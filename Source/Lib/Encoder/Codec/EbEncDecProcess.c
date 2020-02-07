@@ -1417,7 +1417,11 @@ EbErrorType signal_derivation_enc_dec_kernel_oq(SequenceControlSet * scs_ptr,
 
     } else // use specified level
         context_ptr->chroma_level = scs_ptr->static_config.set_chroma_mode;
-
+#if MOVE_OPT
+    context_ptr->chroma_level = (pcs_ptr->enc_mode > ENC_M0 &&
+        context_ptr->chroma_level == CHROMA_MODE_0) ? CHROMA_MODE_01 :
+        context_ptr->chroma_level;
+#endif
     // Set the full loop escape level
     // Level                Settings
     // 0                    Off
@@ -1732,8 +1736,11 @@ EbErrorType signal_derivation_enc_dec_kernel_oq(SequenceControlSet * scs_ptr,
             context_ptr->spatial_sse_full_loop = EB_FALSE;
     else
         context_ptr->spatial_sse_full_loop = scs_ptr->static_config.spatial_sse_fl;
-
+#if MOVE_OPT
+    if (context_ptr->chroma_level <= CHROMA_MODE_1 || context_ptr->chroma_level == CHROMA_MODE_01)
+#else
     if (context_ptr->chroma_level <= CHROMA_MODE_1)
+#endif
         context_ptr->blk_skip_decision = EB_TRUE;
     else
         context_ptr->blk_skip_decision = EB_FALSE;

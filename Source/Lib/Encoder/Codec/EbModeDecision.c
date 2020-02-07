@@ -32,11 +32,19 @@
 #include "EbRateDistortionCost.h"
 #include "aom_dsp_rtcd.h"
 #include "EbLog.h"
+#if INFR_OPT
+#define INCRMENT_CAND_TOTAL_COUNT(cnt)                                                     \
+    MULTI_LINE_MACRO_BEGIN cnt++;                                                          \
+    if (cnt >= MODE_DECISION_CANDIDATE_MAX_COUNT_Y)                                          \
+        SVT_LOG(" ERROR: reaching limit for MODE_DECISION_CANDIDATE_MAX_COUNT %i\n", cnt); \
+    MULTI_LINE_MACRO_END
+#else
 #define INCRMENT_CAND_TOTAL_COUNT(cnt)                                                     \
     MULTI_LINE_MACRO_BEGIN cnt++;                                                          \
     if (cnt >= MODE_DECISION_CANDIDATE_MAX_COUNT)                                          \
         SVT_LOG(" ERROR: reaching limit for MODE_DECISION_CANDIDATE_MAX_COUNT %i\n", cnt); \
     MULTI_LINE_MACRO_END
+#endif
 
 int8_t av1_ref_frame_type(const MvReferenceFrame *const rf);
 int    av1_filter_intra_allowed_bsize(uint8_t enable_filter_intra, BlockSize bs);
@@ -4835,7 +4843,11 @@ void inject_intra_candidates_ois(PictureControlSet *pcs_ptr, ModeDecisionContext
             candidate_array[can_total_cnt].intra_chroma_mode =
                 disable_cfl_flag
                     ? intra_luma_to_chroma[intra_mode]
+#if MOVE_OPT
+                    : (context_ptr->chroma_level == CHROMA_MODE_01 || context_ptr->chroma_level <= CHROMA_MODE_1) ? UV_CFL_PRED : UV_DC_PRED;
+#else
                     : context_ptr->chroma_level <= CHROMA_MODE_1 ? UV_CFL_PRED : UV_DC_PRED;
+#endif
             candidate_array[can_total_cnt].cfl_alpha_signs = 0;
             candidate_array[can_total_cnt].cfl_alpha_idx   = 0;
             candidate_array[can_total_cnt].is_directional_chroma_mode_flag =
@@ -4877,7 +4889,11 @@ void inject_intra_candidates_ois(PictureControlSet *pcs_ptr, ModeDecisionContext
             candidate_array[can_total_cnt].intra_chroma_mode =
                 disable_cfl_flag
                     ? intra_luma_to_chroma[intra_mode]
+#if MOVE_OPT
+                    : (context_ptr->chroma_level == CHROMA_MODE_01 || context_ptr->chroma_level <= CHROMA_MODE_1) ? UV_CFL_PRED : UV_DC_PRED;
+#else
                     : context_ptr->chroma_level <= CHROMA_MODE_1 ? UV_CFL_PRED : UV_DC_PRED;
+#endif
 
             candidate_array[can_total_cnt].cfl_alpha_signs = 0;
             candidate_array[can_total_cnt].cfl_alpha_idx   = 0;
@@ -5363,7 +5379,11 @@ void  inject_intra_candidates(
                         cand_array[cand_total_cnt].is_directional_mode_flag = (uint8_t)av1_is_directional_mode((PredictionMode)open_loop_intra_candidate);
                         cand_array[cand_total_cnt].angle_delta[PLANE_TYPE_Y] = angle_delta;
                         // Search the best independent intra chroma mode
+#if MOVE_OPT
+                        if (context_ptr->chroma_level == CHROMA_MODE_0 || context_ptr->chroma_level == CHROMA_MODE_01) {
+#else
                         if (context_ptr->chroma_level == CHROMA_MODE_0) {
+#endif
                             cand_array[cand_total_cnt].intra_chroma_mode = disable_cfl_flag ?
                                 context_ptr->best_uv_mode[open_loop_intra_candidate][MAX_ANGLE_DELTA + cand_array[cand_total_cnt].angle_delta[PLANE_TYPE_Y]] :
                                 UV_CFL_PRED ;
@@ -5424,7 +5444,11 @@ void  inject_intra_candidates(
             cand_array[cand_total_cnt].is_directional_mode_flag = (uint8_t)av1_is_directional_mode((PredictionMode)open_loop_intra_candidate);
             cand_array[cand_total_cnt].angle_delta[PLANE_TYPE_Y] = 0;
             // Search the best independent intra chroma mode
+#if MOVE_OPT
+            if (context_ptr->chroma_level == CHROMA_MODE_0 || context_ptr->chroma_level == CHROMA_MODE_01) {
+#else
             if (context_ptr->chroma_level == CHROMA_MODE_0) {
+#endif
                 cand_array[cand_total_cnt].intra_chroma_mode = disable_cfl_flag ?
                     context_ptr->best_uv_mode[open_loop_intra_candidate][MAX_ANGLE_DELTA + cand_array[cand_total_cnt].angle_delta[PLANE_TYPE_Y]] :
                     UV_CFL_PRED;
@@ -5510,7 +5534,11 @@ void  inject_filter_intra_candidates(
             cand_array[cand_total_cnt].angle_delta[PLANE_TYPE_Y] = 0;
 
             // Search the best independent intra chroma mode
+#if MOVE_OPT
+            if (context_ptr->chroma_level == CHROMA_MODE_0 || context_ptr->chroma_level == CHROMA_MODE_01) {
+#else
             if (context_ptr->chroma_level == CHROMA_MODE_0) {
+#endif
                 cand_array[cand_total_cnt].intra_chroma_mode  = disable_cfl_flag ? context_ptr->best_uv_mode[fimode_to_intramode[filter_intra_mode]][MAX_ANGLE_DELTA + cand_array[cand_total_cnt].angle_delta[PLANE_TYPE_Y]] : UV_CFL_PRED;
 
                 cand_array[cand_total_cnt].angle_delta[PLANE_TYPE_UV] = disable_cfl_flag ? context_ptr->best_uv_angle[fimode_to_intramode[filter_intra_mode]][MAX_ANGLE_DELTA + cand_array[cand_total_cnt].angle_delta[PLANE_TYPE_Y]] : 0;
@@ -5615,7 +5643,11 @@ void  inject_palette_candidates(
         cand_array[can_total_cnt].angle_delta[PLANE_TYPE_Y] = 0;
 
         // Search the best independent intra chroma mode
+#if MOVE_OPT
+        if (context_ptr->chroma_level == CHROMA_MODE_0 || context_ptr->chroma_level == CHROMA_MODE_01) {
+#else
         if (context_ptr->chroma_level == CHROMA_MODE_0) {
+#endif
             cand_array[can_total_cnt].intra_chroma_mode = disable_cfl_flag ?
                 context_ptr->best_uv_mode[DC_PRED][MAX_ANGLE_DELTA + cand_array[can_total_cnt].angle_delta[PLANE_TYPE_Y]] :
                 UV_CFL_PRED;

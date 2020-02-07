@@ -34,6 +34,12 @@
 extern "C" {
 #endif
 
+#define CHROMA_SEARCH_OPT        1 // Move chroma search to be done on the best intra candidate survived from MD stage 2
+#if CHROMA_SEARCH_OPT
+#define INFR_OPT                 1 // lossless
+#define MOVE_OPT                 1 // semi-lossless
+#define COMP_OPT                 1 // lossy
+#endif
 #define OIS_MEM              1 //reduce memory consumption due to ois struct
 
 
@@ -162,8 +168,15 @@ enum {
 #define BLOCK_MAX_COUNT_SB_64 1101 // TODO: reduce alloction for 64x64
 #define MAX_TXB_COUNT 4 // Maximum number of transform blocks.
 #define MAX_NFL 125 // Maximum number of candidates MD can support
+#if INFR_OPT
+#define MAX_NFL_BUFF_Y \
+    (MAX_NFL + CAND_CLASS_TOTAL) //need one extra temp buffer for each fast loop call
+#define MAX_NFL_BUFF \
+    (MAX_NFL_BUFF_Y + 84) //need one extra temp buffer for each fast loop call
+#else
 #define MAX_NFL_BUFF \
     (MAX_NFL + CAND_CLASS_TOTAL) //need one extra temp buffer for each fast loop call
+#endif
 #define MAX_LAD 120 // max lookahead-distance 2x60fps
 #define ROUND_UV(x) (((x) >> 3) << 3)
 #define AV1_PROB_COST_SHIFT 9
@@ -2746,6 +2759,9 @@ static const uint8_t intra_area_th_class_1[MAX_HIERARCHICAL_LEVEL][MAX_TEMPORAL_
 #define CHROMA_MODE_1  1 // Fast chroma search @ MD
 #define CHROMA_MODE_2  2 // Chroma blind @ MD + CFL @ EP
 #define CHROMA_MODE_3  3 // Chroma blind @ MD + no CFL @ EP
+#if MOVE_OPT
+#define CHROMA_MODE_01  4 // Full chroma search @ last MD stage.
+#endif
 
 typedef enum EbCleanUpMode
 {
