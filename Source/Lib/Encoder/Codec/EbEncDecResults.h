@@ -1,7 +1,5 @@
-/*
-* Copyright(c) 2019 Intel Corporation
-* SPDX - License - Identifier: BSD - 2 - Clause - Patent
-*/
+/*!< Copyright(c) 2019 Intel Corporation
+ * SPDX - License - Identifier: BSD - 2 - Clause - Patent */
 
 #ifndef EbEncDecResults_h
 #define EbEncDecResults_h
@@ -12,9 +10,9 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
-/**************************************
-     * Process Results
-     **************************************/
+/**************************************/
+/*!< Process Results */
+/**************************************/
 typedef struct EncDecResults {
     EbDctor          dctor;
     EbObjectWrapper *pcs_wrapper_ptr;
@@ -48,9 +46,9 @@ typedef struct EncDecResultsInitData {
     uint32_t junk;
 } EncDecResultsInitData;
 
-/**************************************
-     * Extern Function Declarations
-     **************************************/
+/**************************************/
+/*!< Extern Function Declarations */
+/**************************************/
 extern EbErrorType enc_dec_results_creator(EbPtr *object_dbl_ptr, EbPtr object_init_data_ptr);
 
 #ifdef __cplusplus

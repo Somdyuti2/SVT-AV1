@@ -1,14 +1,11 @@
-/*
-* Copyright(c) 2019 Netflix, Inc.
-* SPDX - License - Identifier: BSD - 2 - Clause - Patent
-*/
+/*!< Copyright(c) 2019 Netflix, Inc.
+ * SPDX - License - Identifier: BSD - 2 - Clause - Patent */
 
-// SUMMARY
-//   Contains the Decoder Utility functions
+/*!< SUMMARY: Contains the Decoder Utility functions */
 
-/**************************************
- * Includes
- **************************************/
+/**************************************/
+/*!< Includes */
+/**************************************/
 #include <stdlib.h>
 #include "EbDecUtils.h"
 #include "EbDefinitions.h"
@@ -25,7 +22,7 @@ EbErrorType check_add_tplmv_buf(EbDecHandle *dec_handle_ptr) {
                       (dec_handle_ptr->master_frame_buf.tpl_mvs_size < tpl_size);
 
     if (realloc) {
-        /*TODO: Add free now itself */
+        /*!< TODO: Add free now itself */
         EB_MALLOC_DEC(TemporalMvRef *,
                       dec_handle_ptr->master_frame_buf.tpl_mvs,
                       tpl_size * sizeof(*dec_handle_ptr->master_frame_buf.tpl_mvs),
@@ -56,7 +53,7 @@ void derive_blk_pointers(EbPictureBufferDesc *recon_picture_buf, int32_t plane, 
         *recon_stride = recon_picture_buf->stride_cr;
     }
 
-    if (recon_picture_buf->bit_depth != EB_8BIT) { //16bit
+    if (recon_picture_buf->bit_depth != EB_8BIT) { /*!< 16bit */
         if (plane == 0)
             *pp_blk_recon_buf = (void *)((uint16_t *)recon_picture_buf->buffer_y + block_offset);
         else if (plane == 1)
@@ -267,8 +264,8 @@ void pad_pic(EbDecHandle *dec_handle_ptr)
     uint32_t pad_width = recon_picture_buf->origin_x;
     uint32_t pad_height = recon_picture_buf->origin_y;
 
-    /* To be adjusted according to the granularity of operation.
-       Assuming a superblock row here. */
+    /*!< To be adjusted according to the granularity of operation.
+     *   Assuming a superblock row here. */
     int32_t row_id = 0;
     for (uint32_t row = 0; row < frame_height; row += sb_size, row_id++) {
         EbByte src_y = recon_picture_buf->buffer_y + (pad_width << shift) +

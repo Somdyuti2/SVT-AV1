@@ -1,22 +1,19 @@
-/*
-* Copyright(c) 2019 Intel Corporation
-* SPDX - License - Identifier: BSD - 2 - Clause - Patent
-*/
+/*!< Copyright(c) 2019 Intel Corporation
+ * SPDX - License - Identifier: BSD - 2 - Clause - Patent */
 
-/***************************************
- * Includes
- ***************************************/
-
+/**************/
+/*!< Includes */
+/**************/
 #include <stdlib.h>
 #include <string.h>
 
 #include "EbAppContext.h"
 #include "EbAppConfig.h"
 
-#define INPUT_SIZE_576p_TH 0x90000 // 0.58 Million
-#define INPUT_SIZE_1080i_TH 0xB71B0 // 0.75 Million
-#define INPUT_SIZE_1080p_TH 0x1AB3F0 // 1.75 Million
-#define INPUT_SIZE_4K_TH 0x29F630 // 2.75 Million
+#define INPUT_SIZE_576p_TH 0x90000 /*!< 0.58 Million */
+#define INPUT_SIZE_1080i_TH 0xB71B0 /*!< 0.75 Million */
+#define INPUT_SIZE_1080p_TH 0x1AB3F0 /*!< 1.75 Million */
+#define INPUT_SIZE_4K_TH 0x29F630 /*!< 2.75 Million */
 
 #define IS_16_BIT(bit_depth) (bit_depth == 10 ? 1 : 0)
 #define EB_OUTPUTSTREAMBUFFERSIZE_MACRO(ResolutionSize) \
@@ -26,10 +23,10 @@
                ? 0x2DC6C0                               \
                : (ResolutionSize) < (INPUT_SIZE_4K_TH) ? 0x2DC6C0 : 0x2DC6C0)
 
-/***************************************
- * Variables Defining a memory table
- *  hosting all allocated pointers
- ***************************************/
+/************************************/
+/*!< Variables Defining a memory table
+ *   hosting all allocated pointers */
+/************************************/
 EbMemoryMapEntry *       app_memory_map;
 uint32_t *               app_memory_map_index;
 uint64_t *               total_app_memory;
@@ -38,54 +35,51 @@ static EbMemoryMapEntry *app_memory_map_all_channels[MAX_CHANNEL_NUMBER];
 static uint32_t          app_memory_map_index_all_channels[MAX_CHANNEL_NUMBER];
 static uint64_t          app_memory_mallocd_all_channels[MAX_CHANNEL_NUMBER];
 
-/***************************************
-* Allocation and initializing a memory table
-*  hosting all allocated pointers
-***************************************/
+/**********************************************/
+/*!< Allocation and initializing a memory table
+ *   hosting all allocated pointers */
+/**********************************************/
 void allocate_memory_table(uint32_t instance_idx) {
-    // Malloc Memory Table for the instance @ instance_idx
+    /*!< Malloc Memory Table for the instance @ instance_idx */
     app_memory_map_all_channels[instance_idx] =
         (EbMemoryMapEntry *)malloc(sizeof(EbMemoryMapEntry) * MAX_APP_NUM_PTR);
 
-    // Init the table index
+    /*!< Init the table index */
     app_memory_map_index_all_channels[instance_idx] = 0;
 
-    // Size of the table
+    /*!< Size of the table */
     app_memory_mallocd_all_channels[instance_idx] = sizeof(EbMemoryMapEntry) * MAX_APP_NUM_PTR;
     total_app_memory                              = &app_memory_mallocd_all_channels[instance_idx];
 
-    // Set pointer to the first entry
+    /*!< Set pointer to the first entry */
     app_memory_map = app_memory_map_all_channels[instance_idx];
 
-    // Set index to the first entry
+    /*!< Set index to the first entry */
     app_memory_map_index = &app_memory_map_index_all_channels[instance_idx];
 
-    // Init Number of pointers
+    /*!< Init Number of pointers */
     app_malloc_count = 0;
 
     return;
 }
+/*************************************/
+/*!< Helper functions Input / Output */
+/*************************************/
 
-/*************************************
-**************************************
-*** Helper functions Input / Output **
-**************************************
-**************************************/
-
-/***********************************************
-* Copy configuration parameters from
-*  The config structure, to the
-*  callback structure to send to the library
-***********************************************/
+/***********************************************/
+/*!< Copy configuration parameters from
+ *   The config structure, to the
+ *   callback structure to send to the library */
+/**********************************************/
 EbErrorType copy_configuration_parameters(EbConfig *config, EbAppContext *callback_data,
                                           uint32_t instance_idx) {
     EbErrorType return_error = EB_ErrorNone;
     uint32_t    hme_region_index;
 
-    // Assign Instance index to the library
+    /*!< Assign Instance index to the library */
     callback_data->instance_idx = (uint8_t)instance_idx;
 
-    // Initialize Port Activity Flags
+    /*!< Initialize Port Activity Flags */
     callback_data->output_stream_port_active                = APP_PortActive;
     callback_data->eb_enc_parameters.source_width           = config->source_width;
     callback_data->eb_enc_parameters.source_height          = config->source_height;
@@ -186,18 +180,18 @@ EbErrorType copy_configuration_parameters(EbConfig *config, EbAppContext *callba
     callback_data->eb_enc_parameters.unrestricted_motion_vector =
         config->unrestricted_motion_vector;
     callback_data->eb_enc_parameters.recon_enabled = config->recon_file ? EB_TRUE : EB_FALSE;
-    // --- start: ALTREF_FILTERING_SUPPORT
+    /*!< --- start: ALTREF_FILTERING_SUPPORT */
     callback_data->eb_enc_parameters.enable_altrefs  = (EbBool)config->enable_altrefs;
     callback_data->eb_enc_parameters.altref_strength = config->altref_strength;
     callback_data->eb_enc_parameters.altref_nframes  = config->altref_nframes;
     callback_data->eb_enc_parameters.enable_overlays = (EbBool)config->enable_overlays;
-    // --- end: ALTREF_FILTERING_SUPPORT
-    // --- start: SUPER-RESOLUTION SUPPORT
+    /*!< --- end: ALTREF_FILTERING_SUPPORT */
+    /*!< --- start: SUPER-RESOLUTION SUPPORT */
     callback_data->eb_enc_parameters.superres_mode = config->superres_mode;
     callback_data->eb_enc_parameters.superres_denom = config->superres_denom;
     callback_data->eb_enc_parameters.superres_kf_denom = config->superres_kf_denom;
     callback_data->eb_enc_parameters.superres_qthres = config->superres_qthres;
-    // --- end: SUPER-RESOLUTION SUPPORT
+    /*!< --- end: SUPER-RESOLUTION SUPPORT */
 
     for (hme_region_index = 0;
          hme_region_index < callback_data->eb_enc_parameters.number_hme_search_region_in_width;
@@ -228,7 +222,7 @@ EbErrorType copy_configuration_parameters(EbConfig *config, EbAppContext *callba
     callback_data->eb_enc_parameters.md_full_cost_cand_prune_th  = config->md_full_cost_cand_prune_th;
     callback_data->eb_enc_parameters.md_full_cost_class_prune_th = config->md_full_cost_class_prune_th;
 
-    // Prediction Structure
+    /*!< Prediction Structure */
     callback_data->eb_enc_parameters.enable_manual_pred_struct    = config->enable_manual_pred_struct;
     if (callback_data->eb_enc_parameters.enable_manual_pred_struct) {
         callback_data->eb_enc_parameters.manual_pred_struct_entry_num = config->manual_pred_struct_entry_num;
@@ -242,11 +236,11 @@ static EbErrorType allocate_frame_buffer(EbConfig *config, uint8_t *p_buffer) {
     const int32_t ten_bit_packed_mode =
         (config->encoder_bit_depth > 8) && (config->compressed_ten_bit_format == 0) ? 1 : 0;
 
-    // Chroma subsampling
+    /*!< Chroma subsampling */
     const EbColorFormat color_format  = (EbColorFormat)config->encoder_color_format;
     const uint8_t       subsampling_x = (color_format == EB_YUV444 ? 1 : 2) - 1;
 
-    // Determine size of each plane
+    /*!< Determine size of each plane */
     const size_t luma_8bit_size =
         config->input_padded_width * config->input_padded_height * (1 << ten_bit_packed_mode);
 
@@ -258,7 +252,7 @@ static EbErrorType allocate_frame_buffer(EbConfig *config, uint8_t *p_buffer) {
     const size_t chroma_10bit_size =
         (config->encoder_bit_depth > 8 && ten_bit_packed_mode == 0) ? chroma_8bit_size : 0;
 
-    // Determine
+    /*!< Determine */
     EbSvtIOFormat *input_ptr = (EbSvtIOFormat *)p_buffer;
     input_ptr->y_stride      = config->input_padded_width;
     input_ptr->cr_stride     = config->input_padded_width >> subsampling_x;
@@ -325,7 +319,7 @@ EbErrorType allocate_input_buffers(EbConfig *config, EbAppContext *callback_data
                   EB_N_PTR,
                   EB_ErrorInsufficientResources);
 
-    // Initialize Header
+    /*!< Initialize Header */
     callback_data->input_buffer_pool->size = sizeof(EbBufferHeaderType);
 
     EB_APP_MALLOC(uint8_t *,
@@ -334,11 +328,11 @@ EbErrorType allocate_input_buffers(EbConfig *config, EbAppContext *callback_data
                   EB_N_PTR,
                   EB_ErrorInsufficientResources);
 
-    // Allocate frame buffer for the p_buffer
+    /*!< Allocate frame buffer for the p_buffer */
     if (config->buffered_input == -1)
         allocate_frame_buffer(config, callback_data->input_buffer_pool->p_buffer);
 
-    // Assign the variables
+    /*!< Assign the variables */
     callback_data->input_buffer_pool->p_app_private = NULL;
     callback_data->input_buffer_pool->pic_type      = EB_AV1_INVALID_PICTURE;
 
@@ -348,19 +342,19 @@ EbErrorType allocate_input_buffers(EbConfig *config, EbAppContext *callback_data
 EbErrorType allocate_output_recon_buffers(EbConfig *config, EbAppContext *callback_data) {
     const size_t luma_size = config->input_padded_width * config->input_padded_height;
 
-    // both u and v
+    /*!< both u and v */
     const size_t chroma_size = luma_size >> (3 - config->encoder_color_format);
     const size_t ten_bit     = (config->encoder_bit_depth > 8);
     const size_t frame_size  = (luma_size + 2 * chroma_size) << ten_bit;
 
-    // Recon Port
+    /*!< Recon Port */
     EB_APP_MALLOC(EbBufferHeaderType *,
                   callback_data->recon_buffer,
                   sizeof(EbBufferHeaderType),
                   EB_N_PTR,
                   EB_ErrorInsufficientResources);
 
-    // Initialize Header
+    /*!< Initialize Header */
     callback_data->recon_buffer->size = sizeof(EbBufferHeaderType);
 
     EB_APP_MALLOC(uint8_t *,
@@ -385,7 +379,7 @@ EbErrorType allocate_output_buffers(EbConfig *config, EbAppContext *callback_dat
                   EB_N_PTR,
                   EB_ErrorInsufficientResources);
 
-    // Initialize Header
+    /*!< Initialize Header */
     callback_data->stream_buffer_pool->size = sizeof(EbBufferHeaderType);
 
     EB_APP_MALLOC(uint8_t *,
@@ -409,16 +403,16 @@ EbErrorType preload_frames_info_ram(EbConfig *config) {
     int32_t             input_padded_height = config->input_padded_height;
     int32_t             read_size;
     const EbColorFormat color_format =
-        (EbColorFormat)config->encoder_color_format; // Chroma subsampling
+        (EbColorFormat)config->encoder_color_format; /*!< Chroma subsampling */
 
     FILE *input_file = config->input_file;
 
-    read_size = input_padded_width * input_padded_height; //Luma
-    read_size += 2 * (read_size >> (3 - color_format)); // Add Chroma
+    read_size = input_padded_width * input_padded_height; /*!< Luma */
+    read_size += 2 * (read_size >> (3 - color_format)); /*!< Add Chroma */
     if (config->encoder_bit_depth == 10 && config->compressed_ten_bit_format == 1) {
         read_size += read_size / 4;
     } else
-        read_size *= (config->encoder_bit_depth > 8 ? 2 : 1); //10 bit
+        read_size *= (config->encoder_bit_depth > 8 ? 2 : 1); /*!< 10 bit */
     EB_APP_MALLOC(uint8_t **,
                   config->sequence_buffer,
                   sizeof(uint8_t *) * config->buffered_input,
@@ -432,7 +426,7 @@ EbErrorType preload_frames_info_ram(EbConfig *config) {
                       read_size,
                       EB_N_PTR,
                       EB_ErrorInsufficientResources);
-        // Fill the buffer with a complete frame
+        /*!< Fill the buffer with a complete frame */
         filled_len = 0;
         filled_len += (uint32_t)fread(
             config->sequence_buffer[processed_frame_count], 1, read_size, input_file);
@@ -440,7 +434,7 @@ EbErrorType preload_frames_info_ram(EbConfig *config) {
         if (read_size != filled_len) {
             fseek(config->input_file, 0, SEEK_SET);
 
-            // Fill the buffer with a complete frame
+            /*!< Fill the buffer with a complete frame  */
             filled_len = 0;
             filled_len += (uint32_t)fread(
                 config->sequence_buffer[processed_frame_count], 1, read_size, input_file);
@@ -450,70 +444,70 @@ EbErrorType preload_frames_info_ram(EbConfig *config) {
     return return_error;
 }
 
-/***************************************
-* Functions Implementation
-***************************************/
+/******************************/
+/*!< Functions Implementation */
+/******************************/
 
-/***********************************
- * Initialize Core & Component
- ***********************************/
+/*********************************/
+/*!< Initialize Core & Component */
+/*********************************/
 EbErrorType init_encoder(EbConfig *config, EbAppContext *callback_data, uint32_t instance_idx) {
     EbErrorType return_error = EB_ErrorNone;
 
-    // Allocate a memory table hosting all allocated pointers
+    /*!< Allocate a memory table hosting all allocated pointers */
     allocate_memory_table(instance_idx);
 
-    ///************************* LIBRARY INIT [START] *********************///
-    // STEP 1: Call the library to construct a Component Handle
+    /*!< ************************* LIBRARY INIT [START] *********************/
+    /*!< STEP 1: Call the library to construct a Component Handle */
     return_error = eb_init_handle(
         &callback_data->svt_encoder_handle, callback_data, &callback_data->eb_enc_parameters);
 
     if (return_error != EB_ErrorNone) return return_error;
-    // STEP 3: Copy all configuration parameters into the callback structure
+    /*!< STEP 3: Copy all configuration parameters into the callback structure */
     return_error = copy_configuration_parameters(config, callback_data, instance_idx);
 
     if (return_error != EB_ErrorNone) return return_error;
-    // STEP 4: Send over all configuration parameters
-    // Set the Parameters
+    /*!< STEP 4: Send over all configuration parameters
+     *   Set the Parameters */
     return_error = eb_svt_enc_set_parameter(callback_data->svt_encoder_handle,
                                             &callback_data->eb_enc_parameters);
 
     if (return_error != EB_ErrorNone) return return_error;
-    // STEP 5: Init Encoder
+    /*!< STEP 5: Init Encoder */
     return_error = eb_init_encoder(callback_data->svt_encoder_handle);
     if (return_error != EB_ErrorNone) { return return_error; }
 
-    ///************************* LIBRARY INIT [END] *********************///
+    /*!< ************************* LIBRARY INIT [END] *********************/
 
-    ///********************** APPLICATION INIT [START] ******************///
+    /*!<********************** APPLICATION INIT [START] ******************/
 
-    // STEP 6: Allocate input buffers carrying the yuv frames in
+    /*!< STEP 6: Allocate input buffers carrying the yuv frames in */
     return_error = allocate_input_buffers(config, callback_data);
 
     if (return_error != EB_ErrorNone) return return_error;
-    // STEP 7: Allocate output buffers carrying the Bitstream out
+    /*!< STEP 7: Allocate output buffers carrying the Bitstream out */
     return_error = allocate_output_buffers(config, callback_data);
 
     if (return_error != EB_ErrorNone) return return_error;
-    // STEP 8: Allocate output Recon Buffer
+    /*!< STEP 8: Allocate output Recon Buffer */
     return_error = allocate_output_recon_buffers(config, callback_data);
 
     if (return_error != EB_ErrorNone) return return_error;
-    // Allocate the Sequence Buffer
+    /*!< Allocate the Sequence Buffer */
     if (config->buffered_input != -1) {
-        // Preload frames into the ram for a faster yuv access time
+        /*!< Preload frames into the ram for a faster yuv access time */
         preload_frames_info_ram(config);
     } else
         config->sequence_buffer = 0;
     if (return_error != EB_ErrorNone) return return_error;
-    ///********************** APPLICATION INIT [END] ******************////////
+    /*!<********************** APPLICATION INIT [END] ******************/
 
     return return_error;
 }
 
-/***********************************
- * Deinit Components
- ***********************************/
+/***********************/
+/*!< Deinit Components */
+/***********************/
 EbErrorType de_init_encoder(EbAppContext *callback_data_ptr, uint32_t instance_index) {
     EbErrorType       return_error = EB_ErrorNone;
     int32_t           ptr_index    = 0;
@@ -521,9 +515,9 @@ EbErrorType de_init_encoder(EbAppContext *callback_data_ptr, uint32_t instance_i
 
     if (((EbComponentType *)(callback_data_ptr->svt_encoder_handle)) != NULL)
         return_error = eb_deinit_encoder(callback_data_ptr->svt_encoder_handle);
-    // Destruct the buffer memory pool
+    /*!< Destruct the buffer memory pool */
     if (return_error != EB_ErrorNone) return return_error;
-    // Loop through the ptr table and free all malloc'd pointers per channel
+    /*!< Loop through the ptr table and free all malloc'd pointers per channel */
     for (ptr_index = app_memory_map_index_all_channels[instance_index] - 1; ptr_index >= 0;
          --ptr_index) {
         memory_entry = &app_memory_map_all_channels[instance_index][ptr_index];
@@ -534,7 +528,7 @@ EbErrorType de_init_encoder(EbAppContext *callback_data_ptr, uint32_t instance_i
     }
     free(app_memory_map_all_channels[instance_index]);
 
-    // Destruct the component
+    /*!< Destruct the component */
     eb_deinit_handle(callback_data_ptr->svt_encoder_handle);
 
     return return_error;

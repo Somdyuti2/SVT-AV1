@@ -1,7 +1,5 @@
-/*
-* Copyright(c) 2019 Intel Corporation
-* SPDX - License - Identifier: BSD - 2 - Clause - Patent
-*/
+/*!< Copyright(c) 2019 Intel Corporation
+ * SPDX - License - Identifier: BSD - 2 - Clause - Patent */
 
 #include "EbDefinitions.h"
 #include "immintrin.h"
@@ -9,7 +7,7 @@
 #include "txfm_common_avx2.h"
 #include "common_dsp_rtcd.h"
 
-// Indices are sign, integer, and fractional part of the gradient value
+/*!< Indices are sign, integer, and fractional part of the gradient value */
 static const uint8_t gradient_to_angle_bin[2][7][16] = {
     {
         {6, 6, 6, 6, 7, 7, 7, 7, 7, 7, 7, 7, 0, 0, 0, 0},
@@ -33,7 +31,7 @@ static const uint8_t gradient_to_angle_bin[2][7][16] = {
 
 static INLINE __m256i __m256i_div_epi32(const __m256i *a, const __m256i *b) {
     __m256 d_f = _mm256_div_ps(_mm256_cvtepi32_ps(*a), _mm256_cvtepi32_ps(*b));
-    //Integer devide round down
+    /*!< Integer devide round down */
     return _mm256_cvtps_epi32(_mm256_floor_ps(d_f));
 }
 
@@ -57,10 +55,10 @@ static INLINE void get_gradient_hist_avx2_internal(const __m256i *src1, const __
     dy = _mm256_sub_epi16(*src1, *src3);
 
     //sn = (dx > 0) ^ (dy > 0);
-    sn = _mm256_xor_si256(dx, dy); //result is 0 or 0xFFFF
-    sn = _mm256_srli_epi16(sn, 15); //change output from 0xFFFF to 1
+    sn = _mm256_xor_si256(dx, dy); /*!< result is 0 or 0xFFFF */
+    sn = _mm256_srli_epi16(sn, 15); /*!< change output from 0xFFFF to 1 */
 
-    //mask which shows where are zeros in dy register 0/1
+    /*!< mask which shows where are zeros in dy register 0/1 */
     dy_mask = _mm256_srli_epi16(_mm256_cmpeq_epi16(dy, zero), 15);
 
     //dx = abs(dx); dy = abs(dy);
@@ -69,9 +67,9 @@ static INLINE void get_gradient_hist_avx2_internal(const __m256i *src1, const __
 
     _mm256_add_epi16(dy, dy_mask);
 
-    //  temp = dx * dx + dy * dy;
-    dx1_32 = _mm256_cvtepi16_epi32(_mm256_castsi256_si128(dx)); //dx
-    dy1_32 = _mm256_cvtepi16_epi32(_mm256_castsi256_si128(dy)); //dy
+    // temp = dx * dx + dy * dy;
+    dx1_32 = _mm256_cvtepi16_epi32(_mm256_castsi256_si128(dx)); /*!< dx */
+    dy1_32 = _mm256_cvtepi16_epi32(_mm256_castsi256_si128(dy)); /*!< dy */
 
     tmp1_32 =
         _mm256_add_epi32(_mm256_mullo_epi32(dx1_32, dx1_32), _mm256_mullo_epi32(dy1_32, dy1_32));
@@ -82,13 +80,13 @@ static INLINE void get_gradient_hist_avx2_internal(const __m256i *src1, const __
     tmp2_32 =
         _mm256_add_epi32(_mm256_mullo_epi32(dx2_32, dx2_32), _mm256_mullo_epi32(dy2_32, dy2_32));
 
-    /* Code:
-     quot16 = (dx << 4) / dy;
-     quot = quot16 >> 4;
-     remd = = (quot16 & (15));
-    Equivalent of:
-     quot = dx / dy;
-     remd = (dx % dy) * 16 / dy;*/
+    /*!< Code:
+     *   quot16 = (dx << 4) / dy;
+     *   quot = quot16 >> 4;
+     *   remd = = (quot16 & (15));
+     *  Equivalent of:
+     *   quot = dx / dy;
+     *   remd = (dx % dy) * 16 / dy; */
 
     //quot16 = (dx << 4) / dy;
     dx1_32               = _mm256_slli_epi32(dx1_32, 4);
@@ -120,9 +118,9 @@ void av1_get_gradient_hist_avx2(const uint8_t *src, int src_stride, int rows, in
     src += src_stride;
 
     __m128i tmp_src;
-    __m256i src1; //src[c]
-    __m256i src2; //src[c-1]
-    __m256i src3; //src[c - src_stride]
+    __m256i src1; /*!< src[c] */
+    __m256i src2; /*!< src[c-1] */
+    __m256i src3; /*!< src[c - src_stride] */
 
     DECLARE_ALIGNED(64, int16_t, dy_mask_array[16]);
     DECLARE_ALIGNED(64, int16_t, quot_array[16]);
@@ -130,7 +128,7 @@ void av1_get_gradient_hist_avx2(const uint8_t *src, int src_stride, int rows, in
     DECLARE_ALIGNED(64, int16_t, sn_array[16]);
     DECLARE_ALIGNED(64, int32_t, temp_array[16]);
 
-    if (cols < 8) { //i.e cols ==4
+    if (cols < 8) { /*!< i.e cols == 4 */
         for (int r = 1; r < rows; r += 4) {
             if ((r + 3) >= rows) {
                 tmp_src = _mm_set_epi32(0,
@@ -198,7 +196,7 @@ void av1_get_gradient_hist_avx2(const uint8_t *src, int src_stride, int rows, in
             }
             src += 4 * src_stride;
         }
-    } else if (cols < 16) { //i.e cols ==8
+    } else if (cols < 16) { /*!< i.e cols == 8 */
         for (int r = 1; r < rows; r += 2) {
             if ((r + 1) >= rows) {
                 tmp_src = _mm_set1_epi64x(*(uint64_t *)(src + 1));
@@ -253,7 +251,7 @@ void av1_get_gradient_hist_avx2(const uint8_t *src, int src_stride, int rows, in
         for (int r = 1; r < rows; ++r) {
             int c = 1;
             for (; cols - c >= 15; c += 16) {
-                //read too many [1:16], while max is 15
+                /*!< read too many [1:16], while max is 15 */
                 src1 = _mm256_cvtepu8_epi16(_mm_loadu_si128((__m128i const *)&src[c]));
                 src2 = _mm256_cvtepu8_epi16(_mm_loadu_si128((__m128i const *)&src[c - 1]));
                 src3 = _mm256_cvtepu8_epi16(_mm_loadu_si128((__m128i const *)&src[c - src_stride]));
@@ -346,64 +344,64 @@ static INLINE void highbd_transpose16x4_8x8_sse2(__m128i *x, __m128i *d) {
 static INLINE void highbd_transpose4x16_avx2(__m256i *x, __m256i *d) {
     __m256i w0, w1, w2, w3, ww0, ww1;
 
-    w0 = _mm256_unpacklo_epi16(x[0], x[1]); // 00 10 01 11 02 12 03 13
-    w1 = _mm256_unpacklo_epi16(x[2], x[3]); // 20 30 21 31 22 32 23 33
-    w2 = _mm256_unpackhi_epi16(x[0], x[1]); // 40 50 41 51 42 52 43 53
-    w3 = _mm256_unpackhi_epi16(x[2], x[3]); // 60 70 61 71 62 72 63 73
+    w0 = _mm256_unpacklo_epi16(x[0], x[1]); /*!< 00 10 01 11 02 12 03 13 */
+    w1 = _mm256_unpacklo_epi16(x[2], x[3]); /*!< 20 30 21 31 22 32 23 33 */
+    w2 = _mm256_unpackhi_epi16(x[0], x[1]); /*!< 40 50 41 51 42 52 43 53 */
+    w3 = _mm256_unpackhi_epi16(x[2], x[3]); /*!< 60 70 61 71 62 72 63 73 */
 
-    ww0 = _mm256_unpacklo_epi32(w0, w1); // 00 10 20 30 01 11 21 31
-    ww1 = _mm256_unpacklo_epi32(w2, w3); // 40 50 60 70 41 51 61 71
+    ww0 = _mm256_unpacklo_epi32(w0, w1); /*!< 00 10 20 30 01 11 21 31 */
+    ww1 = _mm256_unpacklo_epi32(w2, w3); /*!< 40 50 60 70 41 51 61 71 */
 
-    d[0] = _mm256_unpacklo_epi64(ww0, ww1); // 00 10 20 30 40 50 60 70
-    d[1] = _mm256_unpackhi_epi64(ww0, ww1); // 01 11 21 31 41 51 61 71
+    d[0] = _mm256_unpacklo_epi64(ww0, ww1); /*!< 00 10 20 30 40 50 60 70 */
+    d[1] = _mm256_unpackhi_epi64(ww0, ww1); /*!< 01 11 21 31 41 51 61 71 */
 
-    ww0 = _mm256_unpackhi_epi32(w0, w1); // 02 12 22 32 03 13 23 33
-    ww1 = _mm256_unpackhi_epi32(w2, w3); // 42 52 62 72 43 53 63 73
+    ww0 = _mm256_unpackhi_epi32(w0, w1); /*!< 02 12 22 32 03 13 23 33 */
+    ww1 = _mm256_unpackhi_epi32(w2, w3); /*!< 42 52 62 72 43 53 63 73 */
 
-    d[2] = _mm256_unpacklo_epi64(ww0, ww1); // 02 12 22 32 42 52 62 72
-    d[3] = _mm256_unpackhi_epi64(ww0, ww1); // 03 13 23 33 43 53 63 73
+    d[2] = _mm256_unpacklo_epi64(ww0, ww1); /*!< 02 12 22 32 42 52 62 72 */
+    d[3] = _mm256_unpackhi_epi64(ww0, ww1); /*!< 03 13 23 33 43 53 63 73 */
 }
 
 static INLINE void highbd_transpose8x16_16x8_avx2(__m256i *x, __m256i *d) {
     __m256i w0, w1, w2, w3, ww0, ww1;
 
-    w0 = _mm256_unpacklo_epi16(x[0], x[1]); // 00 10 01 11 02 12 03 13
-    w1 = _mm256_unpacklo_epi16(x[2], x[3]); // 20 30 21 31 22 32 23 33
-    w2 = _mm256_unpacklo_epi16(x[4], x[5]); // 40 50 41 51 42 52 43 53
-    w3 = _mm256_unpacklo_epi16(x[6], x[7]); // 60 70 61 71 62 72 63 73
+    w0 = _mm256_unpacklo_epi16(x[0], x[1]); /*!< 00 10 01 11 02 12 03 13 */
+    w1 = _mm256_unpacklo_epi16(x[2], x[3]); /*!< 20 30 21 31 22 32 23 33 */
+    w2 = _mm256_unpacklo_epi16(x[4], x[5]); /*!< 40 50 41 51 42 52 43 53 */
+    w3 = _mm256_unpacklo_epi16(x[6], x[7]); /*!< 60 70 61 71 62 72 63 73 */
 
-    ww0 = _mm256_unpacklo_epi32(w0, w1); // 00 10 20 30 01 11 21 31
-    ww1 = _mm256_unpacklo_epi32(w2, w3); // 40 50 60 70 41 51 61 71
+    ww0 = _mm256_unpacklo_epi32(w0, w1); /*!< 00 10 20 30 01 11 21 31 */
+    ww1 = _mm256_unpacklo_epi32(w2, w3); /*!< 40 50 60 70 41 51 61 71 */
 
-    d[0] = _mm256_unpacklo_epi64(ww0, ww1); // 00 10 20 30 40 50 60 70
-    d[1] = _mm256_unpackhi_epi64(ww0, ww1); // 01 11 21 31 41 51 61 71
+    d[0] = _mm256_unpacklo_epi64(ww0, ww1); /*!< 00 10 20 30 40 50 60 70 */
+    d[1] = _mm256_unpackhi_epi64(ww0, ww1); /*!< 01 11 21 31 41 51 61 71 */
 
-    ww0 = _mm256_unpackhi_epi32(w0, w1); // 02 12 22 32 03 13 23 33
-    ww1 = _mm256_unpackhi_epi32(w2, w3); // 42 52 62 72 43 53 63 73
+    ww0 = _mm256_unpackhi_epi32(w0, w1); /*!< 02 12 22 32 03 13 23 33 */
+    ww1 = _mm256_unpackhi_epi32(w2, w3); /*!< 42 52 62 72 43 53 63 73 */
 
-    d[2] = _mm256_unpacklo_epi64(ww0, ww1); // 02 12 22 32 42 52 62 72
-    d[3] = _mm256_unpackhi_epi64(ww0, ww1); // 03 13 23 33 43 53 63 73
+    d[2] = _mm256_unpacklo_epi64(ww0, ww1); /*!< 02 12 22 32 42 52 62 72 */
+    d[3] = _mm256_unpackhi_epi64(ww0, ww1); /*!< 03 13 23 33 43 53 63 73 */
 
-    w0 = _mm256_unpackhi_epi16(x[0], x[1]); // 04 14 05 15 06 16 07 17
-    w1 = _mm256_unpackhi_epi16(x[2], x[3]); // 24 34 25 35 26 36 27 37
-    w2 = _mm256_unpackhi_epi16(x[4], x[5]); // 44 54 45 55 46 56 47 57
-    w3 = _mm256_unpackhi_epi16(x[6], x[7]); // 64 74 65 75 66 76 67 77
+    w0 = _mm256_unpackhi_epi16(x[0], x[1]); /*!< 04 14 05 15 06 16 07 17 */
+    w1 = _mm256_unpackhi_epi16(x[2], x[3]); /*!< 24 34 25 35 26 36 27 37 */
+    w2 = _mm256_unpackhi_epi16(x[4], x[5]); /*!< 44 54 45 55 46 56 47 57 */
+    w3 = _mm256_unpackhi_epi16(x[6], x[7]); /*!< 64 74 65 75 66 76 67 77 */
 
-    ww0 = _mm256_unpacklo_epi32(w0, w1); // 04 14 24 34 05 15 25 35
-    ww1 = _mm256_unpacklo_epi32(w2, w3); // 44 54 64 74 45 55 65 75
+    ww0 = _mm256_unpacklo_epi32(w0, w1); /*!< 04 14 24 34 05 15 25 35 */
+    ww1 = _mm256_unpacklo_epi32(w2, w3); /*!< 44 54 64 74 45 55 65 75 */
 
-    d[4] = _mm256_unpacklo_epi64(ww0, ww1); // 04 14 24 34 44 54 64 74
-    d[5] = _mm256_unpackhi_epi64(ww0, ww1); // 05 15 25 35 45 55 65 75
+    d[4] = _mm256_unpacklo_epi64(ww0, ww1); /*!< 04 14 24 34 44 54 64 74 */
+    d[5] = _mm256_unpackhi_epi64(ww0, ww1); /*!< 05 15 25 35 45 55 65 75 */
 
-    ww0 = _mm256_unpackhi_epi32(w0, w1); // 06 16 26 36 07 17 27 37
-    ww1 = _mm256_unpackhi_epi32(w2, w3); // 46 56 66 76 47 57 67 77
+    ww0 = _mm256_unpackhi_epi32(w0, w1); /*!< 06 16 26 36 07 17 27 37 */
+    ww1 = _mm256_unpackhi_epi32(w2, w3); /*!< 46 56 66 76 47 57 67 77 */
 
-    d[6] = _mm256_unpacklo_epi64(ww0, ww1); // 06 16 26 36 46 56 66 76
-    d[7] = _mm256_unpackhi_epi64(ww0, ww1); // 07 17 27 37 47 57 67 77
+    d[6] = _mm256_unpacklo_epi64(ww0, ww1); /*!< 06 16 26 36 46 56 66 76 */
+    d[7] = _mm256_unpackhi_epi64(ww0, ww1); /*!< 07 17 27 37 47 57 67 77 */
 }
 
-// TODO(luoyi) The following two functions are shared with intrapred_sse2.c.
-// Use a header file, intrapred_common_x86.h
+/*!< TODO(luoyi) The following two functions are shared with intrapred_sse2.c.
+ *   Use a header file, intrapred_common_x86.h */
 static INLINE __m128i dc_sum_16_sse2(const uint8_t *ref) {
     __m128i       x    = _mm_load_si128((__m128i const *)ref);
     const __m128i zero = _mm_setzero_si128();
@@ -718,10 +716,10 @@ void eb_aom_dc_128_predictor_64x32_avx2(uint8_t *dst, ptrdiff_t stride, const ui
     row_store_64xh(&row, 32, dst, stride);
 }
 
-// There are 32 rows togeter. This function does line:
-// 0,1,2,3, and 16,17,18,19. The next call would do
-// 4,5,6,7, and 20,21,22,23. So 4 times of calling
-// would finish 32 rows.
+/*!< There are 32 rows togeter. This function does line:
+ *   0,1,2,3, and 16,17,18,19. The next call would do
+ *   4,5,6,7, and 20,21,22,23. So 4 times of calling
+ *   would finish 32 rows. */
 static INLINE void h_predictor_32x8line(const __m256i *row, uint8_t *dst, ptrdiff_t stride) {
     __m256i       t[4];
     __m256i       m   = _mm256_setzero_si256();
@@ -825,7 +823,7 @@ void eb_aom_dc_predictor_32x32_avx2(uint8_t *dst, ptrdiff_t stride, const uint8_
     row_store_32xh(&row, 32, dst, stride);
 }
 
-// only define these intrinsics if immintrin.h doesn't have them
+/*!< only define these intrinsics if immintrin.h doesn't have them */
 #if defined(_MSC_VER) && _MSC_VER < 1910
 static inline int32_t _mm256_extract_epi32(__m256i a, const int32_t i) {
     return a.m256i_i32[i & 7];
@@ -841,7 +839,7 @@ static inline __m256i _mm256_insert_epi32(__m256i a, int32_t b, const int32_t i)
 #define PERM4x64(c0, c1, c2, c3) c0 + (c1 << 2) + (c2 << 4) + (c3 << 6)
 #define PERM2x128(c0, c1) c0 + (c1 << 4)
 
-// Low bit depth functions
+/*!< Low bit depth functions */
 static DECLARE_ALIGNED(32, uint8_t, base_mask[33][32]) = {
     {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
      0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
@@ -948,12 +946,12 @@ static AOM_FORCE_INLINE void dr_prediction_z1_hxw_internal_avx2(int H, int W, __
     const int max_base_x = ((W + H) - 1) << upsample_above;
 
     assert(dx > 0);
-    // pre-filter above pixels
-    // store in temp buffers:
-    //   above[x] * 32 + 16
-    //   above[x+1] - above[x]
-    // final pixels will be caluculated as:
-    //   (above[x] * 32 + 16 + (above[x+1] - above[x]) * shift) >> 5
+    /*!< pre-filter above pixels
+     *   store in temp buffers:
+     *     above[x] * 32 + 16
+     *     above[x+1] - above[x]
+     *   final pixels will be caluculated as:
+     *     (above[x] * 32 + 16 + (above[x+1] - above[x]) * shift) >> 5 */
     __m256i a0, a1, a32, a16;
     __m256i diff, c3f;
     __m128i a_mbase_x;
@@ -971,7 +969,7 @@ static AOM_FORCE_INLINE void dr_prediction_z1_hxw_internal_avx2(int H, int W, __
         int base_max_diff = (max_base_x - base) >> upsample_above;
         if (base_max_diff <= 0) {
             for (int i = r; i < W; ++i) {
-                dst[i] = a_mbase_x; // save 4 values
+                dst[i] = a_mbase_x; /*!< save 4 values */
             }
             return;
         }
@@ -991,17 +989,17 @@ static AOM_FORCE_INLINE void dr_prediction_z1_hxw_internal_avx2(int H, int W, __
         a0 = _mm256_cvtepu8_epi16(a0_128);
         a1 = _mm256_cvtepu8_epi16(a1_128);
 
-        diff = _mm256_sub_epi16(a1, a0); // a[x+1] - a[x]
-        a32  = _mm256_slli_epi16(a0, 5); // a[x] * 32
-        a32  = _mm256_add_epi16(a32, a16); // a[x] * 32 + 16
+        diff = _mm256_sub_epi16(a1, a0); /*!< a[x+1] - a[x] */
+        a32  = _mm256_slli_epi16(a0, 5); /*!< a[x] * 32 */
+        a32  = _mm256_add_epi16(a32, a16); /*!< a[x] * 32 + 16 */
 
         b   = _mm256_mullo_epi16(diff, shift);
         res = _mm256_add_epi16(a32, b);
         res = _mm256_srli_epi16(res, 5);
 
         res = _mm256_packus_epi16(
-            res, _mm256_castsi128_si256(_mm256_extracti128_si256(res, 1))); // goto 8 bit
-        res1 = _mm256_castsi256_si128(res); // 16 8bit values
+            res, _mm256_castsi128_si256(_mm256_extracti128_si256(res, 1))); /*!< goto 8 bit */
+        res1 = _mm256_castsi256_si128(res); /*!< 16 8bit values */
 
         dst[r] = _mm_blendv_epi8(a_mbase_x, res1, *(__m128i *)base_mask[base_max_diff]);
         x += dx;
@@ -1040,17 +1038,17 @@ static AOM_FORCE_INLINE void dr_prediction_z1_32xn_internal_avx2(int32_t N, __m2
                                                                  int32_t        upsample_above,
                                                                  int32_t        dx) {
     int32_t x;
-    // here upsample_above is 0 by design of av1_use_intra_edge_upsample
+    /*!< here upsample_above is 0 by design of av1_use_intra_edge_upsample */
     (void)upsample_above;
     const int32_t frac_bits  = 6;
     const int32_t max_base_x = ((32 + N) - 1);
 
-    // pre-filter above pixels
-    // store in temp buffers:
-    //   above[x] * 32 + 16
-    //   above[x+1] - above[x]
-    // final pixels will be caluculated as:
-    //   (above[x] * 32 + 16 + (above[x+1] - above[x]) * shift) >> 5
+    /*!< pre-filter above pixels
+     *   store in temp buffers:
+     *     above[x] * 32 + 16
+     *     above[x+1] - above[x]
+     *   final pixels will be caluculated as:
+     *     (above[x] * 32 + 16 + (above[x+1] - above[x]) * shift) >> 5 */
     __m256i a0, a0_1, a1, a1_1, a32, a16;
     __m256i a_mbase_x, diff;
 
@@ -1065,7 +1063,7 @@ static AOM_FORCE_INLINE void dr_prediction_z1_32xn_internal_avx2(int32_t N, __m2
         int32_t base_max_diff = (max_base_x - base);
         if (base_max_diff <= 0) {
             for (int32_t i = r; i < N; ++i) {
-                dstvec[i] = a_mbase_x; // save 32 values
+                dstvec[i] = a_mbase_x; /*!< save 32 values */
             }
             return;
         }
@@ -1081,9 +1079,9 @@ static AOM_FORCE_INLINE void dr_prediction_z1_32xn_internal_avx2(int32_t N, __m2
                 a0 = _mm256_cvtepu8_epi32(_mm_loadu_si128((__m128i *)(above + base + j)));
                 a1 = _mm256_cvtepu8_epi32(_mm_loadu_si128((__m128i *)(above + base + 1 + j)));
 
-                diff = _mm256_sub_epi32(a1, a0); // a[x+1] - a[x]
-                a32  = _mm256_slli_epi32(a0, 5); // a[x] * 32
-                a32  = _mm256_add_epi32(a32, a16); // a[x] * 32 + 16
+                diff = _mm256_sub_epi32(a1, a0); /*!< a[x+1] - a[x] */
+                a32  = _mm256_slli_epi32(a0, 5); /*!< a[x] * 32 */
+                a32  = _mm256_add_epi32(a32, a16); /*!< a[x] * 32 + 16 */
                 b    = _mm256_mullo_epi32(diff, shift);
 
                 res[0] = _mm256_add_epi32(a32, b);
@@ -1091,16 +1089,16 @@ static AOM_FORCE_INLINE void dr_prediction_z1_32xn_internal_avx2(int32_t N, __m2
                 res[0] = _mm256_packus_epi32(
                     res[0], _mm256_castsi128_si256(_mm256_extracti128_si256(res[0], 1)));
 
-                // goto 8 bit
+                /*!< goto 8 bit */
                 res[0] = _mm256_packus_epi16(res[0], res[0]);
 
                 if (mdiff > 8) {
                     a0_1 = _mm256_cvtepu8_epi32(_mm_loadu_si128((__m128i *)(above + base + 8 + j)));
                     a1_1 = _mm256_cvtepu8_epi32(_mm_loadu_si128((__m128i *)(above + base + 9 + j)));
 
-                    diff = _mm256_sub_epi32(a1_1, a0_1); // a[x+1] - a[x]
-                    a32  = _mm256_slli_epi32(a0_1, 5); // a[x] * 32
-                    a32  = _mm256_add_epi32(a32, a16); // a[x] * 32 + 16
+                    diff = _mm256_sub_epi32(a1_1, a0_1); /*!< a[x+1] - a[x] */
+                    a32  = _mm256_slli_epi32(a0_1, 5); /*!< a[x] * 32 */
+                    a32  = _mm256_add_epi32(a32, a16); /*!< a[x] * 32 + 16 */
                     b    = _mm256_mullo_epi32(diff, shift);
 
                     res[1] = _mm256_add_epi32(a32, b);
@@ -1108,20 +1106,20 @@ static AOM_FORCE_INLINE void dr_prediction_z1_32xn_internal_avx2(int32_t N, __m2
                     res[1] = _mm256_packus_epi32(
                         res[1], _mm256_castsi128_si256(_mm256_extracti128_si256(res[1], 1)));
                     res[1] = _mm256_packus_epi16(res[1], res[1]);
-                    // goto 8 bit
+                    /*!< goto 8 bit */
                 } else {
                     res[1] = a_mbase_x;
                 }
-                res16[jj] = _mm256_unpacklo_epi64(res[0], res[1]); // 16 8bit values
+                res16[jj] = _mm256_unpacklo_epi64(res[0], res[1]); /*!< 16 8bit values */
             }
         }
         res16[1] = _mm256_inserti128_si256(res16[0],
                                            _mm256_castsi256_si128(res16[1]),
-                                           1); // 32 8bit values
+                                           1); /*!< 32 8bit values */
 
         dstvec[r] = _mm256_blendv_epi8(a_mbase_x,
                                        res16[1],
-                                       *(__m256i *)base_mask[base_max_diff]); // 32 8bit values
+                                       *(__m256i *)base_mask[base_max_diff]); /*!< 32 8bit values */
         x += dx;
     }
 }
@@ -1139,17 +1137,17 @@ static void dr_prediction_z1_64xn_avx2(int32_t N, uint8_t *dst, ptrdiff_t stride
                                        const uint8_t *above, int32_t upsample_above, int32_t dx) {
     int32_t x;
 
-    // here upsample_above is 0 by design of av1_use_intra_edge_upsample
+    /*!< here upsample_above is 0 by design of av1_use_intra_edge_upsample */
     (void)upsample_above;
     const int32_t frac_bits  = 6;
     const int32_t max_base_x = ((64 + N) - 1);
 
-    // pre-filter above pixels
-    // store in temp buffers:
-    //   above[x] * 32 + 16
-    //   above[x+1] - above[x]
-    // final pixels will be caluculated as:
-    //   (above[x] * 32 + 16 + (above[x+1] - above[x]) * shift) >> 5
+    /*!< pre-filter above pixels
+     *   store in temp buffers:
+     *     above[x] * 32 + 16
+     *     above[x+1] - above[x]
+     *   final pixels will be caluculated as:
+     *     (above[x] * 32 + 16 + (above[x+1] - above[x]) * shift) >> 5 */
     __m256i a0, a0_1, a1, a1_1, a32, a16;
     __m256i a_mbase_x, diff;
     __m128i max_base_x128, base_inc128, mask128;
@@ -1166,7 +1164,7 @@ static void dr_prediction_z1_64xn_avx2(int32_t N, uint8_t *dst, ptrdiff_t stride
         int32_t base = x >> frac_bits;
         if (base >= max_base_x) {
             for (int32_t i = r; i < N; ++i) {
-                _mm256_storeu_si256((__m256i *)dst, a_mbase_x); // save 32 values
+                _mm256_storeu_si256((__m256i *)dst, a_mbase_x); /*!< save 32 values */
                 _mm256_storeu_si256((__m256i *)(dst + 32), a_mbase_x);
                 dst += stride;
             }
@@ -1187,16 +1185,16 @@ static void dr_prediction_z1_64xn_avx2(int32_t N, uint8_t *dst, ptrdiff_t stride
                 a0     = _mm256_cvtepu8_epi32(a0_128);
                 a1     = _mm256_cvtepu8_epi32(a1_128);
 
-                diff = _mm256_sub_epi32(a1, a0); // a[x+1] - a[x]
-                a32  = _mm256_slli_epi32(a0, 5); // a[x] * 32
-                a32  = _mm256_add_epi32(a32, a16); // a[x] * 32 + 16
+                diff = _mm256_sub_epi32(a1, a0); /*!< a[x+1] - a[x] */
+                a32  = _mm256_slli_epi32(a0, 5); /*!< a[x] * 32 */
+                a32  = _mm256_add_epi32(a32, a16); /*!< a[x] * 32 + 16 */
                 b    = _mm256_mullo_epi32(diff, shift);
 
                 res[0] = _mm256_add_epi32(a32, b);
                 res[0] = _mm256_srli_epi32(res[0], 5);
                 res[0] = _mm256_packus_epi32(
                     res[0], _mm256_castsi128_si256(_mm256_extracti128_si256(res[0], 1)));
-                // goto 8 bit
+                /*!< goto 8 bit */
                 res[0] = _mm256_packus_epi16(res[0], res[0]);
 
                 if (mdif > 8) {
@@ -1205,9 +1203,9 @@ static void dr_prediction_z1_64xn_avx2(int32_t N, uint8_t *dst, ptrdiff_t stride
                     a0_1     = _mm256_cvtepu8_epi32(a0_1_128);
                     a1_1     = _mm256_cvtepu8_epi32(a1_1_128);
 
-                    diff = _mm256_sub_epi32(a1_1, a0_1); // a[x+1] - a[x]
-                    a32  = _mm256_slli_epi32(a0_1, 5); // a[x] * 32
-                    a32  = _mm256_add_epi32(a32, a16); // a[x] * 32 + 16
+                    diff = _mm256_sub_epi32(a1_1, a0_1); /*!< a[x+1] - a[x] */
+                    a32  = _mm256_slli_epi32(a0_1, 5); /*!< a[x] * 32 */
+                    a32  = _mm256_add_epi32(a32, a16); /*!< a[x] * 32 + 16 */
                     b    = _mm256_mullo_epi32(diff, shift);
 
                     res[1] = _mm256_add_epi32(a32, b);
@@ -1220,7 +1218,7 @@ static void dr_prediction_z1_64xn_avx2(int32_t N, uint8_t *dst, ptrdiff_t stride
                     res[1] = a_mbase_x;
                 }
                 res1 = _mm_unpacklo_epi64(_mm256_castsi256_si128(res[0]),
-                                          _mm256_castsi256_si128(res[1])); // 16 8bit values
+                                          _mm256_castsi256_si128(res[1])); /*!< 16 8bit values */
 
                 base_inc128 = _mm_setr_epi8(base + j,
                                             base + j + 1,
@@ -1249,7 +1247,7 @@ static void dr_prediction_z1_64xn_avx2(int32_t N, uint8_t *dst, ptrdiff_t stride
     }
 }
 
-// Directional prediction, zone 1: 0 < angle < 90
+/*!< Directional prediction, zone 1: 0 < angle < 90 */
 void eb_av1_dr_prediction_z1_avx2(uint8_t *dst, ptrdiff_t stride, int32_t bw, int32_t bh,
                                   const uint8_t *above, const uint8_t *left, int32_t upsample_above,
                                   int32_t dx, int32_t dy) {
@@ -1274,12 +1272,12 @@ static AOM_FORCE_INLINE void highbd_dr_prediction_z1_4xn_internal_avx2(int32_t N
     const int32_t max_base_x = ((N + 4) - 1) << upsample_above;
     int32_t       x;
     // a assert(dx > 0);
-    // pre-filter above pixels
-    // store in temp buffers:
-    //   above[x] * 32 + 16
-    //   above[x+1] - above[x]
-    // final pixels will be caluculated as:
-    //   (above[x] * 32 + 16 + (above[x+1] - above[x]) * shift) >> 5
+    /*!< pre-filter above pixels
+     *   store in temp buffers:
+     *     above[x] * 32 + 16
+     *     above[x+1] - above[x]
+     *   final pixels will be caluculated as:
+     *     (above[x] * 32 + 16 + (above[x+1] - above[x]) * shift) >> 5 */
     __m256i a0, a1, a32, a16;
     __m256i diff;
     __m128i a_mbase_x, max_base_x128, base_inc128, mask128;
@@ -1296,7 +1294,7 @@ static AOM_FORCE_INLINE void highbd_dr_prediction_z1_4xn_internal_avx2(int32_t N
         int32_t base = x >> frac_bits;
         if (base >= max_base_x) {
             for (int32_t i = r; i < N; ++i) {
-                dst[i] = a_mbase_x; // save 4 values
+                dst[i] = a_mbase_x; /*!< save 4 values */
             }
             return;
         }
@@ -1318,9 +1316,9 @@ static AOM_FORCE_INLINE void highbd_dr_prediction_z1_4xn_internal_avx2(int32_t N
                 _mm256_and_si256(_mm256_set1_epi32(x), _mm256_set1_epi32(0x3f)), 1);
         }
 
-        diff = _mm256_sub_epi32(a1, a0); // a[x+1] - a[x]
-        a32  = _mm256_slli_epi32(a0, 5); // a[x] * 32
-        a32  = _mm256_add_epi32(a32, a16); // a[x] * 32 + 16
+        diff = _mm256_sub_epi32(a1, a0); /*!< a[x+1] - a[x] */
+        a32  = _mm256_slli_epi32(a0, 5); /*!< a[x] * 32 */
+        a32  = _mm256_add_epi32(a32, a16); /*!< a[x] * 32 + 16 */
 
         b   = _mm256_mullo_epi32(diff, shift);
         res = _mm256_add_epi32(a32, b);
@@ -1330,7 +1328,7 @@ static AOM_FORCE_INLINE void highbd_dr_prediction_z1_4xn_internal_avx2(int32_t N
         res1 = _mm_packus_epi32(res1, res1);
 
         mask128 = _mm_cmpgt_epi32(max_base_x128, base_inc128);
-        mask128 = _mm_packs_epi32(mask128, mask128); // goto 16 bit
+        mask128 = _mm_packs_epi32(mask128, mask128); /*!< goto 16 bit */
         dst[r]  = _mm_blendv_epi8(a_mbase_x, res1, mask128);
         x += dx;
     }
@@ -1354,12 +1352,12 @@ static AOM_FORCE_INLINE void highbd_dr_prediction_z1_8xn_internal_avx2(int32_t N
 
     int32_t x;
     // a assert(dx > 0);
-    // pre-filter above pixels
-    // store in temp buffers:
-    //   above[x] * 32 + 16
-    //   above[x+1] - above[x]
-    // final pixels will be caluculated as:
-    //   (above[x] * 32 + 16 + (above[x+1] - above[x]) * shift) >> 5
+    /*!< pre-filter above pixels
+     *   store in temp buffers:
+     *     above[x] * 32 + 16
+     *     above[x+1] - above[x]
+     *   final pixels will be caluculated as:
+     *     (above[x] * 32 + 16 + (above[x+1] - above[x]) * shift) >> 5 */
     __m256i a0, a1, a0_1, a1_1, a32, a16;
     __m256i a_mbase_x, diff, max_base_x256, base_inc256, mask256;
 
@@ -1374,7 +1372,7 @@ static AOM_FORCE_INLINE void highbd_dr_prediction_z1_8xn_internal_avx2(int32_t N
         int32_t base = x >> frac_bits;
         if (base >= max_base_x) {
             for (int32_t i = r; i < N; ++i) {
-                dst[i] = _mm256_castsi256_si128(a_mbase_x); // save 8 values
+                dst[i] = _mm256_castsi256_si128(a_mbase_x); /*!< save 8 values */
             }
             return;
         }
@@ -1405,9 +1403,9 @@ static AOM_FORCE_INLINE void highbd_dr_prediction_z1_8xn_internal_avx2(int32_t N
                 _mm256_and_si256(_mm256_set1_epi32(x), _mm256_set1_epi32(0x3f)), 1);
         }
 
-        diff = _mm256_sub_epi32(a1, a0); // a[x+1] - a[x]
-        a32  = _mm256_slli_epi32(a0, 5); // a[x] * 32
-        a32  = _mm256_add_epi32(a32, a16); // a[x] * 32 + 16
+        diff = _mm256_sub_epi32(a1, a0); /*!< a[x+1] - a[x] */
+        a32  = _mm256_slli_epi32(a0, 5); /*!< a[x] * 32 */
+        a32  = _mm256_add_epi32(a32, a16); /*!< a[x] * 32 + 16 */
 
         b   = _mm256_mullo_epi32(diff, shift);
         res = _mm256_add_epi32(a32, b);
@@ -1417,7 +1415,7 @@ static AOM_FORCE_INLINE void highbd_dr_prediction_z1_8xn_internal_avx2(int32_t N
 
         mask256 = _mm256_cmpgt_epi32(max_base_x256, base_inc256);
         mask256 = _mm256_packs_epi32(
-            mask256, _mm256_castsi128_si256(_mm256_extracti128_si256(mask256, 1))); // goto 16 bit
+            mask256, _mm256_castsi128_si256(_mm256_extracti128_si256(mask256, 1))); /*!< goto 16 bit */
         res1   = _mm256_blendv_epi8(a_mbase_x, res1, mask256);
         dst[r] = _mm256_castsi256_si128(res1);
         x += dx;
@@ -1438,17 +1436,17 @@ static AOM_FORCE_INLINE void highbd_dr_prediction_z1_16xn_internal_avx2(int32_t 
                                                                         int32_t upsample_above,
                                                                         int32_t dx) {
     int32_t x;
-    // here upsample_above is 0 by design of av1_use_intra_edge_upsample
+    /*!< here upsample_above is 0 by design of av1_use_intra_edge_upsample */
     (void)upsample_above;
     const int32_t frac_bits  = 6;
     const int32_t max_base_x = ((16 + N) - 1);
 
-    // pre-filter above pixels
-    // store in temp buffers:
-    //   above[x] * 32 + 16
-    //   above[x+1] - above[x]
-    // final pixels will be caluculated as:
-    //   (above[x] * 32 + 16 + (above[x+1] - above[x]) * shift) >> 5
+    /*!< pre-filter above pixels
+     *   store in temp buffers:
+     *     above[x] * 32 + 16
+     *     above[x+1] - above[x]
+     *   final pixels will be caluculated as:
+     *     (above[x] * 32 + 16 + (above[x+1] - above[x]) * shift) >> 5 */
     __m256i a0, a0_1, a1, a1_1, a32, a16;
     __m256i a_mbase_x, diff, max_base_x256, base_inc256, mask256;
 
@@ -1463,7 +1461,7 @@ static AOM_FORCE_INLINE void highbd_dr_prediction_z1_16xn_internal_avx2(int32_t 
         int32_t base = x >> frac_bits;
         if (base >= max_base_x) {
             for (int32_t i = r; i < N; ++i) {
-                dstvec[i] = a_mbase_x; // save 16 values
+                dstvec[i] = a_mbase_x; /*!< save 16 values */
             }
             return;
         }
@@ -1473,9 +1471,9 @@ static AOM_FORCE_INLINE void highbd_dr_prediction_z1_16xn_internal_avx2(int32_t 
         a0 = _mm256_cvtepu16_epi32(_mm_loadu_si128((__m128i *)(above + base)));
         a1 = _mm256_cvtepu16_epi32(_mm_loadu_si128((__m128i *)(above + base + 1)));
 
-        diff = _mm256_sub_epi32(a1, a0); // a[x+1] - a[x]
-        a32  = _mm256_slli_epi32(a0, 5); // a[x] * 32
-        a32  = _mm256_add_epi32(a32, a16); // a[x] * 32 + 16
+        diff = _mm256_sub_epi32(a1, a0); /*!< a[x+1] - a[x] */
+        a32  = _mm256_slli_epi32(a0, 5); /*!< a[x] * 32 */
+        a32  = _mm256_add_epi32(a32, a16); /*!< a[x] * 32 + 16 */
         b    = _mm256_mullo_epi32(diff, shift);
 
         res[0] = _mm256_add_epi32(a32, b);
@@ -1488,9 +1486,9 @@ static AOM_FORCE_INLINE void highbd_dr_prediction_z1_16xn_internal_avx2(int32_t 
             a0_1 = _mm256_cvtepu16_epi32(_mm_loadu_si128((__m128i *)(above + base + 8)));
             a1_1 = _mm256_cvtepu16_epi32(_mm_loadu_si128((__m128i *)(above + base + 9)));
 
-            diff = _mm256_sub_epi32(a1_1, a0_1); // a[x+1] - a[x]
-            a32  = _mm256_slli_epi32(a0_1, 5); // a[x] * 32
-            a32  = _mm256_add_epi32(a32, a16); // a[x] * 32 + 16
+            diff = _mm256_sub_epi32(a1_1, a0_1); /*!< a[x+1] - a[x] */
+            a32  = _mm256_slli_epi32(a0_1, 5); /*!< a[x] * 32 */
+            a32  = _mm256_add_epi32(a32, a16); /*!< a[x] * 32 + 16 */
             b    = _mm256_mullo_epi32(diff, shift);
 
             res[1] = _mm256_add_epi32(a32, b);
@@ -1502,7 +1500,7 @@ static AOM_FORCE_INLINE void highbd_dr_prediction_z1_16xn_internal_avx2(int32_t 
         }
         res1 = _mm256_inserti128_si256(res[0],
                                        _mm256_castsi256_si128(res[1]),
-                                       1); // 16 16bit values
+                                       1); /*!< 16 16bit values */
 
         base_inc256 = _mm256_setr_epi16(base,
                                         base + 1,
@@ -1541,17 +1539,17 @@ static AOM_FORCE_INLINE void highbd_dr_prediction_z1_32xn_internal_avx2(int32_t 
                                                                         int32_t upsample_above,
                                                                         int32_t dx) {
     int32_t x;
-    // here upsample_above is 0 by design of av1_use_intra_edge_upsample
+    /*!< here upsample_above is 0 by design of av1_use_intra_edge_upsample */
     (void)upsample_above;
     const int32_t frac_bits  = 6;
     const int32_t max_base_x = ((32 + N) - 1);
 
-    // pre-filter above pixels
-    // store in temp buffers:
-    //   above[x] * 32 + 16
-    //   above[x+1] - above[x]
-    // final pixels will be caluculated as:
-    //   (above[x] * 32 + 16 + (above[x+1] - above[x]) * shift) >> 5
+    /*!< pre-filter above pixels
+     *   store in temp buffers:
+     *     above[x] * 32 + 16
+     *     above[x+1] - above[x]
+     *   final pixels will be caluculated as:
+     *     (above[x] * 32 + 16 + (above[x+1] - above[x]) * shift) >> 5 */
     __m256i a0, a0_1, a1, a1_1, a32, a16;
     __m256i a_mbase_x, diff, max_base_x256, base_inc256, mask256;
 
@@ -1566,7 +1564,7 @@ static AOM_FORCE_INLINE void highbd_dr_prediction_z1_32xn_internal_avx2(int32_t 
         int32_t base = x >> frac_bits;
         if (base >= max_base_x) {
             for (int32_t i = r; i < N; ++i) {
-                dstvec[i]     = a_mbase_x; // save 32 values
+                dstvec[i]     = a_mbase_x; /*!< save 32 values */
                 dstvec[i + N] = a_mbase_x;
             }
             return;
@@ -1583,9 +1581,9 @@ static AOM_FORCE_INLINE void highbd_dr_prediction_z1_32xn_internal_avx2(int32_t 
                 a0 = _mm256_cvtepu16_epi32(_mm_loadu_si128((__m128i *)(above + base + j)));
                 a1 = _mm256_cvtepu16_epi32(_mm_loadu_si128((__m128i *)(above + base + 1 + j)));
 
-                diff = _mm256_sub_epi32(a1, a0); // a[x+1] - a[x]
-                a32  = _mm256_slli_epi32(a0, 5); // a[x] * 32
-                a32  = _mm256_add_epi32(a32, a16); // a[x] * 32 + 16
+                diff = _mm256_sub_epi32(a1, a0); /*!< a[x+1] - a[x] */
+                a32  = _mm256_slli_epi32(a0, 5); /*!< a[x] * 32 */
+                a32  = _mm256_add_epi32(a32, a16); /*!< a[x] * 32 + 16 */
                 b    = _mm256_mullo_epi32(diff, shift);
 
                 res[0] = _mm256_add_epi32(a32, b);
@@ -1598,9 +1596,9 @@ static AOM_FORCE_INLINE void highbd_dr_prediction_z1_32xn_internal_avx2(int32_t 
                     a1_1 =
                         _mm256_cvtepu16_epi32(_mm_loadu_si128((__m128i *)(above + base + 9 + j)));
 
-                    diff = _mm256_sub_epi32(a1_1, a0_1); // a[x+1] - a[x]
-                    a32  = _mm256_slli_epi32(a0_1, 5); // a[x] * 32
-                    a32  = _mm256_add_epi32(a32, a16); // a[x] * 32 + 16
+                    diff = _mm256_sub_epi32(a1_1, a0_1); /*!< a[x+1] - a[x] */
+                    a32  = _mm256_slli_epi32(a0_1, 5); /*!< a[x] * 32 */
+                    a32  = _mm256_add_epi32(a32, a16); /*!< a[x] * 32 + 16 */
                     b    = _mm256_mullo_epi32(diff, shift);
 
                     res[1] = _mm256_add_epi32(a32, b);
@@ -1612,7 +1610,7 @@ static AOM_FORCE_INLINE void highbd_dr_prediction_z1_32xn_internal_avx2(int32_t 
                 }
                 res1        = _mm256_inserti128_si256(res[0],
                                                _mm256_castsi256_si128(res[1]),
-                                               1); // 16 16bit values
+                                               1); /*!< 16 16bit values */
                 base_inc256 = _mm256_setr_epi16(base + j,
                                                 base + j + 1,
                                                 base + j + 2,
@@ -1659,17 +1657,17 @@ static void highbd_dr_prediction_z1_64xn_avx2(int32_t N, uint16_t *dst, ptrdiff_
                                               int32_t dx) {
     int32_t x;
 
-    // here upsample_above is 0 by design of av1_use_intra_edge_upsample
+    /*!< here upsample_above is 0 by design of av1_use_intra_edge_upsample */
     (void)upsample_above;
     const int32_t frac_bits  = 6;
     const int32_t max_base_x = ((64 + N) - 1);
 
-    // pre-filter above pixels
-    // store in temp buffers:
-    //   above[x] * 32 + 16
-    //   above[x+1] - above[x]
-    // final pixels will be caluculated as:
-    //   (above[x] * 32 + 16 + (above[x+1] - above[x]) * shift) >> 5
+    /*!< pre-filter above pixels
+     *   store in temp buffers:
+     *     above[x] * 32 + 16
+     *     above[x+1] - above[x]
+     *   final pixels will be caluculated as:
+     *     (above[x] * 32 + 16 + (above[x+1] - above[x]) * shift) >> 5 */
     __m256i a0, a0_1, a1, a1_1, a32, a16;
     __m256i a_mbase_x, diff, max_base_x256, base_inc256, mask256;
 
@@ -1684,7 +1682,7 @@ static void highbd_dr_prediction_z1_64xn_avx2(int32_t N, uint16_t *dst, ptrdiff_
         int32_t base = x >> frac_bits;
         if (base >= max_base_x) {
             for (int32_t i = r; i < N; ++i) {
-                _mm256_storeu_si256((__m256i *)dst, a_mbase_x); // save 32 values
+                _mm256_storeu_si256((__m256i *)dst, a_mbase_x); /*!< save 32 values */
                 _mm256_storeu_si256((__m256i *)(dst + 16), a_mbase_x);
                 _mm256_storeu_si256((__m256i *)(dst + 32), a_mbase_x);
                 _mm256_storeu_si256((__m256i *)(dst + 48), a_mbase_x);
@@ -1707,9 +1705,9 @@ static void highbd_dr_prediction_z1_64xn_avx2(int32_t N, uint16_t *dst, ptrdiff_
                 a0     = _mm256_cvtepu16_epi32(a0_128);
                 a1     = _mm256_cvtepu16_epi32(a1_128);
 
-                diff = _mm256_sub_epi32(a1, a0); // a[x+1] - a[x]
-                a32  = _mm256_slli_epi32(a0, 5); // a[x] * 32
-                a32  = _mm256_add_epi32(a32, a16); // a[x] * 32 + 16
+                diff = _mm256_sub_epi32(a1, a0); /*!< a[x+1] - a[x] */
+                a32  = _mm256_slli_epi32(a0, 5); /*!< a[x] * 32 */
+                a32  = _mm256_add_epi32(a32, a16); /*!< a[x] * 32 + 16 */
                 b    = _mm256_mullo_epi32(diff, shift);
 
                 res[0] = _mm256_add_epi32(a32, b);
@@ -1722,9 +1720,9 @@ static void highbd_dr_prediction_z1_64xn_avx2(int32_t N, uint16_t *dst, ptrdiff_
                     a0_1     = _mm256_cvtepu16_epi32(a0_1_128);
                     a1_1     = _mm256_cvtepu16_epi32(a1_1_128);
 
-                    diff = _mm256_sub_epi32(a1_1, a0_1); // a[x+1] - a[x]
-                    a32  = _mm256_slli_epi32(a0_1, 5); // a[x] * 32
-                    a32  = _mm256_add_epi32(a32, a16); // a[x] * 32 + 16
+                    diff = _mm256_sub_epi32(a1_1, a0_1); /*!< a[x+1] - a[x] */
+                    a32  = _mm256_slli_epi32(a0_1, 5); /*!< a[x] * 32 */
+                    a32  = _mm256_add_epi32(a32, a16); /*!< a[x] * 32 + 16 */
                     b    = _mm256_mullo_epi32(diff, shift);
 
                     res[1] = _mm256_add_epi32(a32, b);
@@ -1736,7 +1734,7 @@ static void highbd_dr_prediction_z1_64xn_avx2(int32_t N, uint16_t *dst, ptrdiff_
                 }
                 res1        = _mm256_inserti128_si256(res[0],
                                                _mm256_castsi256_si128(res[1]),
-                                               1); // 16 16bit values
+                                               1); /*!< 16 16bit values */
                 base_inc256 = _mm256_setr_epi16(base + j,
                                                 base + j + 1,
                                                 base + j + 2,
@@ -1763,7 +1761,7 @@ static void highbd_dr_prediction_z1_64xn_avx2(int32_t N, uint16_t *dst, ptrdiff_
     }
 }
 
-// Directional prediction, zone 1: 0 < angle < 90
+/*!< Directional prediction, zone 1: 0 < angle < 90 */
 void eb_av1_highbd_dr_prediction_z1_avx2(uint16_t *dst, ptrdiff_t stride, int32_t bw, int32_t bh,
                                          const uint16_t *above, const uint16_t *left,
                                          int32_t upsample_above, int32_t dx, int32_t dy,
@@ -1793,12 +1791,12 @@ static void dr_prediction_z2_nx4_avx2(int32_t N, uint8_t *dst, ptrdiff_t stride,
     const int32_t frac_bits_y = 6 - upsample_left;
 
     assert(dx > 0);
-    // pre-filter above pixels
-    // store in temp buffers:
-    //   above[x] * 32 + 16
-    //   above[x+1] - above[x]
-    // final pixels will be caluculated as:
-    //   (above[x] * 32 + 16 + (above[x+1] - above[x]) * shift) >> 5
+    /*!< pre-filter above pixels
+     *   store in temp buffers:
+     *     above[x] * 32 + 16
+     *     above[x+1] - above[x]
+     *   final pixels will be caluculated as:
+     *     (above[x] * 32 + 16 + (above[x+1] - above[x]) * shift) >> 5 */
     __m128i a0_x, a1_x, a32, a16, diff;
     __m128i c3f, min_base_y128, c1234, dy128;
 
@@ -1847,7 +1845,7 @@ static void dr_prediction_z2_nx4_avx2(int32_t N, uint8_t *dst, ptrdiff_t stride,
             a0_x = _mm_cvtepu8_epi16(a0_x128);
             a1_x = _mm_cvtepu8_epi16(a1_x128);
         }
-        // y calc
+        /*!< y calc */
         __m128i a0_y, a1_y, shifty;
         if (base_x < min_base_x) {
             DECLARE_ALIGNED(32, int16_t, base_y_c[8]);
@@ -1890,9 +1888,9 @@ static void dr_prediction_z2_nx4_avx2(int32_t N, uint8_t *dst, ptrdiff_t stride,
             shift = _mm_unpacklo_epi64(shift, shifty);
         }
 
-        diff = _mm_sub_epi16(a1_x, a0_x); // a[x+1] - a[x]
-        a32  = _mm_slli_epi16(a0_x, 5); // a[x] * 32
-        a32  = _mm_add_epi16(a32, a16); // a[x] * 32 + 16
+        diff = _mm_sub_epi16(a1_x, a0_x); /*!< a[x+1] - a[x] */
+        a32  = _mm_slli_epi16(a0_x, 5); /*!< a[x] * 32 */
+        a32  = _mm_add_epi16(a32, a16); /*!< a[x] * 32 + 16 */
 
         b   = _mm_mullo_epi16(diff, shift);
         res = _mm_add_epi16(a32, b);
@@ -1916,12 +1914,12 @@ static void dr_prediction_z2_nx8_avx2(int32_t N, uint8_t *dst, ptrdiff_t stride,
     const int32_t frac_bits_x = 6 - upsample_above;
     const int32_t frac_bits_y = 6 - upsample_left;
 
-    // pre-filter above pixels
-    // store in temp buffers:
-    //   above[x] * 32 + 16
-    //   above[x+1] - above[x]
-    // final pixels will be caluculated as:
-    //   (above[x] * 32 + 16 + (above[x+1] - above[x]) * shift) >> 5
+    /*!< pre-filter above pixels
+     *   store in temp buffers:
+     *     above[x] * 32 + 16
+     *     above[x+1] - above[x]
+     *   final pixels will be caluculated as:
+     *     (above[x] * 32 + 16 + (above[x+1] - above[x]) * shift) >> 5 */
     __m256i diff, a32, a16;
     __m256i a0_x, a1_x;
     __m128i a0_x128, a1_x128, min_base_y128, c3f;
@@ -1974,7 +1972,7 @@ static void dr_prediction_z2_nx8_avx2(int32_t N, uint8_t *dst, ptrdiff_t stride,
             a1_x = _mm256_castsi128_si256(_mm_cvtepu8_epi16(a1_x128));
         }
 
-        // y calc
+        /*!< y calc */
         __m128i a0_y, a1_y, shifty;
         if (base_x < min_base_x) {
             DECLARE_ALIGNED(32, int16_t, base_y_c[16]);
@@ -2019,9 +2017,9 @@ static void dr_prediction_z2_nx8_avx2(int32_t N, uint8_t *dst, ptrdiff_t stride,
             shift = _mm256_inserti128_si256(shift, shifty, 1);
         }
 
-        diff = _mm256_sub_epi16(a1_x, a0_x); // a[x+1] - a[x]
-        a32  = _mm256_slli_epi16(a0_x, 5); // a[x] * 32
-        a32  = _mm256_add_epi16(a32, a16); // a[x] * 32 + 16
+        diff = _mm256_sub_epi16(a1_x, a0_x); /*!< a[x+1] - a[x] */
+        a32  = _mm256_slli_epi16(a0_x, 5); /*!< a[x] * 32 */
+        a32  = _mm256_add_epi16(a32, a16); /*!< a[x] * 32 + 16 */
 
         b   = _mm256_mullo_epi16(diff, shift);
         res = _mm256_add_epi16(a32, b);
@@ -2041,8 +2039,8 @@ static void dr_prediction_z2_hxw_avx2(int32_t H, int32_t W, uint8_t *dst, ptrdif
                                       const uint8_t *above, const uint8_t *left,
                                       int32_t upsample_above, int32_t upsample_left, int32_t dx,
                                       int32_t dy) {
-    // here upsample_above and upsample_left are 0 by design of
-    // av1_use_intra_edge_upsample
+    /*!< here upsample_above and upsample_left are 0 by design of
+     *   av1_use_intra_edge_upsample */
     const int32_t min_base_x = -1;
     const int32_t min_base_y = -1;
     (void)upsample_above;
@@ -2094,20 +2092,20 @@ static void dr_prediction_z2_hxw_avx2(int32_t H, int32_t W, uint8_t *dst, ptrdif
                 r6    = _mm256_slli_epi16(_mm256_add_epi16(c0123, j256), 6);
                 shift = _mm256_srli_epi16(_mm256_and_si256(_mm256_sub_epi16(r6, ydx), c3f), 1);
 
-                diff = _mm256_sub_epi16(a1_x, a0_x); // a[x+1] - a[x]
-                a32  = _mm256_slli_epi16(a0_x, 5); // a[x] * 32
-                a32  = _mm256_add_epi16(a32, a16); // a[x] * 32 + 16
+                diff = _mm256_sub_epi16(a1_x, a0_x); /*!< a[x+1] - a[x] */
+                a32  = _mm256_slli_epi16(a0_x, 5); /*!< a[x] * 32 */
+                a32  = _mm256_add_epi16(a32, a16); /*!< a[x] * 32 + 16 */
 
                 b    = _mm256_mullo_epi16(diff, shift);
                 res  = _mm256_add_epi16(a32, b);
-                res  = _mm256_srli_epi16(res, 5); // 16 16-bit values
+                res  = _mm256_srli_epi16(res, 5); /*!< 16 16-bit values */
                 resx = _mm256_castsi256_si128(_mm256_packus_epi16(
                     res, _mm256_castsi128_si256(_mm256_extracti128_si256(res, 1))));
             } else {
                 resx = _mm_setzero_si128();
             }
 
-            // y calc
+            /*!< y calc */
             if (base_x < min_base_x) {
                 __m256i c256, y_c256, base_y_c256, mask256, mul16;
                 r6     = _mm256_set1_epi16(r << 6);
@@ -2159,13 +2157,13 @@ static void dr_prediction_z2_hxw_avx2(int32_t H, int32_t W, uint8_t *dst, ptrdif
 
                 shifty = _mm256_srli_epi16(_mm256_and_si256(y_c256, c3f), 1);
 
-                diff = _mm256_sub_epi16(a1_y, a0_y); // a[x+1] - a[x]
-                a32  = _mm256_slli_epi16(a0_y, 5); // a[x] * 32
-                a32  = _mm256_add_epi16(a32, a16); // a[x] * 32 + 16
+                diff = _mm256_sub_epi16(a1_y, a0_y); /*!< a[x+1] - a[x] */
+                a32  = _mm256_slli_epi16(a0_y, 5); /*!< a[x] * 32 */
+                a32  = _mm256_add_epi16(a32, a16); /*!< a[x] * 32 + 16 */
 
                 b    = _mm256_mullo_epi16(diff, shifty);
                 res  = _mm256_add_epi16(a32, b);
-                res  = _mm256_srli_epi16(res, 5); // 16 16-bit values
+                res  = _mm256_srli_epi16(res, 5); /*!< 16 16-bit values */
                 resy = _mm256_castsi256_si128(_mm256_packus_epi16(
                     res, _mm256_castsi128_si256(_mm256_extracti128_si256(res, 1))));
             } else {
@@ -2173,12 +2171,12 @@ static void dr_prediction_z2_hxw_avx2(int32_t H, int32_t W, uint8_t *dst, ptrdif
             }
             resxy = _mm_blendv_epi8(resx, resy, *(__m128i *)base_mask[base_min_diff]);
             _mm_storeu_si128((__m128i *)(dst + j), resxy);
-        } // for j
+        } /*!< for j */
         dst += stride;
     }
 }
 
-// Directional prediction, zone 2: 90 < angle < 180
+/*!< Directional prediction, zone 2: 90 < angle < 180 */
 void eb_av1_dr_prediction_z2_avx2(uint8_t *dst, ptrdiff_t stride, int32_t bw, int32_t bh,
                                   const uint8_t *above, const uint8_t *left, int32_t upsample_above,
                                   int32_t upsample_left, int32_t dx, int32_t dy) {
@@ -2202,7 +2200,7 @@ void eb_av1_dr_prediction_z2_avx2(uint8_t *dst, ptrdiff_t stride, int32_t bw, in
     return;
 }
 
-// z3 functions
+/*!< z3 functions */
 static INLINE void transpose4x16_sse2(__m128i *x, __m128i *d) {
     __m128i w0, w1, w2, w3, ww0, ww1, ww2, ww3;
     w0 = _mm_unpacklo_epi8(x[0], x[1]);
@@ -2265,7 +2263,7 @@ static INLINE void transpose16x32_avx2(__m256i *x, __m256i *d) {
     w14 = _mm256_unpacklo_epi32(w12, w13);
     w15 = _mm256_unpackhi_epi32(w12, w13);
 
-    // Store first 4-line result
+    /*!< Store first 4-line result */
     d[0] = _mm256_unpacklo_epi64(w6, w14);
     d[1] = _mm256_unpackhi_epi64(w6, w14);
     d[2] = _mm256_unpacklo_epi64(w7, w15);
@@ -2281,13 +2279,13 @@ static INLINE void transpose16x32_avx2(__m256i *x, __m256i *d) {
     w14 = _mm256_unpacklo_epi32(w12, w13);
     w15 = _mm256_unpackhi_epi32(w12, w13);
 
-    // Store second 4-line result
+    /*!< Store second 4-line result */
     d[4] = _mm256_unpacklo_epi64(w6, w14);
     d[5] = _mm256_unpackhi_epi64(w6, w14);
     d[6] = _mm256_unpacklo_epi64(w7, w15);
     d[7] = _mm256_unpackhi_epi64(w7, w15);
 
-    // upper half
+    /*!< upper half */
     w0 = _mm256_unpackhi_epi8(x[0], x[1]);
     w1 = _mm256_unpackhi_epi8(x[2], x[3]);
     w2 = _mm256_unpackhi_epi8(x[4], x[5]);
@@ -2308,7 +2306,7 @@ static INLINE void transpose16x32_avx2(__m256i *x, __m256i *d) {
     w14 = _mm256_unpacklo_epi32(w12, w13);
     w15 = _mm256_unpackhi_epi32(w12, w13);
 
-    // Store first 4-line result
+    /*!< Store first 4-line result */
     d[8]  = _mm256_unpacklo_epi64(w6, w14);
     d[9]  = _mm256_unpackhi_epi64(w6, w14);
     d[10] = _mm256_unpacklo_epi64(w7, w15);
@@ -2324,7 +2322,7 @@ static INLINE void transpose16x32_avx2(__m256i *x, __m256i *d) {
     w14 = _mm256_unpacklo_epi32(w12, w13);
     w15 = _mm256_unpackhi_epi32(w12, w13);
 
-    // Store second 4-line result
+    /*!< Store second 4-line result */
     d[12] = _mm256_unpacklo_epi64(w6, w14);
     d[13] = _mm256_unpackhi_epi64(w6, w14);
     d[14] = _mm256_unpacklo_epi64(w7, w15);
@@ -2658,7 +2656,7 @@ static void dr_prediction_z3_16x32_avx2(uint8_t *dst, ptrdiff_t stride, const ui
 
     dr_prediction_z1_32xn_internal_avx2(16, dstvec, left, upsample_left, dy);
     transpose16x32_avx2(dstvec, d);
-    // store
+    /*!< store */
     for (int32_t j = 0; j < 16; j++) {
         _mm_storeu_si128((__m128i *)(dst + j * stride), _mm256_castsi256_si128(d[j]));
         _mm_storeu_si128((__m128i *)(dst + (j + 16) * stride), _mm256_extracti128_si256(d[j], 1));
@@ -2936,12 +2934,12 @@ static void highbd_dr_prediction_z2_nx4_avx2(int32_t N, uint16_t *dst, ptrdiff_t
     const int32_t frac_bits_y = 6 - upsample_left;
 
     assert(dx > 0);
-    // pre-filter above pixels
-    // store in temp buffers:
-    //   above[x] * 32 + 16
-    //   above[x+1] - above[x]
-    // final pixels will be caluculated as:
-    //   (above[x] * 32 + 16 + (above[x+1] - above[x]) * shift) >> 5
+    /*!< pre-filter above pixels
+     *   store in temp buffers:
+     *     above[x] * 32 + 16
+     *     above[x+1] - above[x]
+     *   final pixels will be caluculated as:
+     *     (above[x] * 32 + 16 + (above[x+1] - above[x]) * shift) >> 5 */
     __m256i a0_x, a1_x, a32, a16;
     __m256i diff;
     __m128i c3f, min_base_y128;
@@ -3006,7 +3004,7 @@ static void highbd_dr_prediction_z2_nx4_avx2(int32_t N, uint16_t *dst, ptrdiff_t
             a0_x = _mm256_castsi128_si256(a0_x128);
             a1_x = _mm256_castsi128_si256(a1_x128);
         }
-        // y calc
+        /*!< y calc */
         __m128i a0_y, a1_y, shifty;
         if (base_x < min_base_x) {
             __m128i r6, c1234, dy128, y_c128, base_y_c128, mask128;
@@ -3048,9 +3046,9 @@ static void highbd_dr_prediction_z2_nx4_avx2(int32_t N, uint16_t *dst, ptrdiff_t
             shift = _mm256_inserti128_si256(shift, shifty, 1);
         }
 
-        diff = _mm256_sub_epi16(a1_x, a0_x); // a[x+1] - a[x]
-        a32  = _mm256_slli_epi16(a0_x, 5); // a[x] * 32
-        a32  = _mm256_add_epi16(a32, a16); // a[x] * 32 + 16
+        diff = _mm256_sub_epi16(a1_x, a0_x); /*!< a[x+1] - a[x] */
+        a32  = _mm256_slli_epi16(a0_x, 5); /*!< a[x] * 32 */
+        a32  = _mm256_add_epi16(a32, a16); /*!< a[x] * 32 + 16 */
 
         b   = _mm256_mullo_epi16(diff, shift);
         res = _mm256_add_epi16(a32, b);
@@ -3073,12 +3071,12 @@ static void highbd_dr_prediction_z2_nx8_avx2(int32_t N, uint16_t *dst, ptrdiff_t
     const int frac_bits_x = 6 - upsample_above;
     const int frac_bits_y = 6 - upsample_left;
 
-    // pre-filter above pixels
-    // store in temp buffers:
-    //   above[x] * 32 + 16
-    //   above[x+1] - above[x]
-    // final pixels will be calculated as:
-    //   (above[x] * 32 + 16 + (above[x+1] - above[x]) * shift) >> 5
+    /*!< pre-filter above pixels
+     *   store in temp buffers:
+     *     above[x] * 32 + 16
+     *     above[x+1] - above[x]
+     *   final pixels will be calculated as:
+     *     (above[x] * 32 + 16 + (above[x+1] - above[x]) * shift) >> 5 */
     __m128i c3f, min_base_y128;
     __m256i a0_x, a1_x, diff, a32, a16;
     __m128i a0_x128, a1_x128;
@@ -3156,7 +3154,7 @@ static void highbd_dr_prediction_z2_nx8_avx2(int32_t N, uint16_t *dst, ptrdiff_t
             a1_x = _mm256_castsi128_si256(a1_x128);
         }
 
-        // y calc
+        /*!< y calc */
         __m128i a0_y, a1_y, shifty;
         if (base_x < min_base_x) {
             DECLARE_ALIGNED(32, int16_t, base_y_c[8]);
@@ -3198,9 +3196,9 @@ static void highbd_dr_prediction_z2_nx8_avx2(int32_t N, uint16_t *dst, ptrdiff_t
             shift = _mm256_inserti128_si256(shift, shifty, 1);
         }
 
-        diff = _mm256_sub_epi16(a1_x, a0_x); // a[x+1] - a[x]
-        a32  = _mm256_slli_epi16(a0_x, 5); // a[x] * 32
-        a32  = _mm256_add_epi16(a32, a16); // a[x] * 32 + 16
+        diff = _mm256_sub_epi16(a1_x, a0_x); /*!< a[x+1] - a[x] */
+        a32  = _mm256_slli_epi16(a0_x, 5); /*!< a[x] * 32 */
+        a32  = _mm256_add_epi16(a32, a16); /*!< a[x] * 32 + 16 */
 
         b   = _mm256_mullo_epi16(diff, shift);
         res = _mm256_add_epi16(a32, b);
@@ -3224,12 +3222,12 @@ static void highbd_dr_prediction_z2_nx8_32bit_avx2(int32_t N, uint16_t *dst, ptr
     const int32_t frac_bits_x = 6 - upsample_above;
     const int32_t frac_bits_y = 6 - upsample_left;
 
-    // pre-filter above pixels
-    // store in temp buffers:
-    //   above[x] * 32 + 16
-    //   above[x+1] - above[x]
-    // final pixels will be calculated as:
-    //   (above[x] * 32 + 16 + (above[x+1] - above[x]) * shift) >> 5
+    /*!< pre-filter above pixels
+     *   store in temp buffers:
+     *     above[x] * 32 + 16
+     *     above[x+1] - above[x]
+     *   final pixels will be calculated as:
+     *     (above[x] * 32 + 16 + (above[x+1] - above[x]) * shift) >> 5 */
     __m256i a0_x, a1_x, a0_y, a1_y, a32, a16, c3f, min_base_y256;
     __m256i diff;
     __m128i a0_x128, a1_x128;
@@ -3303,9 +3301,9 @@ static void highbd_dr_prediction_z2_nx8_32bit_avx2(int32_t N, uint16_t *dst, ptr
             a0_x = _mm256_cvtepu16_epi32(a0_x128);
             a1_x = _mm256_cvtepu16_epi32(a1_x128);
 
-            diff = _mm256_sub_epi32(a1_x, a0_x); // a[x+1] - a[x]
-            a32  = _mm256_slli_epi32(a0_x, 5); // a[x] * 32
-            a32  = _mm256_add_epi32(a32, a16); // a[x] * 32 + 16
+            diff = _mm256_sub_epi32(a1_x, a0_x); /*!< a[x+1] - a[x] */
+            a32  = _mm256_slli_epi32(a0_x, 5); /*!< a[x] * 32 */
+            a32  = _mm256_add_epi32(a32, a16); /*!< a[x] * 32 + 16 */
 
             b   = _mm256_mullo_epi32(diff, shift);
             res = _mm256_add_epi32(a32, b);
@@ -3314,7 +3312,7 @@ static void highbd_dr_prediction_z2_nx8_32bit_avx2(int32_t N, uint16_t *dst, ptr
             resx = _mm256_castsi256_si128(
                 _mm256_packus_epi32(res, _mm256_castsi128_si256(_mm256_extracti128_si256(res, 1))));
         }
-        // y calc
+        /*!< y calc */
         if (base_x < min_base_x) {
             DECLARE_ALIGNED(32, int32_t, base_y_c[8]);
             __m256i r6, c256, dy256, y_c256, base_y_c256, mask256;
@@ -3350,9 +3348,9 @@ static void highbd_dr_prediction_z2_nx8_32bit_avx2(int32_t N, uint16_t *dst, ptr
             } else {
                 shift = _mm256_srli_epi32(_mm256_and_si256(y_c256, c3f), 1);
             }
-            diff = _mm256_sub_epi32(a1_y, a0_y); // a[x+1] - a[x]
-            a32  = _mm256_slli_epi32(a0_y, 5); // a[x] * 32
-            a32  = _mm256_add_epi32(a32, a16); // a[x] * 32 + 16
+            diff = _mm256_sub_epi32(a1_y, a0_y); /*!< a[x+1] - a[x] */
+            a32  = _mm256_slli_epi32(a0_y, 5); /*!< a[x] * 32 */
+            a32  = _mm256_add_epi32(a32, a16); /*!< a[x] * 32 + 16 */
 
             b   = _mm256_mullo_epi32(diff, shift);
             res = _mm256_add_epi32(a32, b);
@@ -3373,8 +3371,8 @@ static void highbd_dr_prediction_z2_hxw_avx2(int32_t H, int32_t W, uint16_t *dst
                                              const uint16_t *above, const uint16_t *left,
                                              int32_t upsample_above, int32_t upsample_left,
                                              int32_t dx, int32_t dy) {
-    // here upsample_above and upsample_left are 0 by design of
-    // av1_use_intra_edge_upsample
+    /*!< here upsample_above and upsample_left are 0 by design of
+     *   av1_use_intra_edge_upsample */
     const int min_base_x = -1;
     const int min_base_y = -1;
     (void)upsample_above;
@@ -3382,12 +3380,12 @@ static void highbd_dr_prediction_z2_hxw_avx2(int32_t H, int32_t W, uint16_t *dst
     const int frac_bits_x = 6;
     const int frac_bits_y = 6;
 
-    // pre-filter above pixels
-    // store in temp buffers:
-    //   above[x] * 32 + 16
-    //   above[x+1] - above[x]
-    // final pixels will be calculated as:
-    //   (above[x] * 32 + 16 + (above[x+1] - above[x]) * shift) >> 5
+    /*!< pre-filter above pixels
+     *   store in temp buffers:
+     *     above[x] * 32 + 16
+     *     above[x+1] - above[x]
+     *   final pixels will be calculated as:
+     *     (above[x] * 32 + 16 + (above[x+1] - above[x]) * shift) >> 5 */
     __m256i a0_x, a1_x, a32, a16, c3f, c1;
     __m256i diff, min_base_y256, dy256, c1234, c0123;
     DECLARE_ALIGNED(32, int16_t, base_y_c[16]);
@@ -3447,15 +3445,15 @@ static void highbd_dr_prediction_z2_hxw_avx2(int32_t H, int32_t W, uint16_t *dst
             r6    = _mm256_slli_epi16(_mm256_add_epi16(c0123, j256), 6);
             shift = _mm256_srli_epi16(_mm256_and_si256(_mm256_sub_epi16(r6, ydx), c3f), 1);
 
-            diff = _mm256_sub_epi16(a1_x, a0_x); // a[x+1] - a[x]
-            a32  = _mm256_slli_epi16(a0_x, 5); // a[x] * 32
-            a32  = _mm256_add_epi16(a32, a16); // a[x] * 32 + 16
+            diff = _mm256_sub_epi16(a1_x, a0_x); /*!< a[x+1] - a[x] */
+            a32  = _mm256_slli_epi16(a0_x, 5); /*!< a[x] * 32 */
+            a32  = _mm256_add_epi16(a32, a16); /*!< a[x] * 32 + 16 */
 
             b    = _mm256_mullo_epi16(diff, shift);
             res  = _mm256_add_epi16(a32, b);
-            resx = _mm256_srli_epi16(res, 5); // 16 16-bit values
+            resx = _mm256_srli_epi16(res, 5); /*!< 16 16-bit values */
 
-            // y calc
+            /*!< y calc */
             resy = _mm256_setzero_si256();
             __m256i a0_y, a1_y, shifty;
             if ((base_x < min_base_x)) {
@@ -3508,9 +3506,9 @@ static void highbd_dr_prediction_z2_hxw_avx2(int32_t H, int32_t W, uint16_t *dst
 
                 shifty = _mm256_srli_epi16(_mm256_and_si256(y_c256, c3f), 1);
 
-                diff = _mm256_sub_epi16(a1_y, a0_y); // a[x+1] - a[x]
-                a32  = _mm256_slli_epi16(a0_y, 5); // a[x] * 32
-                a32  = _mm256_add_epi16(a32, a16); // a[x] * 32 + 16
+                diff = _mm256_sub_epi16(a1_y, a0_y); /*!< a[x+1] - a[x] */
+                a32  = _mm256_slli_epi16(a0_y, 5); /*!< a[x] * 32 */
+                a32  = _mm256_add_epi16(a32, a16); /*!< a[x] * 32 + 16 */
 
                 b    = _mm256_mullo_epi16(diff, shifty);
                 res  = _mm256_add_epi16(a32, b);
@@ -3519,7 +3517,7 @@ static void highbd_dr_prediction_z2_hxw_avx2(int32_t H, int32_t W, uint16_t *dst
 
             resxy = _mm256_blendv_epi8(resx, resy, *(__m256i *)highbd_base_mask[base_min_diff]);
             _mm256_storeu_si256((__m256i *)(dst + j), resxy);
-        } // for j
+        } /*!< for j */
         dst += stride;
     }
 }
@@ -3528,8 +3526,8 @@ static void highbd_dr_prediction_z2_hxw_32bit_avx2(int32_t H, int32_t W, uint16_
                                                    ptrdiff_t stride, const uint16_t *above,
                                                    const uint16_t *left, int32_t upsample_above,
                                                    int32_t upsample_left, int32_t dx, int32_t dy) {
-    // here upsample_above and upsample_left are 0 by design of
-    // av1_use_intra_edge_upsample
+    /*!< here upsample_above and upsample_left are 0 by design of
+     *   av1_use_intra_edge_upsample */
     const int32_t min_base_x = -1;
     const int32_t min_base_y = -1;
     (void)upsample_above;
@@ -3537,12 +3535,12 @@ static void highbd_dr_prediction_z2_hxw_32bit_avx2(int32_t H, int32_t W, uint16_
     const int32_t frac_bits_x = 6;
     const int32_t frac_bits_y = 6;
 
-    // pre-filter above pixels
-    // store in temp buffers:
-    //   above[x] * 32 + 16
-    //   above[x+1] - above[x]
-    // final pixels will be caluculated as:
-    //   (above[x] * 32 + 16 + (above[x+1] - above[x]) * shift) >> 5
+    /*!< pre-filter above pixels
+     *   store in temp buffers:
+     *     above[x] * 32 + 16
+     *     above[x+1] - above[x]
+     *   final pixels will be caluculated as:
+     *     (above[x] * 32 + 16 + (above[x+1] - above[x]) * shift) >> 5 */
     __m256i a0_x, a1_x, a0_y, a1_y, a32, a0_1_x, a1_1_x, a16;
     __m256i diff, min_base_y256, c3f;
     __m128i a0_x128, a1_x128, a0_1_x128, a1_1_x128;
@@ -3589,9 +3587,9 @@ static void highbd_dr_prediction_z2_hxw_32bit_avx2(int32_t H, int32_t W, uint16_
                                                        _mm256_set1_epi32(0x3f)),
                                       1);
 
-                diff = _mm256_sub_epi32(a1_x, a0_x); // a[x+1] - a[x]
-                a32  = _mm256_slli_epi32(a0_x, 5); // a[x] * 32
-                a32  = _mm256_add_epi32(a32, a16); // a[x] * 32 + 16
+                diff = _mm256_sub_epi32(a1_x, a0_x); /*!< a[x+1] - a[x] */
+                a32  = _mm256_slli_epi32(a0_x, 5); /*!< a[x] * 32 */
+                a32  = _mm256_add_epi32(a32, a16); /*!< a[x] * 32 + 16 */
 
                 b   = _mm256_mullo_epi32(diff, shift);
                 res = _mm256_add_epi32(a32, b);
@@ -3627,9 +3625,9 @@ static void highbd_dr_prediction_z2_hxw_32bit_avx2(int32_t H, int32_t W, uint16_
                                                        _mm256_set1_epi32(0x3f)),
                                       1);
 
-                diff = _mm256_sub_epi32(a1_1_x, a0_1_x); // a[x+1] - a[x]
-                a32  = _mm256_slli_epi32(a0_1_x, 5); // a[x] * 32
-                a32  = _mm256_add_epi32(a32, a16); // a[x] * 32 + 16
+                diff = _mm256_sub_epi32(a1_1_x, a0_1_x); /*!< a[x+1] - a[x] */
+                a32  = _mm256_slli_epi32(a0_1_x, 5); /*!< a[x] * 32 */
+                a32  = _mm256_add_epi32(a32, a16); /*!< a[x] * 32 + 16 */
                 b    = _mm256_mullo_epi32(diff, shift);
 
                 resx[1] = _mm256_add_epi32(a32, b);
@@ -3639,9 +3637,9 @@ static void highbd_dr_prediction_z2_hxw_32bit_avx2(int32_t H, int32_t W, uint16_
             }
             resx[0] = _mm256_inserti128_si256(resx[0],
                                               _mm256_castsi256_si128(resx[1]),
-                                              1); // 16 16bit values
+                                              1); /*!< 16 16bit values */
 
-            // y calc
+            /*!< y calc */
             if ((base_x < min_base_x)) {
                 DECLARE_ALIGNED(32, int32_t, base_y_c[16]);
                 __m256i r6, c256, dy256, y_c256, y_c_1_256, base_y_c256, mask256;
@@ -3680,9 +3678,9 @@ static void highbd_dr_prediction_z2_hxw_32bit_avx2(int32_t H, int32_t W, uint16_
 
                 shift = _mm256_srli_epi32(_mm256_and_si256(y_c256, c3f), 1);
 
-                diff = _mm256_sub_epi32(a1_y, a0_y); // a[x+1] - a[x]
-                a32  = _mm256_slli_epi32(a0_y, 5); // a[x] * 32
-                a32  = _mm256_add_epi32(a32, a16); // a[x] * 32 + 16
+                diff = _mm256_sub_epi32(a1_y, a0_y); /*!< a[x+1] - a[x] */
+                a32  = _mm256_slli_epi32(a0_y, 5); /*!< a[x] * 32 */
+                a32  = _mm256_add_epi32(a32, a16); /*!< a[x] * 32 + 16 */
 
                 b   = _mm256_mullo_epi32(diff, shift);
                 res = _mm256_add_epi32(a32, b);
@@ -3709,9 +3707,9 @@ static void highbd_dr_prediction_z2_hxw_32bit_avx2(int32_t H, int32_t W, uint16_
                                                             left[base_y_c[15] + 1]));
                 shift = _mm256_srli_epi32(_mm256_and_si256(y_c_1_256, c3f), 1);
 
-                diff = _mm256_sub_epi32(a1_y, a0_y); // a[x+1] - a[x]
-                a32  = _mm256_slli_epi32(a0_y, 5); // a[x] * 32
-                a32  = _mm256_add_epi32(a32, a16); // a[x] * 32 + 16
+                diff = _mm256_sub_epi32(a1_y, a0_y); /*!< a[x+1] - a[x] */
+                a32  = _mm256_slli_epi32(a0_y, 5); /*!< a[x] * 32 */
+                a32  = _mm256_add_epi32(a32, a16); /*!< a[x] * 32 + 16 */
 
                 b   = _mm256_mullo_epi32(diff, shift);
                 res = _mm256_add_epi32(a32, b);
@@ -3722,19 +3720,19 @@ static void highbd_dr_prediction_z2_hxw_32bit_avx2(int32_t H, int32_t W, uint16_
 
                 resy[0] = _mm256_inserti128_si256(resy[0],
                                                   _mm256_castsi256_si128(resy[1]),
-                                                  1); // 16 16bit values
+                                                  1); /*!< 16 16bit values */
             } else {
                 resy[0] = resx[0];
             }
             resxy =
                 _mm256_blendv_epi8(resx[0], resy[0], *(__m256i *)highbd_base_mask[base_min_diff]);
             _mm256_storeu_si256((__m256i *)(dst + j), resxy);
-        } // for j
+        } /*!< for j */
         dst += stride;
     }
 }
 
-// Directional prediction, zone 2: 90 < angle < 180
+/*!< Directional prediction, zone 2: 90 < angle < 180 */
 void eb_av1_highbd_dr_prediction_z2_avx2(uint16_t *dst, ptrdiff_t stride, int32_t bw, int32_t bh,
                                          const uint16_t *above, const uint16_t *left,
                                          int32_t upsample_above, int32_t upsample_left, int32_t dx,
@@ -4043,7 +4041,7 @@ static void highbd_dr_prediction_z3_16x32_avx2(uint16_t *dst, ptrdiff_t stride,
 
     highbd_dr_prediction_z1_32xn_internal_avx2(16, dstvec, left, upsample_left, dy);
     for (int32_t i = 0; i < 32; i += 8) { highbd_transpose8x16_16x8_avx2(dstvec + i, d + i); }
-    // store
+    /*!< store */
     for (int32_t j = 0; j < 32; j += 16) {
         for (int32_t i = 0; i < 8; i++) {
             _mm_storeu_si128((__m128i *)(dst + (i + j) * stride),
@@ -4216,7 +4214,7 @@ static INLINE __m256i paeth_pred(const __m256i *left, const __m256i *top, const 
     return _mm256_or_si256(pt, pl);
 }
 
-// Return 16 8-bit pixels in one row (__m128i)
+/*!< Return 16 8-bit pixels in one row (__m128i) */
 static INLINE __m128i paeth_16x1_pred(const __m256i *left, const __m256i *top,
                                       const __m256i *topleft) {
     const __m256i p0 = paeth_pred(left, top, topleft);
@@ -4327,7 +4325,7 @@ void eb_aom_paeth_predictor_16x64_avx2(uint8_t *dst, ptrdiff_t stride, const uin
     }
 }
 
-// Return 32 8-bit pixels in one row (__m256i)
+/*!< Return 32 8-bit pixels in one row (__m256i) */
 static INLINE __m256i paeth_32x1_pred(const __m256i *left, const __m256i *top0, const __m256i *top1,
                                       const __m256i *topleft) {
     __m256i       p0 = paeth_pred(left, top0, topleft);
@@ -4867,7 +4865,7 @@ void eb_aom_highbd_paeth_predictor_4x4_avx2(uint16_t *dst, ptrdiff_t stride, con
     __m256i       l16, row;
     (void)bd;
 
-    /* l16 = left: 0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3 */
+    /*!< l16 = left: 0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3 */
     __m256i t1  = _mm256_cvtepi16_epi64(_mm_lddqu_si128((__m128i const *)left));
     __m256i t1s = _mm256_slli_epi64(t1, 16);
     t1          = _mm256_or_si256(t1s, t1);
@@ -4891,7 +4889,7 @@ void eb_aom_highbd_paeth_predictor_4x8_avx2(uint16_t *dst, ptrdiff_t stride, con
     (void)bd;
 
     for (i = 0; i < 8; i += 4) {
-        /* l16 = left: 0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3 */
+        /*!< l16 = left: 0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3 */
         __m256i t1  = _mm256_cvtepi16_epi64(_mm_lddqu_si128((__m128i const *)&left[i]));
         __m256i t1s = _mm256_slli_epi64(t1, 16);
         t1          = _mm256_or_si256(t1s, t1);
@@ -4917,7 +4915,7 @@ void eb_aom_highbd_paeth_predictor_4x16_avx2(uint16_t *dst, ptrdiff_t stride, co
     (void)bd;
     int i;
     for (i = 0; i < 16; i += 4) {
-        /* l16 = left: 0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3 */
+        /*!< l16 = left: 0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3 */
         __m256i t1  = _mm256_cvtepi16_epi64(_mm_lddqu_si128((__m128i const *)&left[i]));
         __m256i t1s = _mm256_slli_epi64(t1, 16);
         t1          = _mm256_or_si256(t1s, t1);
@@ -4940,7 +4938,7 @@ void eb_aom_highbd_paeth_predictor_2x2_avx2(uint16_t *dst, ptrdiff_t stride, con
     __m256i tl = _mm256_set1_epi16(above[-1]);
     __m256i t0 = _mm256_set1_epi32(((uint32_t *)above)[0]);
 
-    /* l16 = left: 0, 0, 1, 1, 0, 0, 0, 0 */
+    /*!< l16 = left: 0, 0, 1, 1, 0, 0, 0, 0 */
     __m256i gg  = _mm256_cvtepi16_epi32(_mm_cvtsi32_si128(*(uint32_t const *)(left)));
     __m256i ss  = _mm256_slli_epi64(gg, 16);
     __m256i l16 = _mm256_or_si256(gg, ss);

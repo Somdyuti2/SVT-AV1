@@ -1,13 +1,11 @@
-/*
- * Copyright (c) 2016, Alliance for Open Media. All rights reserved
+/*!< Copyright (c) 2016, Alliance for Open Media. All rights reserved
  *
  * This source code is subject to the terms of the BSD 2 Clause License and
  * the Alliance for Open Media Patent License 1.0. If the BSD 2 Clause License
  * was not distributed with this source code in the LICENSE file, you can
  * obtain it at www.aomedia.org/license/software. If the Alliance for Open
  * Media Patent License 1.0 was not distributed with this source code in the
- * PATENTS file, you can obtain it at www.aomedia.org/license/patent.
- */
+ * PATENTS file, you can obtain it at www.aomedia.org/license/patent. */
 
 #ifndef AV1_COMMON_FILTER_H_
 #define AV1_COMMON_FILTER_H_
@@ -18,7 +16,7 @@
 extern "C" {
 #endif
 
-//---aom_filter.h
+/*!< ---aom_filter.h */
 #define FILTER_BITS 7
 
 #define SUBPEL_BITS 4
@@ -35,7 +33,7 @@ extern "C" {
 #define BIL_SUBPEL_BITS 3
 #define BIL_SUBPEL_SHIFTS (1 << BIL_SUBPEL_BITS)
 
-// 2 tap bilinear filters
+/*!< 2 tap bilinear filters */
 static const uint8_t bilinear_filters_2t[BIL_SUBPEL_SHIFTS][2] = {
     {128, 0},
     {112, 16},
@@ -46,15 +44,15 @@ static const uint8_t bilinear_filters_2t[BIL_SUBPEL_SHIFTS][2] = {
     {32, 96},
     {16, 112},
 };
-//----
+/*!< ---- */
 #define MAX_FILTER_TAP 8
 
-// With CONFIG_DUAL_FILTER, pack two InterpFilter's into a uint32_t: since
-// there are at most 10 filters, we can use 16 bits for each and have more than
-// enough space. This reduces argument passing and unifies the operation of
-// setting a (pair of) filters.
-//
-// Without CONFIG_DUAL_FILTER,
+/*!< With CONFIG_DUAL_FILTER, pack two InterpFilter's into a uint32_t: since
+ *   there are at most 10 filters, we can use 16 bits for each and have more than
+ *   enough space. This reduces argument passing and unifies the operation of
+ *   setting a (pair of) filters.
+ *
+ *   Without CONFIG_DUAL_FILTER, */
 typedef uint32_t           InterpFilters;
 static INLINE InterpFilter av1_extract_interp_filter(InterpFilters filters, int32_t x_filter) {
     return (InterpFilter)((filters >> (x_filter ? 16 : 0)) & 0xffff);
@@ -74,7 +72,7 @@ static INLINE InterpFilter av1_unswitchable_filter(InterpFilter filter) {
     return filter == SWITCHABLE ? EIGHTTAP_REGULAR : filter;
 }
 
-#define LOG_SWITCHABLE_FILTERS 2 /* (1 << LOG_SWITCHABLE_FILTERS) > SWITCHABLE_FILTERS */
+#define LOG_SWITCHABLE_FILTERS 2 /*!< (1 << LOG_SWITCHABLE_FILTERS) > SWITCHABLE_FILTERS */
 
 #define MAX_SUBPEL_TAPS 12
 #define SWITCHABLE_FILTER_CONTEXTS ((SWITCHABLE_FILTERS + 1) * 4)

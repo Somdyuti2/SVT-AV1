@@ -1,7 +1,5 @@
-/*
-* Copyright(c) 2019 Intel Corporation
-* SPDX - License - Identifier: BSD - 2 - Clause - Patent
-*/
+/*!< Copyright(c) 2019 Intel Corporation
+ * SPDX - License - Identifier: BSD - 2 - Clause - Patent */
 
 #ifndef EbDlfProcess_h
 #define EbDlfProcess_h
@@ -11,9 +9,9 @@
 #include "EbPictureBufferDesc.h"
 #include "EbSvtAv1Formats.h"
 
-/**************************************
- * Dlf Context
- **************************************/
+/**************************************/
+/*!< Dlf Context */
+/**************************************/
 typedef struct DlfContext {
     EbFifo *             dlf_input_fifo_ptr;
     EbFifo *             dlf_output_fifo_ptr;
@@ -21,9 +19,9 @@ typedef struct DlfContext {
     EbPictureBufferDesc *temp_lf_recon_picture16bit_ptr;
 } DlfContext;
 
-/**************************************
- * Extern Function Declarations
- **************************************/
+/**************************************/
+/*!< Extern Function Declarations */
+/**************************************/
 extern EbErrorType dlf_context_ctor(EbThreadContext *  thread_context_ptr,
                                     const EbEncHandle *enc_handle_ptr, int index);
 

@@ -1,12 +1,10 @@
-/*
- * Copyright(c) 2019 Intel Corporation
- * SPDX - License - Identifier: BSD - 2 - Clause - Patent
- */
+/*!< Copyright(c) 2019 Intel Corporation
+ * SPDX - License - Identifier: BSD - 2 - Clause - Patent */
 
 #ifndef AOM_DSP_X86_PICKRST_AVX2_H_
 #define AOM_DSP_X86_PICKRST_AVX2_H_
 
-#include <immintrin.h> // AVX2
+#include <immintrin.h> /*!< AVX2 */
 #include "aom_dsp_rtcd.h"
 #include "EbRestoration.h"
 #include "transpose_sse2.h"
@@ -175,98 +173,98 @@ static INLINE __m256i hsub_32x8_to_64x4_avx2(const __m256i src) {
 static INLINE __m128i hadd_64_avx2(const __m256i src) {
     const __m256i t0   = _mm256_srli_si256(src, 8);
     const __m256i sum  = _mm256_add_epi64(src, t0);
-    const __m128i sum0 = _mm256_extracti128_si256(sum, 0); // 00+01 10+11
-    const __m128i sum1 = _mm256_extracti128_si256(sum, 1); // 02+03 12+13
-    return _mm_add_epi64(sum0, sum1); // 00+01+02+03 10+11+12+13
+    const __m128i sum0 = _mm256_extracti128_si256(sum, 0); /*!< 00+01 10+11 */
+    const __m128i sum1 = _mm256_extracti128_si256(sum, 1); /*!< 02+03 12+13 */
+    return _mm_add_epi64(sum0, sum1); /*!< 00+01+02+03 10+11+12+13 */
 }
 
 static INLINE __m128i hadd_two_64_avx2(const __m256i src0, const __m256i src1) {
-    const __m256i t0   = _mm256_unpacklo_epi64(src0, src1); // 00 10  02 12
-    const __m256i t1   = _mm256_unpackhi_epi64(src0, src1); // 01 11  03 13
-    const __m256i sum  = _mm256_add_epi64(t0, t1); // 00+01 10+11  02+03 12+13
-    const __m128i sum0 = _mm256_extracti128_si256(sum, 0); // 00+01 10+11
-    const __m128i sum1 = _mm256_extracti128_si256(sum, 1); // 02+03 12+13
-    return _mm_add_epi64(sum0, sum1); // 00+01+02+03 10+11+12+13
+    const __m256i t0   = _mm256_unpacklo_epi64(src0, src1); /*!< 00 10  02 12 */
+    const __m256i t1   = _mm256_unpackhi_epi64(src0, src1); /*!< 01 11  03 13 */
+    const __m256i sum  = _mm256_add_epi64(t0, t1); /*!< 00+01 10+11  02+03 12+13 */
+    const __m128i sum0 = _mm256_extracti128_si256(sum, 0); /*!< 00+01 10+11 */
+    const __m128i sum1 = _mm256_extracti128_si256(sum, 1); /*!< 02+03 12+13 */
+    return _mm_add_epi64(sum0, sum1); /*!< 00+01+02+03 10+11+12+13 */
 }
 
 static INLINE __m128i hadd_two_32_to_64_avx2(const __m256i src0, const __m256i src1) {
-    const __m256i s0 = hadd_32x8_to_64x4_avx2(src0); // 00 01  02 03
-    const __m256i s1 = hadd_32x8_to_64x4_avx2(src1); // 10 11  12 13
+    const __m256i s0 = hadd_32x8_to_64x4_avx2(src0); /*!< 00 01  02 03 */
+    const __m256i s1 = hadd_32x8_to_64x4_avx2(src1); /*!< 10 11  12 13 */
     return hadd_two_64_avx2(s0, s1);
 }
 
 static INLINE __m128i hadd_two_32_avx2(const __m256i src0, const __m256i src1) {
-    const __m256i s01  = _mm256_hadd_epi32(src0, src1); // 0 0 1 1  0 0 1 1
-    const __m128i sum0 = _mm256_extracti128_si256(s01, 0); // 0 0 1 1
-    const __m128i sum1 = _mm256_extracti128_si256(s01, 1); // 0 0 1 1
-    const __m128i sum  = _mm_add_epi32(sum0, sum1); // 0 0 1 1
-    return _mm_hadd_epi32(sum, sum); // 0 1 0 1
+    const __m256i s01  = _mm256_hadd_epi32(src0, src1); /*!< 0 0 1 1  0 0 1 1 */
+    const __m128i sum0 = _mm256_extracti128_si256(s01, 0); /*!< 0 0 1 1 */
+    const __m128i sum1 = _mm256_extracti128_si256(s01, 1); /*!< 0 0 1 1 */
+    const __m128i sum  = _mm_add_epi32(sum0, sum1); /*!< 0 0 1 1 */
+    return _mm_hadd_epi32(sum, sum); /*!< 0 1 0 1 */
 }
 
 static INLINE __m128i hadd_four_32_avx2(const __m256i src0, const __m256i src1, const __m256i src2,
                                         const __m256i src3) {
-    const __m256i s01   = _mm256_hadd_epi32(src0, src1); // 0 0 1 1  0 0 1 1
-    const __m256i s23   = _mm256_hadd_epi32(src2, src3); // 2 2 3 3  2 2 3 3
-    const __m256i s0123 = _mm256_hadd_epi32(s01, s23); // 0 1 2 3  0 1 2 3
-    const __m128i sum0  = _mm256_extracti128_si256(s0123, 0); // 0 1 2 3
-    const __m128i sum1  = _mm256_extracti128_si256(s0123, 1); // 0 1 2 3
-    return _mm_add_epi32(sum0, sum1); // 0 1 2 3
+    const __m256i s01   = _mm256_hadd_epi32(src0, src1); /*!< 0 0 1 1  0 0 1 1 */
+    const __m256i s23   = _mm256_hadd_epi32(src2, src3); /*!< 2 2 3 3  2 2 3 3 */
+    const __m256i s0123 = _mm256_hadd_epi32(s01, s23); /*!< 0 1 2 3  0 1 2 3 */
+    const __m128i sum0  = _mm256_extracti128_si256(s0123, 0); /*!< 0 1 2 3 */
+    const __m128i sum1  = _mm256_extracti128_si256(s0123, 1); /*!< 0 1 2 3 */
+    return _mm_add_epi32(sum0, sum1); /*!< 0 1 2 3 */
 }
 
 static INLINE __m256i hadd_four_64_avx2(const __m256i src0, const __m256i src1, const __m256i src2,
                                         const __m256i src3) {
     __m256i s[2], t[4];
 
-    // 00 01  02 03
-    // 10 11  12 13
-    // 20 21  22 23
-    // 30 31  32 33
+    /*!< 00 01  02 03 */
+    /*!< 10 11  12 13 */
+    /*!< 20 21  22 23 */
+    /*!< 30 31  32 33 */
 
-    t[0] = _mm256_unpacklo_epi64(src0, src1); // 00 10  02 12
-    t[1] = _mm256_unpackhi_epi64(src0, src1); // 01 11  03 13
-    t[2] = _mm256_unpacklo_epi64(src2, src3); // 20 30  22 32
-    t[3] = _mm256_unpackhi_epi64(src2, src3); // 21 31  23 33
+    t[0] = _mm256_unpacklo_epi64(src0, src1); /*!< 00 10  02 12 */
+    t[1] = _mm256_unpackhi_epi64(src0, src1); /*!< 01 11  03 13 */
+    t[2] = _mm256_unpacklo_epi64(src2, src3); /*!< 20 30  22 32 */
+    t[3] = _mm256_unpackhi_epi64(src2, src3); /*!< 21 31  23 33 */
 
-    s[0] = _mm256_add_epi64(t[0], t[1]); // 00+01 10+11  02+03 12+13
-    s[1] = _mm256_add_epi64(t[2], t[3]); // 20+21 30+31  22+23 32+33
+    s[0] = _mm256_add_epi64(t[0], t[1]); /*!< 00+01 10+11  02+03 12+13 */
+    s[1] = _mm256_add_epi64(t[2], t[3]); /*!< 20+21 30+31  22+23 32+33 */
 
-    // 00+01 10+11  20+21 30+31
+    /*!< 00+01 10+11  20+21 30+31 */
     t[0] = _mm256_inserti128_si256(s[0], _mm256_extracti128_si256(s[1], 0), 1);
-    // 02+03 12+13  22+23 32+33
+    /*!< 02+03 12+13  22+23 32+33 */
     t[1] = _mm256_inserti128_si256(s[1], _mm256_extracti128_si256(s[0], 1), 0);
 
-    // 00+01+02+03 10+11+12+13  20+21+22+23 30+31+32+33
+    /*!< 00+01+02+03 10+11+12+13  20+21+22+23 30+31+32+33 */
     return _mm256_add_epi64(t[0], t[1]);
 }
 
-// inputs' value range is 31-bit
+/*!< inputs' value range is 31-bit */
 static INLINE __m128i hadd_two_31_to_64_avx2(const __m256i src0, const __m256i src1) {
     __m256i s;
-    s = _mm256_hadd_epi32(src0, src1); // 0 0 1 1  0 0 1 1
-    s = hadd_32x8_to_64x4_avx2(s); // 0 0 1 1
-    s = _mm256_permute4x64_epi64(s, 0xD8); // 0 1 0 1
+    s = _mm256_hadd_epi32(src0, src1); /*!< 0 0 1 1  0 0 1 1 */
+    s = hadd_32x8_to_64x4_avx2(s); /*!< 0 0 1 1 */
+    s = _mm256_permute4x64_epi64(s, 0xD8); /*!< 0 1 0 1 */
 
     return add_hi_lo_64_avx2(s);
 }
 
 static INLINE __m256i hadd_x_64_avx2(const __m256i src01, const __m256i src23) {
-    // 0 0 1 1
-    // 2 2 3 3
-    const __m256i t0 = _mm256_unpacklo_epi64(src01, src23); // 0 2 1 3
-    const __m256i t1 = _mm256_unpackhi_epi64(src01, src23); // 0 2 1 3
-    const __m256i t  = _mm256_add_epi64(t0, t1); // 0 2 1 3
+    /*!< 0 0 1 1 */
+    /*!< 2 2 3 3 */
+    const __m256i t0 = _mm256_unpacklo_epi64(src01, src23); /*!< 0 2 1 3 */
+    const __m256i t1 = _mm256_unpackhi_epi64(src01, src23); /*!< 0 2 1 3 */
+    const __m256i t  = _mm256_add_epi64(t0, t1); /*!< 0 2 1 3 */
 
-    return _mm256_permute4x64_epi64(t, 0xD8); // 0 1 2 3
+    return _mm256_permute4x64_epi64(t, 0xD8); /*!< 0 1 2 3 */
 }
 
-// inputs' value range is 31-bit
+/*!< inputs' value range is 31-bit */
 static INLINE __m256i hadd_four_31_to_64_avx2(const __m256i src0, const __m256i src1,
                                               const __m256i src2, const __m256i src3) {
     __m256i s[2];
-    s[0] = _mm256_hadd_epi32(src0, src1); // 0 0 1 1  0 0 1 1
-    s[1] = _mm256_hadd_epi32(src2, src3); // 2 2 3 3  2 2 3 3
-    s[0] = hadd_32x8_to_64x4_avx2(s[0]); // 0 0 1 1
-    s[1] = hadd_32x8_to_64x4_avx2(s[1]); // 2 2 3 3
+    s[0] = _mm256_hadd_epi32(src0, src1); /*!< 0 0 1 1  0 0 1 1 */
+    s[1] = _mm256_hadd_epi32(src2, src3); /*!< 2 2 3 3  2 2 3 3 */
+    s[0] = hadd_32x8_to_64x4_avx2(s[0]); /*!< 0 0 1 1 */
+    s[1] = hadd_32x8_to_64x4_avx2(s[1]); /*!< 2 2 3 3 */
 
     return hadd_x_64_avx2(s[0], s[1]);
 }
@@ -275,10 +273,10 @@ static INLINE __m256i hadd_four_32_to_64_avx2(const __m256i src0, const __m256i 
                                               const __m256i src2, const __m256i src3) {
     __m256i s[4];
 
-    s[0] = hadd_32x8_to_64x4_avx2(src0); // 00 01  02 03
-    s[1] = hadd_32x8_to_64x4_avx2(src1); // 10 11  12 13
-    s[2] = hadd_32x8_to_64x4_avx2(src2); // 20 21  22 23
-    s[3] = hadd_32x8_to_64x4_avx2(src3); // 30 31  32 33
+    s[0] = hadd_32x8_to_64x4_avx2(src0); /*!< 00 01  02 03 */
+    s[1] = hadd_32x8_to_64x4_avx2(src1); /*!< 10 11  12 13 */
+    s[2] = hadd_32x8_to_64x4_avx2(src2); /*!< 20 21  22 23 */
+    s[3] = hadd_32x8_to_64x4_avx2(src3); /*!< 30 31  32 33 */
 
     return hadd_four_64_avx2(s[0], s[1], s[2], s[3]);
 }
@@ -389,7 +387,7 @@ static INLINE void load_more_64_avx2(const int16_t *const src, const int32_t wid
 }
 
 static INLINE __m256i load_win7_avx2(const int16_t *const d, const int32_t width) {
-    // 16-bit idx: 0, 4, 1, 5, 2, 6, 3, 7
+    /*!< 16-bit idx: 0, 4, 1, 5, 2, 6, 3, 7 */
     const __m256i shf = _mm256_setr_epi8(0,
                                          1,
                                          8,
@@ -422,21 +420,21 @@ static INLINE __m256i load_win7_avx2(const int16_t *const d, const int32_t width
                                          7,
                                          14,
                                          15);
-    // 00s 01s 02s 03s 04s 05s 06s 07s
+    /*!< 00s 01s 02s 03s 04s 05s 06s 07s */
     const __m128i ds = _mm_load_si128((__m128i *)d);
-    // 00e 01e 02e 03e 04e 05e 06e 07e
+    /*!< 00e 01e 02e 03e 04e 05e 06e 07e */
     const __m128i de = _mm_loadu_si128((__m128i *)(d + width));
     const __m256i t0 = _mm256_inserti128_si256(_mm256_castsi128_si256(ds), de, 1);
-    // 00s 01s 02s 03s 00e 01e 02e 03e  04s 05s 06s 07s 04e 05e 06e 07e
+    /*!< 00s 01s 02s 03s 00e 01e 02e 03e  04s 05s 06s 07s 04e 05e 06e 07e */
     const __m256i t1 = _mm256_permute4x64_epi64(t0, 0xD8);
-    // 00s 00e 01s 01e 02s 02e 03s 03e  04s 04e 05s 05e 06s 06e 07s 07e
+    /*!< 00s 00e 01s 01e 02s 02e 03s 03e  04s 04e 05s 05e 06s 06e 07s 07e */
     return _mm256_shuffle_epi8(t1, shf);
 }
 
 static INLINE void step3_win3_avx2(const int16_t **const d, const int32_t d_stride,
                                    const int32_t width, const int32_t h4, __m256i *const dd,
                                    __m256i deltas[WIENER_WIN_3TAP]) {
-    // 16-bit idx: 0, 2, 4, 6, 1, 3, 5, 7, 0, 2, 4, 6, 1, 3, 5, 7
+    /*!< 16-bit idx: 0, 2, 4, 6, 1, 3, 5, 7, 0, 2, 4, 6, 1, 3, 5, 7 */
     const __m256i shf = _mm256_setr_epi8(0,
                                          1,
                                          4,
@@ -474,22 +472,22 @@ static INLINE void step3_win3_avx2(const int16_t **const d, const int32_t d_stri
     do {
         __m256i ds[WIENER_WIN_3TAP];
 
-        // 00s 01s 10s 11s 20s 21s 30s 31s  00e 01e 10e 11e 20e 21e 30e 31e
+        /*!< 00s 01s 10s 11s 20s 21s 30s 31s  00e 01e 10e 11e 20e 21e 30e 31e */
         *dd = _mm256_insert_epi32(*dd, *(int32_t *)(*d + 2 * d_stride), 2);
         *dd = _mm256_insert_epi32(*dd, *(int32_t *)(*d + 2 * d_stride + width), 6);
         *dd = _mm256_insert_epi32(*dd, *(int32_t *)(*d + 3 * d_stride), 3);
         *dd = _mm256_insert_epi32(*dd, *(int32_t *)(*d + 3 * d_stride + width), 7);
-        // 00s 10s 20s 30s 01s 11s 21s 31s  00e 10e 20e 30e 01e 11e 21e 31e
+        /*!< 00s 10s 20s 30s 01s 11s 21s 31s  00e 10e 20e 30e 01e 11e 21e 31e */
         ds[0] = _mm256_shuffle_epi8(*dd, shf);
 
-        // 10s 11s 20s 21s 30s 31s 40s 41s  10e 11e 20e 21e 30e 31e 40e 41e
+        /*!< 10s 11s 20s 21s 30s 31s 40s 41s  10e 11e 20e 21e 30e 31e 40e 41e */
         load_more_32_avx2(*d + 4 * d_stride, width, dd);
-        // 10s 20s 30s 40s 11s 21s 31s 41s  10e 20e 30e 40e 11e 21e 31e 41e
+        /*!< 10s 20s 30s 40s 11s 21s 31s 41s  10e 20e 30e 40e 11e 21e 31e 41e */
         ds[1] = _mm256_shuffle_epi8(*dd, shf);
 
-        // 20s 21s 30s 31s 40s 41s 50s 51s  20e 21e 30e 31e 40e 41e 50e 51e
+        /*!< 20s 21s 30s 31s 40s 41s 50s 51s  20e 21e 30e 31e 40e 41e 50e 51e */
         load_more_32_avx2(*d + 5 * d_stride, width, dd);
-        // 20s 30s 40s 50s 21s 31s 41s 51s  20e 30e 40e 50e 21e 31e 41e 51e
+        /*!< 20s 30s 40s 50s 21s 31s 41s 51s  20e 30e 40e 50e 21e 31e 41e 51e */
         ds[2] = _mm256_shuffle_epi8(*dd, shf);
 
         madd_avx2(ds[0], ds[0], &deltas[0]);
@@ -506,7 +504,7 @@ static INLINE void step3_win5_avx2(const int16_t **const d, const int32_t d_stri
                                    const int32_t width, const int32_t height, __m256i *const dd,
                                    __m256i ds[WIENER_WIN_CHROMA],
                                    __m256i deltas[WIENER_WIN_CHROMA]) {
-    // 16-bit idx: 0, 4, 1, 5, 2, 6, 3, 7
+    /*!< 16-bit idx: 0, 4, 1, 5, 2, 6, 3, 7 */
     const __m256i shf = _mm256_setr_epi8(0,
                                          1,
                                          8,
@@ -544,14 +542,14 @@ static INLINE void step3_win5_avx2(const int16_t **const d, const int32_t d_stri
     do {
         *d += 2 * d_stride;
 
-        // 30s 31s 32s 33s 40s 41s 42s 43s  30e 31e 32e 33e 40e 41e 42e 43e
+        /*!< 30s 31s 32s 33s 40s 41s 42s 43s  30e 31e 32e 33e 40e 41e 42e 43e */
         load_more_64_avx2(*d + 2 * d_stride, width, dd);
-        // 30s 40s 31s 41s 32s 42s 33s 43s  30e 40e 31e 41e 32e 42e 33e 43e
+        /*!< 30s 40s 31s 41s 32s 42s 33s 43s  30e 40e 31e 41e 32e 42e 33e 43e */
         ds[3] = _mm256_shuffle_epi8(*dd, shf);
 
-        // 40s 41s 42s 43s 50s 51s 52s 53s  40e 41e 42e 43e 50e 51e 52e 53e
+        /*!< 40s 41s 42s 43s 50s 51s 52s 53s  40e 41e 42e 43e 50e 51e 52e 53e */
         load_more_64_avx2(*d + 3 * d_stride, width, dd);
-        // 40s 50s 41s 51s 42s 52s 43s 53s  40e 50e 41e 51e 42e 52e 43e 53e
+        /*!< 40s 50s 41s 51s 42s 52s 43s 53s  40e 50e 41e 51e 42e 52e 43e 53e */
         ds[4] = _mm256_shuffle_epi8(*dd, shf);
 
         madd_avx2(ds[0], ds[0], &deltas[0]);
@@ -581,7 +579,7 @@ static INLINE void step3_win7_avx2(const int16_t **const d, const int32_t d_stri
         dd = _mm256_xor_si256(dd, const_n1_0);
         dd = _mm256_sub_epi16(dd, const_n1_0);
 
-        // 60s 60e 61s 61e 62s 62e 63s 63e  64s 64e 65s 65e 66s 66e 67s 67e
+        /*!< 60s 60e 61s 61e 62s 62e 63s 63e  64s 64e 65s 65e 66s 66e 67s 67e */
         ds[6] = load_win7_avx2(*d, width);
 
         madd_avx2(dd, ds[0], &deltas[0]);

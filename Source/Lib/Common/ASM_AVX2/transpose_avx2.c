@@ -1,9 +1,7 @@
-/*
- * Copyright(c) 2019 Intel Corporation
- * SPDX - License - Identifier: BSD - 2 - Clause - Patent
- */
+/*!< Copyright(c) 2019 Intel Corporation
+ * SPDX - License - Identifier: BSD - 2 - Clause - Patent */
 
-// C instance for unit test.
+/*!< C instance for unit test. */
 
 #include "transpose_avx2.h"
 

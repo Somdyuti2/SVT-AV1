@@ -1,7 +1,5 @@
-/*
-* Copyright(c) 2019 Intel Corporation
-* SPDX - License - Identifier: BSD - 2 - Clause - Patent
-*/
+/*!< Copyright(c) 2019 Intel Corporation
+ * SPDX - License - Identifier: BSD - 2 - Clause - Patent */
 
 #include <stdlib.h>
 
@@ -109,7 +107,7 @@ EbErrorType encode_context_ctor(EncodeContext* encode_context_ptr, EbPtr object_
                hl_rate_control_histogram_entry_ctor,
                picture_index);
     }
-    // HLRateControl Historgram Queue Mutex
+    /*!< HLRateControl Historgram Queue Mutex */
     EB_CREATE_MUTEX(encode_context_ptr->hl_rate_control_historgram_queue_mutex);
 
     EB_ALLOC_PTR_ARRAY(encode_context_ptr->packetization_reorder_queue,
@@ -125,19 +123,19 @@ EbErrorType encode_context_ctor(EncodeContext* encode_context_ptr, EbPtr object_
     encode_context_ptr->current_input_poc = -1;
     encode_context_ptr->initial_picture   = EB_TRUE;
 
-    // Sequence Termination Flags
+    /*!< Sequence Termination Flags */
     encode_context_ptr->terminating_picture_number = ~0u;
 
-    // Signalling the need for a td structure to be written in the Bitstream - on when the sequence starts
+    /*!< Signalling the need for a td structure to be written in the Bitstream - on when the sequence starts */
     encode_context_ptr->td_needed = EB_TRUE;
 
-    // Rate Control Bit Tables
+    /*!< Rate Control Bit Tables */
     EB_MALLOC_ARRAY(encode_context_ptr->rate_control_tables_array,
                     TOTAL_NUMBER_OF_INITIAL_RC_TABLES_ENTRY);
 
     return_error = rate_control_tables_init(encode_context_ptr->rate_control_tables_array);
     if (return_error == EB_ErrorInsufficientResources) return EB_ErrorInsufficientResources;
-    // RC Rate Table Update Mutex
+    /*!< RC Rate Table Update Mutex */
     EB_CREATE_MUTEX(encode_context_ptr->rate_table_update_mutex);
 
     EB_CREATE_MUTEX(encode_context_ptr->sc_buffer_mutex);

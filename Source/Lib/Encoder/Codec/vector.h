@@ -1,24 +1,22 @@
-/*
-The MIT License(MIT)
-Copyright(c) 2016 Peter Goldsborough
-
-Permission is hereby granted, free of charge, to any person obtaining a copy of
-this software and associated documentation files(the "Software"), to deal in
-the Software without restriction, including without limitation the rights to
-use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of
-the Software, and to permit persons to whom the Software is furnished to do so,
-subject to the following conditions :
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS
-FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.IN NO EVENT SHALL THE AUTHORS OR
-COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
-IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
-CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-*/
+/*!< The MIT License(MIT)
+ * Copyright(c) 2016 Peter Goldsborough
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy of
+ * this software and associated documentation files(the "Software"), to deal in
+ * the Software without restriction, including without limitation the rights to
+ * use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of
+ * the Software, and to permit persons to whom the Software is furnished to do so,
+ * subject to the following conditions :
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS
+ * FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.IN NO EVENT SHALL THE AUTHORS OR
+ * COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
+ * IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+ * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE. */
 
 #ifndef VECTOR_H
 #define VECTOR_H
@@ -26,7 +24,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include <stdbool.h>
 #include <stddef.h>
 
-/***** DEFINITIONS *****/
+/*!< **** DEFINITIONS **** */
 
 #define VECTOR_MINIMUM_CAPACITY 2
 #define VECTOR_GROWTH_FACTOR 2
@@ -39,7 +37,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #define VECTOR_INITIALIZER \
     { 0, 0, 0, VECTOR_UNINITIALIZED }
 
-/***** STRUCTURES *****/
+/*!< **** STRUCTURES **** */
 
 typedef struct Vector {
     size_t size;
@@ -54,21 +52,21 @@ typedef struct Iterator {
     size_t element_size;
 } Iterator;
 
-/***** METHODS *****/
+/*!< **** METHODS **** */
 
-/* Constructor */
+/*!< Constructor */
 int eb_aom_vector_setup(Vector *vector, size_t capacity, size_t element_size);
 
-/* Destructor */
+/*!< Destructor */
 int eb_aom_vector_destroy(Vector *vector);
 
-/* Insertion */
+/*!< Insertion */
 int eb_aom_vector_push_back(Vector *vector, void *element);
 
-/* Information */
+/*!< Information */
 size_t eb_aom_vector_byte_size(const Vector *vector);
 
-/* Iterators */
+/*!< Iterators */
 Iterator eb_aom_vector_begin(Vector *vector);
 Iterator eb_aom_vector_iterator(Vector *vector, size_t index);
 
@@ -77,7 +75,7 @@ void *iterator_get(Iterator *iterator);
 
 void iterator_increment(Iterator *iterator);
 
-/***** PRIVATE *****/
+/*!< **** PRIVATE **** */
 
 //#define MAX(a, b) ((a) > (b) ? (a) : (b))
 

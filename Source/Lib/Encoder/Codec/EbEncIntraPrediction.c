@@ -1,19 +1,15 @@
 // clang-format off
-/*
-* Copyright(c) 2019 Intel Corporation
-* SPDX - License - Identifier: BSD - 2 - Clause - Patent
-*/
+/*!< Copyright(c) 2019 Intel Corporation
+ * SPDX - License - Identifier: BSD - 2 - Clause - Patent */
 
-/*
-* Copyright (c) 2016, Alliance for Open Media. All rights reserved
-*
-* This source code is subject to the terms of the BSD 2 Clause License and
-* the Alliance for Open Media Patent License 1.0. If the BSD 2 Clause License
-* was not distributed with this source code in the LICENSE file, you can
-* obtain it at www.aomedia.org/license/software. If the Alliance for Open
-* Media Patent License 1.0 was not distributed with this source code in the
-* PATENTS file, you can obtain it at www.aomedia.org/license/patent.
-*/
+/*!< Copyright (c) 2016, Alliance for Open Media. All rights reserved
+ *
+ * This source code is subject to the terms of the BSD 2 Clause License and
+ * the Alliance for Open Media Patent License 1.0. If the BSD 2 Clause License
+ * was not distributed with this source code in the LICENSE file, you can
+ * obtain it at www.aomedia.org/license/software. If the Alliance for Open
+ * Media Patent License 1.0 was not distributed with this source code in the
+ * PATENTS file, you can obtain it at www.aomedia.org/license/patent. */
 
 #include <stdlib.h>
 #include <string.h>
@@ -54,7 +50,7 @@ static int get_filt_type(const MacroBlockD *xd, int plane) {
     return (ab_sm || le_sm) ? 1 : 0;
 }
 
-////////////#####################...........Recurssive intra prediction ending...........#####################////////////
+/*!< ///////////#####################...........Recurssive intra prediction ending...........#####################/////////// */
 
 static void build_intra_predictors(
         const MacroBlockD *xd,
@@ -118,7 +114,7 @@ static void build_intra_predictors(
         return;
     }
 
-    // NEED_LEFT
+    /*!< NEED_LEFT */
     if (need_left) {
         int32_t need_bottom = !!(extend_modes[mode] & NEED_BOTTOMLEFT);
         if (use_filter_intra) need_bottom = 0;
@@ -143,7 +139,7 @@ static void build_intra_predictors(
         }
     }
 
-    // NEED_ABOVE
+    /*!< NEED_ABOVE */
     if (need_above) {
         int32_t need_right = !!(extend_modes[mode] & NEED_ABOVERIGHT);
         if (use_filter_intra) need_right = 0;
@@ -228,7 +224,7 @@ static void build_intra_predictors(
         return;
     }
 
-    // predict
+    /*!< predict */
     if (mode == DC_PRED) {
         dc_pred[n_left_px > 0][n_top_px > 0][tx_size](dst, dst_stride, above_row,
                                                       left_col);
@@ -238,8 +234,8 @@ static void build_intra_predictors(
 }
 static void build_intra_predictors_high(
         const MacroBlockD *xd,
-        uint16_t* top_neigh_array, // int8_t
-        uint16_t* left_neigh_array, // int8_t
+        uint16_t* top_neigh_array, /*!< int8_t */
+        uint16_t* left_neigh_array, /*!< int8_t */
         //const uint8_t *ref8, int32_t ref_stride,
         uint16_t *dst,//uint8_t *dst8
         int32_t dst_stride, PredictionMode mode, int32_t angle_delta,
@@ -271,12 +267,12 @@ static void build_intra_predictors_high(
     const int32_t use_filter_intra = filter_intra_mode != FILTER_INTRA_MODES;
     int32_t base = 128 << (bd - 8);
 
-    // The default values if ref pixels are not available:
-    // base-1 base-1 base-1 .. base-1 base-1 base-1 base-1 base-1 base-1
-    // base+1   A      b  ..     Y      Z
-    // base+1   C      D  ..     W      X
-    // base+1   E      F  ..     U      V
-    // base+1   G      H  ..     S      T      T      T      T      T
+    /*!< The default values if ref pixels are not available:
+     *   base-1 base-1 base-1 .. base-1 base-1 base-1 base-1 base-1 base-1
+     *   base+1   A      b  ..     Y      Z
+     *   base+1   C      D  ..     W      X
+     *   base+1   E      F  ..     U      V
+     *   base+1   G      H  ..     S      T      T      T      T      T */
 
     if (is_dr_mode) {
         p_angle = mode_to_angle_map[mode] + angle_delta * ANGLE_STEP;
@@ -307,7 +303,7 @@ static void build_intra_predictors_high(
         return;
     }
 
-    // NEED_LEFT
+    /*!< NEED_LEFT */
     if (need_left) {
         int32_t need_bottom = !!(extend_modes[mode] & NEED_BOTTOMLEFT);
         if (use_filter_intra) need_bottom = 0;
@@ -332,7 +328,7 @@ static void build_intra_predictors_high(
         }
     }
 
-    // NEED_ABOVE
+    /*!< NEED_ABOVE */
     if (need_above) {
         int32_t need_right = !!(extend_modes[mode] & NEED_ABOVERIGHT);
         if (use_filter_intra) need_right = 0;
@@ -405,14 +401,14 @@ static void build_intra_predictors_high(
                     use_intra_edge_upsample(txwpx, txhpx, p_angle - 90, filt_type);
             if (need_above && upsample_above) {
                 const int32_t n_px = txwpx + (need_right ? txhpx : 0);
-                //av1_upsample_intra_edge_high(above_row, n_px, bd);// AMIR : to be replaced by optimized code
+                //av1_upsample_intra_edge_high(above_row, n_px, bd); /*!< AMIR : to be replaced by optimized code */
                 eb_av1_upsample_intra_edge_high_c(above_row, n_px, bd);
             }
             upsample_left =
                     use_intra_edge_upsample(txhpx, txwpx, p_angle - 180, filt_type);
             if (need_left && upsample_left) {
                 const int32_t n_px = txhpx + (need_bottom ? txwpx : 0);
-                //av1_upsample_intra_edge_high(left_col, n_px, bd);// AMIR: to be replaced by optimized code
+                //av1_upsample_intra_edge_high(left_col, n_px, bd); /*!< AMIR: to be replaced by optimized code */
                 eb_av1_upsample_intra_edge_high_c(left_col, n_px, bd);
             }
         }
@@ -421,7 +417,7 @@ static void build_intra_predictors_high(
         return;
     }
 
-    // predict
+    /*!< predict */
     if (mode == DC_PRED) {
         dc_pred_high[n_left_px > 0][n_top_px > 0][tx_size](
                 dst, dst_stride, above_row, left_col, bd);
@@ -469,17 +465,17 @@ void eb_av1_predict_intra_block(
     uint32_t  pred_buf_x_offest;
     uint32_t  pred_buf_y_offest;
 
-    if (stage == ED_STAGE) { // EncDec
+    if (stage == ED_STAGE) { /*!< EncDec */
         pred_buf_x_offest = plane ? ((bl_org_x_pict >> 3) << 3) >> 1 : txb_org_x_pict;
         pred_buf_y_offest = plane ? ((bl_org_y_pict >> 3) << 3) >> 1 : txb_org_y_pict;
     }
-    else { // MD
+    else { /*!< MD */
         pred_buf_x_offest = bl_org_x_mb;
         pred_buf_y_offest = bl_org_y_mb;
     }
 
-    // Adjust mirow , micol ;
-    // All plane have the same values
+    /*!< Adjust mirow , micol ;
+     *   All plane have the same values */
 
     int32_t mirow = bl_org_y_pict >> 2;
     int32_t micol = bl_org_x_pict >> 2;
@@ -500,9 +496,9 @@ void eb_av1_predict_intra_block(
     xd->n8_w = bw;
     xd->is_sec_rect = 0;
     if (xd->n8_w < xd->n8_h) {
-        // Only mark is_sec_rect as 1 for the last block.
-        // For PARTITION_VERT_4, it would be (0, 0, 0, 1);
-        // For other partitions, it would be (0, 1).
+        /*!< Only mark is_sec_rect as 1 for the last block.
+         *   For PARTITION_VERT_4, it would be (0, 0, 0, 1);
+         *   For other partitions, it would be (0, 1). */
         if (!((micol + xd->n8_w) & (xd->n8_h - 1))) xd->is_sec_rect = 1;
     }
 
@@ -525,7 +521,7 @@ void eb_av1_predict_intra_block(
 
     int32_t chroma_up_available = xd->up_available;
     int32_t chroma_left_available = xd->left_available;
-    const int32_t ss_x = plane == 0 ? 0 : 1; //CHKN
+    const int32_t ss_x = plane == 0 ? 0 : 1; /*!< CHKN */
     const int32_t ss_y = plane == 0 ? 0 : 1;
 
     if (ss_x && bw < mi_size_wide[BLOCK_8X8])
@@ -553,17 +549,17 @@ void eb_av1_predict_intra_block(
     const int chroma_ref = ((mirow & 0x01) || !(bh & 0x01) || !ss_y) &&
                            ((micol & 0x01) || !(bw & 0x01) || !ss_x);
     if (chroma_ref) {
-        // To help calculate the "above" and "left" chroma blocks, note that the
-        // current block may cover multiple luma blocks (eg, if partitioned into
-        // 4x4 luma blocks).
-        // First, find the top-left-most luma block covered by this chroma block
+        /*!< To help calculate the "above" and "left" chroma blocks, note that the
+         *   current block may cover multiple luma blocks (eg, if partitioned into
+         *   4x4 luma blocks).
+         *   First, find the top-left-most luma block covered by this chroma block */
 
         ModeInfo *mi_ptr = xd->mi[-(mirow & ss_y) * mi_stride - (micol & ss_x)];
 
-        // Then, we consider the luma region covered by the left or above 4x4 chroma
-        // prediction. We want to point to the chroma reference block in that
-        // region, which is the bottom-right-most mi unit.
-        // This leads to the following offsets:
+        /*!< Then, we consider the luma region covered by the left or above 4x4 chroma
+         *   prediction. We want to point to the chroma reference block in that
+         *   region, which is the bottom-right-most mi unit.
+         *   This leads to the following offsets: */
         MbModeInfo *chroma_above_mi =
                 chroma_up_available ? &mi_ptr[-mi_stride + ss_x].mbmi : NULL;
         xd->chroma_above_mbmi = chroma_above_mi;
@@ -612,12 +608,12 @@ void eb_av1_predict_intra_block(
     const int32_t xr_chr_offset = 0;
     const int32_t yd_chr_offset = 0;
 
-    // Distance between the right edge of this prediction block to
-    // the frame right edge
+    /*!< Distance between the right edge of this prediction block to
+     *   the frame right edge */
     const int32_t xr = (xd->mb_to_right_edge >> (3 + pd->subsampling_x)) +
                        (wpx - x - txwpx) - xr_chr_offset;
-    // Distance between the bottom edge of this prediction block to
-    // the frame bottom edge
+    /*!< Distance between the bottom edge of this prediction block to
+     *   the frame bottom edge */
     const int32_t yd = (xd->mb_to_bottom_edge >> (3 + pd->subsampling_y)) +
                        (hpx - y - txhpx) - yd_chr_offset;
     const int32_t right_available =
@@ -626,9 +622,9 @@ void eb_av1_predict_intra_block(
             (yd > 0) &&
             (mi_row + ((row_off + txh) << pd->subsampling_y) < xd->tile.mi_row_end);
 
-    const PartitionType partition = from_shape_to_part[blk_geom->shape]; //blk_ptr->part;// PARTITION_NONE;//CHKN this is good enough as the avail functions need to know if VERT part is used or not mbmi->partition;
+    const PartitionType partition = from_shape_to_part[blk_geom->shape]; //blk_ptr->part;// PARTITION_NONE; /*!< CHKN this is good enough as the avail functions need to know if VERT part is used or not mbmi->partition; */
 
-    // force 4x4 chroma component block size.
+    /*!< force 4x4 chroma component block size. */
     bsize = scale_chroma_bsize(bsize, pd->subsampling_x, pd->subsampling_y);
 
     const int32_t have_top_right = intra_has_top_right(
@@ -705,10 +701,10 @@ void eb_av1_predict_intra_block_16bit(
     uint32_t  pred_buf_x_offest;
     uint32_t  pred_buf_y_offest;
 
-    if (stage == ED_STAGE) { // EncDec
+    if (stage == ED_STAGE) { /*!< EncDec */
         pred_buf_x_offest = plane ? ((bl_org_x_pict >> 3) << 3) >> 1 : txb_org_x_pict;
         pred_buf_y_offest = plane ? ((bl_org_y_pict >> 3) << 3) >> 1 : txb_org_y_pict;
-    } else { // MD
+    } else { /*!< MD */
         pred_buf_x_offest = bl_org_x_mb;
         pred_buf_y_offest = bl_org_y_mb;
     }
@@ -733,16 +729,16 @@ void eb_av1_predict_intra_block_16bit(
     xd->n8_w = bw;
     xd->is_sec_rect = 0;
     if (xd->n8_w < xd->n8_h) {
-        // Only mark is_sec_rect as 1 for the last block.
-        // For PARTITION_VERT_4, it would be (0, 0, 0, 1);
-        // For other partitions, it would be (0, 1).
+        /*!< Only mark is_sec_rect as 1 for the last block.
+         *   For PARTITION_VERT_4, it would be (0, 0, 0, 1);
+         *   For other partitions, it would be (0, 1). */
         if (!((micol + xd->n8_w) & (xd->n8_h - 1))) xd->is_sec_rect = 1;
     }
 
     if (xd->n8_w > xd->n8_h)
         if (mirow & (xd->n8_w - 1)) xd->is_sec_rect = 1;
 
-    // Adjust prediction pointers
+    /*!< Adjust prediction pointers */
     uint16_t *dst;
     int32_t dst_stride;
     if (plane == 0) {
@@ -789,17 +785,17 @@ void eb_av1_predict_intra_block_16bit(
     const int chroma_ref = ((mirow & 0x01) || !(bh & 0x01) || !ss_y) &&
                            ((micol & 0x01) || !(bw & 0x01) || !ss_x);
     if (chroma_ref) {
-        // To help calculate the "above" and "left" chroma blocks, note that the
-        // current block may cover multiple luma blocks (eg, if partitioned into
-        // 4x4 luma blocks).
-        // First, find the top-left-most luma block covered by this chroma block
+        /*!< To help calculate the "above" and "left" chroma blocks, note that the
+         *   current block may cover multiple luma blocks (eg, if partitioned into
+         *   4x4 luma blocks).
+         *   First, find the top-left-most luma block covered by this chroma block */
 
         ModeInfo *mi_ptr = xd->mi[-(mirow & ss_y) * mi_stride - (micol & ss_x)];
 
-        // Then, we consider the luma region covered by the left or above 4x4 chroma
-        // prediction. We want to point to the chroma reference block in that
-        // region, which is the bottom-right-most mi unit.
-        // This leads to the following offsets:
+        /*!< Then, we consider the luma region covered by the left or above 4x4 chroma
+         *   prediction. We want to point to the chroma reference block in that
+         *   region, which is the bottom-right-most mi unit.
+         *   This leads to the following offsets: */
         MbModeInfo *chroma_above_mi =
                 chroma_up_available ? &mi_ptr[-mi_stride + ss_x].mbmi : NULL;
         xd->chroma_above_mbmi = chroma_above_mi;
@@ -847,12 +843,12 @@ void eb_av1_predict_intra_block_16bit(
     const int32_t xr_chr_offset = 0;
     const int32_t yd_chr_offset = 0;
 
-    // Distance between the right edge of this prediction block to
-    // the frame right edge
+    /*!< Distance between the right edge of this prediction block to
+     *   the frame right edge */
     const int32_t xr = (xd->mb_to_right_edge >> (3 + pd->subsampling_x)) +
                        (wpx - x - txwpx) - xr_chr_offset;
-    // Distance between the bottom edge of this prediction block to
-    // the frame bottom edge
+    /*!< Distance between the bottom edge of this prediction block to
+     *   the frame bottom edge */
     const int32_t yd = (xd->mb_to_bottom_edge >> (3 + pd->subsampling_y)) +
                        (hpx - y - txhpx) - yd_chr_offset;
     const int32_t right_available =
@@ -861,9 +857,9 @@ void eb_av1_predict_intra_block_16bit(
             (yd > 0) &&
             (mi_row + ((row_off + txh) << pd->subsampling_y) < xd->tile.mi_row_end);
 
-    const PartitionType partition = from_shape_to_part[blk_geom->shape]; //blk_ptr->part;// PARTITION_NONE;//CHKN this is good enough as the avail functions need to know if VERT part is used or not mbmi->partition;
+    const PartitionType partition = from_shape_to_part[blk_geom->shape]; //blk_ptr->part;// PARTITION_NONE; /*!< CHKN this is good enough as the avail functions need to know if VERT part is used or not mbmi->partition; */
 
-    // force 4x4 chroma component block size.
+    /*!< force 4x4 chroma component block size. */
     bsize = scale_chroma_bsize(bsize, pd->subsampling_x, pd->subsampling_y);
 
     const int32_t have_top_right = intra_has_top_right(
@@ -929,7 +925,7 @@ EbErrorType eb_av1_intra_prediction_cl(
 
     md_context_ptr->intra_luma_top_mode = (uint32_t)(
             (md_context_ptr->mode_type_neighbor_array->top_array[mode_type_top_neighbor_index] != INTRA_MODE) ? DC_PRED/*EB_INTRA_DC*/ :
-            (uint32_t)md_context_ptr->intra_luma_mode_neighbor_array->top_array[intra_luma_mode_top_neighbor_index]);       //   use DC. This seems like we could use a SB-width
+            (uint32_t)md_context_ptr->intra_luma_mode_neighbor_array->top_array[intra_luma_mode_top_neighbor_index]);       /*!< use DC. This seems like we could use a SB-width */
 
     md_context_ptr->intra_chroma_left_mode = md_context_ptr->intra_luma_left_mode;
     md_context_ptr->intra_chroma_top_mode = md_context_ptr->intra_luma_top_mode;
@@ -940,15 +936,15 @@ EbErrorType eb_av1_intra_prediction_cl(
 
     md_context_ptr->intra_chroma_top_mode = (uint32_t)(
             (md_context_ptr->mode_type_neighbor_array->top_array[mode_type_top_neighbor_index] != INTRA_MODE) ? UV_DC_PRED :
-            (uint32_t)md_context_ptr->intra_chroma_mode_neighbor_array->top_array[intra_chroma_mode_top_neighbor_index]);       //   use DC. This seems like we could use a SB-width
-    TxSize  tx_size = md_context_ptr->blk_geom->txsize[candidate_buffer_ptr->candidate_ptr->tx_depth][0]; // Nader - Intra 128x128 not supported
-    TxSize  tx_size_chroma = md_context_ptr->blk_geom->txsize_uv[candidate_buffer_ptr->candidate_ptr->tx_depth][0]; //Nader - Intra 128x128 not supported
+            (uint32_t)md_context_ptr->intra_chroma_mode_neighbor_array->top_array[intra_chroma_mode_top_neighbor_index]);       /*!<   use DC. This seems like we could use a SB-width */
+    TxSize  tx_size = md_context_ptr->blk_geom->txsize[candidate_buffer_ptr->candidate_ptr->tx_depth][0]; /*!< Nader - Intra 128x128 not supported */
+    TxSize  tx_size_chroma = md_context_ptr->blk_geom->txsize_uv[candidate_buffer_ptr->candidate_ptr->tx_depth][0]; /*!< Nader - Intra 128x128 not supported */
 
     if(!md_context_ptr->hbd_mode_decision) {
         uint8_t    top_neigh_array[64 * 2 + 1];
         uint8_t    left_neigh_array[64 * 2 + 1];
         PredictionMode mode;
-        // Hsan: plane should be derived @ an earlier stage (e.g. @ the call of perform_fast_loop())
+        /*!< Hsan: plane should be derived @ an earlier stage (e.g. @ the call of perform_fast_loop()) */
         int32_t start_plane = (md_context_ptr->uv_search_path) ? 1 : 0;
         int32_t end_plane = (md_context_ptr->blk_geom->has_uv && md_context_ptr->chroma_level <= CHROMA_MODE_1) ? (int)MAX_MB_PLANE : 1;
 
@@ -1013,8 +1009,8 @@ EbErrorType eb_av1_intra_prediction_cl(
                     md_context_ptr->blk_origin_y,
                     md_context_ptr->blk_origin_x,                  //uint32_t cuOrgX,
                     md_context_ptr->blk_origin_y,                  //uint32_t cuOrgY
-                    plane ? ((md_context_ptr->blk_geom->origin_x >> 3) << 3) / 2 : md_context_ptr->blk_geom->origin_x,  //uint32_t cuOrgX used only for prediction Ptr
-                    plane ? ((md_context_ptr->blk_geom->origin_y >> 3) << 3) / 2 : md_context_ptr->blk_geom->origin_y,   //uint32_t cuOrgY used only for prediction Ptr
+                    plane ? ((md_context_ptr->blk_geom->origin_x >> 3) << 3) / 2 : md_context_ptr->blk_geom->origin_x,  /*!< uint32_t cuOrgX used only for prediction Ptr */
+                    plane ? ((md_context_ptr->blk_geom->origin_y >> 3) << 3) / 2 : md_context_ptr->blk_geom->origin_y,  /*!< uint32_t cuOrgY used only for prediction Ptr */
                     pcs_ptr->mi_grid_base,
                     &((SequenceControlSet *)pcs_ptr->scs_wrapper_ptr->object_ptr)->seq_header
             );
@@ -1023,7 +1019,7 @@ EbErrorType eb_av1_intra_prediction_cl(
         uint16_t    top_neigh_array[64 * 2 + 1];
         uint16_t    left_neigh_array[64 * 2 + 1];
         PredictionMode mode;
-        // Hsan: plane should be derived @ an earlier stage (e.g. @ the call of perform_fast_loop())
+        /*!< Hsan: plane should be derived @ an earlier stage (e.g. @ the call of perform_fast_loop()) */
         int32_t start_plane = (md_context_ptr->uv_search_path) ? 1 : 0;
         int32_t end_plane = (md_context_ptr->blk_geom->has_uv && md_context_ptr->chroma_level <= CHROMA_MODE_1) ? (int)MAX_MB_PLANE : 1;
         for (int32_t plane = start_plane; plane < end_plane; ++plane) {
@@ -1087,8 +1083,8 @@ EbErrorType eb_av1_intra_prediction_cl(
                     md_context_ptr->blk_origin_y,
                     md_context_ptr->blk_origin_x,                  //uint32_t cuOrgX,
                     md_context_ptr->blk_origin_y,                  //uint32_t cuOrgY
-                    plane ? ((md_context_ptr->blk_geom->origin_x >> 3) << 3) / 2 : md_context_ptr->blk_geom->origin_x,  //uint32_t cuOrgX used only for prediction Ptr
-                    plane ? ((md_context_ptr->blk_geom->origin_y >> 3) << 3) / 2 : md_context_ptr->blk_geom->origin_y,   //uint32_t cuOrgY used only for prediction Ptr
+                    plane ? ((md_context_ptr->blk_geom->origin_x >> 3) << 3) / 2 : md_context_ptr->blk_geom->origin_x,  /*!< uint32_t cuOrgX used only for prediction Ptr */
+                    plane ? ((md_context_ptr->blk_geom->origin_y >> 3) << 3) / 2 : md_context_ptr->blk_geom->origin_y,  /*!< uint32_t cuOrgY used only for prediction Ptr */
                     pcs_ptr->mi_grid_base,
                     &((SequenceControlSet *)pcs_ptr->scs_wrapper_ptr->object_ptr)->seq_header
             );
@@ -1105,7 +1101,7 @@ EbErrorType  intra_luma_prediction_for_interintra(
         EbPictureBufferDesc         *prediction_ptr)
 {
     EbErrorType return_error = EB_ErrorNone;
-    uint8_t is_inter = 0; // set to 0 b/c this is an intra path
+    uint8_t is_inter = 0; /*!< set to 0 b/c this is an intra path */
 
     uint32_t mode_type_left_neighbor_index = get_neighbor_array_unit_left_index(
             md_context_ptr->mode_type_neighbor_array,
@@ -1126,9 +1122,9 @@ EbErrorType  intra_luma_prediction_for_interintra(
 
     md_context_ptr->intra_luma_top_mode = (uint32_t)(
             (md_context_ptr->mode_type_neighbor_array->top_array[mode_type_top_neighbor_index] != INTRA_MODE) ? DC_PRED:
-            (uint32_t)md_context_ptr->intra_luma_mode_neighbor_array->top_array[intra_luma_mode_top_neighbor_index]);       //   use DC. This seems like we could use a SB-width
+            (uint32_t)md_context_ptr->intra_luma_mode_neighbor_array->top_array[intra_luma_mode_top_neighbor_index]);       /*!< use DC. This seems like we could use a SB-width */
 
-    TxSize  tx_size = md_context_ptr->blk_geom->txsize[0][0];  //CHKN  TOcheck
+    TxSize  tx_size = md_context_ptr->blk_geom->txsize[0][0];  /*!< CHKN  TOcheck */
     PredictionMode mode = interintra_to_intra_mode[interintra_mode];
 
     if (!md_context_ptr->hbd_mode_decision) {
@@ -1166,8 +1162,8 @@ EbErrorType  intra_luma_prediction_for_interintra(
                 md_context_ptr->blk_origin_y,
                 md_context_ptr->blk_origin_x,                            //uint32_t cuOrgX,
                 md_context_ptr->blk_origin_y,                            //uint32_t cuOrgY
-                0,                                                      //cuOrgX used only for prediction Ptr
-                0,                                                       //cuOrgY used only for prediction Ptr
+                0,                                                       /*!< cuOrgX used only for prediction Ptr */
+                0,                                                       /*!< cuOrgY used only for prediction Ptr */
                 pcs_ptr->mi_grid_base,
                 &((SequenceControlSet *)pcs_ptr->scs_wrapper_ptr->object_ptr)->seq_header
         );
@@ -1206,8 +1202,8 @@ EbErrorType  intra_luma_prediction_for_interintra(
                 md_context_ptr->blk_origin_y,
                 md_context_ptr->blk_origin_x,                            //uint32_t cuOrgX,
                 md_context_ptr->blk_origin_y,                            //uint32_t cuOrgY
-                0,                                                      //cuOrgX used only for prediction Ptr
-                0,                                                      //cuOrgY used only for prediction Ptr
+                0,                                                       /*!< cuOrgX used only for prediction Ptr */
+                0,                                                       /*!< cuOrgY used only for prediction Ptr */
                 pcs_ptr->mi_grid_base,
                 &((SequenceControlSet *)pcs_ptr->scs_wrapper_ptr->object_ptr)->seq_header
         );
@@ -1238,14 +1234,14 @@ EbErrorType update_neighbor_samples_array_open_loop(
     uint32_t height = input_ptr->height;
     uint32_t block_size_half = bwidth << 1;
 
-    // Adjust the Source ptr to start at the origin of the block being updated
+    /*!< Adjust the Source ptr to start at the origin of the block being updated */
     src_ptr = input_ptr->buffer_y + (((src_origin_y + input_ptr->origin_y) * stride) + (src_origin_x + input_ptr->origin_x));
 
-    //Initialise the Luma Intra Reference Array to the mid range value 128 (for CUs at the picture boundaries)
+    /*!< Initialise the Luma Intra Reference Array to the mid range value 128 (for CUs at the picture boundaries) */
     EB_MEMSET(above_ref, 127, (bwidth << 1) + 1);
     EB_MEMSET(left_ref, 129, (bheight << 1) + 1);
 
-    // Get the upper left sample
+    /*!< Get the upper left sample */
     if (src_origin_x != 0 && src_origin_y != 0) {
         read_ptr = src_ptr - stride - 1;
         *above_ref = *read_ptr;
@@ -1257,7 +1253,7 @@ EbErrorType update_neighbor_samples_array_open_loop(
         left_ref++;
         above_ref++;
     }
-    // Get the left-column
+    /*!< Get the left-column */
     count = block_size_half;
     if (src_origin_x != 0) {
         read_ptr = src_ptr - 1;
@@ -1271,7 +1267,7 @@ EbErrorType update_neighbor_samples_array_open_loop(
     }else
         left_ref += count;
 
-    // Get the top-row
+    /*!< Get the top-row */
     count = block_size_half;
     if (src_origin_y != 0) {
         read_ptr = src_ptr - stride;
@@ -1285,9 +1281,8 @@ EbErrorType update_neighbor_samples_array_open_loop(
 }
 
 
-/** intra_prediction_open_loop()
-        performs Open-loop Intra candidate Search for a CU
- */
+/*!< intra_prediction_open_loop()
+ *        performs Open-loop Intra candidate Search for a CU */
 EbErrorType intra_prediction_open_loop(
         int32_t  p_angle ,
         uint8_t                          ois_intra_mode,
@@ -1296,7 +1291,7 @@ EbErrorType intra_prediction_open_loop(
         TxSize                          tx_size,
         uint8_t                         *above_row,
         uint8_t                         *left_col,
-        MotionEstimationContext_t       *context_ptr)                  // input parameter, ME context
+        MotionEstimationContext_t       *context_ptr)                  /*!< input parameter, ME context */
 
 {
     EbErrorType                return_error = EB_ErrorNone;
@@ -1308,7 +1303,7 @@ EbErrorType intra_prediction_open_loop(
     if (is_dr_mode)
         dr_predictor(dst, dst_stride, tx_size, above_row, left_col, 0, 0, p_angle);
     else {
-        // predict
+        /*!< predict */
         if (mode == DC_PRED) {
             dc_pred[src_origin_x > 0][src_origin_y > 0][tx_size](dst, dst_stride, above_row, left_col);
         } else

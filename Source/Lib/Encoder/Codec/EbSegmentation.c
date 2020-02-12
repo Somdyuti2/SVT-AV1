@@ -1,18 +1,14 @@
-/*
-* Copyright(c) 2019 Intel Corporation
-* SPDX - License - Identifier: BSD - 2 - Clause - Patent
-*/
+/*!< Copyright(c) 2019 Intel Corporation
+ * SPDX - License - Identifier: BSD - 2 - Clause - Patent */
 
-/*
-* Copyright (c) 2016, Alliance for Open Media. All rights reserved
-*
-* This source code is subject to the terms of the BSD 2 Clause License and
-* the Alliance for Open Media Patent License 1.0. If the BSD 2 Clause License
-* was not distributed with this source code in the LICENSE file, you can
-* obtain it at www.aomedia.org/license/software. If the Alliance for Open
-* Media Patent License 1.0 was not distributed with this source code in the
-* PATENTS file, you can obtain it at www.aomedia.org/license/patent.
-*/
+/*!< Copyright (c) 2016, Alliance for Open Media. All rights reserved
+ *
+ * This source code is subject to the terms of the BSD 2 Clause License and
+ * the Alliance for Open Media Patent License 1.0. If the BSD 2 Clause License
+ * was not distributed with this source code in the LICENSE file, you can
+ * obtain it at www.aomedia.org/license/software. If the Alliance for Open
+ * Media Patent License 1.0 was not distributed with this source code in the
+ * PATENTS file, you can obtain it at www.aomedia.org/license/patent. */
 
 #include "EbSegmentation.h"
 #include "EbSegmentationParams.h"
@@ -34,7 +30,7 @@ static const uint8_t q_index_to_quantizer[] = {
 
 uint16_t get_variance_for_cu(const BlockGeom *blk_geom, uint16_t *variance_ptr) {
     int index0, index1;
-    //Assumes max CU size is 64
+    /*!< Assumes max CU size is 64 */
     switch (blk_geom->bsize) {
     case BLOCK_4X4:
     case BLOCK_4X8:
@@ -120,7 +116,7 @@ void setup_segmentation(PictureControlSet *pcs_ptr, SequenceControlSet *scs_ptr,
     if (segmentation_params->segmentation_enabled) {
         int32_t segment_qps[MAX_SEGMENTS] = {0};
         segmentation_params->segmentation_update_data =
-            1; //always updating for now. Need to set this based on actual deltas
+            1; /*!< always updating for now. Need to set this based on actual deltas */
         segmentation_params->segmentation_update_map = 1;
         segmentation_params->segmentation_temporal_update =
             EB_FALSE; //!(pcs_ptr->parent_pcs_ptr->av1FrameType == KEY_FRAME || pcs_ptr->parent_pcs_ptr->av1FrameType == INTRA_ONLY_FRAME);
@@ -147,17 +143,17 @@ void calculate_segmentation_data(SegmentationParams *segmentation_params) {
 }
 
 void find_segment_qps(SegmentationParams *segmentation_params,
-                      PictureControlSet * pcs_ptr) { //QP needs to be specified as qpindex, not qp.
+                      PictureControlSet * pcs_ptr) { /*!< QP needs to be specified as qpindex, not qp. */
 
     uint16_t *variance_ptr;
     uint16_t  min_var = UINT16_MAX, max_var = MIN_UNSIGNED_VALUE, avg_var = 0;
-    float     strength = 2; //to tune
+    float     strength = 2; /*!< to tune */
 
-    // get range of variance
+    /*!< get range of variance */
     for (uint32_t sb_idx = 0; sb_idx < pcs_ptr->sb_total_count; ++sb_idx) {
         variance_ptr = pcs_ptr->parent_pcs_ptr->variance[sb_idx];
         uint32_t var_index, local_avg = 0;
-        // Loop over all 8x8s in a 64x64
+        /*!< Loop over all 8x8s in a 64x64 */
         for (var_index = ME_TIER_ZERO_PU_8x8_0; var_index <= ME_TIER_ZERO_PU_8x8_63; var_index++) {
             max_var = MAX(max_var, variance_ptr[var_index]);
             min_var = MIN(min_var, variance_ptr[var_index]);
@@ -168,7 +164,7 @@ void find_segment_qps(SegmentationParams *segmentation_params,
     avg_var /= pcs_ptr->sb_total_count;
     avg_var = Log2f(avg_var);
 
-    //get variance bin edges & QPs
+    /*!< get variance bin edges & QPs */
     uint16_t min_var_log = Log2f(MAX(1, min_var));
     uint16_t max_var_log = Log2f(MAX(1, max_var));
     uint16_t step_size   = (uint16_t)(max_var_log - min_var_log) <= MAX_SEGMENTS

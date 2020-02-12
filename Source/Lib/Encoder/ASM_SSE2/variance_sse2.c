@@ -1,16 +1,14 @@
-/*
- * Copyright (c) 2016, Alliance for Open Media. All rights reserved
+/*!< Copyright (c) 2016, Alliance for Open Media. All rights reserved
  *
  * This source code is subject to the terms of the BSD 2 Clause License and
  * the Alliance for Open Media Patent License 1.0. If the BSD 2 Clause License
  * was not distributed with this source code in the LICENSE file, you can
  * obtain it at www.aomedia.org/license/software. If the Alliance for Open
  * Media Patent License 1.0 was not distributed with this source code in the
- * PATENTS file, you can obtain it at www.aomedia.org/license/patent.
- */
+ * PATENTS file, you can obtain it at www.aomedia.org/license/patent. */
 #include "EbDefinitions.h"
 #include <assert.h>
-#include <emmintrin.h> // SSE2
+#include <emmintrin.h> /*!< SSE2 */
 #include "aom_dsp_rtcd.h"
 #include "EbVariance_SSE2.h"
 #include "synonyms.h"
@@ -38,9 +36,9 @@ uint32_t eb_aom_get_mb_ss_sse2(const int16_t *src) {
     return _mm_cvtsi128_si32(vsum);
 }
 
-// Can handle 128 pixels' diff sum (such as 8x16 or 16x8)
-// Slightly faster than variance_final_256_pel_sse2()
-// diff sum of 128 pixels can still fit in 16bit integer
+/*!< Can handle 128 pixels' diff sum (such as 8x16 or 16x8)
+ *   Slightly faster than variance_final_256_pel_sse2()
+ *   diff sum of 128 pixels can still fit in 16bit integer */
 static INLINE void variance_final_128_pel_sse2(__m128i vsse, __m128i vsum, unsigned int *const sse,
                                                int *const sum) {
     *sse = add32x4_sse2(vsse);
@@ -51,7 +49,7 @@ static INLINE void variance_final_128_pel_sse2(__m128i vsse, __m128i vsum, unsig
     *sum = (int16_t)_mm_extract_epi16(vsum, 0);
 }
 
-// Can handle 256 pixels' diff sum (such as 16x16)
+/*!< Can handle 256 pixels' diff sum (such as 16x16) */
 static INLINE void variance_final_256_pel_sse2(__m128i vsse, __m128i vsum, unsigned int *const sse,
                                                int *const sum) {
     *sse = add32x4_sse2(vsse);
@@ -72,7 +70,7 @@ static INLINE void variance_kernel_sse2(const __m128i src, const __m128i ref, __
 static INLINE void variance4_sse2(const uint8_t *src, const int src_stride, const uint8_t *ref,
                                   const int ref_stride, const int h, __m128i *const sse,
                                   __m128i *const sum) {
-    assert(h <= 256); // May overflow for larger height.
+    assert(h <= 256); /*!< May overflow for larger height. */
     *sum = _mm_setzero_si128();
 
     for (int i = 0; i < h; i += 2) {
@@ -88,7 +86,7 @@ static INLINE void variance4_sse2(const uint8_t *src, const int src_stride, cons
 static INLINE void variance8_sse2(const uint8_t *src, const int src_stride, const uint8_t *ref,
                                   const int ref_stride, const int h, __m128i *const sse,
                                   __m128i *const sum) {
-    assert(h <= 128); // May overflow for larger height.
+    assert(h <= 128); /*!< May overflow for larger height. */
     *sum = _mm_setzero_si128();
     for (int i = 0; i < h; i++) {
         const __m128i s = load8_8to16_sse2(src);
@@ -234,7 +232,7 @@ DECLARE_ALIGNED(256, static const InterpKernel, av1_sub_pel_filters_8smooth[SUBP
     {0, 0, 4, 40, 62, 22, 0, 0},
     {0, 0, 4, 36, 62, 26, 0, 0},
     {0, 0, 2, 34, 62, 28, 2, 0}};
-// For w<=4, MULTITAP_SHARP is the same as EIGHTTAP_REGULAR
+/*!< For w<=4, MULTITAP_SHARP is the same as EIGHTTAP_REGULAR */
 static const InterpFilterParams av1_interp_4tap[SWITCHABLE_FILTERS + 1] = {
     {(const int16_t *)av1_sub_pel_filters_4, SUBPEL_TAPS, SUBPEL_SHIFTS, EIGHTTAP_REGULAR},
     {(const int16_t *)av1_sub_pel_filters_4smooth, SUBPEL_TAPS, SUBPEL_SHIFTS, EIGHTTAP_SMOOTH},
@@ -271,15 +269,14 @@ void aom_upsampled_pred_sse2(MacroBlockD *xd, const struct AV1Common *const cm, 
     (void)mi_col;
     (void)mv;
     const InterpFilterParams *filter = av1_get_filter(subpel_search);
-    // (TODO:yunqing) 2-tap case uses 4-tap functions since there is no SIMD for
-    // 2-tap yet.
+    /*!< (TODO:yunqing) 2-tap case uses 4-tap functions since there is no SIMD for 2-tap yet. */
     int filter_taps = (subpel_search <= USE_4_TAPS) ? 4 : SUBPEL_TAPS;
 
     if (!subpel_x_q3 && !subpel_y_q3) {
         if (width >= 16) {
             int i;
             assert(!(width & 15));
-            /*Read 16 pixels one row at a time.*/
+            /*!< Read 16 pixels one row at a time. */
             for (i = 0; i < height; i++) {
                 int j;
                 for (j = 0; j < width; j += 16) {
@@ -293,7 +290,7 @@ void aom_upsampled_pred_sse2(MacroBlockD *xd, const struct AV1Common *const cm, 
             int i;
             assert(!(width & 7));
             assert(!(height & 1));
-            /*Read 8 pixels two rows at a time.*/
+            /*!< Read 8 pixels two rows at a time. */
             for (i = 0; i < height; i += 2) {
                 __m128i s0 = xx_loadl_64(ref + 0 * ref_stride);
                 __m128i s1 = xx_loadl_64(ref + 1 * ref_stride);
@@ -305,7 +302,7 @@ void aom_upsampled_pred_sse2(MacroBlockD *xd, const struct AV1Common *const cm, 
             int i;
             assert(!(width & 3));
             assert(!(height & 3));
-            /*Read 4 pixels four rows at a time.*/
+            /*!< Read 4 pixels four rows at a time. */
             for (i = 0; i < height; i++) {
                 const __m128i row0 = xx_loadl_64(ref + 0 * ref_stride);
                 const __m128i row1 = xx_loadl_64(ref + 1 * ref_stride);

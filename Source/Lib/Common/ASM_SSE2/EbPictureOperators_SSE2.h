@@ -1,7 +1,5 @@
-/*
-* Copyright(c) 2019 Intel Corporation
-* SPDX - License - Identifier: BSD - 2 - Clause - Patent
-*/
+/*!< Copyright(c) 2019 Intel Corporation
+ * SPDX - License - Identifier: BSD - 2 - Clause - Patent */
 
 #ifndef EbPictureOperators_SSE2_h
 #define EbPictureOperators_SSE2_h
@@ -13,7 +11,7 @@
 extern "C" {
 #endif
 
-//-----
+/******/
 extern void zero_out_coeff4x4_sse(int16_t *coeff_buffer, uint32_t coeff_stride,
                                   uint32_t coeff_origin_index, uint32_t area_width,
                                   uint32_t area_height);

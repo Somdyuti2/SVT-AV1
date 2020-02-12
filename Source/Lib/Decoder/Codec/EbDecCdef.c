@@ -1,18 +1,14 @@
-/*
-* Copyright(c) 2019 Netflix, Inc.
-* SPDX - License - Identifier: BSD - 2 - Clause - Patent
-*/
+/*!< Copyright(c) 2019 Netflix, Inc.
+ * SPDX - License - Identifier: BSD - 2 - Clause - Patent */
 
-/*
- * Copyright (c) 2016, Alliance for Open Media. All rights reserved
+/*!< Copyright (c) 2016, Alliance for Open Media. All rights reserved
  *
  * This source code is subject to the terms of the BSD 2 Clause License and
  * the Alliance for Open Media Patent License 1.0. If the BSD 2 Clause License
  * was not distributed with this source code in the LICENSE file, you can
  * obtain it at www.aomedia.org/license/software. If the Alliance for Open
  * Media Patent License 1.0 was not distributed with this source code in the
- * PATENTS file, you can obtain it at www.aomedia.org/license/patent.
- */
+ * PATENTS file, you can obtain it at www.aomedia.org/license/patent. */
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -23,11 +19,11 @@
 #include "EbUtility.h"
 #include "EbDecCdef.h"
 
-/*Compute's whether 8x8 block is skip or not skip block*/
+/*!< Compute's whether 8x8 block is skip or not skip block */
 static INLINE int32_t dec_is_8x8_block_skip(BlockModeInfo *mbmi) {
     int32_t is_skip = mbmi->skip;
-    /* To get mode info for special cases wx4, 4xh & 4x4 blocksize */
-    /* Skip is set to(Skips[r][c] && Skips[r + 1][c] && Skips[r][c + 1] &&
+    /*!< To get mode info for special cases wx4, 4xh & 4x4 blocksize */
+    /*!< Skip is set to(Skips[r][c] && Skips[r + 1][c] && Skips[r][c + 1] &&
        Skips[r + 1][c + 1]) as per the Spec sec. 7.15.1 */
     if (BLOCK_4X4 == mbmi->sb_type)
         is_skip = mbmi[0].skip && mbmi[1].skip && mbmi[2].skip && mbmi[3].skip;
@@ -37,7 +33,7 @@ static INLINE int32_t dec_is_8x8_block_skip(BlockModeInfo *mbmi) {
     return is_skip;
 }
 
-/*Compute's no. of cdef blocks in units of 8x8 manner in a 64x64 block */
+/*!< Compute's no. of cdef blocks in units of 8x8 manner in a 64x64 block */
 static INLINE int32_t dec_sb_compute_cdef_list(EbDecHandle *dec_handle, SBInfo *sb_info,
                                                FrameHeader *frame_info, int32_t mi_row,
                                                int32_t mi_col, CdefList *dlist, BlockSize bs) {
@@ -98,8 +94,8 @@ void svt_cdef_block(EbDecHandle *dec_handle, int32_t *mi_wide_l2, int32_t *mi_hi
     CdefList      dlist[MI_SIZE_64X64 * MI_SIZE_64X64];
     int32_t       dir[CDEF_NBLOCKS][CDEF_NBLOCKS] = {{0}};
     int32_t       var[CDEF_NBLOCKS][CDEF_NBLOCKS] = {{0}};
-    /* Logic for getting SBinfo,
-    SbInfo points to every super block.*/
+    /*!< Logic for getting SBinfo,
+     *   SbInfo points to every super block.*/
     SBInfo *sb_info = NULL;
     if (dec_handle->seq_header.sb_size == BLOCK_128X128) {
         sb_info = frame_buf->sb_info + ((fbr >> 1) * master_frame_buf->sb_cols) + (fbc >> 1);
@@ -107,9 +103,9 @@ void svt_cdef_block(EbDecHandle *dec_handle, int32_t *mi_wide_l2, int32_t *mi_hi
         sb_info = frame_buf->sb_info + ((fbr)*master_frame_buf->sb_cols) + (fbc);
     }
 
-    /*Logic for consuming cdef values from super block,
-    Index will vary from 0 to 3 based on position of 64x64 block
-    in Superblock.*/
+    /*!< Logic for consuming cdef values from super block,
+     *   Index will vary from 0 to 3 based on position of 64x64 block
+     *   in Superblock.*/
     const int32_t index = dec_handle->seq_header.sb_size == BLOCK_128X128
                               ? (!!(fbc & cdef_mask) + 2 * !!(fbr & cdef_mask))
                               : 0;
@@ -130,15 +126,15 @@ void svt_cdef_block(EbDecHandle *dec_handle, int32_t *mi_wide_l2, int32_t *mi_hi
     int32_t row_ofset = MI_SIZE_64X64 * fbr;
     int32_t col_ofset = MI_SIZE_64X64 * fbc;
 
-    /*For the current filter block, it's top left corner mi structure (mi_tl)
-    is first accessed to check whether the top and left boundaries are
-    frame boundaries. Then bottom-left and top-right mi structures are
-    accessed to check whether the bottom and right boundaries
-    (respectively) are frame boundaries.
-
-    Note that we can't just check the bottom-right mi structure - eg. if
-    we're at the right-hand edge of the frame but not the bottom, then
-    the bottom-right mi is NULL but the bottom-left is not.  */
+    /*!< For the current filter block, it's top left corner mi structure (mi_tl)
+     * is first accessed to check whether the top and left boundaries are
+     * frame boundaries. Then bottom-left and top-right mi structures are
+     * accessed to check whether the bottom and right boundaries
+     * (respectively) are frame boundaries.
+     *
+     * Note that we can't just check the bottom-right mi structure - eg. if
+     * we're at the right-hand edge of the frame but not the bottom, then
+     * the bottom-right mi is NULL but the bottom-left is not. */
 
     frame_top  = (row_ofset == 0) ? 1 : 0;
     frame_left = (col_ofset == 0) ? 1 : 0;
@@ -173,7 +169,7 @@ void svt_cdef_block(EbDecHandle *dec_handle, int32_t *mi_wide_l2, int32_t *mi_hi
         return;
     }
     curr_row_cdef[fbc] = 1;
-    /*Cdef loop for each plane*/
+    /*!< Cdef loop for each plane */
     for (int32_t pli = 0; pli < num_planes; pli++) {
         uint32_t coffset;
         int32_t  rend, cend;
@@ -200,8 +196,8 @@ void svt_cdef_block(EbDecHandle *dec_handle, int32_t *mi_wide_l2, int32_t *mi_hi
 
         coffset = fbc * MI_SIZE_64X64 << mi_wide_l2[pli];
         if (fbc == nhfb - 1) {
-            /* On the last superblock column, fill in the right border with
-               CDEF_VERY_LARGE to avoid filtering with the outside. */
+            /*!< On the last superblock column, fill in the right border with
+             *   CDEF_VERY_LARGE to avoid filtering with the outside. */
             fill_rect(&src[cend + CDEF_HBORDER],
                       CDEF_BSTRIDE,
                       rend + CDEF_VBORDER,
@@ -209,8 +205,8 @@ void svt_cdef_block(EbDecHandle *dec_handle, int32_t *mi_wide_l2, int32_t *mi_hi
                       CDEF_VERY_LARGE);
         }
         if (fbr == nvfb - 1) {
-            /* On the last superblock row, fill in the bottom border with
-               CDEF_VERY_LARGE to avoid filtering with the outside. */
+            /*!< On the last superblock row, fill in the bottom border with
+             *   CDEF_VERY_LARGE to avoid filtering with the outside. */
             fill_rect(&src[(rend + CDEF_VBORDER) * CDEF_BSTRIDE],
                       CDEF_BSTRIDE,
                       CDEF_VBORDER,
@@ -233,8 +229,8 @@ void svt_cdef_block(EbDecHandle *dec_handle, int32_t *mi_wide_l2, int32_t *mi_hi
             rec_stride = curr_recon_stride[2];
             break;
         }
-        /* Copy in the pixels we need from the current superblock for
-           deringing.*/
+        /*!< Copy in the pixels we need from the current superblock for
+         *   deringing.*/
         if (use_highbd)
             copy_sb16_16(&src[CDEF_VBORDER * CDEF_BSTRIDE + CDEF_HBORDER + cstart],
                          CDEF_BSTRIDE,
@@ -359,14 +355,14 @@ void svt_cdef_block(EbDecHandle *dec_handle, int32_t *mi_wide_l2, int32_t *mi_hi
         }
 
         if (*cdef_left) {
-            /* If we deringed the superblock on the left
-               then we need to copy in saved pixels. */
+            /*!< If we deringed the superblock on the left
+             *   then we need to copy in saved pixels. */
             copy_rect(
                 src, CDEF_BSTRIDE, colbuf[pli], CDEF_HBORDER, rend + CDEF_VBORDER, CDEF_HBORDER);
         }
 
-        /* Saving pixels in case we need to dering the superblock
-            on the right. */
+        /*!< Saving pixels in case we need to dering the superblock
+         *   on the right. */
         if (fbc < nhfb - 1)
             copy_rect(colbuf[pli],
                       CDEF_HBORDER,
@@ -416,7 +412,7 @@ void svt_cdef_block(EbDecHandle *dec_handle, int32_t *mi_wide_l2, int32_t *mi_hi
                       CDEF_HBORDER,
                       CDEF_VERY_LARGE);
         }
-        /*Cdef filter calling function for high bit depth */
+        /*!< Cdef filter calling function for high bit depth */
         if (use_highbd) {
             uint16_t *tmp_buff = (uint16_t *)rec_buff;
             eb_cdef_filter_fb(NULL,
@@ -438,7 +434,7 @@ void svt_cdef_block(EbDecHandle *dec_handle, int32_t *mi_wide_l2, int32_t *mi_hi
                               sec_damping,
                               coeff_shift);
         }
-        /*Cdef filter calling function for 8 bit depth */
+        /*!< Cdef filter calling function for 8 bit depth */
         else
             eb_cdef_filter_fb(&rec_buff[rec_stride * (MI_SIZE_64X64 * fbr << mi_high_l2[pli]) +
                                         (fbc * MI_SIZE_64X64 << mi_wide_l2[pli])],
@@ -458,8 +454,8 @@ void svt_cdef_block(EbDecHandle *dec_handle, int32_t *mi_wide_l2, int32_t *mi_hi
                               pri_damping,
                               sec_damping,
                               coeff_shift);
-    } /*cdef plane loop ending*/
-    //CHKN filtered data is written back directy to recFrame.
+    } /*!< Cdef plane loop ending*/
+    /*!< CHKN filtered data is written back directy to recFrame. */
     *cdef_left = 1;
 }
 
@@ -469,9 +465,9 @@ void svt_cdef_sb_row_mt(EbDecHandle *dec_handle, int32_t *mi_wide_l2, int32_t *m
     FrameHeader * frame_info = &dec_handle->frame_header;
     const int32_t nvfb       = (frame_info->mi_rows + MI_SIZE_64X64 - 1) / MI_SIZE_64X64;
     const int32_t nhfb       = (frame_info->mi_cols + MI_SIZE_64X64 - 1) / MI_SIZE_64X64;
-    /*For SB SIZE 128x128, we need two colbuf because, because we do cdef for
-     each 64x64 in SB block in raster scan order,
-     i.e for transversing across 0 - 3 64x64s in SB block*/
+    /*!< For SB SIZE 128x128, we need two colbuf because, because we do cdef for
+     *   each 64x64 in SB block in raster scan order,
+     *   i.e for transversing across 0 - 3 64x64s in SB block */
     uint16_t *colbuf_64[2][3];
     int32_t   sb_size_w     = block_size_wide[dec_handle->seq_header.sb_size];
     int32_t pic_width_in_sb = (dec_handle->seq_header.max_frame_width + sb_size_w - 1) / sb_size_w;
@@ -481,11 +477,11 @@ void svt_cdef_sb_row_mt(EbDecHandle *dec_handle, int32_t *mi_wide_l2, int32_t *m
     EbBool sb_128 = dec_handle->seq_header.sb_size == BLOCK_128X128;
     for (int32_t pli = 0; pli < num_planes; pli++) {
         const int32_t block_height = (MI_SIZE_64X64 << mi_high_l2[pli]) + 2 * CDEF_VBORDER;
-        /*Filling the colbuff's with some values.*/
+        /*!< Filling the colbuff's with some values. */
         fill_rect(colbuf[pli], CDEF_HBORDER, block_height, CDEF_HBORDER, CDEF_VERY_LARGE);
         colbuf_64[0][pli] = colbuf[pli];
-        /*For SB SIZE 128x128, we are allocating extra colbuff for
-        transversing across 0 - 3 64x64s in SB block */
+        /*!< For SB SIZE 128x128, we are allocating extra colbuff for
+         *   transversing across 0 - 3 64x64s in SB block */
         if (sb_128) {
             fill_rect(colbuf[pli + 3], CDEF_HBORDER, block_height, CDEF_HBORDER, CDEF_VERY_LARGE);
             colbuf_64[1][pli] = colbuf[3 + pli];
@@ -518,20 +514,20 @@ void svt_cdef_sb_row_mt(EbDecHandle *dec_handle, int32_t *mi_wide_l2, int32_t *m
         curr_row_cdef[1] = curr_row_cdef[0] + cdef_map_stride;
         prev_row_cdef[1] = curr_row_cdef[0];
     }
-    /*for loop of SB cols*/
+    /*!< for loop of SB cols */
     for (int32_t sb_fbc = 0; sb_fbc < pic_width_in_sb; sb_fbc++) {
-        /* Top-Right Sync*/
+        /*!< Top-Right Sync */
         if (sb_fbr) {
             if (sb_fbc == pic_width_in_sb - 1) nsync = 0;
             while (*cdef_completed_in_prev_row < (sb_fbc + nsync))
                 ;
-            //Sleep(5); /* ToDo : Change */
+            //Sleep(5); /*!< ToDo : Change */
         }
-        /*Curr multi thread implementation of cdef goes through every SB SIZE row*/
-        /*If SB SIZE is 128x128, as cdef excepts top right sync,
-        to process Bottom Right 64x64 block in (n) th SB BLOCK 128x128,
-        we must have to process Top Left 64x64 block in (n+1) th  SB BLOCK 128x128 in the current SB ROW,
-        below logic helps in do so*/
+        /*!< Curr multi thread implementation of cdef goes through every SB SIZE row */
+        /*!< If SB SIZE is 128x128, as cdef excepts top right sync,
+         *   to process Bottom Right 64x64 block in (n) th SB BLOCK 128x128,
+         *   we must have to process Top Left 64x64 block in (n+1) th
+         *   SB BLOCK 128x128 in the current SB ROW, below logic helps in do so */
         if (0 == sb_fbc && sb_128) {
             int32_t row_cnt = 0;
             fbr_64          = (sb_fbr << sb_64_shift) + row_cnt;
@@ -550,14 +546,14 @@ void svt_cdef_sb_row_mt(EbDecHandle *dec_handle, int32_t *mi_wide_l2, int32_t *m
                 src,
                 curr_recon_stride,
                 curr_blk_recon_buf,
-                dec_mt_frame_data->cdef_linebuf[fbr_64], /*above*/
-                dec_mt_frame_data->cdef_linebuf[AOMMIN(fbr_64 + 1, nvfb - 1)], /*current*/
+                dec_mt_frame_data->cdef_linebuf[fbr_64], /*!< above */
+                dec_mt_frame_data->cdef_linebuf[AOMMIN(fbr_64 + 1, nvfb - 1)], /*!< current */
                 dec_mt_frame_data->cdef_linebuf_stride);
         }
 
         for (int32_t cnt = 0; cnt < cnt_64; cnt++) {
             int32_t row_cnt = (cnt & 2) >> 1;
-            /*transversing across 0 - 3 64x64s or 1 128x128*/
+            /*!< transversing across 0 - 3 64x64s or 1 128x128 */
             fbr_64 = (sb_fbr << sb_64_shift) + (row_cnt);
             fbc_64 = (sb_fbc << sb_64_shift) + (cnt & 1) + (sb_128 ? !row_cnt : 0);
             if (fbc_64 >= nhfb) continue;
@@ -577,16 +573,16 @@ void svt_cdef_sb_row_mt(EbDecHandle *dec_handle, int32_t *mi_wide_l2, int32_t *m
                 src,
                 curr_recon_stride,
                 curr_blk_recon_buf,
-                dec_mt_frame_data->cdef_linebuf[fbr_64], /*above*/
-                dec_mt_frame_data->cdef_linebuf[AOMMIN(fbr_64 + 1, nvfb - 1)], /*current*/
+                dec_mt_frame_data->cdef_linebuf[fbr_64], /*!< above */
+                dec_mt_frame_data->cdef_linebuf[AOMMIN(fbr_64 + 1, nvfb - 1)], /*!< current */
                 dec_mt_frame_data->cdef_linebuf_stride);
         }
-        /* Update Top-Right Sync*/
+        /*!< Update Top-Right Sync */
         *cdef_completed_in_row = sb_fbc;
     }
 }
 
-/* Frame level call, for CDEF */
+/*!< Frame level call, for CDEF */
 void svt_cdef_frame(EbDecHandle *dec_handle, int enable_flag) {
     if (!enable_flag) return;
 
@@ -621,7 +617,7 @@ void svt_cdef_frame(EbDecHandle *dec_handle, int enable_flag) {
         mi_wide_l2[pli] = MI_SIZE_LOG2 - sub_x;
         mi_high_l2[pli] = MI_SIZE_LOG2 - sub_y;
 
-        /*Deriveing  recon pict buffer ptr's*/
+        /*!< Deriveing  recon pict buffer ptr's */
         derive_blk_pointers(recon_picture_ptr,
                             pli,
                             0,
@@ -630,25 +626,25 @@ void svt_cdef_frame(EbDecHandle *dec_handle, int enable_flag) {
                             &curr_recon_stride[pli],
                             sub_x,
                             sub_y);
-        /*Allocating memory for line buffes->to fill from src if needed*/
+        /*!< Allocating memory for line buffes->to fill from src if needed */
         linebuf[pli] = (uint16_t *)eb_aom_malloc(sizeof(*linebuf) * CDEF_VBORDER * stride);
-        /*Allocating memory for col buffes->to fill from src if needed*/
+        /*!< Allocating memory for col buffes->to fill from src if needed */
         colbuf[pli] = (uint16_t *)eb_aom_malloc(
             sizeof(*colbuf) * ((CDEF_BLOCKSIZE << mi_high_l2[pli]) + 2 * CDEF_VBORDER) *
             CDEF_HBORDER);
     }
 
-    /*Loop for 64x64 block wise, along col wise for frame size*/
+    /*!< Loop for 64x64 block wise, along col wise for frame size */
     for (int32_t fbr = 0; fbr < nvfb; fbr++) {
         for (int32_t pli = 0; pli < num_planes; pli++) {
             const int32_t block_height = (MI_SIZE_64X64 << mi_high_l2[pli]) + 2 * CDEF_VBORDER;
-            /*Filling the colbuff's with some values.*/
+            /*!< Filling the colbuff's with some values. */
             fill_rect(colbuf[pli], CDEF_HBORDER, block_height, CDEF_HBORDER, CDEF_VERY_LARGE);
         }
 
-        uint32_t cdef_left = 1;
-        /*Loop for 64x64 block wise, along row wise for frame size*/
-        for (int32_t fbc = 0; fbc < nhfb; fbc++) {
+        int32_t cdef_left = 1;
+        /*!< Loop for 64x64 block wise, along row wise for frame size */
+for (int32_t fbc = 0; fbc < nhfb; fbc++) {
             svt_cdef_block(dec_handle,
                             mi_wide_l2,
                             mi_high_l2,

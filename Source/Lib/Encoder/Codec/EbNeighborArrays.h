@@ -1,8 +1,6 @@
 
-/*
-* Copyright(c) 2019 Intel Corporation
-* SPDX - License - Identifier: BSD - 2 - Clause - Patent
-*/
+/*!< Copyright(c) 2019 Intel Corporation
+ * SPDX - License - Identifier: BSD - 2 - Clause - Patent */
 
 #ifndef EbNeighborArrays_h
 #define EbNeighborArrays_h
@@ -15,7 +13,7 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
-// Neighbor Array Granulairity
+/*!< Neighbor Array Granulairity */
 #define SB_NEIGHBOR_ARRAY_GRANULARITY 64
 #define CU_NEIGHBOR_ARRAY_GRANULARITY 8
 #define PU_NEIGHBOR_ARRAY_GRANULARITY 4
@@ -84,9 +82,9 @@ extern void neighbor_array_unit_reset(NeighborArrayUnit *na_unit_ptr);
 
 extern void neighbor_array_unit_reset32(NeighborArrayUnit32 *na_unit_ptr);
 
-/*************************************************
-     * Neighbor Array Unit Get Left Index
-     *************************************************/
+/*************************************************/
+/*!< Neighbor Array Unit Get Left Index */
+/*************************************************/
 static INLINE uint32_t get_neighbor_array_unit_left_index32(NeighborArrayUnit32 *na_unit_ptr,
                                                             uint32_t             loc_y) {
     return (loc_y >> na_unit_ptr->granularity_normal_log2);
@@ -97,9 +95,9 @@ static INLINE uint32_t get_neighbor_array_unit_left_index(NeighborArrayUnit *na_
     return (loc_y >> na_unit_ptr->granularity_normal_log2);
 }
 
-/*************************************************
-     * Neighbor Array Unit Get Top Index
-     *************************************************/
+/*************************************************/
+/*!< Neighbor Array Unit Get Top Index */
+/*************************************************/
 static INLINE uint32_t get_neighbor_array_unit_top_index32(NeighborArrayUnit32 *na_unit_ptr,
                                                            uint32_t             loc_x) {
     return (loc_x >> na_unit_ptr->granularity_normal_log2);
@@ -156,4 +154,4 @@ extern void neighbor_array_unit_mode_write(NeighborArrayUnit *na_unit_ptr, uint8
 #ifdef __cplusplus
 }
 #endif
-#endif //EbNeighborArrays_h
+#endif // EbNeighborArrays_h

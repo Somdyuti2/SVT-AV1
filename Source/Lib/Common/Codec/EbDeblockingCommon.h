@@ -1,18 +1,14 @@
-/*
-* Copyright(c) 2019 Intel Corporation
-* SPDX - License - Identifier: BSD - 2 - Clause - Patent
-*/
+/*!< Copyright(c) 2019 Intel Corporation
+ * SPDX - License - Identifier: BSD - 2 - Clause - Patent */
 
-/*
-* Copyright (c) 2016, Alliance for Open Media. All rights reserved
-*
-* This source code is subject to the terms of the BSD 2 Clause License and
-* the Alliance for Open Media Patent License 1.0. If the BSD 2 Clause License
-* was not distributed with this source code in the LICENSE file, you can
-* obtain it at www.aomedia.org/license/software. If the Alliance for Open
-* Media Patent License 1.0 was not distributed with this source code in the
-* PATENTS file, you can obtain it at www.aomedia.org/license/patent.
-*/
+/*!< Copyright (c) 2016, Alliance for Open Media. All rights reserved
+ *
+ * This source code is subject to the terms of the BSD 2 Clause License and
+ * the Alliance for Open Media Patent License 1.0. If the BSD 2 Clause License
+ * was not distributed with this source code in the LICENSE file, you can
+ * obtain it at www.aomedia.org/license/software. If the Alliance for Open
+ * Media Patent License 1.0 was not distributed with this source code in the
+ * PATENTS file, you can obtain it at www.aomedia.org/license/patent. */
 
 #include "EbDeblockingFilter_SSE2.h"
 #include "EbDefinitions.h"
@@ -46,7 +42,7 @@ extern "C" {
     (EB_ABS_DIFF((pu1Ptr)->mv[(pu1RefList)].x, (pu2Ptr)->mv[(pu2RefList)].x) >= 4 ||       \
      EB_ABS_DIFF((pu1Ptr)->mv[(pu1RefList)].y, (pu2Ptr)->mv[(pu2RefList)].y) >= 4)
 
-// Precision macros used in the mode decision
+/*!< Precision macros used in the mode decision */
 #define BIT_ESTIMATE_PRECISION 15
 #define LAMBDA_PRECISION 16
 #define COST_PRECISION 8
@@ -54,15 +50,15 @@ extern "C" {
 #define MD_OFFSET (1 << (MD_SHIFT - 1))
 #define VAR_QP 1
 #define MAX_QP_VALUE_PLUS_INTRA_TC_OFFSET 53
-#define BETA_OFFSET_VALUE 12 // range -12 to 12
-#define TC_OFFSET_VALUE 12 //12 // range -12 to 12
+#define BETA_OFFSET_VALUE 12 /*!< range -12 to 12 */
+#define TC_OFFSET_VALUE 12 /*!< 12 */ /*!< range -12 to 12 */
 
 typedef enum EdgeDir { VERT_EDGE = 0, HORZ_EDGE = 1, NUM_EDGE_DIRS } EdgeDir;
 
 typedef struct Av1DeblockingParameters {
-    // length of the filter applied to the outer edge
+    /*!< length of the filter applied to the outer edge */
     uint32_t filter_length;
-    // deblocking limits
+    /*!< deblocking limits */
     const uint8_t *lim;
     const uint8_t *mblim;
     const uint8_t *hev_thr;

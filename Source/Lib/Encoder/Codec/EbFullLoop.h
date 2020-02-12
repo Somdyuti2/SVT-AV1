@@ -1,7 +1,5 @@
-/*
-* Copyright(c) 2019 Intel Corporation
-* SPDX - License - Identifier: BSD - 2 - Clause - Patent
-*/
+/*!< Copyright(c) 2019 Intel Corporation
+ * SPDX - License - Identifier: BSD - 2 - Clause - Patent */
 
 #ifndef EbFullLoop_h
 #define EbFullLoop_h
@@ -48,7 +46,7 @@ extern uint32_t d2_inter_depth_block_decision(ModeDecisionContext *context_ptr, 
                                               MdRateEstimationContext *md_rate_estimation_ptr,
                                               PictureControlSet *      pcs_ptr);
 
-// compute the cost of curr depth, and the depth above
+/*!< compute the cost of curr depth, and the depth above */
 extern void compute_depth_costs_md_skip(ModeDecisionContext *context_ptr,
                                         SequenceControlSet *scs_ptr,
                                         PictureParentControlSet *pcs_ptr,

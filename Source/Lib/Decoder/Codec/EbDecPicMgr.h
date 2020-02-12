@@ -1,7 +1,5 @@
-/*
-* Copyright(c) 2019 Netflix, Inc.
-* SPDX - License - Identifier: BSD - 2 - Clause - Patent
-*/
+/*!< Copyright(c) 2019 Netflix, Inc.
+ * SPDX - License - Identifier: BSD - 2 - Clause - Patent */
 
 #ifndef EbDecPicMgr_h
 #define EbDecPicMgr_h
@@ -10,20 +8,20 @@
 extern "C" {
 #endif
 
-/** Decoder Picture Manager **/
+/*!< * Decoder Picture Manager * */
 typedef struct EbDecPicMgr {
-    /* Array of picture buffers */
+    /*!< Array of picture buffers */
     EbDecPicBuf as_dec_pic[MAX_PIC_BUFS];
 
-    /* number of picture buffers */
+    /*!<  number of picture buffers */
     uint8_t num_pic_bufs;
 
 } EbDecPicMgr;
 
 typedef struct RefFrameInfo {
-    int32_t      map_idx; /* frame map index */
-    EbDecPicBuf *pic_buf; /* frame buffer */
-    /* index based on the offset to be used for sorting */
+    int32_t      map_idx; /*!< frame map index */
+    EbDecPicBuf *pic_buf; /*!< frame buffer */
+    /*!< index based on the offset to be used for sorting */
     int32_t sort_idx;
 } RefFrameInfo;
 

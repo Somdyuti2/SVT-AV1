@@ -1,7 +1,5 @@
-/*
-* Copyright(c) 2019 Intel Corporation
-* SPDX - License - Identifier: BSD - 2 - Clause - Patent
-*/
+/*!< Copyright(c) 2019 Intel Corporation
+ * SPDX - License - Identifier: BSD - 2 - Clause - Patent */
 
 #include "EbPictureControlSet.h"
 #include "EbSequenceControlSet.h"
@@ -13,15 +11,15 @@
 #include "EbEncHandle.h"
 #include "EbUtility.h"
 
-/**************************************
- * Context
- **************************************/
+/**************************************/
+/*!< Context */
+/*************************************/
 
 typedef struct SourceBasedOperationsContext {
     EbDctor dctor;
     EbFifo *initial_rate_control_results_input_fifo_ptr;
     EbFifo *picture_demux_results_output_fifo_ptr;
-    // local zz cost array
+    /*!< local zz cost array */
     uint32_t complete_sb_count;
     uint8_t *y_mean_ptr;
     uint8_t *cr_mean_ptr;
@@ -34,9 +32,9 @@ static void source_based_operations_context_dctor(EbPtr p) {
     EB_FREE_ARRAY(obj);
 }
 
-/************************************************
-* Source Based Operation Context Constructor
-************************************************/
+/************************************************/
+/*!< Source Based Operation Context Constructor */
+/************************************************/
 EbErrorType source_based_operations_context_ctor(EbThreadContext *  thread_context_ptr,
                                                  const EbEncHandle *enc_handle_ptr, int index) {
     SourceBasedOperationsContext *context_ptr;
@@ -51,9 +49,9 @@ EbErrorType source_based_operations_context_ctor(EbThreadContext *  thread_conte
     return EB_ErrorNone;
 }
 
-/***************************************************
-* Derives BEA statistics and set activity flags
-***************************************************/
+/***************************************************/
+/*!< Derives BEA statistics and set activity flags */
+/***************************************************/
 void derive_picture_activity_statistics(PictureParentControlSet *pcs_ptr)
 
 {
@@ -97,9 +95,9 @@ void derive_picture_activity_statistics(PictureParentControlSet *pcs_ptr)
     return;
 }
 
-/************************************************
- * Source Based Operations Kernel
- ************************************************/
+/************************************************/
+/*!< Source Based Operations Kernel */
+/************************************************/
 void *source_based_operations_kernel(void *input_ptr) {
     EbThreadContext *             thread_context_ptr = (EbThreadContext *)input_ptr;
     SourceBasedOperationsContext *context_ptr =
@@ -111,7 +109,7 @@ void *source_based_operations_kernel(void *input_ptr) {
     PictureDemuxResults *      out_results_ptr;
 
     for (;;) {
-        // Get Input Full Object
+        /*!< Get Input Full Object */
         eb_get_full_object(context_ptr->initial_rate_control_results_input_fifo_ptr,
                            &in_results_wrapper_ptr);
 
@@ -122,7 +120,7 @@ void *source_based_operations_kernel(void *input_ptr) {
         uint32_t sb_total_count                    = pcs_ptr->sb_total_count;
         uint32_t sb_index;
 
-        /***********************************************SB-based operations************************************************************/
+        /*!< **********************************************SB-based operations*********************************************************** */
         for (sb_index = 0; sb_index < sb_total_count; ++sb_index) {
             SbParams *sb_params      = &pcs_ptr->sb_params_array[sb_index];
             EbBool    is_complete_sb = sb_params->is_complete_sb;
@@ -141,12 +139,12 @@ void *source_based_operations_kernel(void *input_ptr) {
 
             if (is_complete_sb) { context_ptr->complete_sb_count++; }
         }
-        /*********************************************Picture-based operations**********************************************************/
+        /*!< ********************************************Picture-based operations********************************************************* */
 
-        // Activity statistics derivation
+        /*!< Activity statistics derivation */
         derive_picture_activity_statistics(pcs_ptr);
 
-        // Get Empty Results Object
+        /*!< Get Empty Results Object */
         eb_get_empty_object(context_ptr->picture_demux_results_output_fifo_ptr,
                             &out_results_wrapper_ptr);
 
@@ -154,10 +152,10 @@ void *source_based_operations_kernel(void *input_ptr) {
         out_results_ptr->pcs_wrapper_ptr = in_results_ptr->pcs_wrapper_ptr;
         out_results_ptr->picture_type    = EB_PIC_INPUT;
 
-        // Release the Input Results
+        /*!< Release the Input Results */
         eb_release_object(in_results_wrapper_ptr);
 
-        // Post the Full Results Object
+        /*!< Post the Full Results Object */
         eb_post_full_object(out_results_wrapper_ptr);
     }
     return EB_NULL;

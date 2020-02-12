@@ -1,13 +1,11 @@
-/*
- * Copyright (c) 2017, Alliance for Open Media. All rights reserved
+/*!< Copyright (c) 2017, Alliance for Open Media. All rights reserved
  *
  * This source code is subject to the terms of the BSD 2 Clause License and
  * the Alliance for Open Media Patent License 1.0. If the BSD 2 Clause License
  * was not distributed with this source code in the LICENSE file, you can
  * obtain it at www.aomedia.org/license/software. If the Alliance for Open
  * Media Patent License 1.0 was not distributed with this source code in the
- * PATENTS file, you can obtain it at www.aomedia.org/license/patent.
- */
+ * PATENTS file, you can obtain it at www.aomedia.org/license/patent. */
 
 #ifndef EbDecObmc_h
 #define EbDecObmc_h
@@ -17,9 +15,9 @@
 #define MAX_OBMC_LEN 32
 
 typedef struct ObmcCtx {
-    /*we can reduce memory size by fixing one side to 32, because
-    for left or above pred one side max is 32 only*/
-    /*Note : If we change one side DIM to 32,make sure strides also changed appropriately*/
+    /*!< we can reduce memory size by fixing one side to 32, because
+     *   for left or above pred one side max is 32 only */
+    /*!< Note : If we change one side DIM to 32,make sure strides also changed appropriately */
     uint8_t tmp_obmc_bufs[MAX_MB_PLANE][MAX_SB_SIZE * MAX_SB_SIZE * 2];
 
     int dst_stride[MAX_MB_PLANE];

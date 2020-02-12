@@ -1,7 +1,5 @@
-/*
-* Copyright(c) 2019 Intel Corporation
-* SPDX - License - Identifier: BSD - 2 - Clause - Patent
-*/
+/*!< Copyright(c) 2019 Intel Corporation
+ * SPDX - License - Identifier: BSD - 2 - Clause - Patent */
 #include "EbDefinitions.h"
 
 #ifndef NON_AVX512_SUPPORT
@@ -126,7 +124,7 @@ void residual_kernel8bit_avx512(uint8_t *input, uint32_t input_stride, uint8_t *
             input, input_stride, pred, pred_stride, residual, residual_stride, area_height);
         break;
 
-    default: // 128
+    default: /*!< 128 */
         residual_kernel128_avx2(
             input, input_stride, pred, pred_stride, residual, residual_stride, area_height);
         break;
@@ -151,7 +149,7 @@ static INLINE void Distortion_AVX512_INTRIN(const __m256i input, const __m256i r
 }
 
 #if 0
-// Slightly slower than AVX2 version for small area_height. Disabled.
+/*!< Slightly slower than AVX2 version for small area_height. Disabled. */
 uint64_t SpatialFullDistortionKernel16xN_AVX512_INTRIN(
     uint8_t   *input,
     uint32_t   input_stride,
@@ -351,7 +349,7 @@ uint64_t spatial_full_distortion_kernel_avx512(uint8_t *input, uint32_t input_of
             } else if (leftover == 24) {
                 mask[0] = _mm256_setr_epi32(-1, -1, -1, -1, -1, -1, -1, -1);
                 mask[1] = _mm256_setr_epi32(-1, -1, -1, -1, 0, 0, 0, 0);
-            } else { // leftover = 28
+            } else { /*!< leftover = 28 */
                 mask[0] = _mm256_setr_epi32(-1, -1, -1, -1, -1, -1, -1, -1);
                 mask[1] = _mm256_setr_epi32(-1, -1, -1, -1, -1, -1, 0, 0);
             }
@@ -391,7 +389,7 @@ uint64_t spatial_full_distortion_kernel_avx512(uint8_t *input, uint32_t input_of
                     inp += input_stride;
                     rec += recon_stride;
                 } while (--h);
-            } else { // 128
+            } else { /*!< 128 */
                 do {
                     SpatialFullDistortionKernel64_AVX512_INTRIN(inp, rec, &sum512);
                     SpatialFullDistortionKernel64_AVX512_INTRIN(inp + 64, rec + 64, &sum512);

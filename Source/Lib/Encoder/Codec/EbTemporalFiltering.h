@@ -1,12 +1,8 @@
-/*
-* Copyright(c) 2019 Netflix, Inc.
-* SPDX - License - Identifier: BSD - 2 - Clause - Patent
-*/
-/*
-* Copyright(c) 2019 Intel Corporation
-* SPDX - License - Identifier: BSD - 2 - Clause - Patent
-*/
-/*
+/*!< Copyright(c) 2019 Netflix, Inc.
+ * SPDX - License - Identifier: BSD - 2 - Clause - Patent */
+/*!< Copyright(c) 2019 Intel Corporation
+ * SPDX - License - Identifier: BSD - 2 - Clause - Patent */
+/*!<
  * Copyright (c) 2016, Alliance for Open Media. All rights reserved
  *
  * This source code is subject to the terms of the BSD 2 Clause License and
@@ -14,15 +10,14 @@
  * was not distributed with this source code in the LICENSE file, you can
  * obtain it at www.aomedia.org/license/software. If the Alliance for Open
  * Media Patent License 1.0 was not distributed with this source code in the
- * PATENTS file, you can obtain it at www.aomedia.org/license/patent.
- */
+ * PATENTS file, you can obtain it at www.aomedia.org/license/patent. */
 #ifndef EbTemporalFiltering_h
 #define EbTemporalFiltering_h
 
 #include "EbPictureControlSet.h"
 #include "EbMotionEstimationProcess.h"
 
-// ALT-REF debug-specific defines
+/*!< ALT-REF debug-specific defines */
 #define DEBUG_TF 0
 
 #define COLOR_CHANNELS 3
@@ -33,16 +28,16 @@
 #define EDGE_THRESHOLD 50
 #define SQRT_PI_BY_2 1.25331413732
 #define SMOOTH_THRESHOLD 16
-// Block size used in temporal filtering
+/*!< Block size used in temporal filtering */
 #define BW 64
 #define BH 64
-#define BLK_PELS 4096 // Pixels in the block
+#define BLK_PELS 4096 /*!< Pixels in the block */
 #define N_16X16_BLOCKS 16
 #define N_32X32_BLOCKS 4
 
-#define INT_MAX_TF 2147483647 //max value for an int
-#define INT_MIN_TF (-2147483647 - 1) //min value for an int
-#define THR_SHIFT 2 // should be 2
+#define INT_MAX_TF 2147483647 /*!< max value for an int */
+#define INT_MIN_TF (-2147483647 - 1) /*!< min value for an int */
+#define THR_SHIFT 2 /*!< should be 2 */
 
 #define INIT_WEIGHT 2
 #define WEIGHT_MULTIPLIER 16

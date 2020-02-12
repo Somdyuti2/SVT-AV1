@@ -1,7 +1,5 @@
-/*
-* Copyright(c) 2019 Intel Corporation
-* SPDX - License - Identifier: BSD - 2 - Clause - Patent
-*/
+/*!< Copyright(c) 2019 Intel Corporation
+ * SPDX - License - Identifier: BSD - 2 - Clause - Patent */
 
 #ifndef EbModeDecisionConfiguration_h
 #define EbModeDecisionConfiguration_h
@@ -13,18 +11,18 @@
 extern "C" {
 #endif
 
-/*******************************************
- * early_mode_decision_sb
- *   predicts candidates (SB)
- *******************************************/
+/*******************************************/
+/*!< early_mode_decision_sb
+ *     predicts candidates (SB)
+/*******************************************/
 extern EbErrorType early_mode_decision_sb(SequenceControlSet *scs_ptr, PictureControlSet *pcs_ptr,
                                           SuperBlock *sb_ptr, uint32_t sb_index,
                                           ModeDecisionConfigurationContext *context_ptr);
 
-/*******************************************
-* derive_delta_qp_for_each_leaf_sb
-*   Derive Sb For Each Leaf (SB)
-*******************************************/
+/*******************************************/
+/*!< derive_delta_qp_for_each_leaf_sb
+ *     Derive Sb For Each Leaf (SB) */
+/*******************************************/
 extern EbErrorType derive_delta_qp_for_each_leaf_sb(
     SequenceControlSet *scs_ptr, PictureControlSet *pcs_ptr, SuperBlock *sb_ptr, uint32_t sb_index,
     int32_t intra_min_distance, int32_t intra_max_distance, int32_t inter_min_distance,
@@ -32,9 +30,9 @@ extern EbErrorType derive_delta_qp_for_each_leaf_sb(
 
 void qpm_derive_delta_qp_map_weights(ModeDecisionConfigurationContext *context_ptr,
                                      PictureControlSet *               pcs_ptr);
-/**************************************
-* Function Ptrs Definitions
-**************************************/
+/**************************************/
+/*!< Function Ptrs Definitions */
+/**************************************/
 typedef EbErrorType (*EB_MDC_FUNC)(MdcpLocalBlkStruct *localCuArray, uint32_t blk_index,
                                    uint32_t depth, EbBool *mdcPrediction64);
 

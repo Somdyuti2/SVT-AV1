@@ -1,7 +1,5 @@
-/*
-* Copyright(c) 2019 Intel Corporation
-* SPDX - License - Identifier: BSD - 2 - Clause - Patent
-*/
+/*!< Copyright(c) 2019 Intel Corporation
+* SPDX - License - Identifier: BSD - 2 - Clause - Patent */
 
 #include "EbDefinitions.h"
 #include "smmintrin.h"
@@ -10,9 +8,9 @@ void eb_av1_filter_intra_edge_sse4_1(uint8_t *p, int32_t sz, int32_t strength) {
     if (!strength) return;
 
     DECLARE_ALIGNED(16, static const int8_t, kern[3][16]) = {
-        {4, 8, 4, 0, 4, 8, 4, 0, 4, 8, 4, 0, 4, 8, 4, 0}, // strength 1: 4,8,4
-        {5, 6, 5, 0, 5, 6, 5, 0, 5, 6, 5, 0, 5, 6, 5, 0}, // strength 2: 5,6,5
-        {2, 4, 4, 4, 2, 0, 0, 0, 2, 4, 4, 4, 2, 0, 0, 0} // strength 3: 2,4,4,4,2
+        {4, 8, 4, 0, 4, 8, 4, 0, 4, 8, 4, 0, 4, 8, 4, 0}, /*!< strength 1: 4,8,4 */
+        {5, 6, 5, 0, 5, 6, 5, 0, 5, 6, 5, 0, 5, 6, 5, 0}, /*!< strength 2: 5,6,5 */
+        {2, 4, 4, 4, 2, 0, 0, 0, 2, 4, 4, 4, 2, 0, 0, 0} /*!< strength 3: 2,4,4,4,2 */
     };
 
     DECLARE_ALIGNED(16, static const int8_t, v_const[5][16]) = {
@@ -22,15 +20,15 @@ void eb_av1_filter_intra_edge_sse4_1(uint8_t *p, int32_t sz, int32_t strength) {
         {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15},
     };
 
-    // Extend the first and last samples to simplify the loop for the 5-tap case
+    /*!< Extend the first and last samples to simplify the loop for the 5-tap case */
     p[-1]        = p[0];
     __m128i last = _mm_set1_epi8(p[sz - 1]);
     _mm_storeu_si128((__m128i *)&p[sz], last);
 
-    // Adjust input pointer for filter support area
+    /*!< Adjust input pointer for filter support area */
     uint8_t *in = (strength == 3) ? p - 1 : p;
 
-    // Avoid modifying first sample
+    /*!< Avoid modifying first sample */
     uint8_t *out = p + 1;
     int32_t  len = sz - 1;
 
@@ -64,7 +62,7 @@ void eb_av1_filter_intra_edge_sse4_1(uint8_t *p, int32_t sz, int32_t strength) {
             out += 8;
             len -= n_out;
         }
-    } else { // 5-tap filter
+    } else { /*!< 5-tap filter */
         __m128i coef0  = _mm_lddqu_si128((__m128i const *)kern[strength - 1]);
         __m128i two    = _mm_set1_epi8(2);
         __m128i shuf_a = _mm_lddqu_si128((__m128i const *)v_const[2]);
@@ -108,22 +106,22 @@ void eb_av1_filter_intra_edge_high_sse4_1(uint16_t *p, int32_t sz, int32_t stren
     if (!strength) return;
 
     DECLARE_ALIGNED(16, static const int16_t, kern[3][8]) = {
-        {4, 8, 4, 8, 4, 8, 4, 8}, // strength 1: 4,8,4
-        {5, 6, 5, 6, 5, 6, 5, 6}, // strength 2: 5,6,5
-        {2, 4, 2, 4, 2, 4, 2, 4} // strength 3: 2,4,4,4,2
+        {4, 8, 4, 8, 4, 8, 4, 8}, /*!< strength 1: 4,8,4 */
+        {5, 6, 5, 6, 5, 6, 5, 6}, /*!< strength 2: 5,6,5 */
+        {2, 4, 2, 4, 2, 4, 2, 4} /*!< strength 3: 2,4,4,4,2 */
     };
 
     DECLARE_ALIGNED(16, static const int16_t, v_const[1][8]) = {{0, 1, 2, 3, 4, 5, 6, 7}};
 
-    // Extend the first and last samples to simplify the loop for the 5-tap case
+    /*!< Extend the first and last samples to simplify the loop for the 5-tap case */
     p[-1]        = p[0];
     __m128i last = _mm_set1_epi16(p[sz - 1]);
     _mm_storeu_si128((__m128i *)&p[sz], last);
 
-    // Adjust input pointer for filter support area
+    /*!< Adjust input pointer for filter support area */
     uint16_t *in = (strength == 3) ? p - 1 : p;
 
-    // Avoid modifying first sample
+    /*!< Avoid modifying first sample */
     uint16_t *out = p + 1;
     int32_t   len = sz - 1;
 
@@ -158,7 +156,7 @@ void eb_av1_filter_intra_edge_high_sse4_1(uint16_t *p, int32_t sz, int32_t stren
             out += 8;
             len -= n_out;
         }
-    } else { // 5-tap filter
+    } else { /*!< 5-tap filter */
         __m128i coef0 = _mm_lddqu_si128((__m128i const *)kern[strength - 1]);
         __m128i iden  = _mm_lddqu_si128((__m128i *)v_const[0]);
         __m128i in0   = _mm_lddqu_si128((__m128i *)&in[0]);
@@ -195,7 +193,7 @@ void eb_av1_filter_intra_edge_high_sse4_1(uint16_t *p, int32_t sz, int32_t stren
 }
 
 void eb_av1_upsample_intra_edge_sse4_1(uint8_t *p, int32_t sz) {
-    // interpolate half-sample positions
+    /*!< interpolate half-sample positions */
     assert(sz <= 24);
 
     DECLARE_ALIGNED(16, static const int8_t, kernel[1][16]) = {
@@ -205,15 +203,14 @@ void eb_av1_upsample_intra_edge_sse4_1(uint8_t *p, int32_t sz) {
         {0, 1, 2, 3, 1, 2, 3, 4, 2, 3, 4, 5, 3, 4, 5, 6},
         {4, 5, 6, 7, 5, 6, 7, 8, 6, 7, 8, 9, 7, 8, 9, 10}};
 
-    // Extend first/last samples (upper-left p[-1], last p[sz-1])
-    // to support 4-tap filter
+    /*!< Extend first/last samples (upper-left p[-1], last p[sz-1]) to support 4-tap filter */
     p[-2] = p[-1];
     p[sz] = p[sz - 1];
 
     uint8_t *in  = &p[-2];
     uint8_t *out = &p[-2];
 
-    int32_t n = sz + 1; // Input length including upper-left sample
+    int32_t n = sz + 1; /*!< Input length including upper-left sample */
 
     __m128i in0  = _mm_lddqu_si128((__m128i *)&in[0]);
     __m128i in16 = _mm_lddqu_si128((__m128i *)&in[16]);

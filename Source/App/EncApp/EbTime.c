@@ -1,7 +1,5 @@
-/*
-* Copyright(c) 2019 Intel Corporation
-* SPDX - License - Identifier: BSD - 2 - Clause - Patent
-*/
+/*!< Copyright(c) 2019 Intel Corporation
+* SPDX - License - Identifier: BSD - 2 - Clause - Patent */
 
 #include <stdint.h>
 
@@ -80,9 +78,9 @@ static void sleep_ms(uint64_t milli_seconds) {
 
 void injector(uint64_t processed_frame_count, uint32_t injector_frame_rate) {
 #ifdef _WIN32
-    static LARGE_INTEGER start_count; // this is the start time
-    static LARGE_INTEGER counter_freq; // performance counter frequency
-    LARGE_INTEGER        now_count; // this is the current time
+    static LARGE_INTEGER start_count; /*!< this is the start time */
+    static LARGE_INTEGER counter_freq; /*!< performance counter frequency */
+    LARGE_INTEGER        now_count; /*!< this is the current time */
 #else
     uint64_t        currentTimesSeconds  = 0;
     uint64_t        currentTimesuSeconds = 0;
@@ -92,10 +90,10 @@ void injector(uint64_t processed_frame_count, uint32_t injector_frame_rate) {
 
     double injector_interval =
         (double)(1 << 16) /
-        (double)injector_frame_rate; // 1.0 / injector frame rate (in this case, 1.0/encodRate)
+        (double)injector_frame_rate; /*!< 1.0 / injector frame rate (in this case, 1.0/encodRate) */
     double         elapsed_time;
     double         predicted_time;
-    int32_t        buffer_frames = 1; // How far ahead of time should we let it get
+    int32_t        buffer_frames = 1; /*!< How far ahead of time should we let it get */
     int32_t        millisec_ahead;
     static int32_t first_time = 0;
 

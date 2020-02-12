@@ -1,7 +1,5 @@
-/*
-* Copyright(c) 2019 Intel Corporation
-* SPDX - License - Identifier: BSD - 2 - Clause - Patent
-*/
+/*!< Copyright(c) 2019 Intel Corporation
+ * SPDX - License - Identifier: BSD - 2 - Clause - Patent */
 
 #ifndef AOM_DSP_X86_CONVOLVE_AVX512_H_
 #define AOM_DSP_X86_CONVOLVE_AVX512_H_
@@ -19,8 +17,8 @@
 
 static INLINE __m512i eb_mm512_broadcast_i64x2(const __m128i v) {
 #ifdef _WIN32
-    // Work around of Visual Studio warning C4305: 'function': truncation from
-    // 'int' to '__mmask8'. It's a flaw in header file zmmintrin.h.
+    /*!< Work around of Visual Studio warning C4305: 'function': truncation from
+     *   'int' to '__mmask8'. It's a flaw in header file zmmintrin.h. */
     return _mm512_maskz_broadcast_i64x2((__mmask8)0xffff, v);
 #else
     return _mm512_broadcast_i64x2(v);
@@ -61,70 +59,70 @@ static INLINE void storeu_u8_32x2_avx512(const __m512i src, uint8_t *const dst,
 static INLINE void populate_coeffs_4tap_avx512(const __m128i coeffs_128, __m512i coeffs[2]) {
     const __m512i coeffs_512 = eb_mm512_broadcast_i64x2(coeffs_128);
 
-    // coeffs 2 3 2 3 2 3 2 3
+    /*!< coeffs 2 3 2 3 2 3 2 3 */
     coeffs[0] = _mm512_shuffle_epi8(coeffs_512, _mm512_set1_epi16(0x0604u));
-    // coeffs 4 5 4 5 4 5 4 5
+    /*!< coeffs 4 5 4 5 4 5 4 5 */
     coeffs[1] = _mm512_shuffle_epi8(coeffs_512, _mm512_set1_epi16(0x0a08u));
 }
 
 static INLINE void populate_coeffs_6tap_avx512(const __m128i coeffs_128, __m512i coeffs[3]) {
     const __m512i coeffs_512 = eb_mm512_broadcast_i64x2(coeffs_128);
 
-    // coeffs 1 2 1 2 1 2 1 2
+    /*!< coeffs 1 2 1 2 1 2 1 2 */
     coeffs[0] = _mm512_shuffle_epi8(coeffs_512, _mm512_set1_epi16(0x0402u));
-    // coeffs 3 4 3 4 3 4 3 4
+    /*!< coeffs 3 4 3 4 3 4 3 4 */
     coeffs[1] = _mm512_shuffle_epi8(coeffs_512, _mm512_set1_epi16(0x0806u));
-    // coeffs 5 6 5 6 5 6 5 6
+    /*!< coeffs 5 6 5 6 5 6 5 6 */
     coeffs[2] = _mm512_shuffle_epi8(coeffs_512, _mm512_set1_epi16(0x0C0Au));
 }
 
 static INLINE void populate_coeffs_8tap_avx512(const __m128i coeffs_128, __m512i coeffs[4]) {
     const __m512i coeffs_512 = eb_mm512_broadcast_i64x2(coeffs_128);
 
-    // coeffs 0 1 0 1 0 1 0 1
+    /*!< coeffs 0 1 0 1 0 1 0 1 */
     coeffs[0] = _mm512_shuffle_epi8(coeffs_512, _mm512_set1_epi16(0x0200u));
-    // coeffs 2 3 2 3 2 3 2 3
+    /*!< coeffs 2 3 2 3 2 3 2 3 */
     coeffs[1] = _mm512_shuffle_epi8(coeffs_512, _mm512_set1_epi16(0x0604u));
-    // coeffs 4 5 4 5 4 5 4 5
+    /*!< coeffs 4 5 4 5 4 5 4 5 */
     coeffs[2] = _mm512_shuffle_epi8(coeffs_512, _mm512_set1_epi16(0x0a08u));
-    // coeffs 6 7 6 7 6 7 6 7
+    /*!< coeffs 6 7 6 7 6 7 6 7 */
     coeffs[3] = _mm512_shuffle_epi8(coeffs_512, _mm512_set1_epi16(0x0e0cu));
 }
 
 static INLINE void prepare_half_coeffs_2tap_avx512(const InterpFilterParams *const filter_params,
                                                    const int32_t                   subpel_q4,
-                                                   __m512i *const coeffs /* [1] */) {
+                                                   __m512i *const coeffs /*!< [1] */) {
     const int16_t *const filter =
         av1_get_interp_filter_subpel_kernel(*filter_params, subpel_q4 & SUBPEL_MASK);
     const __m128i coeffs_8      = _mm_cvtsi32_si128(*(const int32_t *)(filter + 3));
     const __m512i filter_coeffs = _mm512_broadcastd_epi32(coeffs_8);
 
-    // right shift all filter co-efficients by 1 to reduce the bits required.
-    // This extra right shift will be taken care of at the end while rounding
-    // the result.
-    // Since all filter co-efficients are even, this change will not affect the
-    // end result
+    /*!< right shift all filter co-efficients by 1 to reduce the bits required.
+     *   This extra right shift will be taken care of at the end while rounding
+     *   the result.
+     *   Since all filter co-efficients are even, this change will not affect the
+     *   end result */
     assert(_mm_test_all_zeros(_mm_and_si128(coeffs_8, _mm_set1_epi16(1)),
                               _mm_set1_epi16((short)0xffff)));
 
     const __m512i coeffs_1 = _mm512_srai_epi16(filter_coeffs, 1);
 
-    // coeffs 3 4 3 4 3 4 3 4
+    /*!< coeffs 3 4 3 4 3 4 3 4 */
     *coeffs = _mm512_shuffle_epi8(coeffs_1, _mm512_set1_epi16(0x0200u));
 }
 
 static INLINE void prepare_half_coeffs_4tap_avx512(const InterpFilterParams *const filter_params,
                                                    const int32_t                   subpel_q4,
-                                                   __m512i *const coeffs /* [2] */) {
+                                                   __m512i *const coeffs /*!< [2] */) {
     const int16_t *const filter =
         av1_get_interp_filter_subpel_kernel(*filter_params, subpel_q4 & SUBPEL_MASK);
     const __m128i coeffs_8 = _mm_load_si128((__m128i *)filter);
 
-    // right shift all filter co-efficients by 1 to reduce the bits required.
-    // This extra right shift will be taken care of at the end while rounding
-    // the result.
-    // Since all filter co-efficients are even, this change will not affect the
-    // end result
+    /*!< right shift all filter co-efficients by 1 to reduce the bits required.
+     *   This extra right shift will be taken care of at the end while rounding
+     *   the result.
+     *   Since all filter co-efficients are even, this change will not affect the
+     *   end result */
     assert(_mm_test_all_zeros(_mm_and_si128(coeffs_8, _mm_set1_epi16(1)),
                               _mm_set1_epi16((short)0xffff)));
     const __m128i coeffs_1 = _mm_srai_epi16(coeffs_8, 1);
@@ -133,16 +131,16 @@ static INLINE void prepare_half_coeffs_4tap_avx512(const InterpFilterParams *con
 
 static INLINE void prepare_half_coeffs_6tap_avx512(const InterpFilterParams *const filter_params,
                                                    const int32_t                   subpel_q4,
-                                                   __m512i *const coeffs /* [3] */) {
+                                                   __m512i *const coeffs /*!< [3] */) {
     const int16_t *const filter =
         av1_get_interp_filter_subpel_kernel(*filter_params, subpel_q4 & SUBPEL_MASK);
     const __m128i coeffs_8 = _mm_load_si128((__m128i *)filter);
 
-    // right shift all filter co-efficients by 1 to reduce the bits required.
-    // This extra right shift will be taken care of at the end while rounding
-    // the result.
-    // Since all filter co-efficients are even, this change will not affect the
-    // end result
+    /*!< right shift all filter co-efficients by 1 to reduce the bits required.
+     *   This extra right shift will be taken care of at the end while rounding
+     *   the result.
+     *   Since all filter co-efficients are even, this change will not affect the
+     *   end result */
     assert(_mm_test_all_zeros(_mm_and_si128(coeffs_8, _mm_set1_epi16(1)),
                               _mm_set1_epi16((short)0xffff)));
     const __m128i coeffs_1 = _mm_srai_epi16(coeffs_8, 1);
@@ -151,16 +149,16 @@ static INLINE void prepare_half_coeffs_6tap_avx512(const InterpFilterParams *con
 
 SIMD_INLINE void prepare_half_coeffs_8tap_avx512(const InterpFilterParams *const filter_params,
                                                  const int32_t                   subpel_q4,
-                                                 __m512i *const                  coeffs /* [4] */) {
+                                                 __m512i *const                  coeffs /*!< [4] */) {
     const int16_t *const filter =
         av1_get_interp_filter_subpel_kernel(*filter_params, subpel_q4 & SUBPEL_MASK);
     const __m128i coeffs_8 = _mm_load_si128((__m128i *)filter);
 
-    // right shift all filter co-efficients by 1 to reduce the bits required.
-    // This extra right shift will be taken care of at the end while rounding
-    // the result.
-    // Since all filter co-efficients are even, this change will not affect the
-    // end result
+    /*!< right shift all filter co-efficients by 1 to reduce the bits required.
+     *   This extra right shift will be taken care of at the end while rounding
+     *   the result.
+     *   Since all filter co-efficients are even, this change will not affect the
+     *   end result */
     assert(_mm_test_all_zeros(_mm_and_si128(coeffs_8, _mm_set1_epi16(1)),
                               _mm_set1_epi16((short)0xffff)));
     const __m128i coeffs_1 = _mm_srai_epi16(coeffs_8, 1);
@@ -169,64 +167,64 @@ SIMD_INLINE void prepare_half_coeffs_8tap_avx512(const InterpFilterParams *const
 
 static INLINE void prepare_coeffs_2tap_avx512(const InterpFilterParams *const filter_params,
                                               const int32_t                   subpel_q4,
-                                              __m512i *const                  coeffs /* [1] */) {
+                                              __m512i *const                  coeffs /*!< [1] */) {
     const int16_t *filter =
         av1_get_interp_filter_subpel_kernel(*filter_params, subpel_q4 & SUBPEL_MASK);
 
     const __m128i coeff_8 = _mm_cvtsi32_si128(*(const int32_t *)(filter + 3));
     const __m512i coeff   = _mm512_broadcastd_epi32(coeff_8);
 
-    // coeffs 3 4 3 4 3 4 3 4
+    /*!< coeffs 3 4 3 4 3 4 3 4 */
     coeffs[0] = _mm512_shuffle_epi32(coeff, 0x00);
 }
 
 static INLINE void prepare_coeffs_4tap_avx512(const InterpFilterParams *const filter_params,
                                               const int32_t                   subpel_q4,
-                                              __m512i *const                  coeffs /* [2] */) {
+                                              __m512i *const                  coeffs /*!< [2] */) {
     const int16_t *filter =
         av1_get_interp_filter_subpel_kernel(*filter_params, subpel_q4 & SUBPEL_MASK);
 
     const __m128i coeff_8 = _mm_load_si128((__m128i *)filter);
     const __m512i coeff   = eb_mm512_broadcast_i64x2(coeff_8);
 
-    // coeffs 2 3 2 3 2 3 2 3
+    /*!< coeffs 2 3 2 3 2 3 2 3 */
     coeffs[0] = _mm512_shuffle_epi32(coeff, 0x55);
-    // coeffs 4 5 4 5 4 5 4 5
+    /*!< coeffs 4 5 4 5 4 5 4 5 */
     coeffs[1] = _mm512_shuffle_epi32(coeff, 0xaa);
 }
 
 static INLINE void prepare_coeffs_6tap_avx512(const InterpFilterParams *const filter_params,
                                               const int32_t                   subpel_q4,
-                                              __m512i *const                  coeffs /* [3] */) {
+                                              __m512i *const                  coeffs /*!< [3] */) {
     const int16_t *const filter =
         av1_get_interp_filter_subpel_kernel(*filter_params, subpel_q4 & SUBPEL_MASK);
     const __m128i coeffs_8 = _mm_load_si128((__m128i *)filter);
     const __m512i coeff    = eb_mm512_broadcast_i64x2(coeffs_8);
 
-    // coeffs 1 2 1 2 1 2 1 2
+    /*!< coeffs 1 2 1 2 1 2 1 2 */
     coeffs[0] = _mm512_shuffle_epi8(coeff, _mm512_set1_epi32(0x05040302u));
-    // coeffs 3 4 3 4 3 4 3 4
+    /*!< coeffs 3 4 3 4 3 4 3 4 */
     coeffs[1] = _mm512_shuffle_epi8(coeff, _mm512_set1_epi32(0x09080706u));
-    // coeffs 5 6 5 6 5 6 5 6
+    /*!< coeffs 5 6 5 6 5 6 5 6 */
     coeffs[2] = _mm512_shuffle_epi8(coeff, _mm512_set1_epi32(0x0D0C0B0Au));
 }
 
 static INLINE void prepare_coeffs_8tap_avx512(const InterpFilterParams *const filter_params,
                                               const int32_t                   subpel_q4,
-                                              __m512i *const                  coeffs /* [4] */) {
+                                              __m512i *const                  coeffs /*!< [4] */) {
     const int16_t *filter =
         av1_get_interp_filter_subpel_kernel(*filter_params, subpel_q4 & SUBPEL_MASK);
 
     const __m128i coeff_8 = _mm_load_si128((__m128i *)filter);
     const __m512i coeff   = eb_mm512_broadcast_i64x2(coeff_8);
 
-    // coeffs 0 1 0 1 0 1 0 1
+    /*!< coeffs 0 1 0 1 0 1 0 1 */
     coeffs[0] = _mm512_shuffle_epi32(coeff, 0x00);
-    // coeffs 2 3 2 3 2 3 2 3
+    /*!< coeffs 2 3 2 3 2 3 2 3 */
     coeffs[1] = _mm512_shuffle_epi32(coeff, 0x55);
-    // coeffs 4 5 4 5 4 5 4 5
+    /*!< coeffs 4 5 4 5 4 5 4 5 */
     coeffs[2] = _mm512_shuffle_epi32(coeff, 0xaa);
-    // coeffs 6 7 6 7 6 7 6 7
+    /*!< coeffs 6 7 6 7 6 7 6 7 */
     coeffs[3] = _mm512_shuffle_epi32(coeff, 0xff);
 }
 

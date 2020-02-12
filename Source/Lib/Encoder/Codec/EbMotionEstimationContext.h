@@ -1,7 +1,5 @@
-/*
-* Copyright(c) 2019 Intel Corporation
-* SPDX - License - Identifier: BSD - 2 - Clause - Patent
-*/
+/*!< Copyright(c) 2019 Intel Corporation
+ * SPDX - License - Identifier: BSD - 2 - Clause - Patent */
 
 #ifndef EbMotionEstimationContext_h
 #define EbMotionEstimationContext_h
@@ -14,13 +12,13 @@
 extern "C" {
 #endif
 
-// Max Search Area
+/*!< Max Search Area */
 #define MAX_SEARCH_AREA_WIDTH 1280
 #define MAX_SEARCH_AREA_HEIGHT 1280
 #define MAX_SEARCH_AREA_WIDTH_CH MAX_SEARCH_AREA_WIDTH + PAD_VALUE
 #define MAX_SEARCH_AREA_HEIGHT_CH MAX_SEARCH_AREA_HEIGHT + PAD_VALUE
 
-// 1-D interpolation shift value
+/*!< 1-D interpolation shift value */
 #define if_shift 6
 #define NUMBER_OF_SB_QUAD 4
 #define VARIANCE_PRECISION 16
@@ -29,7 +27,7 @@ extern "C" {
 #define HME_SPARSE 1
 #define HME_DECIM_FILTER_TAP 9
 
-// Quater pel refinement methods
+/*!< Quater pel refinement methods */
 typedef enum EbQuarterPelRefinementMethod {
     EB_QUARTER_IN_FULL,
     EB_QUARTER_IN_HALF_HORIZONTAL,
@@ -45,7 +43,7 @@ typedef struct MePredictionUnit {
 } MePredictionUnit;
 
 typedef enum EbMeTierZeroPu {
-    // 2Nx2N [85 partitions]
+    /*!< 2Nx2N [85 partitions] */
     ME_TIER_ZERO_PU_64x64    = 0,
     ME_TIER_ZERO_PU_32x32_0  = 1,
     ME_TIER_ZERO_PU_32x32_1  = 2,
@@ -131,7 +129,7 @@ typedef enum EbMeTierZeroPu {
     ME_TIER_ZERO_PU_8x8_61   = 82,
     ME_TIER_ZERO_PU_8x8_62   = 83,
     ME_TIER_ZERO_PU_8x8_63   = 84,
-    // H  [42 partitions]
+    /*!< H  [42 partitions] */
     ME_TIER_ZERO_PU_64x32_0 = 85,
     ME_TIER_ZERO_PU_64x32_1 = 86,
     ME_TIER_ZERO_PU_32x16_0 = 87,
@@ -174,7 +172,7 @@ typedef enum EbMeTierZeroPu {
     ME_TIER_ZERO_PU_16x8_29 = 124,
     ME_TIER_ZERO_PU_16x8_30 = 125,
     ME_TIER_ZERO_PU_16x8_31 = 126,
-    // V  [42 partitions]
+    /*!< V  [42 partitions] */
     ME_TIER_ZERO_PU_32x64_0 = 127,
     ME_TIER_ZERO_PU_32x64_1 = 128,
     ME_TIER_ZERO_PU_16x32_0 = 129,
@@ -217,7 +215,7 @@ typedef enum EbMeTierZeroPu {
     ME_TIER_ZERO_PU_8x16_29 = 166,
     ME_TIER_ZERO_PU_8x16_30 = 167,
     ME_TIER_ZERO_PU_8x16_31 = 168,
-    // H4 [16 partitions]
+    /*!< H4 [16 partitions] */
     ME_TIER_ZERO_PU_32x8_0  = 169,
     ME_TIER_ZERO_PU_32x8_1  = 170,
     ME_TIER_ZERO_PU_32x8_2  = 171,
@@ -234,7 +232,7 @@ typedef enum EbMeTierZeroPu {
     ME_TIER_ZERO_PU_32x8_13 = 182,
     ME_TIER_ZERO_PU_32x8_14 = 183,
     ME_TIER_ZERO_PU_32x8_15 = 184,
-    // V4 [16 partitions]
+    /*!< V4 [16 partitions] */
     ME_TIER_ZERO_PU_8x32_0  = 185,
     ME_TIER_ZERO_PU_8x32_1  = 186,
     ME_TIER_ZERO_PU_8x32_2  = 187,
@@ -269,7 +267,7 @@ typedef struct IntraReferenceSamplesOpenLoop {
     EbDctor  dctor;
     uint8_t *y_intra_reference_array_reverse;
 
-    // Scratch buffers used in the interpolaiton process
+    /*!< Scratch buffers used in the interpolaiton process */
     uint8_t reference_above_line_y[MAX_INTRA_REFERENCE_SAMPLES];
     uint8_t reference_left_line_y[MAX_INTRA_REFERENCE_SAMPLES];
     EbBool  above_ready_flag_y;
@@ -299,11 +297,11 @@ typedef struct HmeResults {
 #endif
 typedef struct MeContext {
     EbDctor dctor;
-    // Search region stride
+    /*!< Search region stride */
     uint32_t                  interpolated_stride;
     uint32_t                  interpolated_full_stride[MAX_NUM_OF_REF_PIC_LIST][MAX_REF_IDX];
     MotionEstimationTierZero *me_candidate;
-    // Intermediate SB-sized buffer to retain the input samples
+    /*!< Intermediate SB-sized buffer to retain the input samples */
     uint8_t * sb_buffer;
     uint8_t * sb_buffer_ptr;
     uint32_t  sb_buffer_stride;
@@ -322,14 +320,14 @@ typedef struct MeContext {
     int16_t   x_search_area_origin[MAX_NUM_OF_REF_PIC_LIST][MAX_REF_IDX];
     int16_t   y_search_area_origin[MAX_NUM_OF_REF_PIC_LIST][MAX_REF_IDX];
 #if MUS_ME_FP
-    // ME Parameters
-    /* Number of search positions in the horizontal direction.
-    *
-    * Default depends on input resolution. */
+    /*!< ME Parameters */
+    /*!< Number of search positions in the horizontal direction.
+     *
+     *   Default depends on input resolution. */
     uint32_t sa_width[MAX_NUM_OF_REF_PIC_LIST][MAX_REF_IDX];
-    /* Number of search positions in the vertical direction.
-    *
-    * Default depends on input resolution. */
+    /*!< Number of search positions in the vertical direction.
+     *
+     *   Default depends on input resolution. */
     uint32_t sa_height[MAX_NUM_OF_REF_PIC_LIST][MAX_REF_IDX];
 #endif
     uint8_t * avctemp_buffer;
@@ -382,7 +380,7 @@ typedef struct MeContext {
 
     uint32_t  p_sb_best_sad[MAX_NUM_OF_REF_PIC_LIST][MAX_REF_IDX][MAX_ME_PU_COUNT];
     uint32_t  p_sb_best_mv[MAX_NUM_OF_REF_PIC_LIST][MAX_REF_IDX][MAX_ME_PU_COUNT];
-    uint32_t  p_sb_bipred_sad[MAX_ME_PU_COUNT]; //needs to be upgraded to 209 pus
+    uint32_t  p_sb_bipred_sad[MAX_ME_PU_COUNT]; /*!< needs to be upgraded to 209 pus */
     uint32_t  p_sb_best_full_pel_mv[MAX_NUM_OF_REF_PIC_LIST][MAX_REF_IDX][MAX_ME_PU_COUNT];
     uint32_t *p_best_full_pel_mv8x8;
     uint32_t *p_best_full_pel_mv16x16;
@@ -444,10 +442,10 @@ typedef struct MeContext {
 
     EbBool compute_global_motion;
 
-    // ME
+    /*!< ME */
     uint16_t search_area_width;
     uint16_t search_area_height;
-    // HME
+    /*!< HME */
     uint16_t number_hme_search_region_in_width;
     uint16_t number_hme_search_region_in_height;
     uint16_t hme_level0_total_search_area_width;
@@ -468,12 +466,12 @@ typedef struct MeContext {
 #if SWITCHED_HALF_PEL_MODE
     EbBool local_hp_mode[MAX_NUM_OF_REF_PIC_LIST][REF_LIST_MAX_DEPTH];
 #endif
-    // ------- Context for Alt-Ref ME ------
+    /*!< ------- Context for Alt-Ref ME ------ */
     uint16_t adj_search_area_width;
     uint16_t adj_search_area_height;
     EbBool   me_alt_ref;
     void *   alt_ref_reference_ptr;
-    // -------
+    /****************************************/
 } MeContext;
 
 typedef uint64_t (*EB_ME_DISTORTION_FUNC)(uint8_t *src, uint32_t src_stride, uint8_t *ref,

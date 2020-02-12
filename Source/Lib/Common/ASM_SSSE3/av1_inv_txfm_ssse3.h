@@ -1,18 +1,16 @@
-/*
- * Copyright (c) 2018, Alliance for Open Media. All rights reserved
+/*!< Copyright (c) 2018, Alliance for Open Media. All rights reserved
  *
  * This source code is subject to the terms of the BSD 2 Clause License and
  * the Alliance for Open Media Patent License 1.0. If the BSD 2 Clause License
  * was not distributed with this source code in the LICENSE file, you can
  * obtain it at www.aomedia.org/license/software. If the Alliance for Open
  * Media Patent License 1.0 was not distributed with this source code in the
- * PATENTS file, you can obtain it at www.aomedia.org/license/patent.
- */
+ * PATENTS file, you can obtain it at www.aomedia.org/license/patent. */
 #ifndef AV1_COMMON_X86_AV1_INV_TXFM_SSSE3_H_
 #define AV1_COMMON_X86_AV1_INV_TXFM_SSSE3_H_
 
-#include <emmintrin.h> // SSE2
-#include <tmmintrin.h> // SSSE3
+#include <emmintrin.h> /*!< SSE2 */
+#include <tmmintrin.h> /*!< SSSE3 */
 
 #ifdef __cplusplus
 extern "C" {
@@ -60,7 +58,7 @@ static INLINE void round_shift_16bit_ssse3(__m128i *in, int32_t size, int32_t bi
     }
 }
 
-// 1D itx types
+/*!< 1D itx types */
 typedef enum ATTRIBUTE_PACKED {
     IDCT_1D,
     IADST_1D,
@@ -241,7 +239,7 @@ static const int32_t lowbd_txfm_all_1d_zeros_idx[32] = {
     0, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3,
 };
 
-// Transform block width in log2 for eob (size of 64 map to 32)
+/*!< Transform block width in log2 for eob (size of 64 map to 32) */
 static const int32_t tx_size_wide_log2_eob[TX_SIZES_ALL] = {
     2, 3, 4, 5, 5, 2, 3, 3, 4, 4, 5, 5, 5, 2, 4, 3, 5, 4, 5,
 };

@@ -1,7 +1,5 @@
-/*
-* Copyright(c) 2019 Intel Corporation
-* SPDX - License - Identifier: BSD - 2 - Clause - Patent
-*/
+/*!< Copyright(c) 2019 Intel Corporation
+ * SPDX - License - Identifier: BSD - 2 - Clause - Patent */
 
 #include <immintrin.h>
 #include "EbDefinitions.h"
@@ -13,8 +11,8 @@ static INLINE unsigned int lcg_rand16(unsigned int *state) {
     return *state / 65536 % 32768;
 }
 
-/* That same calculation as: av1_calc_indices_dist_dim1_avx2(),
-   but not calculate sum at the end. */
+/*!< That same calculation as: av1_calc_indices_dist_dim1_avx2(),
+ *   but not calculate sum at the end. */
 void av1_calc_indices_dim1_avx2(const int *data, const int *centroids, uint8_t *indices, int n,
                                 int k) {
     int i = 0;
@@ -181,8 +179,8 @@ void av1_k_means_dim1_avx2(const int *data, int *centroids, uint8_t *indices, in
     }
 }
 
-/* That same calculation as: av1_calc_indices_dist_dim2_avx2(),
-   but not calculate sum at the end. */
+/*!< That same calculation as: av1_calc_indices_dist_dim2_avx2(),
+ *   but not calculate sum at the end. */
 void av1_calc_indices_dim2_avx2(const int *data, const int *centroids, uint8_t *indices, int n,
                                 int k) {
     int i = 0;

@@ -1,18 +1,14 @@
-/*
-* Copyright(c) 2019 Intel Corporation
-* SPDX - License - Identifier: BSD - 2 - Clause - Patent
-*/
+/*!< Copyright(c) 2019 Intel Corporation
+ * SPDX - License - Identifier: BSD - 2 - Clause - Patent */
 
-/*
-* Copyright (c) 2016, Alliance for Open Media. All rights reserved
-*
-* This source code is subject to the terms of the BSD 2 Clause License and
-* the Alliance for Open Media Patent License 1.0. If the BSD 2 Clause License
-* was not distributed with this source code in the LICENSE file, you can
-* obtain it at www.aomedia.org/license/software. If the Alliance for Open
-* Media Patent License 1.0 was not distributed with this source code in the
-* PATENTS file, you can obtain it at www.aomedia.org/license/patent.
-*/
+/*!< Copyright (c) 2016, Alliance for Open Media. All rights reserved
+ *
+ * This source code is subject to the terms of the BSD 2 Clause License and
+ * the Alliance for Open Media Patent License 1.0. If the BSD 2 Clause License
+ * was not distributed with this source code in the LICENSE file, you can
+ * obtain it at www.aomedia.org/license/software. If the Alliance for Open
+ * Media Patent License 1.0 was not distributed with this source code in the
+ * PATENTS file, you can obtain it at www.aomedia.org/license/patent. */
 
 #ifndef EbDecBitReader_h
 #define EbDecBitReader_h
@@ -23,11 +19,7 @@
 extern "C" {
 #endif
 
-/********************************************************************************************************************************/
-/********************************************************************************************************************************/
-/********************************************************************************************************************************/
-/********************************************************************************************************************************/
-// bitreader.h from AOM
+/*!< bitreader.h from AOM */
 
 #define ACCT_STR_PARAM
 #define ACCT_STR_ARG(s)
@@ -65,7 +57,7 @@ static INLINE int aom_read_(SvtReader *r, int prob ACCT_STR_PARAM) {
 
 static INLINE int aom_read_bit_(SvtReader *r ACCT_STR_PARAM) {
     int ret;
-    ret = svt_read(r, 128, NULL); // aom_prob_half
+    ret = svt_read(r, 128, NULL); /*!< aom_prob_half */
     return ret;
 }
 
@@ -91,7 +83,7 @@ static INLINE int aom_read_symbol_(SvtReader *r, AomCdfProb *cdf, int nsymbs ACC
 }
 
 static INLINE int aom_read_ns_ae_(SvtReader *r, int nsymbs ACCT_STR_PARAM) {
-    int w = get_msb(nsymbs) + 1; //w = FloorLog2(n) + 1
+    int w = get_msb(nsymbs) + 1; /*!< w = FloorLog2(n) + 1 */
     int m = (1 << w) - nsymbs;
     int v = svt_read_literal(r, w - 1, ACCT_STR_NAME);
     if (v < m) return v;

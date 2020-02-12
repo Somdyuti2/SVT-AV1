@@ -1,7 +1,5 @@
-/*
-* Copyright(c) 2019 Intel Corporation
-* SPDX - License - Identifier: BSD - 2 - Clause - Patent
-*/
+/*!< Copyright(c) 2019 Intel Corporation
+ * SPDX - License - Identifier: BSD - 2 - Clause - Patent */
 
 #ifndef EbModeDecisionProcess_h
 #define EbModeDecisionProcess_h
@@ -21,9 +19,9 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
-/**************************************
-     * Defines
-     **************************************/
+/**************************************/
+/*!< Defines */
+/**************************************/
 #define MODE_DECISION_CANDIDATE_MAX_COUNT 1855
 #define DEPTH_ONE_STEP 21
 #define DEPTH_TWO_STEP 5
@@ -38,9 +36,9 @@ extern "C" {
 #define FULL_PEL_REF_WINDOW_HEIGHT_EXTENDED 15
 #define EIGHT_PEL_REF_WINDOW 3
 
-/**************************************
-      * Macros
-      **************************************/
+/**************************************/
+/*!< Macros */
+/**************************************/
 
 #define GROUP_OF_4_8x8_BLOCKS(origin_x, origin_y) \
     (((origin_x >> 3) & 0x1) && ((origin_y >> 3) & 0x1) ? EB_TRUE : EB_FALSE)
@@ -49,9 +47,9 @@ extern "C" {
 #define GROUP_OF_4_32x32_BLOCKS(origin_x, origin_y) \
     (((((origin_x >> 3) & 0x4) == 0x4) && (((origin_y >> 3) & 0x4) == 0x4)) ? EB_TRUE : EB_FALSE)
 
-/**************************************
-       * Coding Loop Context
-       **************************************/
+/**************************************/
+/*!< Coding Loop Context */
+/**************************************/
 typedef struct MdEncPassCuData {
     uint64_t skip_cost;
     uint64_t merge_cost;
@@ -61,7 +59,7 @@ typedef struct MdEncPassCuData {
     uint32_t y_has_coeff;
     uint64_t fast_luma_rate;
     uint16_t y_count_non_zero_coeffs
-        [4]; // Store nonzero CoeffNum, per TU. If one TU, stored in 0, otherwise 4 tus stored in 0 to 3
+        [4]; /*!< Store nonzero CoeffNum, per TU. If one TU, stored in 0, otherwise 4 tus stored in 0 to 3 */
 } MdEncPassCuData;
 
 typedef struct {
@@ -69,7 +67,7 @@ typedef struct {
     int     kmeans_data_buf[2 * MAX_PALETTE_SQUARE];
 } PALETTE_BUFFER;
 typedef struct MdBlkStruct {
-    unsigned             tested_blk_flag : 1; //tells whether this CU is tested in MD.
+    unsigned             tested_blk_flag : 1; /*!< tells whether this CU is tested in MD. */
     unsigned             mdc_array_index : 7;
     unsigned             count_non_zero_coeffs : 11;
     unsigned             top_neighbor_depth : 8;
@@ -126,22 +124,22 @@ typedef struct ModeDecisionContext {
     NeighborArrayUnit *tx_search_luma_recon_neighbor_array16bit;
     NeighborArrayUnit *skip_coeff_neighbor_array;
     NeighborArrayUnit *
-        luma_dc_sign_level_coeff_neighbor_array; // Stored per 4x4. 8 bit: lower 6 bits (COEFF_CONTEXT_BITS), shows if there is at least one Coef. Top 2 bit store the sign of DC as follow: 0->0,1->-1,2-> 1
+        luma_dc_sign_level_coeff_neighbor_array; /*!< Stored per 4x4. 8 bit: lower 6 bits (COEFF_CONTEXT_BITS), shows if there is at least one Coef. Top 2 bit store the sign of DC as follow: 0->0,1->-1,2-> 1 */
     NeighborArrayUnit *
-        full_loop_luma_dc_sign_level_coeff_neighbor_array; // Stored per 4x4. 8 bit: lower 6 bits (COEFF_CONTEXT_BITS), shows if there is at least one Coef. Top 2 bit store the sign of DC as follow: 0->0,1->-1,2-> 1
+        full_loop_luma_dc_sign_level_coeff_neighbor_array; /*!< Stored per 4x4. 8 bit: lower 6 bits (COEFF_CONTEXT_BITS), shows if there is at least one Coef. Top 2 bit store the sign of DC as follow: 0->0,1->-1,2-> 1 */
     NeighborArrayUnit *
-        tx_search_luma_dc_sign_level_coeff_neighbor_array; // Stored per 4x4. 8 bit: lower 6 bits (COEFF_CONTEXT_BITS), shows if there is at least one Coef. Top 2 bit store the sign of DC as follow: 0->0,1->-1,2-> 1
+        tx_search_luma_dc_sign_level_coeff_neighbor_array; /*!< Stored per 4x4. 8 bit: lower 6 bits (COEFF_CONTEXT_BITS), shows if there is at least one Coef. Top 2 bit store the sign of DC as follow: 0->0,1->-1,2-> 1 */
     NeighborArrayUnit *
-        cr_dc_sign_level_coeff_neighbor_array; // Stored per 4x4. 8 bit: lower 6 bits(COEFF_CONTEXT_BITS), shows if there is at least one Coef. Top 2 bit store the sign of DC as follow: 0->0,1->-1,2-> 1
+        cr_dc_sign_level_coeff_neighbor_array; /*!< Stored per 4x4. 8 bit: lower 6 bits(COEFF_CONTEXT_BITS), shows if there is at least one Coef. Top 2 bit store the sign of DC as follow: 0->0,1->-1,2-> 1 */
     NeighborArrayUnit *
-                         cb_dc_sign_level_coeff_neighbor_array; // Stored per 4x4. 8 bit: lower 6 bits(COEFF_CONTEXT_BITS), shows if there is at least one Coef. Top 2 bit store the sign of DC as follow: 0->0,1->-1,2-> 1
+                         cb_dc_sign_level_coeff_neighbor_array; /*!< Stored per 4x4. 8 bit: lower 6 bits(COEFF_CONTEXT_BITS), shows if there is at least one Coef. Top 2 bit store the sign of DC as follow: 0->0,1->-1,2-> 1 */
     NeighborArrayUnit *  txfm_context_array;
     NeighborArrayUnit *  inter_pred_dir_neighbor_array;
     NeighborArrayUnit *  ref_frame_type_neighbor_array;
     NeighborArrayUnit *  leaf_partition_neighbor_array;
     NeighborArrayUnit32 *interpolation_type_neighbor_array;
 
-    // Transform and Quantization Buffers
+    /*!< Transform and Quantization Buffers */
     EbTransQuantBuffers * trans_quant_buffers_ptr;
     struct EncDecContext *enc_dec_context_ptr;
 
@@ -149,7 +147,7 @@ typedef struct ModeDecisionContext {
     uint64_t *full_cost_array;
     uint64_t *full_cost_skip_ptr;
     uint64_t *full_cost_merge_ptr;
-    // Lambda
+    /*!< Lambda */
     uint16_t qp;
     uint8_t  chroma_qp;
     uint32_t fast_lambda;
@@ -158,7 +156,7 @@ typedef struct ModeDecisionContext {
     uint32_t full_chroma_lambda;
     uint32_t full_chroma_lambda_sao;
 
-    //  Context Variables---------------------------------
+    /*!<  Context Variables--------------------------------- */
     SuperBlock *     sb_ptr;
     TransformUnit *  txb_ptr;
     BlkStruct *     blk_ptr;
@@ -167,7 +165,7 @@ typedef struct ModeDecisionContext {
     MvUnit           mv_unit;
     PALETTE_BUFFER   palette_buffer;
     PaletteInfo      palette_cand_array[MAX_PAL_CAND];
-    // Entropy Coder
+    /*!< Entropy Coder */
     EntropyCoder *   coeff_est_entropy_coder_ptr;
     MdEncPassCuData *md_ep_pipe_sb;
     uint8_t          pu_itr;
@@ -196,7 +194,7 @@ typedef struct ModeDecisionContext {
     uint64_t         best_uv_cost[UV_PAETH_PRED + 1][(MAX_ANGLE_DELTA << 1) + 1];
     uint64_t         fast_luma_rate[UV_PAETH_PRED + 1][(MAX_ANGLE_DELTA << 1) + 1];
     uint64_t         fast_chroma_rate[UV_PAETH_PRED + 1][(MAX_ANGLE_DELTA << 1) + 1];
-    // Needed for DC prediction
+    /*!< Needed for DC prediction */
     int32_t is_inter_ctx;
     uint8_t intra_luma_left_mode;
     uint8_t intra_luma_top_mode;
@@ -204,33 +202,33 @@ typedef struct ModeDecisionContext {
     uint8_t intra_chroma_top_mode;
     EB_ALIGN(64)
     int16_t pred_buf_q3
-        [CFL_BUF_SQUARE]; // Hsan: both MD and EP to use pred_buf_q3 (kept 1, and removed the 2nd)
+        [CFL_BUF_SQUARE]; /*!< Hsan: both MD and EP to use pred_buf_q3 (kept 1, and removed the 2nd) */
     uint8_t injected_ref_type_l0_array
-        [MODE_DECISION_CANDIDATE_MAX_COUNT]; // used to do not inject existing MV
+        [MODE_DECISION_CANDIDATE_MAX_COUNT]; /*!< used to do not inject existing MV */
     uint8_t injected_ref_type_l1_array
-        [MODE_DECISION_CANDIDATE_MAX_COUNT]; // used to do not inject existing MV
+        [MODE_DECISION_CANDIDATE_MAX_COUNT]; /*!< used to do not inject existing MV */
     uint8_t injected_ref_type_bipred_array
-        [MODE_DECISION_CANDIDATE_MAX_COUNT]; // used to do not inject existing MV
+        [MODE_DECISION_CANDIDATE_MAX_COUNT]; /*!< used to do not inject existing MV */
     int16_t injected_mv_x_l0_array
-        [MODE_DECISION_CANDIDATE_MAX_COUNT]; // used to do not inject existing MV
+        [MODE_DECISION_CANDIDATE_MAX_COUNT]; /*!< used to do not inject existing MV */
     int16_t injected_mv_y_l0_array
-        [MODE_DECISION_CANDIDATE_MAX_COUNT]; // used to do not inject existing MV
+        [MODE_DECISION_CANDIDATE_MAX_COUNT]; /*!< used to do not inject existing MV */
     uint8_t injected_mv_count_l0;
 
     int16_t injected_mv_x_l1_array
-        [MODE_DECISION_CANDIDATE_MAX_COUNT]; // used to do not inject existing MV
+        [MODE_DECISION_CANDIDATE_MAX_COUNT]; /*!< used to do not inject existing MV */
     int16_t injected_mv_y_l1_array
-        [MODE_DECISION_CANDIDATE_MAX_COUNT]; // used to do not inject existing MV
+        [MODE_DECISION_CANDIDATE_MAX_COUNT]; /*!< used to do not inject existing MV */
     uint8_t injected_mv_count_l1;
 
     int16_t injected_mv_x_bipred_l0_array
-        [MODE_DECISION_CANDIDATE_MAX_COUNT]; // used to do not inject existing MV
+        [MODE_DECISION_CANDIDATE_MAX_COUNT]; /*!< used to do not inject existing MV */
     int16_t injected_mv_y_bipred_l0_array
-        [MODE_DECISION_CANDIDATE_MAX_COUNT]; // used to do not inject existing MV
+        [MODE_DECISION_CANDIDATE_MAX_COUNT]; /*!< used to do not inject existing MV */
     int16_t injected_mv_x_bipred_l1_array
-        [MODE_DECISION_CANDIDATE_MAX_COUNT]; // used to do not inject existing MV
+        [MODE_DECISION_CANDIDATE_MAX_COUNT]; /*!< used to do not inject existing MV */
     int16_t injected_mv_y_bipred_l1_array
-        [MODE_DECISION_CANDIDATE_MAX_COUNT]; // used to do not inject existing MV
+        [MODE_DECISION_CANDIDATE_MAX_COUNT]; /*!< used to do not inject existing MV */
     uint8_t  injected_mv_count_bipred;
     uint32_t fast_candidate_inter_count;
     uint32_t me_block_offset;
@@ -245,7 +243,7 @@ typedef struct ModeDecisionContext {
     int16_t  cb_dc_sign_context;
     int16_t  cr_txb_skip_context;
     int16_t  cr_dc_sign_context;
-    // Multi-modes signal(s)
+    /*!< Multi-modes signal(s) */
     uint8_t              parent_sq_type[MAX_PARENT_SQ];
     uint8_t              parent_sq_has_coeff[MAX_PARENT_SQ];
     uint8_t              parent_sq_pred_mode[MAX_PARENT_SQ];
@@ -297,14 +295,14 @@ typedef struct ModeDecisionContext {
 
     CandClass target_class;
 
-    // fast_loop_core signals
+    /*!< fast_loop_core signals */
     EbBool md_staging_use_bilinear;
     EbBool md_staging_skip_interpolation_search;
     EbBool md_staging_skip_inter_chroma_pred;
 
-    // full_loop_core signals
+    /*!< full_loop_core signals */
     EbBool
-           md_staging_skip_full_pred; // 0: perform luma & chroma prediction + interpolation search, 2: nothing (use information from previous stages)
+           md_staging_skip_full_pred; /*!< 0: perform luma & chroma prediction + interpolation search, 2: nothing (use information from previous stages) */
     EbBool md_staging_tx_size_mode; // 0: Tx Size recon only, 1:Tx Size search and recon
     EbBool md_staging_tx_search; // 0: skip, 1: use ref cost, 2: no shortcuts
     EbBool md_staging_skip_full_chroma;
@@ -312,12 +310,12 @@ typedef struct ModeDecisionContext {
     EbBool md_staging_spatial_sse_full_loop;
     DECLARE_ALIGNED(
         16, uint8_t,
-        intrapred_buf[INTERINTRA_MODES][2 * 32 * 32]); //MAX block size for inter intra is 32x32
+        intrapred_buf[INTERINTRA_MODES][2 * 32 * 32]); /*!< MAX block size for inter intra is 32x32 */
     uint64_t *   ref_best_cost_sq_table;
     uint32_t *   ref_best_ref_sq_table;
     uint8_t      edge_based_skip_angle_intra;
     uint8_t      prune_ref_frame_for_rec_partitions;
-    unsigned int source_variance; // input block variance
+    unsigned int source_variance; /*!< input block variance */
     unsigned int inter_inter_wedge_variance_th;
     uint64_t     md_exit_th;
     uint64_t     md_fast_cost_cand_prune_th;
@@ -333,10 +331,10 @@ typedef struct ModeDecisionContext {
     unsigned int pred_sse[REF_FRAMES];
     uint8_t *    above_txfm_context;
     uint8_t *    left_txfm_context;
-    // square cost weighting for deciding if a/b shapes could be skipped
+    /*!< square cost weighting for deciding if a/b shapes could be skipped */
     uint32_t sq_weight;
 
-    // signal for enabling shortcut to skip search depths
+    /*!< signal for enabling shortcut to skip search depths */
     MD_COMP_TYPE compound_types_to_try;
     uint8_t      best_me_cand_only_flag;
     uint8_t      dc_cand_only_flag;
@@ -357,7 +355,7 @@ typedef struct ModeDecisionContext {
     int16_t      full_pel_ref_window_width_th;
     int16_t      full_pel_ref_window_height_th;
 
-    // Signal to control initial and final pass PD setting(s)
+    /*!< Signal to control initial and final pass PD setting(s) */
     PdPass pd_pass;
 
 } ModeDecisionContext;
@@ -372,9 +370,9 @@ typedef void (*EbLambdaAssignFunc)(uint32_t *fast_lambda, uint32_t *full_lambda,
                                    uint32_t *full_chroma_lambda_sao,
                                    uint8_t qp_hierarchical_position, uint8_t qp, uint8_t chroma_qp);
 
-/**************************************
-     * Extern Function Declarations
-     **************************************/
+/**************************************/
+/*!< Extern Function Declarations */
+/**************************************/
 extern EbErrorType mode_decision_context_ctor(ModeDecisionContext *context_ptr,
                                               EbColorFormat        color_format,
                                               EbFifo *mode_decision_configuration_input_fifo_ptr,
@@ -401,8 +399,7 @@ extern void lambda_assign_random_access(uint32_t *fast_lambda, uint32_t *full_la
 extern const EbLambdaAssignFunc    lambda_assignment_function_table[4];
 extern const EbAv1LambdaAssignFunc av1_lambda_assignment_function_table[4];
 
-// Table that converts 0-63 Q-range values passed in outside to the Qindex
-// range used internally.
+/*!< Table that converts 0-63 Q-range values passed in outside to the Qindex range used internally. */
 static const uint8_t quantizer_to_qindex[] = {
     0,   4,   8,   12,  16,  20,  24,  28,  32,  36,  40,  44,  48,  52,  56,  60,
     64,  68,  72,  76,  80,  84,  88,  92,  96,  100, 104, 108, 112, 116, 120, 124,

@@ -1,26 +1,23 @@
-/*
-* Copyright(c) 2019 Intel Corporation
-* SPDX - License - Identifier: BSD - 2 - Clause - Patent
-*/
+/*!< Copyright(c) 2019 Intel Corporation
+ * SPDX - License - Identifier: BSD - 2 - Clause - Patent */
 
-/*
-* Copyright (c) 2016, Alliance for Open Media. All rights reserved
-*
-* This source code is subject to the terms of the BSD 2 Clause License and
-* the Alliance for Open Media Patent License 1.0. If the BSD 2 Clause License
-* was not distributed with this source code in the LICENSE file, you can
-* obtain it at www.aomedia.org/license/software. If the Alliance for Open
-* Media Patent License 1.0 was not distributed with this source code in the
-* PATENTS file, you can obtain it at www.aomedia.org/license/patent.
-*/
+/*!< Copyright (c) 2016, Alliance for Open Media. All rights reserved
+ *
+ * This source code is subject to the terms of the BSD 2 Clause License and
+ * the Alliance for Open Media Patent License 1.0. If the BSD 2 Clause License
+ * was not distributed with this source code in the LICENSE file, you can
+ * obtain it at www.aomedia.org/license/software. If the Alliance for Open
+ * Media Patent License 1.0 was not distributed with this source code in the
+ * PATENTS file, you can obtain it at www.aomedia.org/license/patent. */
 
 #ifndef EbDecBitstreamUnit_h
 #define EbDecBitstreamUnit_h
 
 #include "EbCabacContextModel.h"
 #include "EbBitstreamUnit.h"
-//Added this EbBitstreamUnit.h because OdEcWindow is defined in it, but
-//we also defining it, so it leads to warning,  so i commented our defination & added EbBitstreamUnit.h file.
+/*!< Added this EbBitstreamUnit.h because OdEcWindow is defined in it, but
+ *   we also defining it, so it leads to warning,
+ *   so i commented our defination & added EbBitstreamUnit.h file. */
 
 #ifdef __cplusplus
 extern "C" {
@@ -34,25 +31,25 @@ extern "C" {
 /********************************************************************************************************************************/
 #if (CHAR_BIT != 8)
 #undef CHAR_BIT
-#define CHAR_BIT 8 /* number of bits in a char */
+#define CHAR_BIT 8 /*!< number of bits in a char */
 #endif
-// entcode.h from AOM
+/*!< entcode.h from AOM */
 
 #define EC_PROB_SHIFT 6
-#define EC_MIN_PROB 4 // must be <= (1<<EC_PROB_SHIFT)/16
+#define EC_MIN_PROB 4 /*!< must be <= (1<<EC_PROB_SHIFT)/16 */
 
-/*OPT: OdEcWindow must be at least 32 bits, but if you have fast arithmetic
-   on a larger type, you can speed up the decoder by using it here.*/
+/*!< OPT: OdEcWindow must be at least 32 bits, but if you have fast arithmetic
+ *        on a larger type, you can speed up the decoder by using it here. */
 //typedef uint32_t OdEcWindow;
 
-/*The size in bits of OdEcWindow.*/
+/*!< The size in bits of OdEcWindow.*/
 //#define OD_EC_WINDOW_SIZE ((int)sizeof(OdEcWindow) * CHAR_BIT)
 
 /********************************************************************************************************************************/
 /********************************************************************************************************************************/
 /********************************************************************************************************************************/
 /********************************************************************************************************************************/
-// prob.h from AOM
+/*!< prob.h from AOM */
 //typedef uint16_t aom_cdf_prob;
 #define ENABLE_ENTROPY_TRACE 0
 #define EXTRA_DUMP 0
@@ -68,10 +65,10 @@ extern int   enable_dump;
 #define CDF_PROB_TOP (1 << CDF_PROB_BITS)
 #define CDF_INIT_TOP 32768
 #define CDF_SHIFT (15 - CDF_PROB_BITS)
-/*The value stored in an iCDF is CDF_PROB_TOP minus the actual cumulative
-  probability (an "inverse" CDF).
-  This function converts from one representation to the other (and is its own
-  inverse).*/
+/*!< The value stored in an iCDF is CDF_PROB_TOP minus the actual cumulative
+ * probability (an "inverse" CDF).
+ * This function converts from one representation to the other (and is its own
+ * inverse). */
 #define AOM_ICDF(x) (CDF_PROB_TOP - (x))
 
 static INLINE void dec_update_cdf(AomCdfProb *cdf, int8_t val, int nsymbs) {
@@ -80,10 +77,10 @@ static INLINE void dec_update_cdf(AomCdfProb *cdf, int8_t val, int nsymbs) {
 
     static const int nsymbs2speed[17] = {0, 0, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2};
     assert(nsymbs < 17);
-    rate = 3 + (cdf[nsymbs] > 15) + (cdf[nsymbs] > 31) + nsymbs2speed[nsymbs]; // + get_msb(nsymbs);
+    rate = 3 + (cdf[nsymbs] > 15) + (cdf[nsymbs] > 31) + nsymbs2speed[nsymbs]; /*!< + get_msb(nsymbs);*/
     tmp  = AOM_ICDF(0);
 
-    // Single loop (faster)
+    /*!< Single loop (faster) */
     for (i = 0; i < nsymbs - 1; ++i) {
         tmp = (i == val) ? 0 : tmp;
         if (tmp < cdf[i]) {
@@ -98,35 +95,34 @@ static INLINE void dec_update_cdf(AomCdfProb *cdf, int8_t val, int nsymbs) {
 /********************************************************************************************************************************/
 /********************************************************************************************************************************/
 /********************************************************************************************************************************/
-// entdec.h from AOM
+/*!< entdec.h from AOM */
 
-/*The entropy decoder context.*/
+/*!< The entropy decoder context.*/
 typedef struct OdEcDec {
-    /*The start of the current input buffer.*/
+    /*!< The start of the current input buffer. */
     const unsigned char *buf;
 
-    /*An offset used to keep track of tell after reaching the end of the stream.
-    This is constant throughout most of the decoding process, but becomes
-    important once we hit the end of the buffer and stop incrementing bptr
-    (and instead pretend cnt has lots of bits).*/
+    /*!< An offset used to keep track of tell after reaching the end of the stream.
+     *   This is constant throughout most of the decoding process, but becomes
+     *   important once we hit the end of the buffer and stop incrementing bptr
+     *   (and instead pretend cnt has lots of bits). */
     int32_t tell_offs;
 
-    /*The end of the current input buffer.*/
+    /*!< The end of the current input buffer. */
     const unsigned char *end;
-    /*The read pointer for the entropy-coded bits.*/
+    /*!< The read pointer for the entropy-coded bits. */
     const unsigned char *bptr;
 
-    /*The difference between the high end of the current range, (low + rng), and
-    the coded value, minus 1.
-    This stores up to OD_EC_WINDOW_SIZE bits of that difference, but the
-    decoder only uses the top 16 bits of the window to decode the next symbol.
-    As we shift up during renormalization, if we don't have enough bits left in
-    the window to fill the top 16, we'll read in more bits of the coded
-    value.*/
+    /*!< The difference between the high end of the current range, (low + rng), and
+     *   the coded value, minus 1.
+     *   This stores up to OD_EC_WINDOW_SIZE bits of that difference, but the
+     *   decoder only uses the top 16 bits of the window to decode the next symbol.
+     *   As we shift up during renormalization, if we don't have enough bits left in
+     *   the window to fill the top 16, we'll read in more bits of the coded value.*/
     OdEcWindow dif;
-    /*The number of values in the current range.*/
+    /*!< The number of values in the current range. */
     uint16_t rng;
-    /*The number of bits of data in the current value.*/
+    /*!< The number of bits of data in the current value. */
     int16_t cnt;
 } OdEcDec;
 
@@ -137,7 +133,7 @@ int od_ec_decode_cdf_q15(OdEcDec *dec, const uint16_t *cdf, int nsyms);
 /********************************************************************************************************************************/
 /********************************************************************************************************************************/
 /********************************************************************************************************************************/
-// daalaboolreader.h from AOM
+/*!< daalaboolreader.h from AOM */
 
 typedef struct DaalaReader {
     const uint8_t *buffer;

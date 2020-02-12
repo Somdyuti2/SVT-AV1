@@ -1,18 +1,14 @@
-/*
-* Copyright(c) 2019 Intel Corporation
-* SPDX - License - Identifier: BSD - 2 - Clause - Patent
-*/
+/*!< Copyright(c) 2019 Intel Corporation
+ * SPDX - License - Identifier: BSD - 2 - Clause - Patent */
 
-/*
-* Copyright (c) 2016, Alliance for Open Media. All rights reserved
-*
-* This source code is subject to the terms of the BSD 2 Clause License and
-* the Alliance for Open Media Patent License 1.0. If the BSD 2 Clause License
-* was not distributed with this source code in the LICENSE file, you can
-* obtain it at www.aomedia.org/license/software. If the Alliance for Open
-* Media Patent License 1.0 was not distributed with this source code in the
-* PATENTS file, you can obtain it at www.aomedia.org/license/patent.
-*/
+/*!< Copyright (c) 2016, Alliance for Open Media. All rights reserved
+ *
+ * This source code is subject to the terms of the BSD 2 Clause License and
+ * the Alliance for Open Media Patent License 1.0. If the BSD 2 Clause License
+ * was not distributed with this source code in the LICENSE file, you can
+ * obtain it at www.aomedia.org/license/software. If the Alliance for Open
+ * Media Patent License 1.0 was not distributed with this source code in the
+ * PATENTS file, you can obtain it at www.aomedia.org/license/patent. */
 
 #include "EbDeblockingCommon.h"
 #include "EbLog.h"
@@ -85,22 +81,22 @@ uint8_t get_filter_level_delta_lf(FrameHeader* frm_hdr,
     return lvl_seg;
 }
 
-// Update the loop filter for the current frame.
-// This should be called before loop_filter_rows(),
-// eb_av1_loop_filter_frame() calls this function directly.
+/*!< Update the loop filter for the current frame.
+ *   This should be called before loop_filter_rows(),
+ *   eb_av1_loop_filter_frame() calls this function directly. */
 void eb_av1_loop_filter_frame_init(FrameHeader *frm_hdr, LoopFilterInfoN *lfi, int32_t plane_start,
                                    int32_t plane_end) {
     int32_t filt_lvl[MAX_MB_PLANE], filt_lvl_r[MAX_MB_PLANE];
     int32_t plane;
     int32_t seg_id;
-    // n_shift is the multiplier for lf_deltas
-    // the multiplier is 1 for when filter_lvl is between 0 and 31;
-    // 2 when filter_lvl is between 32 and 63
+    /*!< n_shift is the multiplier for lf_deltas
+     *   the multiplier is 1 for when filter_lvl is between 0 and 31;
+     *   2 when filter_lvl is between 32 and 63 */
 
     struct LoopFilter *const lf = &frm_hdr->loop_filter_params;
     // const struct segmentation *const seg = &pcs_ptr->parent_pcs_ptr->seg;
 
-    // update sharpness limits
+    /*!< update sharpness limits */
     update_sharpness(lfi, lf->sharpness_level);
 
     filt_lvl[0] = frm_hdr->loop_filter_params.filter_level[0];
@@ -131,8 +127,8 @@ void eb_av1_loop_filter_frame_init(FrameHeader *frm_hdr, LoopFilterInfoN *lfi, i
                 }
 
                 if (!lf->mode_ref_delta_enabled) {
-                    // we could get rid of this if we assume that deltas are set to
-                    // zero when not in use; encoder always uses deltas
+                    /*!< we could get rid of this if we assume that deltas are set to
+                     *   zero when not in use; encoder always uses deltas */
                     memset(lfi->lvl[plane][seg_id][dir],
                            lvl_seg,
                            sizeof(lfi->lvl[plane][seg_id][dir]));
@@ -157,7 +153,7 @@ void eb_av1_loop_filter_frame_init(FrameHeader *frm_hdr, LoopFilterInfoN *lfi, i
     }
 }
 
-// should we apply any filter at all: 11111111 yes, 00000000 no
+/*!< should we apply any filter at all: 11111111 yes, 00000000 no */
 static INLINE int8_t filter_mask2(uint8_t limit, uint8_t blimit, uint8_t p1, uint8_t p0, uint8_t q0,
                                   uint8_t q1) {
     int8_t mask = 0;
@@ -213,7 +209,7 @@ static INLINE int8_t flat_mask4(uint8_t thresh, uint8_t p3, uint8_t p2, uint8_t 
     return ~mask;
 }
 
-// is there high edge variance internal edge: 11111111 yes, 00000000 no
+/*!< is there high edge variance internal edge: 11111111 yes, 00000000 no */
 static INLINE int8_t hev_mask(uint8_t thresh, uint8_t p1, uint8_t p0, uint8_t q0, uint8_t q1) {
     int8_t hev = 0;
     hev |= (abs(p1 - p0) > thresh) * -1;
@@ -231,35 +227,35 @@ static INLINE void filter4(int8_t mask, uint8_t thresh, uint8_t *op1, uint8_t *o
     const int8_t  qs1 = (int8_t)*oq1 ^ 0x80;
     const uint8_t hev = hev_mask(thresh, *op1, *op0, *oq0, *oq1);
 
-    // add outer taps if we have high edge variance
+    /*!< add outer taps if we have high edge variance */
     int8_t filter = signed_char_clamp(ps1 - qs1) & hev;
 
-    // inner taps
+    /*!< inner taps */
     filter = signed_char_clamp(filter + 3 * (qs0 - ps0)) & mask;
 
-    // save bottom 3 bits so that we round one side +4 and the other +3
-    // if it equals 4 we'll set to adjust by -1 to account for the fact
-    // we'd round 3 the other way
+    /*!< save bottom 3 bits so that we round one side +4 and the other +3
+     *   if it equals 4 we'll set to adjust by -1 to account for the fact
+     *   we'd round 3 the other way */
     filter1 = signed_char_clamp(filter + 4) >> 3;
     filter2 = signed_char_clamp(filter + 3) >> 3;
 
     *oq0 = signed_char_clamp(qs0 - filter1) ^ 0x80;
     *op0 = signed_char_clamp(ps0 + filter2) ^ 0x80;
 
-    // outer tap adjustments
+    /*!< outer tap adjustments */
     filter = ROUND_POWER_OF_TWO(filter1, 1) & ~hev;
 
     *oq1 = signed_char_clamp(qs1 - filter) ^ 0x80;
     *op1 = signed_char_clamp(ps1 + filter) ^ 0x80;
 }
 
-void aom_lpf_horizontal_4_c(uint8_t *s, int32_t p /* pitch */, const uint8_t *blimit,
+void aom_lpf_horizontal_4_c(uint8_t *s, int32_t p /*!< pitch */, const uint8_t *blimit,
                             const uint8_t *limit, const uint8_t *thresh) {
     int32_t i;
     int32_t count = 4;
 
-    // loop filter designed to work using chars so that we can make maximum use
-    // of 8 bit simd instructions.
+    /*!< loop filter designed to work using chars so that we can make maximum use
+     *   of 8 bit simd instructions. */
     for (i = 0; i < count; ++i) {
         const uint8_t p1 = s[-2 * p], p0 = s[-p];
         const uint8_t q0 = s[0 * p], q1 = s[1 * p];
@@ -274,8 +270,8 @@ void aom_lpf_vertical_4_c(uint8_t *s, int32_t pitch, const uint8_t *blimit, cons
     int32_t i;
     int32_t count = 4;
 
-    // loop filter designed to work using chars so that we can make maximum use
-    // of 8 bit simd instructions.
+    /*!< loop filter designed to work using chars so that we can make maximum use
+     *   of 8 bit simd instructions. */
     for (i = 0; i < count; ++i) {
         const uint8_t p1 = s[-2], p0 = s[-1];
         const uint8_t q0 = s[0], q1 = s[1];
@@ -291,7 +287,7 @@ static INLINE void filter6(int8_t mask, uint8_t thresh, int8_t flat, uint8_t *op
         const uint8_t p2 = *op2, p1 = *op1, p0 = *op0;
         const uint8_t q0 = *oq0, q1 = *oq1, q2 = *oq2;
 
-        // 5-tap filter [1, 2, 2, 2, 1]
+        /*!< 5-tap filter [1, 2, 2, 2, 1] */
         *op1 = ROUND_POWER_OF_TWO(p2 * 3 + p1 * 2 + p0 * 2 + q0, 3);
         *op0 = ROUND_POWER_OF_TWO(p2 + p1 * 2 + p0 * 2 + q0 * 2 + q1, 3);
         *oq0 = ROUND_POWER_OF_TWO(p1 + p0 * 2 + q0 * 2 + q1 * 2 + q2, 3);
@@ -307,7 +303,7 @@ static INLINE void filter8(int8_t mask, uint8_t thresh, int8_t flat, uint8_t *op
         const uint8_t p3 = *op3, p2 = *op2, p1 = *op1, p0 = *op0;
         const uint8_t q0 = *oq0, q1 = *oq1, q2 = *oq2, q3 = *oq3;
 
-        // 7-tap filter [1, 1, 1, 2, 1, 1, 1]
+        /*!< 7-tap filter [1, 1, 1, 2, 1, 1, 1] */
         *op2 = ROUND_POWER_OF_TWO(p3 + p3 + p3 + 2 * p2 + p1 + p0 + q0, 3);
         *op1 = ROUND_POWER_OF_TWO(p3 + p3 + p2 + 2 * p1 + p0 + q0 + q1, 3);
         *op0 = ROUND_POWER_OF_TWO(p3 + p2 + p1 + 2 * p0 + q0 + q1 + q2, 3);
@@ -323,8 +319,8 @@ void aom_lpf_horizontal_6_c(uint8_t *s, int32_t p, const uint8_t *blimit, const 
     int32_t i;
     int32_t count = 4;
 
-    // loop filter designed to work using chars so that we can make maximum use
-    // of 8 bit simd instructions.
+    /*!< loop filter designed to work using chars so that we can make maximum use
+     *   of 8 bit simd instructions. */
     for (i = 0; i < count; ++i) {
         const uint8_t p2 = s[-3 * p], p1 = s[-2 * p], p0 = s[-p];
         const uint8_t q0 = s[0 * p], q1 = s[1 * p], q2 = s[2 * p];
@@ -359,8 +355,8 @@ void aom_lpf_horizontal_8_c(uint8_t *s, int32_t p, const uint8_t *blimit, const 
     int32_t i;
     int32_t count = 4;
 
-    // loop filter designed to work using chars so that we can make maximum use
-    // of 8 bit simd instructions.
+    /*!< loop filter designed to work using chars so that we can make maximum use
+     *   of 8 bit simd instructions. */
     for (i = 0; i < count; ++i) {
         const uint8_t p3 = s[-4 * p], p2 = s[-3 * p], p1 = s[-2 * p], p0 = s[-p];
         const uint8_t q0 = s[0 * p], q1 = s[1 * p], q2 = s[2 * p], q3 = s[3 * p];
@@ -397,7 +393,7 @@ void aom_lpf_vertical_8_c(uint8_t *s, int32_t pitch, const uint8_t *blimit, cons
     }
 }
 
-// Should we apply any filter at all: 11111111 yes, 00000000 no ?
+/*!< Should we apply any filter at all: 11111111 yes, 00000000 no ? */
 static INLINE int8_t highbd_filter_mask2(uint8_t limit, uint8_t blimit, uint16_t p1, uint16_t p0,
                                          uint16_t q0, uint16_t q1, int32_t bd) {
     int8_t  mask     = 0;
@@ -409,7 +405,7 @@ static INLINE int8_t highbd_filter_mask2(uint8_t limit, uint8_t blimit, uint16_t
     return ~mask;
 }
 
-// Should we apply any filter at all: 11111111 yes, 00000000 no ?
+/*!< Should we apply any filter at all: 11111111 yes, 00000000 no ? */
 static INLINE int8_t highbd_filter_mask(uint8_t limit, uint8_t blimit, uint16_t p3, uint16_t p2,
                                         uint16_t p1, uint16_t p0, uint16_t q0, uint16_t q1,
                                         uint16_t q2, uint16_t q3, int32_t bd) {
@@ -440,8 +436,8 @@ static INLINE int8_t highbd_flat_mask4(uint8_t thresh, uint16_t p3, uint16_t p2,
     return ~mask;
 }
 
-// Is there high edge variance internal edge:
-// 11111111_11111111 yes, 00000000_00000000 no ?
+/*!< Is there high edge variance internal edge:
+ *   11111111_11111111 yes, 00000000_00000000 no ? */
 static INLINE int16_t highbd_hev_mask(uint8_t thresh, uint16_t p1, uint16_t p0, uint16_t q0,
                                       uint16_t q1, int32_t bd) {
     int16_t hev      = 0;
@@ -454,8 +450,8 @@ static INLINE int16_t highbd_hev_mask(uint8_t thresh, uint16_t p1, uint16_t p0, 
 static INLINE void highbd_filter4(int8_t mask, uint8_t thresh, uint16_t *op1, uint16_t *op0,
                                   uint16_t *oq0, uint16_t *oq1, int32_t bd) {
     int16_t filter1, filter2;
-    // ^0x80 equivalent to subtracting 0x80 from the values to turn them
-    // into -128 to +127 instead of 0 to 255.
+    /*!< ^0x80 equivalent to subtracting 0x80 from the values to turn them
+     *   into -128 to +127 instead of 0 to 255. */
     int32_t        shift = bd - 8;
     const int16_t  ps1   = (int16_t)*op1 - (0x80 << shift);
     const int16_t  ps0   = (int16_t)*op0 - (0x80 << shift);
@@ -463,22 +459,22 @@ static INLINE void highbd_filter4(int8_t mask, uint8_t thresh, uint16_t *op1, ui
     const int16_t  qs1   = (int16_t)*oq1 - (0x80 << shift);
     const uint16_t hev   = highbd_hev_mask(thresh, *op1, *op0, *oq0, *oq1, bd);
 
-    // Add outer taps if we have high edge variance.
+    /*!< Add outer taps if we have high edge variance. */
     int16_t filter = signed_char_clamp_high(ps1 - qs1, bd) & hev;
 
-    // Inner taps.
+    /*!< Inner taps. */
     filter = signed_char_clamp_high(filter + 3 * (qs0 - ps0), bd) & mask;
 
-    // Save bottom 3 bits so that we round one side +4 and the other +3
-    // if it equals 4 we'll set to adjust by -1 to account for the fact
-    // we'd round 3 the other way.
+    /*!< Save bottom 3 bits so that we round one side +4 and the other +3
+     *   if it equals 4 we'll set to adjust by -1 to account for the fact
+     *   we'd round 3 the other way. */
     filter1 = signed_char_clamp_high(filter + 4, bd) >> 3;
     filter2 = signed_char_clamp_high(filter + 3, bd) >> 3;
 
     *oq0 = signed_char_clamp_high(qs0 - filter1, bd) + (0x80 << shift);
     *op0 = signed_char_clamp_high(ps0 + filter2, bd) + (0x80 << shift);
 
-    // Outer tap adjustments.
+    /*!< Outer tap adjustments. */
     filter = ROUND_POWER_OF_TWO(filter1, 1) & ~hev;
 
     *oq1 = signed_char_clamp_high(qs1 - filter, bd) + (0x80 << shift);
@@ -490,8 +486,8 @@ void aom_highbd_lpf_horizontal_4_c(uint16_t *s, int32_t p /* pitch */, const uin
     int32_t i;
     int32_t count = 4;
 
-    // loop filter designed to work using chars so that we can make maximum use
-    // of 8 bit simd instructions.
+    /*!< loop filter designed to work using chars so that we can make maximum use
+     *   of 8 bit simd instructions. */
     for (i = 0; i < count; ++i) {
         const uint16_t p1   = s[-2 * p];
         const uint16_t p0   = s[-p];
@@ -508,8 +504,8 @@ void aom_highbd_lpf_vertical_4_c(uint16_t *s, int32_t pitch, const uint8_t *blim
     int32_t i;
     int32_t count = 4;
 
-    // loop filter designed to work using chars so that we can make maximum use
-    // of 8 bit simd instructions.
+    /*!< loop filter designed to work using chars so that we can make maximum use
+     *   of 8 bit simd instructions. */
     for (i = 0; i < count; ++i) {
         const uint16_t p1 = s[-2], p0 = s[-1];
         const uint16_t q0 = s[0], q1 = s[1];
@@ -526,7 +522,7 @@ static INLINE void highbd_filter8(int8_t mask, uint8_t thresh, int8_t flat, uint
         const uint16_t p3 = *op3, p2 = *op2, p1 = *op1, p0 = *op0;
         const uint16_t q0 = *oq0, q1 = *oq1, q2 = *oq2, q3 = *oq3;
 
-        // 7-tap filter [1, 1, 1, 2, 1, 1, 1]
+        /*!< 7-tap filter [1, 1, 1, 2, 1, 1, 1] */
         *op2 = ROUND_POWER_OF_TWO(p3 + p3 + p3 + 2 * p2 + p1 + p0 + q0, 3);
         *op1 = ROUND_POWER_OF_TWO(p3 + p3 + p2 + 2 * p1 + p0 + q0 + q1, 3);
         *op0 = ROUND_POWER_OF_TWO(p3 + p2 + p1 + 2 * p0 + q0 + q1 + q2, 3);
@@ -542,8 +538,8 @@ void aom_highbd_lpf_horizontal_8_c(uint16_t *s, int32_t p, const uint8_t *blimit
     int32_t i;
     int32_t count = 4;
 
-    // loop filter designed to work using chars so that we can make maximum use
-    // of 8 bit simd instructions.
+    /*!< loop filter designed to work using chars so that we can make maximum use
+     *   of 8 bit simd instructions. */
     for (i = 0; i < count; ++i) {
         const uint16_t p3 = s[-4 * p], p2 = s[-3 * p], p1 = s[-2 * p], p0 = s[-p];
         const uint16_t q0 = s[0 * p], q1 = s[1 * p], q2 = s[2 * p], q3 = s[3 * p];
@@ -592,9 +588,9 @@ void aom_highbd_lpf_vertical_8_c(uint16_t *s, int32_t pitch, const uint8_t *blim
 void update_sharpness(LoopFilterInfoN *lfi, int32_t sharpness_lvl) {
     int32_t lvl;
 
-    // For each possible value for the loop filter fill out limits
+    /*!< For each possible value for the loop filter fill out limits */
     for (lvl = 0; lvl <= MAX_LOOP_FILTER; lvl++) {
-        // Set loop filter parameters that control sharpness.
+        /*!< Set loop filter parameters that control sharpness. */
         int32_t block_inside_limit = lvl >> ((sharpness_lvl > 0) + (sharpness_lvl > 4));
 
         if (sharpness_lvl > 0) {

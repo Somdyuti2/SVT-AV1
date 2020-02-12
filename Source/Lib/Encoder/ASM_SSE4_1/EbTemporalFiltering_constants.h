@@ -1,37 +1,35 @@
-/*
- * Copyright (c) 2019, Alliance for Open Media. All rights reserved
+/*!< Copyright (c) 2019, Alliance for Open Media. All rights reserved
  *
  * This source code is subject to the terms of the BSD 2 Clause License and
  * the Alliance for Open Media Patent License 1.0. If the BSD 2 Clause License
  * was not distributed with this source code in the LICENSE file, you can
  * obtain it at www.aomedia.org/license/software. If the Alliance for Open
  * Media Patent License 1.0 was not distributed with this source code in the
- * PATENTS file, you can obtain it at www.aomedia.org/license/patent.
- */
+ * PATENTS file, you can obtain it at www.aomedia.org/license/patent. */
 
 #include "EbTemporalFiltering.h"
 
-// Division using multiplication and shifting. The C implementation does:
-// modifier *= 3;
-// modifier /= index;
-// where 'modifier' is a set of summed values and 'index' is the number of
-// summed values.
-//
-// This equation works out to (m * 3) / i which reduces to:
-// m * 3/4
-// m * 1/2
-// m * 1/3
-//
-// by pairing the multiply with a down shift by 16 (_mm_mulhi_epu16):
-// m * C / 65536
-// we can create a C to replicate the division.
-//
-// m * 49152 / 65536 = m * 3/4
-// m * 32758 / 65536 = m * 1/2
-// m * 21846 / 65536 = m * 0.3333
-//
-// These are loaded using an instruction expecting int16_t values but are used
-// with _mm_mulhi_epu16(), which treats them as unsigned.
+/*!< Division using multiplication and shifting. The C implementation does:
+ *   modifier *= 3;
+ *   modifier /= index;
+ *   where 'modifier' is a set of summed values and 'index' is the number of
+ *   summed values.
+ *
+ *   This equation works out to (m * 3) / i which reduces to:
+ *   m * 3/4
+ *   m * 1/2
+ *   m * 1/3
+ *
+ *   by pairing the multiply with a down shift by 16 (_mm_mulhi_epu16):
+ *   m * C / 65536
+ *   we can create a C to replicate the division.
+ *
+ *   m * 49152 / 65536 = m * 3/4
+ *   m * 32758 / 65536 = m * 1/2
+ *   m * 21846 / 65536 = m * 0.3333
+ *
+ *   These are loaded using an instruction expecting int16_t values but are used
+ *   with _mm_mulhi_epu16(), which treats them as unsigned. */
 #define NEIGHBOR_CONSTANT_4 (int16_t)49152
 #define NEIGHBOR_CONSTANT_5 (int16_t)39322
 #define NEIGHBOR_CONSTANT_6 (int16_t)32768

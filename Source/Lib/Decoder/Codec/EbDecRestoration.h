@@ -1,7 +1,5 @@
-/*
-* Copyright(c) 2019 Netflix, Inc.
-* SPDX - License - Identifier: BSD - 2 - Clause - Patent
-*/
+/* Copyright(c) 2019 Netflix, Inc.
+ * SPDX - License - Identifier: BSD - 2 - Clause - Patent */
 
 #ifndef EbDecRestoration_h
 #define EbDecRestoration_h
@@ -12,9 +10,9 @@ extern "C" {
 
 #include "EbDecHandle.h"
 
-/* The LR_PAD_SIZE must be 3 for both luma and chroma
-   The value is set to 6 to keep the functionality for
-   all planes when subsampling is applied in the pad functions */
+/*!< The LR_PAD_SIZE must be 3 for both luma and chroma
+ *   The value is set to 6 to keep the functionality for
+ *   all planes when subsampling is applied in the pad functions */
 #define LR_PAD_SIDE 6
 #define LR_PAD_MAX  (LR_PAD_SIDE << 1)
 

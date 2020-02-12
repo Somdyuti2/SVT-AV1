@@ -1,7 +1,5 @@
-/*
-* Copyright(c) 2019 Intel Corporation
-* SPDX - License - Identifier: BSD - 2 - Clause - Patent
-*/
+/*!< Copyright(c) 2019 Intel Corporation
+ * SPDX - License - Identifier: BSD - 2 - Clause - Patent */
 
 #ifndef EbEncIntraPrediction_h
 #define EbEncIntraPrediction_h
@@ -32,7 +30,7 @@ extern EbErrorType update_neighbor_samples_array_open_loop(uint8_t *above_ref, u
 extern EbErrorType intra_prediction_open_loop(
         int32_t p_angle, uint8_t ois_intra_mode, uint32_t srcOriginX, uint32_t srcOriginY,
         TxSize tx_size, uint8_t *above_row, uint8_t *left_col,
-        MotionEstimationContext_t *context_ptr); // input parameter, ME context
+        MotionEstimationContext_t *context_ptr); /*!< input parameter, ME context */
 
 
 

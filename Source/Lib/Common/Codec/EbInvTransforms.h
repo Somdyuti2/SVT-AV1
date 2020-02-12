@@ -1,18 +1,14 @@
-/*
-* Copyright(c) 2019 Intel Corporation
-* SPDX - License - Identifier: BSD - 2 - Clause - Patent
-*/
+/*!< Copyright(c) 2019 Intel Corporation
+ * SPDX - License - Identifier: BSD - 2 - Clause - Patent */
 
-/*
-* Copyright (c) 2016, Alliance for Open Media. All rights reserved
-*
-* This source code is subject to the terms of the BSD 2 Clause License and
-* the Alliance for Open Media Patent License 1.0. If the BSD 2 Clause License
-* was not distributed with this source code in the LICENSE file, you can
-* obtain it at www.aomedia.org/license/software. If the Alliance for Open
-* Media Patent License 1.0 was not distributed with this source code in the
-* PATENTS file, you can obtain it at www.aomedia.org/license/patent.
-*/
+/*!< Copyright (c) 2016, Alliance for Open Media. All rights reserved
+ *
+ * This source code is subject to the terms of the BSD 2 Clause License and
+ * the Alliance for Open Media Patent License 1.0. If the BSD 2 Clause License
+ * was not distributed with this source code in the LICENSE file, you can
+ * obtain it at www.aomedia.org/license/software. If the Alliance for Open
+ * Media Patent License 1.0 was not distributed with this source code in the
+ * PATENTS file, you can obtain it at www.aomedia.org/license/patent. */
 
 #ifndef EbInvTransforms_h
 #define EbInvTransforms_h
@@ -31,9 +27,9 @@ extern "C" {
 #define MAX_TXWH_IDX 5
 #define AOM_QM_BITS 5
 #define MAX_TX_SCALE 1
-/*****************************
-    * DEBUG MACROS
-    *****************************/
+/*****************************/
+/*!< DEBUG MACROS */
+/*****************************/
 #define ZERO_COEFF 0
 #define ZERO_COEFF_CHROMA 0
 
@@ -111,8 +107,7 @@ static const TxType1D htx_tab[TX_TYPES] = {
         FLIPADST_1D,
 };
 
-// Utility function that returns the log of the ratio of the col and row
-// sizes.
+/*!< Utility function that returns the log of the ratio of the col and row sizes. */
 typedef enum TxfmType {
     TXFM_TYPE_DCT4,
     TXFM_TYPE_DCT8,
@@ -133,8 +128,8 @@ typedef enum TxfmType {
 } TxfmType;
 typedef struct Txfm2dFlipCfg {
     TxSize        tx_size;
-    int32_t       ud_flip; // flip upside down
-    int32_t       lr_flip; // flip left to right
+    int32_t       ud_flip; /*!< flip upside down */
+    int32_t       lr_flip; /*!< flip left to right */
     const int8_t *shift;
     int8_t        cos_bit_col;
     int8_t        cos_bit_row;
@@ -148,13 +143,13 @@ typedef struct Txfm2dFlipCfg {
 
 
 
-EbErrorType av1_inv_transform_recon(int32_t *coeff_buffer, //1D buffer
+EbErrorType av1_inv_transform_recon(int32_t *coeff_buffer, /*!< 1D buffer */
                                     uint8_t *recon_buffer_r, uint32_t recon_stride_r,
                                     uint8_t *recon_buffer_w, uint32_t recon_stride_w, TxSize txsize,
                                     uint32_t bit_increment, TxType transform_type,
                                     PlaneType component_type, uint32_t eob, uint8_t lossless);
 
-EbErrorType av1_inv_transform_recon8bit(int32_t *coeff_buffer, //1D buffer
+EbErrorType av1_inv_transform_recon8bit(int32_t *coeff_buffer, /*!< 1D buffer */
                                         uint8_t *recon_buffer_r, uint32_t recon_stride_r,
                                         uint8_t *recon_buffer_w, uint32_t recon_stride_w,
                                         TxSize txsize, TxType transform_type,
@@ -224,45 +219,45 @@ static const TxfmType av1_txfm_type_ls[5][TX_TYPES_1D] = {
         {TXFM_TYPE_DCT32, TXFM_TYPE_ADST32, TXFM_TYPE_ADST32, TXFM_TYPE_IDENTITY32},
         {TXFM_TYPE_DCT64, TXFM_TYPE_INVALID, TXFM_TYPE_INVALID, TXFM_TYPE_IDENTITY64}};
 static const int8_t av1_txfm_stage_num_list[TXFM_TYPES] = {
-        4, // TXFM_TYPE_DCT4
-        6, // TXFM_TYPE_DCT8
-        8, // TXFM_TYPE_DCT16
-        10, // TXFM_TYPE_DCT32
-        12, // TXFM_TYPE_DCT64
-        7, // TXFM_TYPE_ADST4
-        8, // TXFM_TYPE_ADST8
-        10, // TXFM_TYPE_ADST16
-        12, // TXFM_TYPE_ADST32
-        1, // TXFM_TYPE_IDENTITY4
-        1, // TXFM_TYPE_IDENTITY8
-        1, // TXFM_TYPE_IDENTITY16
-        1, // TXFM_TYPE_IDENTITY32
-        1, // TXFM_TYPE_IDENTITY64
+        4, /*!< TXFM_TYPE_DCT4 */
+        6, /*!< TXFM_TYPE_DCT8 */
+        8, /*!< TXFM_TYPE_DCT16 */
+        10, /*!< TXFM_TYPE_DCT32 */
+        12, /*!< TXFM_TYPE_DCT64 */
+        7, /*!< TXFM_TYPE_ADST4 */
+        8, /*!< TXFM_TYPE_ADST8 */
+        10, /*!< TXFM_TYPE_ADST16 */
+        12, /*!< TXFM_TYPE_ADST32 */
+        1, /*!< TXFM_TYPE_IDENTITY4 */
+        1, /*!< TXFM_TYPE_IDENTITY8 */
+        1, /*!< TXFM_TYPE_IDENTITY16 */
+        1, /*!< TXFM_TYPE_IDENTITY32 */
+        1, /*!< TXFM_TYPE_IDENTITY64 */
 };
 
 static const int8_t iadst4_range[7] = {0, 1, 0, 0, 0, 0, 0};
 
-// sum of fwd_shift_##
+/*!< sum of fwd_shift_## */
 static const int8_t inv_start_range[TX_SIZES_ALL] = {
-        5, // 4x4 transform
-        6, // 8x8 transform
-        7, // 16x16 transform
-        7, // 32x32 transform
-        7, // 64x64 transform
-        5, // 4x8 transform
-        5, // 8x4 transform
-        6, // 8x16 transform
-        6, // 16x8 transform
-        6, // 16x32 transform
-        6, // 32x16 transform
-        6, // 32x64 transform
-        6, // 64x32 transform
-        6, // 4x16 transform
-        6, // 16x4 transform
-        7, // 8x32 transform
-        7, // 32x8 transform
-        7, // 16x64 transform
-        7, // 64x16 transform
+        5, /*!< 4x4 transform */
+        6, /*!< 8x8 transform */
+        7, /*!< 16x16 transform */
+        7, /*!< 32x32 transform */
+        7, /*!< 64x64 transform */
+        5, /*!< 4x8 transform */
+        5, /*!< 8x4 transform */
+        6, /*!< 8x16 transform */
+        6, /*!< 16x8 transform */
+        6, /*!< 16x32 transform */
+        6, /*!< 32x16 transform */
+        6, /*!< 32x64 transform */
+        6, /*!< 64x32 transform */
+        6, /*!< 4x16 transform */
+        6, /*!< 16x4 transform */
+        7, /*!< 8x32 transform */
+        7, /*!< 32x8 transform */
+        7, /*!< 16x64 transform */
+        7, /*!< 64x16 transform */
 };
 
 extern const int32_t eb_av1_cospi_arr_data[7][64];
@@ -276,16 +271,16 @@ static INLINE const int32_t *cospi_arr(int32_t n) { return eb_av1_cospi_arr_data
 static INLINE const int32_t *sinpi_arr(int32_t n) { return eb_av1_sinpi_arr_data[n - cos_bit_min]; }
 
 static const int32_t new_sqrt2_bits = 12;
-// 2^12 * sqrt(2)
+/*!< 2^12 * sqrt(2) */
 static const int32_t new_sqrt2 = 5793;
-// 2^12 / sqrt(2)
+/*!< 2^12 / sqrt(2) */
 static const int32_t new_inv_sqrt2 = 2896;
 
 typedef void (*TxfmFunc)(const int32_t *input, int32_t *output, int8_t cos_bit,
                          const int8_t *stage_range);
 
-// Note:
-// TranHigh is the datatype used for intermediate transform stages.
+/*!< Note:
+ *   TranHigh is the datatype used for intermediate transform stages. */
 typedef int64_t TranHigh;
 
 static INLINE int32_t round_shift(int64_t value, int32_t bit) {
@@ -311,54 +306,54 @@ static INLINE int32_t get_rect_tx_log_ratio(int32_t col, int32_t row) {
         if (row == col * 4) return -2;
         assert(0 && "Unsupported transform size");
     }
-    return 0; // Invalid
+    return 0; /*!< Invalid */
 }
 
 void eb_av1_round_shift_array_c(int32_t *arr, int32_t size, int32_t bit);
 
 
 static const BlockSize txsize_to_bsize[TX_SIZES_ALL] = {
-        BLOCK_4X4, // TX_4X4
-        BLOCK_8X8, // TX_8X8
-        BLOCK_16X16, // TX_16X16
-        BLOCK_32X32, // TX_32X32
-        BLOCK_64X64, // TX_64X64
-        BLOCK_4X8, // TX_4X8
-        BLOCK_8X4, // TX_8X4
-        BLOCK_8X16, // TX_8X16
-        BLOCK_16X8, // TX_16X8
-        BLOCK_16X32, // TX_16X32
-        BLOCK_32X16, // TX_32X16
-        BLOCK_32X64, // TX_32X64
-        BLOCK_64X32, // TX_64X32
-        BLOCK_4X16, // TX_4X16
-        BLOCK_16X4, // TX_16X4
-        BLOCK_8X32, // TX_8X32
-        BLOCK_32X8, // TX_32X8
-        BLOCK_16X64, // TX_16X64
-        BLOCK_64X16, // TX_64X16
+        BLOCK_4X4, /*!< TX_4X4 */
+        BLOCK_8X8, /*!< TX_8X8 */
+        BLOCK_16X16, /*!< TX_16X16 */
+        BLOCK_32X32, /*!< TX_32X32 */
+        BLOCK_64X64, /*!< TX_64X64 */
+        BLOCK_4X8, /*!< TX_4X8 */
+        BLOCK_8X4, /*!< TX_8X4 */
+        BLOCK_8X16, /*!< TX_8X16 */
+        BLOCK_16X8, /*!< TX_16X8 */
+        BLOCK_16X32, /*!< TX_16X32 */
+        BLOCK_32X16, /*!< TX_32X16 */
+        BLOCK_32X64, /*!< TX_32X64 */
+        BLOCK_64X32, /*!< TX_64X32 */
+        BLOCK_4X16, /*!< TX_4X16 */
+        BLOCK_16X4, /*!< TX_16X4 */
+        BLOCK_8X32, /*!< TX_8X32 */
+        BLOCK_32X8, /*!< TX_32X8 */
+        BLOCK_16X64, /*!< TX_16X64 */
+        BLOCK_64X16, /*!< TX_64X16 */
 };
 
 static const int8_t txsize_log2_minus4[TX_SIZES_ALL] = {
-        0, // TX_4X4
-        2, // TX_8X8
-        4, // TX_16X16
-        6, // TX_32X32
-        6, // TX_64X64
-        1, // TX_4X8
-        1, // TX_8X4
-        3, // TX_8X16
-        3, // TX_16X8
-        5, // TX_16X32
-        5, // TX_32X16
-        6, // TX_32X64
-        6, // TX_64X32
-        2, // TX_4X16
-        2, // TX_16X4
-        4, // TX_8X32
-        4, // TX_32X8
-        5, // TX_16X64
-        5, // TX_64X16
+        0, /*!< TX_4X4 */
+        2, /*!< TX_8X8 */
+        4, /*!< TX_16X16 */
+        6, /*!< TX_32X32 */
+        6, /*!< TX_64X64 */
+        1, /*!< TX_4X8 */
+        1, /*!< TX_8X4 */
+        3, /*!< TX_8X16 */
+        3, /*!< TX_16X8 */
+        5, /*!< TX_16X32 */
+        5, /*!< TX_32X16 */
+        6, /*!< TX_32X64 */
+        6, /*!< TX_64X32 */
+        2, /*!< TX_4X16 */
+        2, /*!< TX_16X4 */
+        4, /*!< TX_8X32 */
+        4, /*!< TX_32X8 */
+        5, /*!< TX_16X64 */
+        5, /*!< TX_64X16 */
 };
 
 int16_t eb_av1_ac_quant_qtx(int32_t qindex, int32_t delta, AomBitDepth bit_depth);

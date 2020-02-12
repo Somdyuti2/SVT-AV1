@@ -1,21 +1,19 @@
-/*
- * Copyright (c) 2017, Alliance for Open Media. All rights reserved
+/*!< Copyright (c) 2017, Alliance for Open Media. All rights reserved
  *
  * This source code is subject to the terms of the BSD 2 Clause License and
  * the Alliance for Open Media Patent License 1.0. If the BSD 2 Clause License
  * was not distributed with this source code in the LICENSE file, you can
  * obtain it at www.aomedia.org/license/software. If the Alliance for Open
  * Media Patent License 1.0 was not distributed with this source code in the
- * PATENTS file, you can obtain it at www.aomedia.org/license/patent.
- */
+ * PATENTS file, you can obtain it at www.aomedia.org/license/patent. */
 
 #include <emmintrin.h>
 #include "EbHighbdIntraPrediction_SSE2.h"
 #include "EbDefinitions.h"
 #include "common_dsp_rtcd.h"
 
-// -----------------------------------------------------------------------------
-// H_PRED
+/******************************************************************************/
+/*!< H_PRED */
 
 void eb_aom_highbd_h_predictor_4x4_sse2(uint16_t *dst, ptrdiff_t stride, const uint16_t *above,
                                         const uint16_t *left, int32_t bd) {
@@ -254,10 +252,10 @@ void eb_aom_highbd_h_predictor_32x32_sse2(uint16_t *dst, ptrdiff_t stride, const
     }
 }
 
-// -----------------------------------------------------------------------------
-// DC_TOP, DC_LEFT, DC_128
+/******************************************************************************/
+/*!< DC_TOP, DC_LEFT, DC_128 */
 
-// 4x4
+/*!< 4x4 */
 
 static INLINE void dc_store_4xh(uint16_t *dst, ptrdiff_t stride, int32_t height,
                                 const __m128i *dc) {
@@ -295,8 +293,8 @@ void eb_aom_highbd_dc_128_predictor_4x4_sse2(uint16_t *dst, ptrdiff_t stride, co
     dc_store_4xh(dst, stride, 4, &dc);
 }
 
-// -----------------------------------------------------------------------------
-// 4x8
+/******************************************************************************/
+/*!< 4x8 */
 
 void eb_aom_highbd_dc_left_predictor_4x8_sse2(uint16_t *dst, ptrdiff_t stride,
                                               const uint16_t *above, const uint16_t *left,
@@ -327,8 +325,8 @@ void eb_aom_highbd_dc_128_predictor_4x8_sse2(uint16_t *dst, ptrdiff_t stride, co
     dc_store_4xh(dst, stride, 8, &dc);
 }
 
-// -----------------------------------------------------------------------------
-// 4x16
+/******************************************************************************/
+/*!< 4x16 */
 
 static INLINE __m128i dc_sum_16(const uint16_t *const src) {
     const __m128i s_lo = _mm_load_si128((const __m128i *)(src + 0));
@@ -375,8 +373,8 @@ void eb_aom_highbd_dc_128_predictor_4x16_sse2(uint16_t *dst, ptrdiff_t stride,
     dc_store_4xh(dst, stride, 16, &dc);
 }
 
-// -----------------------------------------------------------------------------
-// 8xh
+/******************************************************************************/
+/*!< 8xh */
 
 static INLINE void dc_store_8xh(uint16_t *dst, ptrdiff_t stride, int32_t height,
                                 const __m128i *dc) {
@@ -386,8 +384,8 @@ static INLINE void dc_store_8xh(uint16_t *dst, ptrdiff_t stride, int32_t height,
     for (i = 0; i < height; ++i, dst += stride) _mm_store_si128((__m128i *)dst, dc_dup);
 }
 
-// -----------------------------------------------------------------------------
-// DC_TOP
+/******************************************************************************/
+/*!< DC_TOP */
 
 static INLINE void dc_top_predictor_8xh(uint16_t *dst, ptrdiff_t stride, int32_t height,
                                         const uint16_t *above) {
@@ -419,14 +417,14 @@ void eb_aom_highbd_dc_top_predictor_8x16_sse2(uint16_t *dst, ptrdiff_t stride,
     dc_top_predictor_8xh(dst, stride, 16, above);
 }
 
-// -----------------------------------------------------------------------------
-// DC_LEFT
+/******************************************************************************/
+/*!< DC_LEFT */
 
 static INLINE __m128i dc_sum_32(const uint16_t *ref) {
     const __m128i zero  = _mm_setzero_si128();
     const __m128i sum_a = dc_sum_16(ref);
     const __m128i sum_b = dc_sum_16(ref + 16);
-    // 12 bit bd will outrange, so expand to 32 bit before adding final total
+    /*!< 12 bit bd will outrange, so expand to 32 bit before adding final total */
     return _mm_add_epi32(_mm_unpacklo_epi16(sum_a, zero), _mm_unpacklo_epi16(sum_b, zero));
 }
 
@@ -474,8 +472,8 @@ void eb_aom_highbd_dc_left_predictor_8x32_sse2(uint16_t *dst, ptrdiff_t stride,
     dc_store_8xh(dst, stride, 32, &dc);
 }
 
-// -----------------------------------------------------------------------------
-// DC_128
+/******************************************************************************/
+/*!< DC_128 */
 
 static INLINE void dc_128_predictor_8xh(uint16_t *dst, ptrdiff_t stride, int32_t height,
                                         int32_t bd) {
@@ -513,8 +511,8 @@ void eb_aom_highbd_dc_128_predictor_8x32_sse2(uint16_t *dst, ptrdiff_t stride,
     dc_128_predictor_8xh(dst, stride, 32, bd);
 }
 
-// -----------------------------------------------------------------------------
-// V_PRED
+/******************************************************************************/
+/*!< V_PRED */
 
 void eb_aom_highbd_v_predictor_4x8_sse2(uint16_t *dst, ptrdiff_t stride, const uint16_t *above,
                                         const uint16_t *left, int32_t bd) {
@@ -587,8 +585,8 @@ void eb_aom_highbd_v_predictor_8x32_sse2(uint16_t *dst, ptrdiff_t stride, const 
     }
 }
 
-// -----------------------------------------------------------------------------
-// DC_PRED
+/******************************************************************************/
+/*!< DC_PRED */
 
 static INLINE __m128i dc_sum_8_32(const uint16_t *const src_8, const uint16_t *const src_32) {
     const __m128i s_8       = _mm_load_si128((const __m128i *)src_8);

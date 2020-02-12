@@ -1,7 +1,5 @@
-/*
-* Copyright(c) 2019 Intel Corporation
-* SPDX - License - Identifier: BSD - 2 - Clause - Patent
-*/
+/*!< Copyright(c) 2019 Intel Corporation
+* SPDX - License - Identifier: BSD - 2 - Clause - Patent */
 #include <stdio.h>
 #include <inttypes.h>
 
@@ -44,7 +42,7 @@ static EbHandle get_malloc_mutex() {
 }
 #endif // _WIN32
 
-//hash function to speedup etnry search
+/*!< hash function to speedup etnry search */
 uint32_t hash(void* p) {
 #define MASK32 ((((uint64_t)1) << 32) - 1)
 
@@ -61,7 +59,7 @@ typedef struct MemoryEntry {
     uint32_t    line;
 } MemoryEntry;
 
-//+1 to get a better hash result
+/*!< +1 to get a better hash result */
 #define MEM_ENTRY_SIZE (4 * 1024 * 1024 + 1)
 
 MemoryEntry g_mem_entry[MEM_ENTRY_SIZE];
@@ -70,27 +68,21 @@ MemoryEntry g_mem_entry[MEM_ENTRY_SIZE];
 static EbBool g_add_mem_entry_warning    = EB_TRUE;
 static EbBool g_remove_mem_entry_warning = EB_TRUE;
 
-/*********************************************************************************
-*
-* @brief
-*  compare and update current memory entry.
-*
-* @param[in] e
-*  current memory entry.
-*
-* @param[in] param
-*  param you set to for_each_mem_entry
-*
-*
-* @returns  return EB_TRUE if you want get early exit in for_each_mem_entry
-*
-s*
-********************************************************************************/
-
+/*!<
+ * @brief
+ *  compare and update current memory entry.
+ *
+ * @param[in] e
+ *  current memory entry.
+ *
+ * @param[in] param
+ *  param you set to for_each_mem_entry
+ *
+ *
+ * @returns  return EB_TRUE if you want get early exit in for_each_mem_entry */
 typedef EbBool (*Predicate)(MemoryEntry* e, void* param);
 
-/*********************************************************************************
-*
+/*!<
 * @brief
 *  Loop through mem entries.
 *
@@ -106,10 +98,7 @@ typedef EbBool (*Predicate)(MemoryEntry* e, void* param);
 * @param[out] param
 *  param send to pred.
 *
-* @returns  return EB_TRUE if we got early exit.
-*
-*
-********************************************************************************/
+* @returns  return EB_TRUE if we got early exit. */
 static EbBool for_each_hash_entry(MemoryEntry* bucket, uint32_t start, Predicate pred,
                                   void* param) {
     uint32_t s = TO_INDEX(start);
@@ -170,7 +159,7 @@ static EbBool remove_mem_entry(MemoryEntry* e, void* param) {
             e->ptr = NULL;
             return EB_TRUE;
         } else if (e->type == EB_C_PTR && item->type == EB_N_PTR) {
-            //speical case, we use EB_FREE to free calloced memory
+            /*!< speical case, we use EB_FREE to free calloced memory */
             e->ptr = NULL;
             return EB_TRUE;
         }
@@ -220,11 +209,11 @@ static void get_memory_usage_and_scale(uint64_t amount, double* usage, char* sca
     *scale = scales[i];
 }
 
-//this need more memory and cpu
+/*!< this need more memory and cpu */
 #define PROFILE_MEMORY_USAGE
 #ifdef PROFILE_MEMORY_USAGE
 
-//if we use a static array here, this size + sizeof(g_mem_entry) will exceed max size allowed on windows.
+/*!< if we use a static array here, this size + sizeof(g_mem_entry) will exceed max size allowed on windows. */
 static MemoryEntry* g_profile_entry;
 
 static EbBool add_location(MemoryEntry* e, void* param) {
@@ -236,14 +225,14 @@ static EbBool add_location(MemoryEntry* e, void* param) {
         e->count += new_item->count;
         return EB_TRUE;
     }
-    //to next position.
+    /*!< to next position. */
     return EB_FALSE;
 }
 
 static EbBool collect_mem(MemoryEntry* e, void* param) {
     EbPtrType type = *(EbPtrType*)param;
     if (e->ptr && e->type == type) { for_each_hash_entry(g_profile_entry, 0, add_location, e); }
-    //Loop entire bucket.
+    /*!< Loop entire bucket. */
     return EB_FALSE;
 }
 
@@ -280,11 +269,11 @@ static void print_top_10_locations() {
     free(g_profile_entry);
     eb_release_mutex(m);
 }
-#endif //PROFILE_MEMORY_USAGE
+#endif // PROFILE_MEMORY_USAGE
 
 static int g_component_count;
 
-#endif //DEBUG_MEMORY_USAGE
+#endif // DEBUG_MEMORY_USAGE
 
 void eb_print_memory_usage() {
 #ifdef DEBUG_MEMORY_USAGE
@@ -335,7 +324,7 @@ static EbBool print_leak(MemoryEntry* e, void* param) {
         *leaked        = EB_TRUE;
         SVT_ERROR("%s leaked at %s:L%d\r\n", mem_type_name(e->type), e->file, e->line);
     }
-    //loop through all items
+    /*!< loop through all items */
     return EB_FALSE;
 }
 #endif

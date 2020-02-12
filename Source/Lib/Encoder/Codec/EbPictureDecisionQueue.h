@@ -1,7 +1,5 @@
-/*
-* Copyright(c) 2019 Intel Corporation
-* SPDX - License - Identifier: BSD - 2 - Clause - Patent
-*/
+/*!< Copyright(c) 2019 Intel Corporation
+ * SPDX - License - Identifier: BSD - 2 - Clause - Patent */
 
 #ifndef EbPictureDecisionQueue_h
 #define EbPictureDecisionQueue_h
@@ -10,9 +8,9 @@
 #include "EbSystemResourceManager.h"
 #include "EbPredictionStructure.h"
 #include "EbObject.h"
-/************************************************
- * PA Reference Queue Entry
- ************************************************/
+/************************************************/
+/*!< PA Reference Queue Entry */
+/************************************************/
 typedef struct PaReferenceQueueEntry {
     EbDctor          dctor;
     EbObjectWrapper *input_object_ptr;

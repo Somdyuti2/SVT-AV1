@@ -1,14 +1,12 @@
-/*
-* Copyright(c) 2019 Netflix, Inc.
-* SPDX - License - Identifier: BSD - 2 - Clause - Patent
-*/
+/*!< Copyright(c) 2019 Netflix, Inc.
+ * SPDX - License - Identifier: BSD - 2 - Clause - Patent */
 #ifndef EbDecBitstream_h
 #define EbDecBitstream_h
 
-// Defines the maximum number of bits in a Bitstream word
+/*!< Defines the maximum number of bits in a Bitstream word */
 #define WORD_SIZE 32
 
-// Twice the WORD_SIZE
+/*!< Twice the WORD_SIZE */
 #define DBL_WORD_SIZE (2 * (WORD_SIZE))
 
 #define SHL(x, y) (((y) < 32) ? ((x) << (y)) : 0)
@@ -17,32 +15,30 @@
 #define TO_BIG_ENDIAN(x) \
     ((x << 24)) | ((x & 0x0000ff00) << 8) | ((x & 0x00ff0000) >> 8) | ((uint32_t)x >> 24);
 
-static const uint8_t k_leb_128byte_mask = 0x7f; // Binary: 01111111
+static const uint8_t k_leb_128byte_mask = 0x7f; /*!< Binary: 01111111 */
 
-/*
- * Bitstream structure
- */
+/*!< Bitstream structure */
 typedef struct {
-    /* Bitstream buffer base pointer */
+    /*!< Bitstream buffer base pointer */
     uint8_t *buf_base;
 
-    /* Bitstream bit offset in current word. Value between 0 and 31 */
+    /*!< Bitstream bit offset in current word. Value between 0 and 31 */
     uint32_t bit_ofst;
 
-    /* Current Bitstream buffer pointer */
+    /*!< Current Bitstream buffer pointer */
     uint32_t *buf;
 
-    /* Current word */
+    /*!< Current word */
     uint32_t cur_word;
 
-    /* Next word */
+    /*!< Next word */
     uint32_t nxt_word;
 
-    /* Max address for Bitstream */
+    /*!< Max address for Bitstream */
     uint8_t *buf_max;
 } Bitstrm;
 
-// Get m_cnt number of bits and update bffer pointers and offset.
+/*!< Get m_cnt number of bits and update bffer pointers and offset. */
 #define GET_BITS(bits, m_pu4_buf, bit_ofst, cur_word, nxt_word, m_cnt)                   \
     {                                                                                    \
         bits = (cur_word << bit_ofst) >> (WORD_SIZE - m_cnt);                            \
@@ -52,11 +48,11 @@ typedef struct {
         if (bit_ofst >= WORD_SIZE) {                                                     \
             uint32_t pu4_word_tmp;                                                       \
             cur_word = nxt_word;                                                         \
-            /* Getting the next word */                                                  \
+            /*!< Getting the next word */                                                \
             pu4_word_tmp = *(m_pu4_buf++);                                               \
                                                                                          \
             bit_ofst -= WORD_SIZE;                                                       \
-            /* Swapping little endian to big endian conversion*/                         \
+            /*!< Swapping little endian to big endian conversion*/                       \
             nxt_word = TO_BIG_ENDIAN(pu4_word_tmp);                                      \
         }                                                                                \
     }
@@ -73,4 +69,4 @@ uint32_t dec_get_bits_le(Bitstrm *bs, uint32_t n);
 uint32_t get_position(Bitstrm *bs);
 uint8_t *get_bitsteam_buf(Bitstrm *bs);
 
-#endif // EbDecBitstream_h
+#endif //*!< EbDecBitstream_h */

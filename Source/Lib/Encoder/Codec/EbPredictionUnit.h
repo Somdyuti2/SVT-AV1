@@ -1,7 +1,5 @@
-/*
-* Copyright(c) 2019 Intel Corporation
-* SPDX - License - Identifier: BSD - 2 - Clause - Patent
-*/
+/*!< Copyright(c) 2019 Intel Corporation
+ * SPDX - License - Identifier: BSD - 2 - Clause - Patent */
 
 #ifndef EbPredictionUnit_h
 #define EbPredictionUnit_h
@@ -15,8 +13,8 @@ extern "C" {
 #endif
 #pragma pack(push, 1)
 typedef struct PredictionUnit {
-    Mv       mv[MAX_NUM_OF_REF_PIC_LIST]; // 16-bytes
-    Mvd      mvd[MAX_NUM_OF_REF_PIC_LIST]; // 16-bytes
+    Mv       mv[MAX_NUM_OF_REF_PIC_LIST]; /*!< 16-bytes */
+    Mvd      mvd[MAX_NUM_OF_REF_PIC_LIST]; /*!< 16-bytes */
     unsigned merge_flag : 1;
     unsigned inter_pred_direction_index : 2;
     unsigned intra_luma_mode : 6;
@@ -25,13 +23,13 @@ typedef struct PredictionUnit {
 
     uint8_t intra_chroma_left_mode;
     uint8_t intra_chroma_top_mode;
-    // Intra Mode
+    /*!< Intra Mode */
     int32_t  angle_delta[PLANE_TYPES];
     EbBool   is_directional_mode_flag;
     EbBool   is_directional_chroma_mode_flag;
     uint32_t intra_chroma_mode;
 
-    // Inter Mode
+    /*!< Inter Mode */
     PredictionMode         inter_mode;
     EbBool                 is_compound;
     uint8_t                compound_idx;
@@ -51,9 +49,9 @@ typedef struct PredictionUnit {
     EbWarpedMotionParams wm_params_l1;
     uint32_t             overlappable_neighbors[2];
 
-    // Index of the alpha Cb and alpha Cr combination
+    /*!< Index of the alpha Cb and alpha Cr combination */
     int32_t cfl_alpha_idx;
-    // Joint sign of alpha Cb and alpha Cr
+    /*!< Joint sign of alpha Cb and alpha Cr */
     int32_t cfl_alpha_signs;
 } PredictionUnit;
 #pragma pack(pop)

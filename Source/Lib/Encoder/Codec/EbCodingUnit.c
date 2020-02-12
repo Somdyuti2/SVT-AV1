@@ -1,7 +1,5 @@
-/*
-* Copyright(c) 2019 Intel Corporation
-* SPDX - License - Identifier: BSD - 2 - Clause - Patent
-*/
+/*!< Copyright(c) 2019 Intel Corporation
+ * SPDX - License - Identifier: BSD - 2 - Clause - Patent */
 
 #include <stdlib.h>
 #include <stdint.h>
@@ -16,15 +14,13 @@ void largest_coding_unit_dctor(EbPtr p) {
     EB_FREE_ARRAY(obj->final_blk_arr);
     EB_FREE_ARRAY(obj->cu_partition_array);
 }
-/*
-Tasks & Questions
-    -Need a GetEmptyChain function for testing sub partitions.  Tie it to an Itr?
-    -How many empty CUs do we need?  We need to have enough for the max CU count AND
-       enough for temp storage when calculating a subdivision.
-    -Where do we store temp reconstructed picture data while deciding to subdivide or not?
-    -Need a ReconPicture for each candidate.
-    -I don't see a way around doing the copies in temp memory and then copying it in...
-*/
+/*!< * Tasks & Questions
+ *       -Need a GetEmptyChain function for testing sub partitions.  Tie it to an Itr?
+ *       -How many empty CUs do we need?  We need to have enough for the max CU count AND
+ *          enough for temp storage when calculating a subdivision.
+ *       -Where do we store temp reconstructed picture data while deciding to subdivide or not?
+ *       -Need a ReconPicture for each candidate.
+ *       -I don't see a way around doing the copies in temp memory and then copying it in... */
 EbErrorType largest_coding_unit_ctor(SuperBlock *larget_coding_unit_ptr, uint8_t sb_size_pix,
                                      uint16_t sb_origin_x, uint16_t sb_origin_y, uint16_t sb_index,
                                      PictureControlSet *picture_control_set)
@@ -35,10 +31,10 @@ EbErrorType largest_coding_unit_ctor(SuperBlock *larget_coding_unit_ptr, uint8_t
 
     larget_coding_unit_ptr->dctor = largest_coding_unit_dctor;
 
-    // ************ SB ***************
-    // Which borderLargestCuSize is not a power of two
+    /*!< ************ SB *************** */
+    /*!< Which borderLargestCuSize is not a power of two */
 
-    // Which borderLargestCuSize is not a power of two
+    /*!< Which borderLargestCuSize is not a power of two */
     larget_coding_unit_ptr->pcs_ptr = picture_control_set;
 
     larget_coding_unit_ptr->origin_x = sb_origin_x;

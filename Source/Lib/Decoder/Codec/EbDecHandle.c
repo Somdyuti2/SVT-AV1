@@ -1,14 +1,12 @@
-/*
-* Copyright(c) 2019 Netflix, Inc.
-* SPDX - License - Identifier: BSD - 2 - Clause - Patent
-*/
+/*!< Copyright(c) 2019 Netflix, Inc.
+ * SPDX - License - Identifier: BSD - 2 - Clause - Patent */
 
-// SUMMARY
-//   Contains the API component functions
+/*!< SUMMARY */
+/*!< Contains the API component functions */
 
-/**************************************
- * Includes
- **************************************/
+/**************************************/
+/*!< Includes */
+/**************************************/
 #include <stdlib.h>
 
 #include "EbDefinitions.h"
@@ -35,9 +33,9 @@
 
 #include "EbLog.h"
 
-/**************************************
-* Globals
-**************************************/
+/**************************************/
+/*!< Globals */
+/**************************************/
 uint8_t num_groups = 0;
 #ifdef _WIN32
 GROUP_AFFINITY group_affinity;
@@ -58,7 +56,7 @@ uint64_t *        svt_dec_total_lib_memory;
 
 uint32_t svt_dec_lib_malloc_count = 0;
 
-//TODO: Should be removed! Check
+/*!< TODO: Should be removed! Check */
 EbMemoryMapEntry *memory_map;
 uint32_t *        memory_map_index;
 uint64_t *        total_lib_memory;
@@ -67,7 +65,7 @@ uint32_t lib_malloc_count    = 0;
 uint32_t lib_semaphore_count = 0;
 uint32_t lib_mutex_count     = 0;
 
-/* Track address for memory during change in resoultion*/
+/*!< Track address for memory during change in resoultion*/
 EbMemoryMapEntry    *memory_map_start_address;
 EbMemoryMapEntry    *memory_map_end_address;
 
@@ -91,15 +89,15 @@ void switch_to_real_time() {
 #endif
 }
 
-/***********************************
-* Decoder Library Handle Constructor
-************************************/
-/*TODO : Add more features*/
+/****************************************/
+/*!< Decoder Library Handle Constructor */
+/****************************************/
+/*!< TODO : Add more features */
 static EbErrorType eb_dec_handle_ctor(EbDecHandle **decHandleDblPtr, EbComponentType *ebHandlePtr) {
     (void)ebHandlePtr;
     EbErrorType return_error = EB_ErrorNone;
 
-    // Allocate Memory
+    /*!< Allocate Memory */
     EbDecHandle *dec_handle_ptr = (EbDecHandle *)malloc(sizeof(EbDecHandle));
     *decHandleDblPtr            = dec_handle_ptr;
     if (dec_handle_ptr == (EbDecHandle *)EB_NULL) return EB_ErrorInsufficientResources;
@@ -108,7 +106,7 @@ static EbErrorType eb_dec_handle_ctor(EbDecHandle **decHandleDblPtr, EbComponent
     dec_handle_ptr->total_lib_memory =
         sizeof(EbComponentType) + sizeof(EbDecHandle) + sizeof(EbMemoryMapEntry);
     dec_handle_ptr->memory_map_init_address = dec_handle_ptr->memory_map;
-    // Save Memory Map Pointers
+    /*!< Save Memory Map Pointers */
     svt_dec_total_lib_memory = &dec_handle_ptr->total_lib_memory;
     svt_dec_memory_map       = dec_handle_ptr->memory_map;
     svt_dec_memory_map_index = &dec_handle_ptr->memory_map_index;
@@ -121,7 +119,7 @@ static EbErrorType eb_dec_handle_ctor(EbDecHandle **decHandleDblPtr, EbComponent
     return return_error;
 }
 
-/* Copy from recon buffer to out buffer! */
+/*!< Copy from recon buffer to out buffer! */
 int svt_dec_out_buf(EbDecHandle *dec_handle_ptr, EbBufferHeaderType *p_buffer) {
     EbPictureBufferDesc *recon_picture_buf = dec_handle_ptr->cur_pic_buf[0]->ps_pic_buf;
     EbSvtIOFormat *      out_img           = (EbSvtIOFormat *)p_buffer->p_buffer;
@@ -130,7 +128,7 @@ int svt_dec_out_buf(EbDecHandle *dec_handle_ptr, EbBufferHeaderType *p_buffer) {
     uint8_t *cb   = NULL;
     uint8_t *cr   = NULL;
 
-    /* TODO: Should add logic for show_existing_frame */
+    /*!< TODO: Should add logic for show_existing_frame */
     if (0 == dec_handle_ptr->show_frame) {
         assert(0 == dec_handle_ptr->show_existing_frame);
         return 0;
@@ -229,7 +227,7 @@ int svt_dec_out_buf(EbDecHandle *dec_handle_ptr, EbBufferHeaderType *p_buffer) {
               << use_high_bit_depth);
     }
 
-    /* Memcpy to dst buffer */
+    /*!< Memcpy to dst buffer */
     {
         if (recon_picture_buf->bit_depth == EB_8BIT) {
             uint8_t *src, *dst;
@@ -244,7 +242,7 @@ int svt_dec_out_buf(EbDecHandle *dec_handle_ptr, EbBufferHeaderType *p_buffer) {
             }
 
             if (recon_picture_buf->color_format != EB_YUV400) {
-                /* Cb */
+                /*!< Cb */
                 dst = cb;
                 src = recon_picture_buf->buffer_cb + (recon_picture_buf->origin_x >> sx) +
                       ((recon_picture_buf->origin_y >> sy) * recon_picture_buf->stride_cb);
@@ -255,7 +253,7 @@ int svt_dec_out_buf(EbDecHandle *dec_handle_ptr, EbBufferHeaderType *p_buffer) {
                     src += recon_picture_buf->stride_cb;
                 }
 
-                /* Cr */
+                /*!< Cr */
                 dst = cr;
                 src = recon_picture_buf->buffer_cr + (recon_picture_buf->origin_x >> sx) +
                       ((recon_picture_buf->origin_y >> sy) * recon_picture_buf->stride_cr);
@@ -270,7 +268,7 @@ int svt_dec_out_buf(EbDecHandle *dec_handle_ptr, EbBufferHeaderType *p_buffer) {
             uint16_t *pu2_dst;
             uint16_t *pu2_src;
 
-            /* Luma */
+            /*!< Luma */
             pu2_dst = (uint16_t *)luma;
             pu2_src = (uint16_t *)recon_picture_buf->buffer_y + recon_picture_buf->origin_x +
                       (recon_picture_buf->origin_y * recon_picture_buf->stride_y);
@@ -282,7 +280,7 @@ int svt_dec_out_buf(EbDecHandle *dec_handle_ptr, EbBufferHeaderType *p_buffer) {
             }
 
             if (recon_picture_buf->color_format != EB_YUV400) {
-                /* Cb */
+                /*!< Cb */
                 pu2_dst = (uint16_t *)cb;
                 pu2_src = (uint16_t *)recon_picture_buf->buffer_cb +
                           (recon_picture_buf->origin_x >> sx) +
@@ -294,7 +292,7 @@ int svt_dec_out_buf(EbDecHandle *dec_handle_ptr, EbBufferHeaderType *p_buffer) {
                     pu2_src += recon_picture_buf->stride_cb;
                 }
 
-                /* Cr */
+                /*!< Cr */
                 pu2_dst = (uint16_t *)cr;
                 pu2_src = (uint16_t *)recon_picture_buf->buffer_cr +
                           (recon_picture_buf->origin_x >> sx) +
@@ -310,7 +308,7 @@ int svt_dec_out_buf(EbDecHandle *dec_handle_ptr, EbBufferHeaderType *p_buffer) {
     }
 
     if (!dec_handle_ptr->dec_config.skip_film_grain) {
-        /* Need to fill the dst buf with recon data before calling film_grain */
+        /*!< Need to fill the dst buf with recon data before calling film_grain */
         AomFilmGrain *film_grain_ptr = &dec_handle_ptr->cur_pic_buf[0]->film_grain_params;
         if (film_grain_ptr->apply_grain) {
             switch (recon_picture_buf->bit_depth) {
@@ -336,9 +334,9 @@ int svt_dec_out_buf(EbDecHandle *dec_handle_ptr, EbBufferHeaderType *p_buffer) {
     return 1;
 }
 
-/**********************************
-Set Default Library Params
-**********************************/
+/********************************/
+/*!< Set Default Library Params */
+/********************************/
 EbErrorType eb_svt_dec_set_default_parameter(EbSvtAv1DecConfiguration *config_ptr) {
     EbErrorType return_error = EB_ErrorNone;
 
@@ -352,28 +350,28 @@ EbErrorType eb_svt_dec_set_default_parameter(EbSvtAv1DecConfiguration *config_pt
     config_ptr->compressed_ten_bit_format = 0;
     config_ptr->eight_bit_output          = 0;
 
-    /* Picture parameters */
+    /*!< Picture parameters */
     config_ptr->max_picture_width  = 0;
     config_ptr->max_picture_height = 0;
     config_ptr->max_bit_depth      = EB_EIGHT_BIT;
     config_ptr->max_color_format   = EB_YUV420;
     config_ptr->threads            = 1;
 
-    // Application Specific parameters
+    /*!< Application Specific parameters */
     config_ptr->channel_id           = 0;
     config_ptr->active_channel_count = 1;
     config_ptr->stat_report          = 0;
 
-    /* Multi-thread parameters */
+    /*!< Multi-thread parameters */
     config_ptr->threads      = 1;
     config_ptr->num_p_frames = 1;
 
     return return_error;
 }
 
-/**********************************
-* Decoder Handle Initialization
-**********************************/
+/***********************************/
+/*!< Decoder Handle Initialization */
+/***********************************/
 static EbErrorType init_svt_av1_decoder_handle(EbComponentType *hComponent) {
     EbErrorType      return_error      = EB_ErrorNone;
     EbComponentType *svt_dec_component = (EbComponentType *)hComponent;
@@ -401,10 +399,10 @@ static EbErrorType init_svt_av1_decoder_handle(EbComponentType *hComponent) {
 
     switch_to_real_time();
 
-    // Set Component Size & Version
+    /*!< Set Component Size & Version */
     svt_dec_component->size = sizeof(EbComponentType);
 
-    // Decoder Private Handle Ctor
+    /*!< Decoder Private Handle Ctor */
     return_error = (EbErrorType)eb_dec_handle_ctor(
         (EbDecHandle **)&(svt_dec_component->p_component_private), svt_dec_component);
 
@@ -426,8 +424,8 @@ eb_dec_init_handle(EbComponentType **p_handle, void *p_app_data,
     *p_handle = (EbComponentType *)malloc(sizeof(EbComponentType));
 
     if (*p_handle != (EbComponentType *)NULL) {
-        // Init Component OS objects (threads, semaphores, etc.)
-        // also links the various Component control functions
+        /*!< Init Component OS objects (threads, semaphores, etc.) */
+        /*!< also links the various Component control functions */
         return_error = init_svt_av1_decoder_handle(*p_handle);
 
         if (return_error == EB_ErrorNone)
@@ -498,9 +496,9 @@ eb_init_decoder(EbComponentType *svt_dec_component) {
 
     av1_init_wedge_masks();
 
-    /************************************
-    * Decoder Memory Init
-    ************************************/
+    /************************************/
+    /*!< Decoder Memory Init */
+    /************************************/
     return_error = dec_mem_init(dec_handle_ptr);
     if (return_error != EB_ErrorNone) return return_error;
 
@@ -522,7 +520,7 @@ eb_svt_decode_frame(EbComponentType *svt_dec_component, const uint8_t *data, con
     dec_handle_ptr->seen_frame_header = 0;
 
     while (data_start < data_end) {
-        /*TODO : Remove or move. For Test purpose only */
+        /*!< TODO : Remove or move. For Test purpose only */
         dec_handle_ptr->dec_cnt++;
         //SVT_LOG("\n SVT-AV1 Dec : Decoding Pic #%d", dec_handle_ptr->dec_cnt);
 
@@ -536,7 +534,7 @@ eb_svt_decode_frame(EbComponentType *svt_dec_component, const uint8_t *data, con
                                    (EB_ErrorNone == return_error) ? 1 : 0,
                                    dec_handle_ptr->frame_header.refresh_frame_flags);
 
-        // Allow extra zero bytes after the frame end
+        /*!< Allow extra zero bytes after the frame end */
         while (data < data_end) {
             const uint8_t marker = data[0];
             if (marker) break;
@@ -566,7 +564,7 @@ eb_svt_dec_get_picture(EbComponentType *svt_dec_component, EbBufferHeaderType *p
     if (svt_dec_component == NULL) return EB_ErrorBadParameter;
 
     EbDecHandle *dec_handle_ptr = (EbDecHandle *)svt_dec_component->p_component_private;
-    /* Copy from recon pointer and return! TODO: Should remove the memcpy! */
+    /*!< Copy from recon pointer and return! TODO: Should remove the memcpy! */
     if (0 == svt_dec_out_buf(dec_handle_ptr, p_buffer)) return_error = EB_DecNoOutputPicture;
     return return_error;
 }
@@ -583,7 +581,7 @@ eb_deinit_decoder(EbComponentType *svt_dec_component) {
     if (dec_handle_ptr) {
         if (dec_handle_ptr->dec_config.threads > 1) dec_sync_all_threads(dec_handle_ptr);
         if (svt_dec_memory_map) {
-            // Loop through the ptr table and free all malloc'd pointers per channel
+            /*!< Loop through the ptr table and free all malloc'd pointers per channel */
             EbMemoryMapEntry *memory_entry = svt_dec_memory_map;
             if (memory_entry) {
                 do {
@@ -613,9 +611,9 @@ eb_deinit_decoder(EbComponentType *svt_dec_component) {
     return return_error;
 }
 
-/**********************************
-* Encoder Componenet DeInit
-**********************************/
+/*******************************/
+/*!< Encoder Componenet DeInit */
+/*******************************/
 EbErrorType eb_dec_component_de_init(EbComponentType *svt_dec_component) {
     EbErrorType return_error = EB_ErrorNone;
 

@@ -1,20 +1,16 @@
-/*
-* Copyright(c) 2019 Intel Corporation
-* SPDX - License - Identifier: BSD - 2 - Clause - Patent
-*/
+/*!< Copyright(c) 2019 Intel Corporation
+ * SPDX - License - Identifier: BSD - 2 - Clause - Patent */
 
-// main.cpp
-//  -Constructs the following resources needed during the encoding process
-//      -memory
-//      -threads
-//      -semaphores
-//  -Configures the encoder
-//  -Calls the encoder via the API
-//  -Destructs the resources
+/*!< main.cpp
+ *       -Constructs the following resources needed during the encoding process
+ *          -memory
+ *          -threads
+ *          -semaphores
+ *      -Configures the encoder
+ *      -Calls the encoder via the API
+ *      -Destructs the resources */
 
-/***************************************
- * Includes
- ***************************************/
+/*!< Includes */
 #include <stdio.h>
 #include <stdlib.h>
 #include <signal.h>
@@ -24,8 +20,8 @@
 #include "EbTime.h"
 #ifdef _WIN32
 #include <Windows.h>
-#include <io.h> /* _setmode() */
-#include <fcntl.h> /* _O_BINARY */
+#include <io.h> /*!< _setmode() */
+#include <fcntl.h> /*!< _O_BINARY */
 #else
 #include <pthread.h>
 #include <semaphore.h>
@@ -33,9 +29,7 @@
 #include <errno.h>
 #endif
 
-/***************************************
- * External Functions
- ***************************************/
+/*!< External Functions */
 extern AppExitConditionType process_input_buffer(EbConfig *config, EbAppContext *app_call_back);
 
 extern AppExitConditionType process_output_recon_buffer(EbConfig *    config,
@@ -51,7 +45,7 @@ void event_handler(int32_t dummy) {
     (void)dummy;
     keep_running = 0;
 
-    // restore default signal handler
+    /*!< restore default signal handler */
     signal(SIGINT, SIG_DFL);
 }
 
@@ -71,39 +65,37 @@ void assign_app_thread_group(uint8_t target_socket) {
 
 double get_psnr(double sse, double max);
 
-/***************************************
- * Encoder App Main
- ***************************************/
+/*!< Encoder App Main */
 int32_t main(int32_t argc, char *argv[]) {
 #ifdef _WIN32
     _setmode(_fileno(stdin), _O_BINARY);
     _setmode(_fileno(stdout), _O_BINARY);
 #endif
-    // GLOBAL VARIABLES
-    EbErrorType          return_error   = EB_ErrorNone; // Error Handling
-    AppExitConditionType exit_condition = APP_ExitConditionNone; // Processing loop exit condition
+    /*!< GLOBAL VARIABLES */
+    EbErrorType          return_error   = EB_ErrorNone; /*!< Error Handling */
+    AppExitConditionType exit_condition = APP_ExitConditionNone; /*!< Processing loop exit condition */
 
-    EbErrorType          return_errors[MAX_CHANNEL_NUMBER]; // Error Handling
-    AppExitConditionType exit_cond[MAX_CHANNEL_NUMBER]; // Processing loop exit condition
-    AppExitConditionType exit_cond_output[MAX_CHANNEL_NUMBER]; // Processing loop exit condition
-    AppExitConditionType exit_cond_recon[MAX_CHANNEL_NUMBER]; // Processing loop exit condition
-    AppExitConditionType exit_cond_input[MAX_CHANNEL_NUMBER]; // Processing loop exit condition
+    EbErrorType          return_errors[MAX_CHANNEL_NUMBER]; /*!< Error Handling */
+    AppExitConditionType exit_cond[MAX_CHANNEL_NUMBER]; /*!< Processing loop exit condition */
+    AppExitConditionType exit_cond_output[MAX_CHANNEL_NUMBER]; /*!< Processing loop exit condition */
+    AppExitConditionType exit_cond_recon[MAX_CHANNEL_NUMBER]; /*!< Processing loop exit condition */
+    AppExitConditionType exit_cond_input[MAX_CHANNEL_NUMBER]; /*!< Processing loop exit condition */
 
     EbBool channel_active[MAX_CHANNEL_NUMBER];
 
-    EbConfig *configs[MAX_CHANNEL_NUMBER]; // Encoder Configuration
+    EbConfig *configs[MAX_CHANNEL_NUMBER]; /*!< Encoder Configuration */
 
     uint32_t      num_channels = 0;
     uint32_t      inst_cnt     = 0;
-    EbAppContext *app_callbacks[MAX_CHANNEL_NUMBER]; // Instances App callback data
+    EbAppContext *app_callbacks[MAX_CHANNEL_NUMBER]; /*!< Instances App callback data */
     signal(SIGINT, event_handler);
     fprintf(stderr, "-------------------------------------------\n");
     fprintf(stderr, "SVT-AV1 Encoder\n");
     if (!get_help(argc, argv)) {
-        // Get num_channels
+        /*!< Get num_channels */
         num_channels = get_number_of_channels(argc, argv);
         if (num_channels == 0) return EB_ErrorBadParameter;
-        // Initialize config
+        /*!< Initialize config */
         for (inst_cnt = 0; inst_cnt < num_channels; ++inst_cnt) {
             configs[inst_cnt] = (EbConfig *)malloc(sizeof(EbConfig));
             if (!configs[inst_cnt]) {
@@ -114,7 +106,7 @@ int32_t main(int32_t argc, char *argv[]) {
             return_errors[inst_cnt] = EB_ErrorNone;
         }
 
-        // Initialize appCallback
+        /*!< Initialize appCallback */
         for (inst_cnt = 0; inst_cnt < num_channels; ++inst_cnt) {
             app_callbacks[inst_cnt] = (EbAppContext *)malloc(sizeof(EbAppContext));
             if (!app_callbacks[inst_cnt]) {
@@ -124,23 +116,23 @@ int32_t main(int32_t argc, char *argv[]) {
         }
 
         for (inst_cnt = 0; inst_cnt < MAX_CHANNEL_NUMBER; ++inst_cnt) {
-            exit_cond[inst_cnt]        = APP_ExitConditionError; // Processing loop exit condition
-            exit_cond_output[inst_cnt] = APP_ExitConditionError; // Processing loop exit condition
-            exit_cond_recon[inst_cnt]  = APP_ExitConditionError; // Processing loop exit condition
-            exit_cond_input[inst_cnt]  = APP_ExitConditionError; // Processing loop exit condition
+            exit_cond[inst_cnt]        = APP_ExitConditionError; /*!< Processing loop exit condition */
+            exit_cond_output[inst_cnt] = APP_ExitConditionError; /*!< Processing loop exit condition */
+            exit_cond_recon[inst_cnt]  = APP_ExitConditionError; /*!< Processing loop exit condition */
+            exit_cond_input[inst_cnt]  = APP_ExitConditionError; /*!< Processing loop exit condition */
             channel_active[inst_cnt]   = EB_FALSE;
         }
 
-        // Read all configuration files.
+        /*!< Read all configuration files. */
         return_error = read_command_line(argc, argv, configs, num_channels, return_errors);
 
-        // Process any command line options, including the configuration file
+        /*!< Process any command line options, including the configuration file */
 
         if (return_error == EB_ErrorNone) {
-            // Set main thread affinity
+            /*!< Set main thread affinity */
             if (configs[0]->target_socket != -1) assign_app_thread_group(configs[0]->target_socket);
 
-            // Init the Encoder
+            /*!< Init the Encoder */
             for (inst_cnt = 0; inst_cnt < num_channels; ++inst_cnt) {
                 if (return_errors[inst_cnt] == EB_ErrorNone) {
                     configs[inst_cnt]->active_channel_count = num_channels;
@@ -158,7 +150,7 @@ int32_t main(int32_t argc, char *argv[]) {
             }
 
             {
-                // Start the Encoder
+                /*!< Start the Encoder */
                 for (inst_cnt = 0; inst_cnt < num_channels; ++inst_cnt) {
                     if (return_errors[inst_cnt] == EB_ErrorNone) {
                         return_error        = (EbErrorType)(return_error & return_errors[inst_cnt]);
@@ -224,7 +216,7 @@ int32_t main(int32_t argc, char *argv[]) {
                             }
                         }
                     }
-                    // check if all channels are inactive
+                    /*!< check if all channels are inactive */
                     for (inst_cnt = 0; inst_cnt < num_channels; ++inst_cnt) {
                         if (channel_active[inst_cnt] == EB_TRUE)
                             exit_condition = APP_ExitConditionNone;
@@ -256,7 +248,7 @@ int32_t main(int32_t argc, char *argv[]) {
                                 frame_rate = ((double)configs[inst_cnt]->frame_rate_numerator) /
                                              ((double)configs[inst_cnt]->frame_rate_denominator);
                             else if (configs[inst_cnt]->frame_rate > 1000) {
-                                // Correct for 16-bit fixed-point fractional precision
+                                /*!< Correct for 16-bit fixed-point fractional precision */
                                 frame_rate = ((double)configs[inst_cnt]->frame_rate) / (1 << 16);
                             } else
                                 frame_rate = (double)configs[inst_cnt]->frame_rate;
@@ -392,7 +384,7 @@ int32_t main(int32_t argc, char *argv[]) {
                             "... \n",
                             inst_cnt + 1);
             }
-            // DeInit Encoder
+            /*!< DeInit Encoder */
             for (inst_cnt = num_channels; inst_cnt > 0; --inst_cnt) {
                 if (return_errors[inst_cnt - 1] == EB_ErrorNone)
                     return_errors[inst_cnt - 1] =
@@ -402,7 +394,7 @@ int32_t main(int32_t argc, char *argv[]) {
             fprintf(stderr, "Error in configuration, could not begin encoding! ... \n");
             fprintf(stderr, "Run %s -help for a list of options\n", argv[0]);
         }
-        // Destruct the App memory variables
+        /*!< Destruct the App memory variables */
         for (inst_cnt = 0; inst_cnt < num_channels; ++inst_cnt) {
             eb_config_dtor(configs[inst_cnt]);
             if (configs[inst_cnt]) free(configs[inst_cnt]);

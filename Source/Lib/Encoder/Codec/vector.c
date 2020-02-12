@@ -1,24 +1,22 @@
-/*
-The MIT License(MIT)
-Copyright(c) 2016 Peter Goldsborough
-
-Permission is hereby granted, free of charge, to any person obtaining a copy of
-this software and associated documentation files(the "Software"), to deal in
-the Software without restriction, including without limitation the rights to
-use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of
-the Software, and to permit persons to whom the Software is furnished to do so,
-subject to the following conditions :
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS
-FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.IN NO EVENT SHALL THE AUTHORS OR
-COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
-IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
-CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-*/
+/*!< The MIT License(MIT)
+ * Copyright(c) 2016 Peter Goldsborough
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy of
+ * this software and associated documentation files(the "Software"), to deal in
+ * the Software without restriction, including without limitation the rights to
+ * use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of
+ * the Software, and to permit persons to whom the Software is furnished to do so,
+ * subject to the following conditions :
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS
+ * FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.IN NO EVENT SHALL THE AUTHORS OR
+ * COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
+ * IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+ * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE. */
 
 #define __STDC_WANT_LIB_EXT1__ 1
 
@@ -53,7 +51,7 @@ int eb_aom_vector_destroy(Vector *vector) {
     return VECTOR_SUCCESS;
 }
 
-/* Insertion */
+/*!< Insertion */
 int eb_aom_vector_push_back(Vector *vector, void *element) {
     assert(vector != NULL);
     assert(element != NULL);
@@ -69,11 +67,11 @@ int eb_aom_vector_push_back(Vector *vector, void *element) {
     return VECTOR_SUCCESS;
 }
 
-/* Information */
+/*!< Information */
 
 size_t eb_aom_vector_byte_size(const Vector *vector) { return vector->size * vector->element_size; }
 
-/* Iterators */
+/*!< Iterators */
 Iterator eb_aom_vector_begin(Vector *vector) { return eb_aom_vector_iterator(vector, 0); }
 
 Iterator eb_aom_vector_iterator(Vector *vector, size_t index) {
@@ -100,7 +98,7 @@ void iterator_increment(Iterator *iterator) {
 }
 
 
-/***** PRIVATE *****/
+/*!< **** PRIVATE **** */
 
 bool _vector_should_grow(Vector *vector) {
     assert(vector->size <= vector->capacity);
@@ -112,7 +110,7 @@ void *_vector_offset(Vector *vector, size_t index) {
     return (unsigned char *)vector->data + (index * vector->element_size);
 }
 void _vector_assign(Vector *vector, size_t index, void *element) {
-    /* Insert the element */
+    /*!< Insert the element */
     void *offset = _vector_offset(vector, index);
     memcpy(offset, element, vector->element_size);
 }
@@ -130,7 +128,7 @@ int _vector_reallocate(Vector *vector, size_t new_capacity) {
         if (vector->capacity > VECTOR_MINIMUM_CAPACITY) {
             new_capacity = VECTOR_MINIMUM_CAPACITY;
         } else {
-            /* NO-OP */
+            /*!< NO-OP */
             return VECTOR_SUCCESS;
         }
     }

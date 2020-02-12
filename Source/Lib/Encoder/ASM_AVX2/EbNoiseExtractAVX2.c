@@ -1,7 +1,5 @@
-/*
-* Copyright(c) 2019 Intel Corporation
-* SPDX - License - Identifier: BSD - 2 - Clause - Patent
-*/
+/*!< Copyright(c) 2019 Intel Corporation
+ * SPDX - License - Identifier: BSD - 2 - Clause - Patent */
 
 #include "EbNoiseExtractAVX2.h"
 #include "EbDefinitions.h"
@@ -114,7 +112,7 @@ inline void chroma_weak_luma_strong_filter_avx2_intrin(__m256i top, __m256i curr
         bottom_left_mid_first_halflo, bottom_left_mid_first_half_weight, bottom_next_permutation,
         bottom_next_first_half, bottom_left_mid_first_halfhi, bottom_next_second_half;
 
-    //  Curr
+    /*!< Curr */
     curr_prev_permutation           = _mm256_permute4x64_epi64(curr_prev, 216);
     curr_permutation                = _mm256_permute4x64_epi64(curr, 216);
     curr_left_mid_first_halflo      = _mm256_unpacklo_epi8(curr_prev_permutation, curr_permutation);
@@ -134,7 +132,7 @@ inline void chroma_weak_luma_strong_filter_avx2_intrin(__m256i top, __m256i curr
     curr_left_mid_first_halfhi =
         _mm256_add_epi16(curr_next_second_half, curr_left_mid_first_half_weight);
 
-    // Top
+    /*!< Top */
     top_prev_permutation           = _mm256_permute4x64_epi64(top_prev, 216);
     top_permutation                = _mm256_permute4x64_epi64(top, 216);
     top_left_mid_first_halflo      = _mm256_unpacklo_epi8(top_prev_permutation, top_permutation);
@@ -152,7 +150,7 @@ inline void chroma_weak_luma_strong_filter_avx2_intrin(__m256i top, __m256i curr
     top_left_mid_first_halfhi =
         _mm256_add_epi16(top_next_second_half, top_left_mid_first_half_weight);
 
-    // Bottom
+    /*!< Bottom */
     bottom_prev_permutation = _mm256_permute4x64_epi64(bottom_prev, 216);
     bottom_permutation      = _mm256_permute4x64_epi64(bottom, 216);
     bottom_left_mid_first_halflo =
@@ -199,7 +197,7 @@ inline void chroma_weak_luma_strong_filter_128_avx2_intrin(__m128i top, __m128i 
         bottom_left_mid_first_halflo, bottom_left_mid_first_half_weight, bottom_next_first_half,
         bottom_left_mid_first_halfhi, bottom_next_second_half;
 
-    //  Curr
+    /*!< Curr */
     curr_left_mid_first_halflo      = _mm_unpacklo_epi8(curr_prev, curr);
     weights                         = _mm_loadu_si128((__m128i *)weak_chroma_filter[0]);
     curr_left_mid_first_half_weight = _mm_maddubs_epi16(curr_left_mid_first_halflo, weights);
@@ -215,7 +213,7 @@ inline void chroma_weak_luma_strong_filter_128_avx2_intrin(__m128i top, __m128i 
     curr_left_mid_first_halfhi =
         _mm_add_epi16(curr_next_second_half, curr_left_mid_first_half_weight);
 
-    // Top
+    /*!< Top */
     top_left_mid_first_halflo      = _mm_unpacklo_epi8(top_prev, top);
     weights                        = _mm_loadu_si128((__m128i *)weak_chroma_filter[1]);
     top_left_mid_first_half_weight = _mm_maddubs_epi16(top_left_mid_first_halflo, weights);
@@ -227,7 +225,7 @@ inline void chroma_weak_luma_strong_filter_128_avx2_intrin(__m128i top, __m128i 
     top_next_second_half           = _mm_unpackhi_epi8(top_next, _mm_setzero_si128());
     top_left_mid_first_halfhi = _mm_add_epi16(top_next_second_half, top_left_mid_first_half_weight);
 
-    // Bottom
+    /*!< Bottom */
     bottom_left_mid_first_halflo      = _mm_unpacklo_epi8(bottom_prev, bottom);
     weights                           = _mm_loadu_si128((__m128i *)weak_chroma_filter[1]);
     bottom_left_mid_first_half_weight = _mm_maddubs_epi16(bottom_left_mid_first_halflo, weights);
@@ -428,10 +426,10 @@ inline void chroma_strong_128_avx2_intrin(__m128i top, __m128i curr, __m128i bot
 
     _mm_storel_epi64((__m128i *)(ptr_denoised), curr_left_mid_first_halflo);
 }
-/*******************************************
-* noise_extract_luma_weak
-*  weak filter Luma and store noise.
-*******************************************/
+/*!< ******************************************
+ * noise_extract_luma_weak
+ *  weak filter Luma and store noise.
+ ****************************************** */
 void noise_extract_luma_weak_avx2_intrin(EbPictureBufferDesc *input_picture_ptr,
                                          EbPictureBufferDesc *denoised_picture_ptr,
                                          EbPictureBufferDesc *noise_picture_ptr,
@@ -456,7 +454,7 @@ void noise_extract_luma_weak_avx2_intrin(EbPictureBufferDesc *input_picture_ptr,
         second_curr_128, second_bottom_128, second_curr_prev_128, second_curr_next_128;
     uint32_t idx = (sb_origin_x + BLOCK_SIZE_64 > input_picture_ptr->width) ? sb_origin_x : 0;
 
-    //Luma
+    /*!< Luma */
     {
         pic_height = input_picture_ptr->height;
         pic_width  = input_picture_ptr->width;
@@ -482,7 +480,7 @@ void noise_extract_luma_weak_avx2_intrin(EbPictureBufferDesc *input_picture_ptr,
         ptr_noise        = &(noise_picture_ptr->buffer_y[noise_origin_index]);
         ptr_noise_interm = ptr_noise;
 
-        ////Luma
+        /*!< Luma  */
         //a = (p[1] +
         //    p[0 + stride] + 4 * p[1 + stride] + p[2 + stride] +
         //    p[1 + 2 * stride]) / 8;
@@ -677,7 +675,7 @@ void noise_extract_luma_weak_sb_avx2_intrin(EbPictureBufferDesc *input_picture_p
         second_curr_prev, second_curr_next;
     (void)sb_origin_x;
 
-    //Luma
+    /*!< Luma */
     {
         pic_height = input_picture_ptr->height;
         pic_width  = input_picture_ptr->width;
@@ -704,7 +702,7 @@ void noise_extract_luma_weak_sb_avx2_intrin(EbPictureBufferDesc *input_picture_p
         ptr_noise        = &(noise_picture_ptr->buffer_y[noise_origin_index]);
         ptr_noise_interm = ptr_noise;
 
-        ////Luma
+        /*!< luma */
         //a = (p[1] +
         //    p[0 + stride] + 4 * p[1 + stride] + p[2 + stride] +
         //    p[1 + 2 * stride]) / 8;
@@ -797,10 +795,10 @@ void noise_extract_luma_weak_sb_avx2_intrin(EbPictureBufferDesc *input_picture_p
         }
     }
 }
-/*******************************************
-* noise_extract_luma_strong
-*  strong filter Luma.
-*******************************************/
+/*!< ******************************************
+ * noise_extract_luma_strong
+ *  strong filter Luma.
+ ****************************************** */
 void noise_extract_luma_strong_avx2_intrin(EbPictureBufferDesc *input_picture_ptr,
                                            EbPictureBufferDesc *denoised_picture_ptr,
                                            uint32_t sb_origin_y, uint32_t sb_origin_x) {
@@ -825,7 +823,7 @@ void noise_extract_luma_strong_avx2_intrin(EbPictureBufferDesc *input_picture_pt
         second_bottom_prev_128, second_bottom_next_128;
 
     uint32_t idx = (sb_origin_x + BLOCK_SIZE_64 > input_picture_ptr->width) ? sb_origin_x : 0;
-    //Luma
+    /*!< luma */
     {
         pic_height = input_picture_ptr->height;
         pic_width  = input_picture_ptr->width;
@@ -1130,10 +1128,10 @@ void noise_extract_luma_strong_avx2_intrin(EbPictureBufferDesc *input_picture_pt
     }
 }
 
-/*******************************************
-* noise_extract_chroma_strong
-*  strong filter chroma.
-*******************************************/
+/*!< ******************************************
+ * noise_extract_chroma_strong
+ *  strong filter chroma.
+ ****************************************** */
 void noise_extract_chroma_strong_avx2_intrin(EbPictureBufferDesc *input_picture_ptr,
                                              EbPictureBufferDesc *denoised_picture_ptr,
                                              uint32_t sb_origin_y, uint32_t sb_origin_x) {
@@ -1190,7 +1188,7 @@ void noise_extract_chroma_strong_avx2_intrin(EbPictureBufferDesc *input_picture_
         stride_out_cr          = denoised_picture_ptr->stride_cr;
         ptr_denoised_cr        = &(denoised_picture_ptr->buffer_cr[input_origin_index_pad]);
         ptr_denoised_interm_cr = ptr_denoised_cr;
-        ////Chroma
+        /*!< Chroma */
         //a = (4 * p[0] + 4 * p[1] + 4 * p[2] +
         //    4 * p[0 + stride] + 4 * p[1 + stride] + 4 * p[2 + stride] +
         //    4 * p[0 + 2 * stride] + 4 * p[1 + 2 * stride] + 4 * p[2 + 2 * stride]) / 36;
@@ -1462,10 +1460,10 @@ void noise_extract_chroma_strong_avx2_intrin(EbPictureBufferDesc *input_picture_
     }
 }
 
-/*******************************************
-* noise_extract_chroma_weak
-*  weak filter chroma.
-*******************************************/
+/*!< ******************************************
+ * noise_extract_chroma_weak
+ *  weak filter chroma.
+ ****************************************** */
 void noise_extract_chroma_weak_avx2_intrin(EbPictureBufferDesc *input_picture_ptr,
                                            EbPictureBufferDesc *denoised_picture_ptr,
                                            uint32_t sb_origin_y, uint32_t sb_origin_x) {
@@ -1489,7 +1487,7 @@ void noise_extract_chroma_weak_avx2_intrin(EbPictureBufferDesc *input_picture_pt
         bottom_prev_128, bottom_next_128, top_cr_128, curr_cr_128, bottom_cr_128, curr_prev_cr_128,
         curr_next_cr_128, top_prev_cr_128, top_next_cr_128, bottom_prev_cr_128, bottom_next_cr_128;
     uint32_t idx = (sb_origin_x + BLOCK_SIZE_64 > input_picture_ptr->width) ? sb_origin_x : 0;
-    ////gaussian matrix(Chroma)
+    /*!< gaussian matrix(Chroma) */
     //a = (1 * p[0] + 2 * p[1] + 1 * p[2] +
     //    2 * p[0 + stride] + 4 * p[1 + stride] + 2 * p[2 + stride] +
     //    1 * p[0 + 2 * stride] + 2 * p[1 + 2 * stride] + 1 * p[2 + 2 * stride]) / 16;

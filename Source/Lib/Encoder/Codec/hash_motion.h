@@ -1,13 +1,11 @@
-/*
- * Copyright (c) 2016, Alliance for Open Media. All rights reserved
+/*!< Copyright (c) 2016, Alliance for Open Media. All rights reserved
  *
  * This source code is subject to the terms of the BSD 2 Clause License and
  * the Alliance for Open Media Patent License 1.0. If the BSD 2 Clause License
  * was not distributed with this source code in the LICENSE file, you can
  * obtain it at www.aomedia.org/license/software. If the Alliance for Open
  * Media Patent License 1.0 was not distributed with this source code in the
- * PATENTS file, you can obtain it at www.aomedia.org/license/patent.
- */
+ * PATENTS file, you can obtain it at www.aomedia.org/license/patent. */
 
 #ifndef AOM_AV1_ENCODER_HASH_MOTION_H_
 #define AOM_AV1_ENCODER_HASH_MOTION_H_
@@ -21,9 +19,9 @@
 extern "C" {
 #endif
 
-// store a block's hash info.
-// x and y are the position from the top left of the picture
-// hash_value2 is used to store the second hash value
+/*!< Store a block's hash info.
+ *   x and y are the position from the top left of the picture
+ *   hash_value2 is used to store the second hash value */
 typedef struct _block_hash {
     int16_t  x;
     int16_t  y;
@@ -49,15 +47,15 @@ void av1_add_to_hash_map_by_row_with_precal_data(HashTable *p_hash_table, uint32
                                                  int8_t *pic_is_same, int pic_width, int pic_height,
                                                  int block_size);
 
-// check whether the block starts from (x_start, y_start) with the size of
-// BlockSize x BlockSize has the same color in all rows
+/*!< check whether the block starts from (x_start, y_start) with the size of
+ *   BlockSize x BlockSize has the same color in all rows */
 
-// check whether the block starts from (x_start, y_start) with the size of
-// BlockSize x BlockSize has the same color in all columns
+/*!< check whether the block starts from (x_start, y_start) with the size of
+ *   BlockSize x BlockSize has the same color in all columns */
 void av1_get_block_hash_value(uint8_t *y_src, int stride, int block_size, uint32_t *hash_value1,
                               uint32_t *hash_value2, int use_highbitdepth,
                               struct PictureControlSet *            pcs,
-                              struct IntraBcContext /*MACROBLOCK*/ *x);
+                              struct IntraBcContext /*!< MACROBLOCK */ *x);
 
 #ifdef __cplusplus
 } // extern "C"

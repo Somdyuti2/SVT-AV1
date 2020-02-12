@@ -1,7 +1,5 @@
-/*
-* Copyright(c) 2019 Netflix, Inc.
-* SPDX - License - Identifier: BSD - 2 - Clause - Patent
-*/
+/*!< Copyright(c) 2019 Netflix, Inc.
+ * SPDX - License - Identifier: BSD - 2 - Clause - Patent */
 
 #ifndef EbAV1Structs_h
 #define EbAV1Structs_h
@@ -13,7 +11,7 @@
 extern "C" {
 #endif
 
-/*!\brief OBU types. */
+/*!< brief OBU types. */
 typedef enum ATTRIBUTE_PACKED {
     OBU_SEQUENCE_HEADER        = 1,
     OBU_TEMPORAL_DELIMITER     = 2,
@@ -26,26 +24,26 @@ typedef enum ATTRIBUTE_PACKED {
 } ObuType;
 
 typedef struct ObuHeader {
-    /*!<Size (1 or 2 b) of OBU header (including optional OBU extension header) */
+    /*!< Size (1 or 2 b) of OBU header (including optional OBU extension header) */
     size_t size;
 
-    /*!<Must be set to 0*/
+    /*!< Must be set to 0 */
     uint8_t obu_forbidden_bit;
 
-    /*!<Specifies the type of data structure contained in the OBU payload*/
+    /*!< Specifies the type of data structure contained in the OBU payload */
     ObuType obu_type;
 
-    /*!<Indicates if the optional obu_extension_header is present*/
+    /*!< Indicates if the optional obu_extension_header is present */
     uint8_t obu_extension_flag;
 
     /*!< 1: indicates that the obu_size syntax element will be present
-     *   0: Indicates that the obu_size syntax element will not be present*/
+     *   0: Indicates that the obu_size syntax element will not be present */
     uint8_t obu_has_size_field;
 
-    /*!<Specifies the temporal level of the data contained in the OBU*/
+    /*!< Specifies the temporal level of the data contained in the OBU */
     uint8_t temporal_id;
 
-    /*!<Specifies the spatial level of the data contained in the OBU*/
+    /*!< Specifies the spatial level of the data contained in the OBU */
     uint8_t spatial_id;
 
     size_t payload_size;
@@ -58,20 +56,20 @@ typedef struct DecoderModelInfo {
     uint8_t buffer_delay_length_minus_1;
 
     /*!< Number of time units of a decoding clock operating at the frequency
-     *time_scale Hz that corresponds to one increment of a clock tick counter*/
+     * time_scale Hz that corresponds to one increment of a clock tick counter */
     uint32_t num_units_in_decoding_tick;
 
-    /*!<Specifies the length of the buffer_removal_time syntax element,in bits*/
+    /*!< Specifies the length of the buffer_removal_time syntax element,in bits */
     uint8_t buffer_removal_time_length_minus_1;
 
     /*!< Specifies the length of the frame_presentation_time syntax element,
-     * in bits*/
+     * in bits */
     uint8_t frame_presentation_time_length_minus_1;
 
 } DecoderModelInfo;
 
 typedef struct OrderHintInfo {
-    /*!<1: Indicates that tools based on the values of order hints may be used.
+    /*!< 1: Indicates that tools based on the values of order hints may be used.
      *  0: Indicates that tools based on order hints are disabled */
     uint8_t enable_order_hint;
 
@@ -84,7 +82,7 @@ typedef struct OrderHintInfo {
             present */
     uint8_t enable_ref_frame_mvs;
 
-    /*!< Used to compute OrderHintBits*/
+    /*!< Used to compute OrderHintBits */
     uint8_t order_hint_bits;
 
 } OrderHintInfo;
@@ -93,68 +91,66 @@ typedef struct SeqHeader {
     /*!< Specifies the features that can be used in the coded video sequence */
     EbAv1SeqProfile seq_profile;
 
-    /*!<1: Specifies that the coded video sequence contains only one coded frame
-     *  0: Specifies that the coded video sequence contains one or more coded
-           frames */
+    /*!< 1: Specifies that the coded video sequence contains only one coded frame
+     *   0: Specifies that the coded video sequence contains one or more coded frames */
     uint8_t still_picture;
 
-    /*!< Specifies that the syntax elements not needed by a still picture are
-     * omitted */
+    /*!< Specifies that the syntax elements not needed by a still picture are omitted */
     uint8_t reduced_still_picture_header;
 
     /*!< Timing Information structure*/
     EbTimingInfo timing_info;
 
     /*!< Specifies whether decoder model information is present in the coded
-     * video sequence */
+     *   video sequence */
     uint8_t decoder_model_info_present_flag;
 
     /*!< Decoder Mode Information structure*/
     DecoderModelInfo decoder_model_info;
 
     /*!< Specifies whether initial display delay information is present in the
-     * coded video sequence.*/
+     *   coded video sequence */
     uint8_t initial_display_delay_present_flag;
 
-    /*!< Indicates the number of operating points minus 1 present in the coded video sequence*/
+    /*!< Indicates the number of operating points minus 1 present in the coded video sequence */
     uint8_t operating_points_cnt_minus_1;
 
-    /*!< Operating Point Param structure*/
+    /*!< Operating Point Param structure */
     EbAv1OperatingPoint operating_point[MAX_NUM_OPERATING_POINTS];
 
     /*!< Specifies the number of bits minus 1 used for transmitting the frame
-     * width syntax elements */
+     *   width syntax elements */
     uint8_t frame_width_bits;
 
     /*!< Specifies the number of bits minus 1 used for transmitting the frame
-     * height syntax elements*/
+     *   height syntax elements */
     uint8_t frame_height_bits;
 
     /*!< Specifies the maximum frame width minus 1 for the frames represented
-     * by this sequence header */
+     *   by this sequence header */
     uint16_t max_frame_width;
 
     /*!< Specifies the maximum frame height minus 1 for the frames represented
-     * by this sequence header */
+     *   by this sequence header */
     uint16_t max_frame_height;
 
     /*!< Specifies whether frame id numbers are present in the coded video
-     * sequence*/
+     *   sequence */
     uint8_t frame_id_numbers_present_flag;
 
     /*!< Specifies the number of bits used to encode delta_frame_id
-     * syntax elements*/
+     *   syntax elements */
     uint8_t delta_frame_id_length;
 
-    /*!<Used to calculate the number of bits used to encode the frame_id syntax
-     * element.*/
+    /*!< Used to calculate the number of bits used to encode the frame_id syntax
+     *   element */
     uint8_t frame_id_length;
 
     /*!< 1: Indicates that superblocks contain 128x128 luma samples
-     *   0: Indicates that superblocks contain 64x64 luma samples.*/
+     *   0: Indicates that superblocks contain 64x64 luma samples */
     uint8_t use_128x128_superblock;
 
-    /*Size of the superblock used for this frame*/
+    /*!< Size of the superblock used for this frame */
     BlockSize sb_size;
 
     /*!< superblock size in 4x4 MI unit */
@@ -164,66 +160,64 @@ typedef struct SeqHeader {
     uint8_t sb_size_log2;
 
     /*!< 1: Specifies that the use_filter_intra syntax element may be present.
-     *   0: Specifies that the use_filter_intra syntax element will not be
-     *       present*/
+     *   0: Specifies that the use_filter_intra syntax element will not be present*/
     uint8_t enable_filter_intra;
 
     /*!< Specifies whether the intra edge filtering process should be enabled */
     uint8_t enable_intra_edge_filter;
 
-    /*!<1: Specifies that the mode info for inter blocks may contain the syntax
-     *     element interintra.
-     *  0: Specifies that the syntax element interintra will not be present */
+    /*!< 1: Specifies that the mode info for inter blocks may contain the syntax
+     *      element interintra.
+     *   0: Specifies that the syntax element interintra will not be present */
     uint8_t enable_interintra_compound;
 
-    /*!<1: Specifies that the mode info for inter blocks may contain the syntax
-     *     element compound_type
-     *  0: Specifies that the syntax element compound_type will not be present*/
+    /*!< 1: Specifies that the mode info for inter blocks may contain the syntax
+     *      element compound_type
+     *   0: Specifies that the syntax element compound_type will not be present */
     uint8_t enable_masked_compound;
 
     /*!<1: Indicates that the allow_warped_motion syntax element may be present
-     *  0: Indicates that the allow_warped_motion syntax element will not be
-     *     present*/
+     *  0: Indicates that the allow_warped_motion syntax element will not be present */
     uint8_t enable_warped_motion;
 
     /*!< 1: Indicates that the inter prediction filter type may be specified
      *      independently in the horizontal and vertical directions.
      *   0: Indicates only one filter type may be specified, which is then used
-     *      in both directions.*/
+     *      in both directions */
     uint8_t enable_dual_filter;
 
     /*!< Order Hint Information structure */
     OrderHintInfo order_hint_info;
 
-    /*!<Equal to SELECT_SCREEN_CONTENT_TOOLS, indicates that the
-     * allow_screen_content_tools syntax element will be present in the frame
-     * header. Otherwise, seq_force_screen_content_tools contains the value for
-     * allow_screen_content_tools*/
+    /*!< Equal to SELECT_SCREEN_CONTENT_TOOLS, indicates that the
+     *   allow_screen_content_tools syntax element will be present in the frame
+     *   header. Otherwise, seq_force_screen_content_tools contains the value for
+     *   allow_screen_content_tools */
     uint8_t seq_force_screen_content_tools;
 
     /*!< Equal to SELECT_INTEGER_MV indicates that the force_integer_mv syntax
-     * element will be present in the frame header (providing
-     * allow_screen_content_tools is equal to 1). Otherwise, seq_force_integer_mv
-     * contains the value for force_integer_mv */
+     *   element will be present in the frame header (providing
+     *   allow_screen_content_tools is equal to 1). Otherwise, seq_force_integer_mv
+     *   contains the value for force_integer_mv */
     uint8_t seq_force_integer_mv;
 
     /*!< 1: Specifies that the use_superres syntax element will be present in
      *      the uncompressed header.
-     *   0: Specifies that the use_superres syntax element will not be present*/
+     *   0: Specifies that the use_superres syntax element will not be present */
     uint8_t enable_superres;
 
     /*!< 1: Specifies that cdef filtering may be enabled.
-         0: specifies that cdef filtering is disabled */
+     *   0: specifies that cdef filtering is disabled */
     uint8_t enable_cdef;
 
     /*!< 1: Specifies that loop restoration filtering may be enabled.
-         0: Specifies that loop restoration filtering is disabled*/
+     *   0: Specifies that loop restoration filtering is disabled */
     uint8_t enable_restoration;
 
-    /*!< Colour Configuration structure*/
+    /*!< Colour Configuration structure */
     EbColorConfig color_config;
 
-    /*!< Specifies whether film grain parameters are present in the coded video sequence*/
+    /*!< Specifies whether film grain parameters are present in the coded video sequence */
     uint8_t film_grain_params_present;
 
 } SeqHeader;
@@ -238,7 +232,7 @@ typedef struct FrameSize {
     /*!< Render height of the frame in luma samples */
     uint16_t render_height;
     /*!< Denominator of a fraction that specifies the ratio between the
-     * superblock width before and after upscaling*/
+     * superblock width before and after upscaling */
     uint8_t superres_denominator;
     /*!< Width of Upscaled SuperRes */
     uint16_t superres_upscaled_width;
@@ -269,7 +263,7 @@ typedef struct TilesInfo {
     uint8_t min_log2_tiles;
 
     /*!< 1: Indicates that the tiles are uniformly spaced across the frame
-     *   0: Indicates that the tile sizes are coded*/
+     *   0: Indicates that the tile sizes are coded */
     uint8_t uniform_tile_spacing_flag;
 
     /*!< Specifies the number of tiles across the frame */
@@ -308,7 +302,7 @@ typedef struct QuantizationParams {
     /*!<Specifies that the quantizer matrix will be used to compute quantizers*/
     uint8_t using_qmatrix;
     /*!< Specifies the level in the quantizer matrix that should be used for
-     * each plane decoding */
+     *   each plane decoding */
     uint8_t qm[MAX_MB_PLANE];
 } QuantizationParams;
 typedef struct DeltaQParams {
@@ -316,7 +310,7 @@ typedef struct DeltaQParams {
     uint8_t delta_q_present;
 
     /*!< Specifies the left shift which should be applied to decoded quantizer
-     * index delta values*/
+     *   index delta values */
     uint8_t delta_q_res;
 } DeltaQParams;
 
@@ -325,7 +319,7 @@ typedef struct DeltaLfParams {
     uint8_t delta_lf_present;
 
     /*!< Specifies the left shift which should be applied to decoded loop filter
-     * delta values*/
+     *   delta values*/
     uint8_t delta_lf_res;
 
     /*!< 1: Specifies that separate loop filter deltas are sent for horizontal
@@ -338,7 +332,7 @@ typedef struct CdefParams {
     /*!< Controls the amount of damping in the deringing filter */
     uint8_t cdef_damping;
     /*!< Specifies the number of bits needed to specify which CDEF filter to
-     *apply*/
+     *   apply*/
     uint8_t cdef_bits;
     /*!< Specify the strength of the primary and secondary filter of Y plane */
     uint8_t cdef_y_strength[CDEF_MAX_STRENGTHS];
@@ -351,7 +345,7 @@ typedef struct LrParams {
     RestorationType frame_restoration_type;
 
     /*!< Specifies the size of loop restoration units in units of samples in
-     * the current plane */
+     *   the current plane */
     uint16_t loop_restoration_size;
 
     /*!< Loop Restoration size in log2 unit */
@@ -363,7 +357,7 @@ typedef struct SkipModeInfo {
     int skip_mode_allowed;
 
     /*!< 1: Specifies that the syntax element skip_mode will be present
-    *   0: Specifies that skip_mode will not be used for this frame */
+    *    0: Specifies that skip_mode will not be used for this frame */
     int skip_mode_flag;
 
     /*!< ref_frame_idx_0 */
@@ -392,19 +386,19 @@ typedef struct GlobalMotionParams {
     int32_t gm_params[6];
 
     /*!< Previous global motion parameter */
-    //int32_t             prev_gm_params[6];
+    /*!< int32_t             prev_gm_params[6]; */
 } GlobalMotionParams;
 
 typedef struct FrameHeader {
     /*!< 1: Indicates the frame indexed by frame_to_show_map_idx is to be output.
-         0: Indicates that further processing is required */
+     *   0: Indicates that further processing is required */
     uint8_t show_existing_frame;
 
     /*!< Specifies the type of the frame */
     FrameType frame_type;
 
     /*!< 1: Specifies that this frame should be immediately output once decoded
-         0: Specifies that this frame should not be immediately output */
+     *   0: Specifies that this frame should not be immediately output */
     uint8_t show_frame;
 
     /*!< Specifies the presentation time of the frame in clock ticks DispCT
@@ -415,7 +409,7 @@ typedef struct FrameHeader {
     /*!< 1: Specifies that the frame may be output using the show_existing_frame
      *      mechanism
      *   0: Specifies that this frame will not be output using the
-            show_existing_frame mechanism */
+     *      show_existing_frame mechanism */
     uint8_t showable_frame;
 
     /*!< 1: Indicates that error resilient mode is enabled
@@ -423,7 +417,7 @@ typedef struct FrameHeader {
     uint8_t error_resilient_mode;
 
     /*!< Specifies whether the CDF update in the symbol decoding process should
-     * be disabled */
+     *   be disabled */
     uint8_t disable_cdf_update;
 
     /*!< 1: Indicates that intra blocks may use palette encoding
@@ -441,16 +435,16 @@ typedef struct FrameHeader {
     uint32_t order_hint;
 
     /*!< Specifies which reference frame contains the CDF values and other
-     * state that should be loaded at the start of the frame */
+     *   state that should be loaded at the start of the frame */
     uint8_t primary_ref_frame;
 
     /*!< 1: Specifies that buffer_removal_time is present.
-         0: Specifies that buffer_removal_time is not present */
+     *   0: Specifies that buffer_removal_time is not present */
     uint8_t buffer_removal_time_present_flag;
 
     /*!< Specifies the frame removal time in units of DecCT clock ticks counted
-     * from the removal time of the last random access point for operating
-     * point op_num */
+     *   from the removal time of the last random access point for operating
+     *   point op_num */
     uint32_t buffer_removal_time[MAX_NUM_OPERATING_POINTS];
 
     /*!< Specifies the length of the buffer_removal_time syntax element */
@@ -490,7 +484,7 @@ typedef struct FrameHeader {
     uint8_t is_motion_mode_switchable;
 
     /*!< 1: Specifies that motion vector information from a previous frame can
-     * be used when decoding the current frame
+     *      be used when decoding the current frame
      *   0: Specifies that this information will not be used */
     uint8_t use_ref_frame_mvs;
 
@@ -502,13 +496,13 @@ typedef struct FrameHeader {
      *   0: Indicates that the end of frame CDF update is enabled */
     uint8_t disable_frame_end_update_cdf;
 
-    /* Number of 4x4 block columns in the frame */
+    /*!< Number of 4x4 block columns in the frame */
     uint32_t mi_cols;
 
-    /* Number of 4x4 block rows in the frame */
+    /*!< Number of 4x4 block rows in the frame */
     uint32_t mi_rows;
 
-    /* Number of 4x4 block rows in the frame aligned to SB */
+    /*!< Number of 4x4 block rows in the frame aligned to SB */
     uint32_t mi_stride;
 
     /*!< Tile information */
@@ -527,7 +521,7 @@ typedef struct FrameHeader {
     DeltaLfParams delta_lf_params;
 
     /*!< Indicates that the frame is fully lossless at the coded resolution of
-     * FrameWidth by FrameHeight */
+     *   FrameWidth by FrameHeight */
     uint8_t coded_lossless;
 
     /*!< Indicates that the frame is fully lossless at the upscaled resolution*/
@@ -555,15 +549,15 @@ typedef struct FrameHeader {
     SkipModeInfo skip_mode_params;
 
     /*!< 1: Indicates that the syntax element motion_mode may be present
-     *   0: Indicates that the syntax element motion_mode will not be present*/
+     *   0: Indicates that the syntax element motion_mode will not be present */
     uint8_t allow_warped_motion;
 
     /*!< 1, specifies that the frame is restricted to a reduced subset of the
-     * full set of transform types */
+     *      full set of transform types */
     uint8_t reduced_tx_set;
 
     /*!< Global Motion Paramters */
-    //GlobalMotionParams      global_motion_params[ALTREF_FRAME + 1];
+    /*!< GlobalMotionParams      global_motion_params[ALTREF_FRAME + 1]; */
 
     /*!< Film Grain Parameters */
     AomFilmGrain film_grain_params;
@@ -572,7 +566,7 @@ typedef struct FrameHeader {
 } FrameHeader;
 
 typedef struct Dequant {
-    DECLARE_ALIGNED(16, int16_t, dequant_qtx[MAX_SEGMENTS][MAX_MB_PLANE][2]); // 0: DC, 1: AC
+    DECLARE_ALIGNED(16, int16_t, dequant_qtx[MAX_SEGMENTS][MAX_MB_PLANE][2]); /*!< 0: DC, 1: AC */
 } Dequant;
 
 #ifdef __cplusplus

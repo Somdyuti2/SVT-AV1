@@ -1,4 +1,4 @@
-/*
+/*!<
  * Copyright (c) 2016, Alliance for Open Media. All rights reserved
  *
  * This source code is subject to the terms of the BSD 2 Clause License and
@@ -6,8 +6,7 @@
  * was not distributed with this source code in the LICENSE file, you can
  * obtain it at www.aomedia.org/license/software. If the Alliance for Open
  * Media Patent License 1.0 was not distributed with this source code in the
- * PATENTS file, you can obtain it at www.aomedia.org/license/patent.
- */
+ * PATENTS file, you can obtain it at www.aomedia.org/license/patent. */
 
 #include <stdlib.h>
 #include <memory.h>
@@ -20,9 +19,8 @@
 
 #define THRESHOLD_NCC 0.75
 
-/* Compute var(im) * MATCH_SZ_SQ over a MATCH_SZ by MATCH_SZ window of im,
-   centered at (x, y).
-*/
+/*!< Compute var(im) * MATCH_SZ_SQ over a MATCH_SZ by MATCH_SZ window of im,
+ *  centered at (x, y). */
 static double compute_variance(unsigned char *im, int stride, int x, int y) {
     int sum   = 0;
     int sumsq = 0;
@@ -38,10 +36,9 @@ static double compute_variance(unsigned char *im, int stride, int x, int y) {
     return (double)var;
 }
 
-/* Compute corr(im1, im2) * MATCH_SZ * stddev(im1), where the
-   correlation/standard deviation are taken over MATCH_SZ by MATCH_SZ windows
-   of each image, centered at (x1, y1) and (x2, y2) respectively.
-*/
+/*!< Compute corr(im1, im2) * MATCH_SZ * stddev(im1), where the
+ *   correlation/standard deviation are taken over MATCH_SZ by MATCH_SZ windows
+ *   of each image, centered at (x1, y1) and (x2, y2) respectively. */
 double av1_compute_cross_correlation_c(unsigned char *im1, int stride1, int x1, int y1,
                                        unsigned char *im2, int stride2, int x2, int y2) {
     int v1, v2;
@@ -154,7 +151,7 @@ int av1_determine_correspondence(unsigned char *frm, int *frm_corners, int num_f
                                  unsigned char *ref, int *ref_corners, int num_ref_corners,
                                  int width, int height, int frm_stride, int ref_stride,
                                  int *correspondence_pts) {
-    // TODO(sarahparker) Improve this to include 2-way match
+    /*!< TODO(sarahparker) Improve this to include 2-way match */
     int             i, j;
     Correspondence *correspondences     = (Correspondence *)correspondence_pts;
     int             num_correspondences = 0;
@@ -187,9 +184,9 @@ int av1_determine_correspondence(unsigned char *frm, int *frm_corners, int num_f
                 best_match_j   = j;
             }
         }
-        // Note: We want to test if the best correlation is >= THRESHOLD_NCC,
-        // but need to account for the normalization in
-        // av1_compute_cross_correlation.
+        /*!< Note: We want to test if the best correlation is >= THRESHOLD_NCC,
+         *   but need to account for the normalization in
+         *   av1_compute_cross_correlation. */
         template_norm =
             compute_variance(frm, frm_stride, frm_corners[2 * i], frm_corners[2 * i + 1]);
         if (best_match_ncc > THRESHOLD_NCC * sqrt(template_norm)) {

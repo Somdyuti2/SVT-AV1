@@ -1,31 +1,27 @@
-/*
-* Copyright(c) 2019 Intel Corporation
-* SPDX - License - Identifier: BSD - 2 - Clause - Patent
-*/
+/*!< Copyright(c) 2019 Intel Corporation
+ * SPDX - License - Identifier: BSD - 2 - Clause - Patent */
 
-/*
-* Copyright (c) 2016, Alliance for Open Media. All rights reserved
-*
-* This source code is subject to the terms of the BSD 2 Clause License and
-* the Alliance for Open Media Patent License 1.0. If the BSD 2 Clause License
-* was not distributed with this source code in the LICENSE file, you can
-* obtain it at www.aomedia.org/license/software. If the Alliance for Open
-* Media Patent License 1.0 was not distributed with this source code in the
-* PATENTS file, you can obtain it at www.aomedia.org/license/patent.
-*/
+/*!< Copyright (c) 2016, Alliance for Open Media. All rights reserved
+ *
+ * This source code is subject to the terms of the BSD 2 Clause License and
+ * the Alliance for Open Media Patent License 1.0. If the BSD 2 Clause License
+ * was not distributed with this source code in the LICENSE file, you can
+ * obtain it at www.aomedia.org/license/software. If the Alliance for Open
+ * Media Patent License 1.0 was not distributed with this source code in the
+ * PATENTS file, you can obtain it at www.aomedia.org/license/patent. */
 
 #ifndef SVT_AV1_EBSEGMENTATIONPARAMS_H
 #define SVT_AV1_EBSEGMENTATIONPARAMS_H
 #include "EbObject.h"
 
 enum {
-    SEG_LVL_ALT_Q, // Use alternate Quantizer
-    SEG_LVL_ALT_LF_Y_V, // Use alternate loop filter value on y plane vertical
-    SEG_LVL_ALT_LF_Y_H, // Use alternate loop filter value on y plane horizontal
-    SEG_LVL_ALT_LF_U, // Use alternate loop filter value on u plane
-    SEG_LVL_ALT_LF_V, // Use alternate loop filter value on v plane
-    SEG_LVL_REF_FRAME, // Optional Segment reference frame
-    SEG_LVL_SKIP, // Optional Segment (0,0) + skip mode
+    SEG_LVL_ALT_Q, /*!< Use alternate Quantizer */
+    SEG_LVL_ALT_LF_Y_V, /*!< Use alternate loop filter value on y plane vertical */
+    SEG_LVL_ALT_LF_Y_H, /*!< Use alternate loop filter value on y plane horizontal */
+    SEG_LVL_ALT_LF_U, /*!< Use alternate loop filter value on u plane */
+    SEG_LVL_ALT_LF_V, /*!< Use alternate loop filter value on v plane */
+    SEG_LVL_REF_FRAME, /*!< Optional Segment reference frame */
+    SEG_LVL_SKIP, /*!< Optional Segment (0,0) + skip mode */
     SEG_LVL_GLOBALMV,
     SEG_LVL_MAX
 } UENUM1BYTE(SEG_LVL_FEATURES);
@@ -38,7 +34,7 @@ typedef struct {
 
 typedef struct {
     /*!< 1: Indicates that this frame makes use of the segmentation tool
-    *   0: Indicates that the frame does not use segmentation*/
+     *   0: Indicates that the frame does not use segmentation*/
     uint8_t segmentation_enabled;
 
     /*!< 1: Indicates that the segmentation map are updated during the decoding
@@ -73,7 +69,7 @@ typedef struct {
      *   0: Indicates that the skip syntax element will be read first */
     uint8_t seg_id_pre_skip;
 
-    //qp-binning related
+    /*!< qp-binning related */
     int16_t variance_bin_edge[MAX_SEGMENTS];
 
 } SegmentationParams;

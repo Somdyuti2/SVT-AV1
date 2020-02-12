@@ -1,13 +1,12 @@
-/*
-* Copyright (c) 2016, Alliance for Open Media. All rights reserved
-*
-* This source code is subject to the terms of the BSD 2 Clause License and
-* the Alliance for Open Media Patent License 1.0. If the BSD 2 Clause License
-* was not distributed with this source code in the LICENSE file, you can
-* obtain it at www.aomedia.org/license/software. If the Alliance for Open
-* Media Patent License 1.0 was not distributed with this source code in the
-* PATENTS file, you can obtain it at www.aomedia.org/license/patent.
-*/
+/*!<
+ * Copyright (c) 2016, Alliance for Open Media. All rights reserved
+ *
+ * This source code is subject to the terms of the BSD 2 Clause License and
+ * the Alliance for Open Media Patent License 1.0. If the BSD 2 Clause License
+ * was not distributed with this source code in the LICENSE file, you can
+ * obtain it at www.aomedia.org/license/software. If the Alliance for Open
+ * Media Patent License 1.0 was not distributed with this source code in the
+ * PATENTS file, you can obtain it at www.aomedia.org/license/patent. */
 
 #include "EbDefinitions.h"
 #include "EbRestoration.h"
@@ -41,30 +40,30 @@ extern "C" {
 typedef struct Av1Common {
     int32_t      mi_rows;
     int32_t      mi_cols;
-    int32_t      ref_frame_sign_bias[REF_FRAMES]; /* Two state 0, 1 */
+    int32_t      ref_frame_sign_bias[REF_FRAMES]; /*!< Two state 0, 1 */
     InterpFilter interp_filter;
     int32_t      mi_stride;
 
-    // Marks if we need to use 16bit frame buffers (1: yes, 0: no).
+    /*!< Marks if we need to use 16bit frame buffers (1: yes, 0: no). */
     int32_t         use_highbitdepth;
     int32_t         bit_depth;
     int32_t         color_format;
     int32_t         subsampling_x;
     int32_t         subsampling_y;
     RestorationInfo rst_info[MAX_MB_PLANE];
-    // rst_end_stripe[i] is one more than the index of the bottom stripe
-    // for tile row i.
+    /*!< rst_end_stripe[i] is one more than the index of the bottom stripe
+     *   for tile row i. */
     int32_t rst_end_stripe[MAX_TILE_ROWS];
-    // Output of loop restoration
+    /*!< Output of loop restoration */
     Yv12BufferConfig rst_frame;
-    // pointer to a scratch buffer used by self-guided restoration
+    /*!< pointer to a scratch buffer used by self-guided restoration */
     int32_t *                       rst_tmpbuf;
     Yv12BufferConfig *              frame_to_show;
     int32_t                         byte_alignment;
     int32_t                         last_tile_cols, last_tile_rows;
-    int32_t                         log2_tile_cols; // only valid for uniform tiles
-    int32_t                         log2_tile_rows; // only valid for uniform tiles
-    int32_t                         tile_width, tile_height; // In MI units
+    int32_t                         log2_tile_cols; /*!< only valid for uniform tiles */
+    int32_t                         log2_tile_rows; /*!< only valid for uniform tiles */
+    int32_t                         tile_width, tile_height; /*!< In MI units */
 
 //    SeqHeader                       *seq_header_ptr;
     int8_t                          sg_filter_mode;

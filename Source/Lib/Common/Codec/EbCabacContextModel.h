@@ -1,18 +1,14 @@
-/*
-* Copyright(c) 2019 Intel Corporation
-* SPDX - License - Identifier: BSD - 2 - Clause - Patent
-*/
+/*!< Copyright(c) 2019 Intel Corporation
+ * SPDX - License - Identifier: BSD - 2 - Clause - Patent */
 
-/*
-* Copyright (c) 2016, Alliance for Open Media. All rights reserved
-*
-* This source code is subject to the terms of the BSD 2 Clause License and
-* the Alliance for Open Media Patent License 1.0. If the BSD 2 Clause License
-* was not distributed with this source code in the LICENSE file, you can
-* obtain it at www.aomedia.org/license/software. If the Alliance for Open
-* Media Patent License 1.0 was not distributed with this source code in the
-* PATENTS file, you can obtain it at www.aomedia.org/license/patent.
-*/
+/*!< Copyright (c) 2016, Alliance for Open Media. All rights reserved
+ *
+ * This source code is subject to the terms of the BSD 2 Clause License and
+ * the Alliance for Open Media Patent License 1.0. If the BSD 2 Clause License
+ * was not distributed with this source code in the LICENSE file, you can
+ * obtain it at www.aomedia.org/license/software. If the Alliance for Open
+ * Media Patent License 1.0 was not distributed with this source code in the
+ * PATENTS file, you can obtain it at www.aomedia.org/license/patent. */
 
 #ifndef EbCabacContextModel_h
 #define EbCabacContextModel_h
@@ -23,20 +19,19 @@
 extern "C" {
 #endif
 
-#define TOTAL_NUMBER_OF_QP_VALUES 64 // qp range is 0 to 63
+#define TOTAL_NUMBER_OF_QP_VALUES 64 /*!< qp range is 0 to 63 */
 
-#define TOTAL_NUMBER_OF_SLICE_TYPES 3 // I, P and b
+#define TOTAL_NUMBER_OF_SLICE_TYPES 3 /*!< I, P and b */
 /**********************************************************************************************************************/
 /**********************************************************************************************************************/
 /**********************************************************************************************************************/
-/********************************************************************************************************************************/
 //prob.h
 
-// TODO(negge): Rename this AomProb once we remove vpxbool.
+/*!< TODO(negge): Rename this AomProb once we remove vpxbool. */
 typedef uint16_t AomCdfProb;
 typedef struct {
     AomCdfProb *color_map_cdf;
-    // TODO( use packed enum type if appropriate)
+    /*!< TODO( use packed enum type if appropriate) */
     uint8_t token;
 } TOKENEXTRA;
 
@@ -45,10 +40,9 @@ typedef struct {
 #define CDF_PROB_TOP (1 << CDF_PROB_BITS)
 #define CDF_INIT_TOP 32768
 #define CDF_SHIFT (15 - CDF_PROB_BITS)
-/*The value stored in an iCDF is CDF_PROB_TOP minus the actual cumulative
-    probability (an "inverse" CDF).
-    This function converts from one representation to the other (and is its own
-    inverse).*/
+/*!< The value stored in an iCDF is CDF_PROB_TOP minus the actual cumulative
+ *   probability (an "inverse" CDF).
+ *   This function converts from one representation to the other (and is its own inverse). */
 #define AOM_ICDF(x) (CDF_PROB_TOP - (x))
 
 #define SEG_TEMPORAL_PRED_CTXS 3
@@ -531,7 +525,7 @@ static INLINE uint8_t get_prob(uint32_t num, uint32_t den) {
 
 static INLINE void update_cdf(AomCdfProb *cdf, int32_t val, int32_t nsymbs) {
     int32_t    rate;
-    int32_t    i /*,tmp*/;
+    int32_t    i /*!< , tmp */;
     AomCdfProb tmp;
 
     static const int32_t nsymbs2speed[17] = {0, 0, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2};
@@ -539,7 +533,7 @@ static INLINE void update_cdf(AomCdfProb *cdf, int32_t val, int32_t nsymbs) {
     rate = 3 + (cdf[nsymbs] > 15) + (cdf[nsymbs] > 31) + nsymbs2speed[nsymbs]; // + get_msb(nsymbs);
     tmp  = AOM_ICDF(0);
 
-    // Single loop (faster)
+    /*!< Single loop (faster) */
     for (i = 0; i < nsymbs - 1; ++i) {
         tmp = (i == val) ? 0 : tmp;
         if (tmp < cdf[i])
@@ -584,9 +578,9 @@ static INLINE void update_cdf(AomCdfProb *cdf, int32_t val, int32_t nsymbs) {
 #define DCT_MAX_VALUE_HIGH10 65536
 #define DCT_MAX_VALUE_HIGH12 262144
 
-/* Coefficients are predicted via a 3-dimensional probability table indexed on
-* REF_TYPES, COEF_BANDS and COEF_CONTEXTS. */
-#define REF_TYPES 2 // intra=0, inter=1
+/*!< Coefficients are predicted via a 3-dimensional probability
+ *   table indexed on REF_TYPES, COEF_BANDS and COEF_CONTEXTS. */
+#define REF_TYPES 2 /*!< intra=0, inter=1 */
 
 struct AV1Common;
 struct FrameContexts;
@@ -596,38 +590,38 @@ void init_mode_probs(struct FrameContexts *fc);
 
 struct FrameContexts;
 
-//**********************************************************************************************************************//
-// txb_Common.h
+/**********************************************************************************************************************/
+/*!< txb_Common.h */
 static const TxClass tx_type_to_class[TX_TYPES] = {
-    TX_CLASS_2D, // DCT_DCT
-    TX_CLASS_2D, // ADST_DCT
-    TX_CLASS_2D, // DCT_ADST
-    TX_CLASS_2D, // ADST_ADST
-    TX_CLASS_2D, // FLIPADST_DCT
-    TX_CLASS_2D, // DCT_FLIPADST
-    TX_CLASS_2D, // FLIPADST_FLIPADST
-    TX_CLASS_2D, // ADST_FLIPADST
-    TX_CLASS_2D, // FLIPADST_ADST
-    TX_CLASS_2D, // IDTX
-    TX_CLASS_VERT, // V_DCT
-    TX_CLASS_HORIZ, // H_DCT
-    TX_CLASS_VERT, // V_ADST
-    TX_CLASS_HORIZ, // H_ADST
-    TX_CLASS_VERT, // V_FLIPADST
-    TX_CLASS_HORIZ, // H_FLIPADST
+    TX_CLASS_2D, /*!< DCT_DCT */
+    TX_CLASS_2D, /*!< ADST_DCT */
+    TX_CLASS_2D, /*!< DCT_ADST */
+    TX_CLASS_2D, /*!< ADST_ADST */
+    TX_CLASS_2D, /*!< FLIPADST_DCT */
+    TX_CLASS_2D, /*!< DCT_FLIPADST */
+    TX_CLASS_2D, /*!< FLIPADST_FLIPADST */
+    TX_CLASS_2D, /*!< ADST_FLIPADST */
+    TX_CLASS_2D, /*!< FLIPADST_ADST */
+    TX_CLASS_2D, /*!< IDTX */
+    TX_CLASS_VERT, /*!< V_DCT */
+    TX_CLASS_HORIZ, /*!< H_DCT */
+    TX_CLASS_VERT, /*!< V_ADST */
+    TX_CLASS_HORIZ, /*!< H_ADST */
+    TX_CLASS_VERT, /*!< V_FLIPADST */
+    TX_CLASS_HORIZ, /*!< H_FLIPADST  */
 };
 /**********************************************************************************************************************/
-// entropymv.h
+/*!< entropymv.h */
 
 #define MV_UPDATE_PROB 252
 
-/* Symbols for coding which components are zero jointly */
+/*!< Symbols for coding which components are zero jointly */
 #define MV_JOINTS 4
 typedef enum MvJointType {
-    MV_JOINT_ZERO   = 0, /* zero vector */
-    MV_JOINT_HNZVZ  = 1, /* Vert zero, hor nonzero */
-    MV_JOINT_HZVNZ  = 2, /* Hor zero, vert nonzero */
-    MV_JOINT_HNZVNZ = 3, /* Both components nonzero */
+    MV_JOINT_ZERO   = 0, /*!< zero vector */
+    MV_JOINT_HNZVZ  = 1, /*!< Vert zero, hor nonzero */
+    MV_JOINT_HZVNZ  = 2, /*!< Hor zero, vert nonzero */
+    MV_JOINT_HNZVNZ = 3, /*!< Both components nonzero */
 } MvJointType;
 
 static INLINE int32_t mv_joint_vertical(MvJointType type) {
@@ -638,23 +632,23 @@ static INLINE int32_t mv_joint_horizontal(MvJointType type) {
     return type == MV_JOINT_HNZVZ || type == MV_JOINT_HNZVNZ;
 }
 
-/* Symbols for coding magnitude class of nonzero components */
+/*!< Symbols for coding magnitude class of nonzero components */
 #define MV_CLASSES 11
 typedef enum MvClassType {
-    MV_CLASS_0  = 0, /* (0, 2]     integer pel */
-    MV_CLASS_1  = 1, /* (2, 4]     integer pel */
-    MV_CLASS_2  = 2, /* (4, 8]     integer pel */
-    MV_CLASS_3  = 3, /* (8, 16]    integer pel */
-    MV_CLASS_4  = 4, /* (16, 32]   integer pel */
-    MV_CLASS_5  = 5, /* (32, 64]   integer pel */
-    MV_CLASS_6  = 6, /* (64, 128]  integer pel */
-    MV_CLASS_7  = 7, /* (128, 256] integer pel */
-    MV_CLASS_8  = 8, /* (256, 512] integer pel */
-    MV_CLASS_9  = 9, /* (512, 1024] integer pel */
-    MV_CLASS_10 = 10, /* (1024,2048] integer pel */
+    MV_CLASS_0  = 0, /*!< (0, 2]     integer pel */
+    MV_CLASS_1  = 1, /*!< (2, 4]     integer pel */
+    MV_CLASS_2  = 2, /*!< (4, 8]     integer pel */
+    MV_CLASS_3  = 3, /*!< (8, 16]    integer pel */
+    MV_CLASS_4  = 4, /*!< (16, 32]   integer pel */
+    MV_CLASS_5  = 5, /*!< (32, 64]   integer pel */
+    MV_CLASS_6  = 6, /*!< (64, 128]  integer pel */
+    MV_CLASS_7  = 7, /*!< (128, 256] integer pel */
+    MV_CLASS_8  = 8, /*!< (256, 512] integer pel */
+    MV_CLASS_9  = 9, /*!< (512, 1024] integer pel */
+    MV_CLASS_10 = 10, /*!< (1024,2048] integer pel */
 } MvClassType;
 
-#define CLASS0_BITS 1 /* bits at integer precision for class 0 */
+#define CLASS0_BITS 1 /*!< bits at integer precision for class 0 */
 #define CLASS0_SIZE (1 << CLASS0_BITS)
 #define MV_OFFSET_BITS (MV_CLASSES + CLASS0_BITS - 2)
 #define MV_BITS_CONTEXTS 6
@@ -692,7 +686,7 @@ typedef enum MvSubpelPrecision {
     MV_SUBPEL_HIGH_PRECISION,
 } MvSubpelPrecision;
 /**********************************************************************************************************************/
-// entropymode.h
+/*!< entropymode.h */
 #define BlockSize_GROUPS 4
 
 #define TX_SIZE_CONTEXTS 3
@@ -700,32 +694,32 @@ typedef enum MvSubpelPrecision {
 #define INTER_OFFSET(mode) ((mode)-NEARESTMV)
 #define INTER_COMPOUND_OFFSET(mode) (uint8_t)((mode)-NEAREST_NEARESTMV)
 
-// Number of possible contexts for a color index.
-// As can be seen from av1_get_palette_color_index_context(), the possible
-// contexts are (2,0,0), (2,2,1), (3,2,0), (4,1,0), (5,0,0). These are mapped to
-// a value from 0 to 4 using 'palette_color_index_context_lookup' table.
+/*!< Number of possible contexts for a color index.
+ *   As can be seen from av1_get_palette_color_index_context(), the possible
+ *   contexts are (2,0,0), (2,2,1), (3,2,0), (4,1,0), (5,0,0). These are mapped to
+ *   a value from 0 to 4 using 'palette_color_index_context_lookup' table. */
 #define PALETTE_COLOR_INDEX_CONTEXTS 5
 
-// Palette Y mode context for a block is determined by number of neighboring
-// blocks (top and/or left) using a palette for Y plane. So, possible Y mode'
-// context values are:
-// 0 if neither left nor top block uses palette for Y plane,
-// 1 if exactly one of left or top block uses palette for Y plane, and
-// 2 if both left and top blocks use palette for Y plane.
+/*!< Palette Y mode context for a block is determined by number of neighboring
+ * blocks (top and/or left) using a palette for Y plane. So, possible Y mode'
+ * context values are:
+ * 0 if neither left nor top block uses palette for Y plane,
+ * 1 if exactly one of left or top block uses palette for Y plane, and
+ * 2 if both left and top blocks use palette for Y plane. */
 #define PALETTE_Y_MODE_CONTEXTS 3
 
-// Palette UV mode context for a block is determined by whether this block uses
-// palette for the Y plane. So, possible values are:
-// 0 if this block doesn't use palette for Y plane.
-// 1 if this block uses palette for Y plane (i.e. Y palette size > 0).
+/*!< Palette UV mode context for a block is determined by whether
+ *   this block uses palette for the Y plane. So, possible values are:
+ *   0 if this block doesn't use palette for Y plane.
+ *   1 if this block uses palette for Y plane (i.e. Y palette size > 0). */
 #define PALETTE_UV_MODE_CONTEXTS 2
 
-// Map the number of pixels in a block size to a context
-//   16(BLOCK_4X4)                          -> 0
-//   32(BLOCK_4X8, BLOCK_8X4)               -> 1
-//   64(BLOCK_8X8, BLOCK_4x16, BLOCK_16X4)  -> 2
-//   ...
-// 4096(BLOCK_64X64)                        -> 8
+/*!< Map the number of pixels in a block size to a context
+ *   16(BLOCK_4X4)                          -> 0
+ *   32(BLOCK_4X8, BLOCK_8X4)               -> 1
+ *   64(BLOCK_8X8, BLOCK_4x16, BLOCK_16X4)  -> 2
+ *   ...
+ * 4096(BLOCK_64X64)                        -> 8 */
 #define PALATTE_BSIZE_CTXS 7
 
 #define KF_MODE_CONTEXTS 5
@@ -808,10 +802,9 @@ typedef struct FrameContexts {
     AomCdfProb                partition_cdf[PARTITION_CONTEXTS][CDF_SIZE(EXT_PARTITION_TYPES)];
 
     AomCdfProb switchable_interp_cdf[SWITCHABLE_FILTER_CONTEXTS][CDF_SIZE(SWITCHABLE_FILTERS)];
-    /* kf_y_cdf is discarded after use, so does not require persistent storage.
-       However, we keep it with the other CDFs in this struct since it needs to
-       be copied to each tile to support parallelism just like the others.
-       */
+    /*!< kf_y_cdf is discarded after use, so does not require persistent storage.
+     *   However, we keep it with the other CDFs in this struct since it needs to
+     *   be copied to each tile to support parallelism just like the others. */
     AomCdfProb kf_y_cdf[KF_MODE_CONTEXTS][KF_MODE_CONTEXTS][CDF_SIZE(INTRA_MODES)];
 
     AomCdfProb angle_delta_cdf[DIRECTIONAL_MODES][CDF_SIZE(2 * MAX_ANGLE_DELTA + 1)];

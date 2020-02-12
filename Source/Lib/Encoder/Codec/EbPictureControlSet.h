@@ -1,7 +1,5 @@
-/*
-* Copyright(c) 2019 Intel Corporation
-* SPDX - License - Identifier: BSD - 2 - Clause - Patent
-*/
+/*!< Copyright(c) 2019 Intel Corporation
+ * SPDX - License - Identifier: BSD - 2 - Clause - Patent */
 
 #ifndef EbPictureControlSet_h
 #define EbPictureControlSet_h
@@ -36,7 +34,7 @@
 extern "C" {
 #endif
 
-#define SEGMENT_ENTROPY_BUFFER_SIZE 40000000 // Entropy Bitstream Buffer Size
+#define SEGMENT_ENTROPY_BUFFER_SIZE 40000000 /*!< Entropy Bitstream Buffer Size */
 #define PACKETIZATION_PROCESS_BUFFER_SIZE SEGMENT_ENTROPY_BUFFER_SIZE
 #define PACKETIZATION_PROCESS_SPS_BUFFER_SIZE 2000
 #define HISTOGRAM_NUMBER_OF_BINS 256
@@ -44,17 +42,17 @@ extern "C" {
 #define MAX_NUMBER_OF_REGIONS_IN_HEIGHT 4
 #define MAX_REF_QP_NUM 81
 
-// BDP OFF
+/*!< BDP OFF */
 #define MD_NEIGHBOR_ARRAY_INDEX 0
 #define MULTI_STAGE_PD_NEIGHBOR_ARRAY_INDEX 4
 #define NEIGHBOR_ARRAY_TOTAL_COUNT 5
 #define AOM_QM_BITS 5
 
 typedef struct MacroblockPlane {
-    // Quantizer setings
-    // These are used/accessed only in the quantization process
-    // RDO does not / must not depend on any of these values
-    // All values below share the coefficient scale/shift used in TX
+    /*!< Quantizer setings
+     *   These are used/accessed only in the quantization process
+     *   RDO does not / must not depend on any of these values
+     *   All values below share the coefficient scale/shift used in TX */
     const int16_t *quant_fp_qtx;
     const int16_t *round_fp_qtx;
     const int16_t *quant_qtx;
@@ -64,18 +62,18 @@ typedef struct MacroblockPlane {
     const int16_t *dequant_qtx;
 } MacroblockPlane;
 
-// The Quants structure is used only for internal quantizer setup in
-// av1_quantize.c.
-// All of its fields use the same coefficient shift/scaling at TX.
+/*!< The Quants structure is used only for internal quantizer setup in
+ *   av1_quantize.c. */
+/*!< All of its fields use the same coefficient shift/scaling at TX. */
 typedef struct Quants {
-    // 0: dc 1: ac 2-8: ac repeated to SIMD width
+    /*!< 0: dc 1: ac 2-8: ac repeated to SIMD width */
     DECLARE_ALIGNED(16, int16_t, y_quant[QINDEX_RANGE][8]);
     DECLARE_ALIGNED(16, int16_t, y_quant_shift[QINDEX_RANGE][8]);
     DECLARE_ALIGNED(16, int16_t, y_zbin[QINDEX_RANGE][8]);
     DECLARE_ALIGNED(16, int16_t, y_round[QINDEX_RANGE][8]);
 
-    // TODO(jingning): in progress of re-working the quantization. will decide
-    // if we want to deprecate the current use of y_quant.
+    /*!< TODO(jingning): in progress of re-working the quantization. will decide
+     *   if we want to deprecate the current use of y_quant. */
     DECLARE_ALIGNED(16, int16_t, y_quant_fp[QINDEX_RANGE][8]);
     DECLARE_ALIGNED(16, int16_t, u_quant_fp[QINDEX_RANGE][8]);
     DECLARE_ALIGNED(16, int16_t, v_quant_fp[QINDEX_RANGE][8]);
@@ -93,20 +91,20 @@ typedef struct Quants {
     DECLARE_ALIGNED(16, int16_t, v_round[QINDEX_RANGE][8]);
 } Quants;
 
-// The Dequants structure is used only for internal quantizer setup in
-// av1_quantize.c.
-// Fields are sufffixed according to whether or not they're expressed in
-// the same coefficient shift/precision as TX or a fixed Q3 format.
+/*!< The Dequants structure is used only for internal quantizer setup in
+ *   av1_quantize.c. */
+/*!< Fields are sufffixed according to whether or not they're expressed in
+ *   the same coefficient shift/precision as TX or a fixed Q3 format. */
 typedef struct Dequants {
     DECLARE_ALIGNED(16, int16_t,
-                    y_dequant_qtx[QINDEX_RANGE][8]); // 8: SIMD width
+                    y_dequant_qtx[QINDEX_RANGE][8]); /*!< 8: SIMD width */
     DECLARE_ALIGNED(16, int16_t,
-                    u_dequant_qtx[QINDEX_RANGE][8]); // 8: SIMD width
+                    u_dequant_qtx[QINDEX_RANGE][8]); /*!< 8: SIMD width */
     DECLARE_ALIGNED(16, int16_t,
-                    v_dequant_qtx[QINDEX_RANGE][8]); // 8: SIMD width
-    DECLARE_ALIGNED(16, int16_t, y_dequant_q3[QINDEX_RANGE][8]); // 8: SIMD width
-    DECLARE_ALIGNED(16, int16_t, u_dequant_q3[QINDEX_RANGE][8]); // 8: SIMD width
-    DECLARE_ALIGNED(16, int16_t, v_dequant_q3[QINDEX_RANGE][8]); // 8: SIMD width
+                    v_dequant_qtx[QINDEX_RANGE][8]); /*!< 8: SIMD width */
+    DECLARE_ALIGNED(16, int16_t, y_dequant_q3[QINDEX_RANGE][8]); /*!< 8: SIMD width */
+    DECLARE_ALIGNED(16, int16_t, u_dequant_q3[QINDEX_RANGE][8]); /*!< 8: SIMD width */
+    DECLARE_ALIGNED(16, int16_t, v_dequant_q3[QINDEX_RANGE][8]); /*!< 8: SIMD width */
 } Dequants;
 
 typedef struct MacroblockdPlane {
@@ -119,31 +117,30 @@ typedef struct MacroblockdPlane {
     //struct Buf2D pre[2];
     //EntropyContext *above_context;
     //EntropyContext *left_context;
-    // The dequantizers below are true dequntizers used only in the
-    // dequantization process.  They have the same coefficient
-    // shift/scale as TX.
+    /*!< The dequantizers below are true dequntizers used only in the
+     *   dequantization process.  They have the same coefficient shift/scale as TX. */
     //int16_t seg_dequant_qtx[MAX_SEGMENTS][2];
     //uint8_t *color_index_map;
     // block size in pixels
     //uint8_t width, height;
     //QmVal *seg_iqmatrix[MAX_SEGMENTS][TX_SIZES_ALL];
     //QmVal *seg_qmatrix[MAX_SEGMENTS][TX_SIZES_ALL];
-    // the 'dequantizers' below are not literal dequantizer values.
-    // They're used by encoder RDO to generate ad-hoc lambda values.
-    // They use a hardwired Q3 coeff shift and do not necessarily match
-    // the TX scale in use.
+    /*!< the 'dequantizers' below are not literal dequantizer values.
+     *   They're used by encoder RDO to generate ad-hoc lambda values.
+     *   They use a hardwired Q3 coeff shift and do not necessarily match
+     *   the TX scale in use.  */
     //const int16_t *dequant_Q3;
 } MacroblockdPlane;
 
 struct PredictionUnit;
 
-/**************************************
-     * Segment-based Control Sets
-     **************************************/
+/**************************************/
+/*!< Segment-based Control Sets */
+/**************************************/
 
 typedef struct EbMdcLeafData {
     uint32_t mds_idx;
-    uint32_t tot_d1_blocks; //how many d1 bloks every parent square would have
+    uint32_t tot_d1_blocks; /*!< how many d1 bloks every parent square would have */
     uint8_t  leaf_index;
     EbBool   split_flag;
     uint8_t  consider_block;
@@ -151,18 +148,18 @@ typedef struct EbMdcLeafData {
 } EbMdcLeafData;
 
 typedef struct MdcSbData {
-    // Rate Control
+    /*!< Rate Control */
     uint8_t qp;
 
-    // ME Results
+    /*!< ME Results */
     uint64_t      treeblock_variance;
     uint32_t      leaf_count;
     EbMdcLeafData leaf_data_array[BLOCK_MAX_COUNT_SB_128];
 } MdcSbData;
 
-/**************************************
-     * MD Segment Control
-     **************************************/
+/**************************************/
+/*!< MD Segment Control */
+/**************************************/
 typedef struct MdSegmentCtrl {
     uint64_t completion_mask;
     EbHandle write_lock_mutex;
@@ -173,9 +170,9 @@ typedef struct MdSegmentCtrl {
     uint32_t current_row_idx;
 } MdSegmentCtrl;
 
-/**************************************
-     * Picture Control Set
-     **************************************/
+/**************************************/
+/*!< Picture Control Set */
+/**************************************/
 struct CodedTreeblock_s;
 struct SuperBlock;
 #define MAX_MESH_STEP 4
@@ -186,21 +183,21 @@ typedef struct MeshPattern {
 } MeshPattern;
 
 typedef struct SpeedFeatures {
-    // TODO(jingning): combine the related motion search speed features
-    // This allows us to use motion search at other sizes as a starting
-    // point for this motion search and limits the search range around it.
+    /*!< TODO(jingning): combine the related motion search speed features
+     *   This allows us to use motion search at other sizes as a starting
+     *   point for this motion search and limits the search range around it. */
     int adaptive_motion_search;
 
-    // Flag for allowing some use of exhaustive searches;
+    /*!< Flag for allowing some use of exhaustive searches */
     int allow_exhaustive_searches;
 
-    // Threshold for allowing exhaistive motion search.
+    /*!< Threshold for allowing exhaistive motion search. */
     int exhaustive_searches_thresh;
 
-    // Maximum number of exhaustive searches for a frame.
+    /*!< Maximum number of exhaustive searches for a frame. */
     int max_exaustive_pct;
 
-    // Pattern to be used for any exhaustive mesh searches.
+    /*!< Pattern to be used for any exhaustive mesh searches. */
     MeshPattern mesh_patterns[MAX_MESH_STEP];
 
 } SpeedFeatures;
@@ -216,23 +213,22 @@ typedef struct PictureControlSet {
     EbPictureBufferDesc *recon_picture32bit_ptr;
     EbPictureBufferDesc *input_frame16bit;
 
-    struct PictureParentControlSet *parent_pcs_ptr; //The parent of this PCS.
+    struct PictureParentControlSet *parent_pcs_ptr; /*!< The parent of this PCS. */
     EbObjectWrapper *               picture_parent_control_set_wrapper_ptr;
 #if !TILES_PARALLEL
     EntropyCoder *entropy_coder_ptr;
 #endif
-    // Packetization (used to encode SPS, PPS, etc)
+    /*!< Packetization (used to encode SPS, PPS, etc) */
     Bitstream *bitstream_ptr;
 
-    // Reference Lists
-    // Reference Lists
+    /*!< Reference Lists */
     EbObjectWrapper *ref_pic_ptr_array[MAX_NUM_OF_REF_PIC_LIST][REF_LIST_MAX_DEPTH];
     //EB_S64                                refPicPocArray[MAX_NUM_OF_REF_PIC_LIST][REF_LIST_MAX_DEPTH];
 
     uint8_t  ref_pic_qp_array[MAX_NUM_OF_REF_PIC_LIST][REF_LIST_MAX_DEPTH];
     EB_SLICE ref_slice_type_array[MAX_NUM_OF_REF_PIC_LIST][REF_LIST_MAX_DEPTH];
     uint64_t ref_pic_referenced_area_avg_array[MAX_NUM_OF_REF_PIC_LIST][REF_LIST_MAX_DEPTH];
-    // GOP
+    /*!< GOP */
     uint64_t      picture_number;
     uint8_t       temporal_layer_index;
     EbColorFormat color_format;
@@ -269,8 +265,8 @@ typedef struct PictureControlSet {
 
     uint64_t (*mse_seg[2])[TOTAL_STRENGTHS];
 
-    uint16_t *src[3]; //dlfed recon in 16bit form
-    uint16_t *ref_coeff[3]; //input video in 16bit form
+    uint16_t *src[3]; /*!< dlfed recon in 16bit form */
+    uint16_t *ref_coeff[3]; /*!< input video in 16bit form */
 
     uint32_t tot_seg_searched_rest;
     EbHandle rest_search_mutex;
@@ -278,28 +274,28 @@ typedef struct PictureControlSet {
     uint8_t  rest_segments_column_count;
     uint8_t  rest_segments_row_count;
 
-    // Mode Decision Config
+    /*!< Mode Decision Config */
     MdcSbData *mdc_sb_array;
 
-    // Slice Type
+    /*!< Slice Type */
     EB_SLICE slice_type;
 
-    // Rate Control
+    /*!< Rate Control */
     uint8_t picture_qp;
     uint8_t dif_blk_delta_qp_depth;
 
-    // SB Array
+    /*!< SB Array */
     uint8_t      sb_max_depth;
     uint16_t     sb_total_count;
     SuperBlock **sb_ptr_array;
-    // DLF
+    /*!< DLF */
     uint8_t *qp_array;
     uint16_t qp_array_stride;
     uint32_t qp_array_size;
-    // EncDec Entropy Coder (for rate estimation)
+    /*!< EncDec Entropy Coder (for rate estimation) */
     EntropyCoder *coeff_est_entropy_coder_ptr;
 
-    // Mode Decision Neighbor Arrays
+    /*!< Mode Decision Neighbor Arrays */
 #if TILES_PARALLEL
     NeighborArrayUnit **md_intra_luma_mode_neighbor_array[NEIGHBOR_ARRAY_TOTAL_COUNT];
     NeighborArrayUnit **md_intra_chroma_mode_neighbor_array[NEIGHBOR_ARRAY_TOTAL_COUNT];
@@ -362,7 +358,7 @@ typedef struct PictureControlSet {
     NeighborArrayUnit *mdleaf_partition_neighbor_array[NEIGHBOR_ARRAY_TOTAL_COUNT];
 #endif
 
-    // Encode Pass Neighbor Arrays
+    /*!< Encode Pass Neighbor Arrays */
 #if TILES_PARALLEL
     NeighborArrayUnit **ep_intra_luma_mode_neighbor_array;
     NeighborArrayUnit **ep_intra_chroma_mode_neighbor_array;
@@ -399,7 +395,7 @@ typedef struct PictureControlSet {
     NeighborArrayUnit *ep_partition_context_neighbor_array;
 #endif
 
-    // Entropy Coding Neighbor Arrays
+    /*!< Entropy Coding Neighbor Arrays */
 #if TILES_PARALLEL
     NeighborArrayUnit **mode_type_neighbor_array;
     NeighborArrayUnit **partition_context_neighbor_array;
@@ -407,11 +403,11 @@ typedef struct PictureControlSet {
     NeighborArrayUnit **skip_flag_neighbor_array;
     NeighborArrayUnit **skip_coeff_neighbor_array;
     NeighborArrayUnit **
-        luma_dc_sign_level_coeff_neighbor_array; // Stored per 4x4. 8 bit: lower 6 bits (COEFF_CONTEXT_BITS), shows if there is at least one Coef. Top 2 bit store the sign of DC as follow: 0->0,1->-1,2-> 1
+        luma_dc_sign_level_coeff_neighbor_array; /*!< Stored per 4x4. 8 bit: lower 6 bits (COEFF_CONTEXT_BITS), shows if there is at least one Coef. Top 2 bit store the sign of DC as follow: 0->0,1->-1,2-> 1 */
     NeighborArrayUnit **
-        cr_dc_sign_level_coeff_neighbor_array; // Stored per 4x4. 8 bit: lower 6 bits(COEFF_CONTEXT_BITS), shows if there is at least one Coef. Top 2 bit store the sign of DC as follow: 0->0,1->-1,2-> 1
+        cr_dc_sign_level_coeff_neighbor_array; /*!< Stored per 4x4. 8 bit: lower 6 bits(COEFF_CONTEXT_BITS), shows if there is at least one Coef. Top 2 bit store the sign of DC as follow: 0->0,1->-1,2-> 1 */
     NeighborArrayUnit **
-                          cb_dc_sign_level_coeff_neighbor_array; // Stored per 4x4. 8 bit: lower 6 bits(COEFF_CONTEXT_BITS), shows if there is at least one Coef. Top 2 bit store the sign of DC as follow: 0->0,1->-1,2-> 1
+                          cb_dc_sign_level_coeff_neighbor_array; /*!< Stored per 4x4. 8 bit: lower 6 bits(COEFF_CONTEXT_BITS), shows if there is at least one Coef. Top 2 bit store the sign of DC as follow: 0->0,1->-1,2-> 1 */
     NeighborArrayUnit **  txfm_context_array;
     NeighborArrayUnit **  inter_pred_dir_neighbor_array;
     NeighborArrayUnit **  ref_frame_type_neighbor_array;
@@ -425,11 +421,11 @@ typedef struct PictureControlSet {
     NeighborArrayUnit *skip_flag_neighbor_array;
     NeighborArrayUnit *skip_coeff_neighbor_array;
     NeighborArrayUnit *
-        luma_dc_sign_level_coeff_neighbor_array; // Stored per 4x4. 8 bit: lower 6 bits (COEFF_CONTEXT_BITS), shows if there is at least one Coef. Top 2 bit store the sign of DC as follow: 0->0,1->-1,2-> 1
+        luma_dc_sign_level_coeff_neighbor_array; /*!< Stored per 4x4. 8 bit: lower 6 bits (COEFF_CONTEXT_BITS), shows if there is at least one Coef. Top 2 bit store the sign of DC as follow: 0->0,1->-1,2-> 1 */
     NeighborArrayUnit *
-        cr_dc_sign_level_coeff_neighbor_array; // Stored per 4x4. 8 bit: lower 6 bits(COEFF_CONTEXT_BITS), shows if there is at least one Coef. Top 2 bit store the sign of DC as follow: 0->0,1->-1,2-> 1
+        cr_dc_sign_level_coeff_neighbor_array; /*!< Stored per 4x4. 8 bit: lower 6 bits(COEFF_CONTEXT_BITS), shows if there is at least one Coef. Top 2 bit store the sign of DC as follow: 0->0,1->-1,2-> 1 */
     NeighborArrayUnit *
-                         cb_dc_sign_level_coeff_neighbor_array; // Stored per 4x4. 8 bit: lower 6 bits(COEFF_CONTEXT_BITS), shows if there is at least one Coef. Top 2 bit store the sign of DC as follow: 0->0,1->-1,2-> 1
+                         cb_dc_sign_level_coeff_neighbor_array; /*!< Stored per 4x4. 8 bit: lower 6 bits(COEFF_CONTEXT_BITS), shows if there is at least one Coef. Top 2 bit store the sign of DC as follow: 0->0,1->-1,2-> 1 */
     NeighborArrayUnit *  txfm_context_array;
     NeighborArrayUnit *  inter_pred_dir_neighbor_array;
     NeighborArrayUnit *  ref_frame_type_neighbor_array;
@@ -439,15 +435,15 @@ typedef struct PictureControlSet {
 #endif
     SegmentationNeighborMap *segmentation_neighbor_map;
 
-    ModeInfo **mi_grid_base; //2 SB Rows of mi Data are enough
+    ModeInfo **mi_grid_base; /*!< 2 SB Rows of mi Data are enough */
 
     ModeInfo *mip;
 
-    int32_t   mi_stride; // TODO: needs to be retired, use pcs_ptr->av1_cm->mi_stride instead
+    int32_t   mi_stride; /*!< TODO: needs to be retired, use pcs_ptr->av1_cm->mi_stride instead */
     EbReflist colocated_pu_ref_list;
     EbBool    is_low_delay;
 
-    // slice level chroma QP offsets
+    /*!</ slice level chroma QP offsets */
     EbBool slice_level_chroma_qp_flag;
     int8_t slice_cb_qp_offset;
     int8_t slice_cr_qp_offset;
@@ -468,7 +464,7 @@ typedef struct PictureControlSet {
     SgrprojInfo        sgrproj_info[MAX_MB_PLANE];
 #endif
     SpeedFeatures    sf;
-    SearchSiteConfig ss_cfg; //CHKN this might be a seq based
+    SearchSiteConfig ss_cfg; /*!< CHKN this might be a seq based */
     HashTable        hash_table;
     CRC_CALCULATOR   crc_calculator1;
     CRC_CALCULATOR   crc_calculator2;
@@ -492,8 +488,8 @@ typedef struct PictureControlSet {
     uint16_t sb_total_count_unscaled;
 } PictureControlSet;
 
-// To optimize based on the max input size
-// To study speed-memory trade-offs
+/*!< To optimize based on the max input size */
+/*!< To study speed-memory trade-offs */
 typedef struct SbParams {
     uint8_t  horizontal_index;
     uint8_t  vertical_index;
@@ -537,11 +533,14 @@ typedef struct TileGroupInfo {
     uint16_t tile_group_tile_end_y;
 } TileGroupInfo;
 #endif
-//CHKN
-// Add the concept of PictureParentControlSet which is a subset of the old PictureControlSet.
-// It actually holds only high level Picture based control data:(GOP management,when to start a picture, when to release the PCS, ....).
-// The regular PictureControlSet(Child) will be dedicated to store SB based encoding results and information.
-// Parent is created before the Child, and continue to live more. Child PCS only lives the exact time needed to encode the picture: from ME to EC/ALF.
+/*!< CHKN
+ *   Add the concept of PictureParentControlSet which is a subset of the old PictureControlSet.
+ *   It actually holds only high level Picture based control data:
+ *   (GOP management,when to start a picture, when to release the PCS, ....).
+ *   The regular PictureControlSet(Child) will be dedicated to
+ *   store SB based encoding results and information.
+ *   Parent is created before the Child, and continue to live more.
+ *   Child PCS only lives the exact time needed to encode the picture: from ME to EC/ALF. */
 typedef struct PictureParentControlSet {
     EbDctor              dctor;
     EbObjectWrapper *    scs_wrapper_ptr;
@@ -552,22 +551,22 @@ typedef struct PictureParentControlSet {
     EbPictureBufferDesc *enhanced_downscaled_picture_ptr;
     EbPictureBufferDesc *enhanced_unscaled_picture_ptr;
     EbPictureBufferDesc
-        *  chroma_downsampled_picture_ptr; //if 422/444 input, down sample to 420 for MD
+        *  chroma_downsampled_picture_ptr; /*!< if 422/444 input, down sample to 420 for MD */
     EbBool is_chroma_downsampled_picture_ptr_owner;
-    PredictionStructure *      pred_struct_ptr; // need to check
+    PredictionStructure *         pred_struct_ptr; /*!< need to check */
     struct SequenceControlSet *scs_ptr;
     EbObjectWrapper *          p_pcs_wrapper_ptr;
     EbObjectWrapper *          previous_picture_control_set_wrapper_ptr;
     EbObjectWrapper *          output_stream_wrapper_ptr;
     Av1Common *                av1_cm;
 
-    // Data attached to the picture. This includes data passed from the application, or other data the encoder attaches
-    // to the picture.
+    /*!< Data attached to the picture. This includes data passed from the application,
+     *   or other data the encoder attaches to the picture. */
     EbLinkedListNode *data_ll_head_ptr;
-    // pointer to data to be passed back to the application when picture encoding is done
+    /*!< pointer to data to be passed back to the application when picture encoding is done */
     EbLinkedListNode *app_out_data_ll_head_ptr;
 
-    EbBufferHeaderType *input_ptr; // input picture buffer
+    EbBufferHeaderType *input_ptr; /*!< input picture buffer */
 #if TILES_PARALLEL
     uint8_t        log2_tile_rows;
     uint8_t        log2_tile_cols;
@@ -600,7 +599,7 @@ typedef struct PictureParentControlSet {
     uint8_t          ref_list1_count;
     MvReferenceFrame ref_frame_type_arr[MODE_CTX_REF_FRAMES];
     uint8_t          tot_ref_frame_types;
-    // Rate Control
+    /*!< Rate Control */
     uint64_t pred_bits_ref_qp[MAX_REF_QP_NUM];
     uint64_t target_bits_best_pred_qp;
     uint64_t target_bits_rc;
@@ -620,7 +619,7 @@ typedef struct PictureParentControlSet {
     uint16_t sb_total_count;
     EbBool   end_of_sequence_region;
     EbBool   scene_change_in_gop;
-    uint8_t  frames_in_sw; // used for Look ahead
+    uint8_t  frames_in_sw; /*!< used for Look ahead */
     int8_t   historgram_life_count;
     EbBool   qp_on_the_fly;
     uint8_t  calculated_qp;
@@ -635,7 +634,7 @@ typedef struct PictureParentControlSet {
     uint32_t cr_sse;
     uint32_t cb_sse;
 
-    // Pre Analysis
+    /*!< Pre Analysis */
     EbObjectWrapper *ref_pa_pic_ptr_array[MAX_NUM_OF_REF_PIC_LIST][REF_LIST_MAX_DEPTH];
     uint64_t         ref_pic_poc_array[MAX_NUM_OF_REF_PIC_LIST][REF_LIST_MAX_DEPTH];
     uint16_t **      variance;
@@ -647,15 +646,15 @@ typedef struct PictureParentControlSet {
     EbBool           scene_transition_flag[MAX_NUM_OF_REF_PIC_LIST];
     EbBool           intensity_transition_flag;
     uint8_t          average_intensity[3];
-    // Non moving index array
+    /*!< Non moving index array */
     uint8_t *non_moving_index_array;
-    int      kf_zeromotion_pct; // percent of zero motion blocks
+    int      kf_zeromotion_pct; /*!< percent of zero motion blocks */
     uint8_t  fade_out_from_black;
     uint8_t  fade_in_to_black;
     EbBool   is_pan;
     EbBool   is_tilt;
     uint8_t *sb_flat_noise_array;
-    uint16_t non_moving_index_average; // used by ModeDecisionConfigurationProcess()
+    uint16_t non_moving_index_average; /*!< used by ModeDecisionConfigurationProcess() */
     int16_t  non_moving_index_min_distance;
     int16_t  non_moving_index_max_distance;
     uint16_t qp_scaling_average_complexity;
@@ -678,88 +677,88 @@ typedef struct PictureParentControlSet {
     int32_t  intra_max_distance[4];
     int32_t  inter_min_distance[4];
     int32_t  inter_max_distance[4];
-    // Histograms
+    /*!< Histograms */
     uint32_t ****picture_histogram;
     uint64_t     average_intensity_per_region[MAX_NUMBER_OF_REGIONS_IN_WIDTH]
                                          [MAX_NUMBER_OF_REGIONS_IN_HEIGHT][3];
 
-    // Segments
+    /*!< Segments */
     uint16_t me_segments_total_count;
     uint8_t  me_segments_column_count;
     uint8_t  me_segments_row_count;
     uint64_t me_segments_completion_mask;
 
-    // Motion Estimation Results
+    /*!< Motion Estimation Results */
     uint8_t       max_number_of_pus_per_sb;
     uint8_t       max_number_of_candidates_per_block;
     MeSbResults **me_results;
     uint32_t *    rc_me_distortion;
 
-    // Global motion estimation results
+    /*!< Global motion estimation results */
     EbBool               is_global_motion[MAX_NUM_OF_REF_PIC_LIST][REF_LIST_MAX_DEPTH];
     EbWarpedMotionParams global_motion_estimation[MAX_NUM_OF_REF_PIC_LIST][REF_LIST_MAX_DEPTH];
 
-    // Motion Estimation Distortion and OIS Historgram
+    /*!< Motion Estimation Distortion and OIS Historgram */
     uint16_t *me_distortion_histogram;
     uint16_t *ois_distortion_histogram;
     uint32_t *intra_sad_interval_index;
     uint32_t *inter_sad_interval_index;
     EbHandle  rc_distortion_histogram_mutex;
 
-    // Open loop Intra candidate Search Results
+    /*!< Open loop Intra candidate Search Results */
     OisSbResults **ois_sb_results;
     OisCandidate **ois_candicate;
-    // Dynamic GOP
+    /*!< Dynamic GOP */
     EbPred   pred_structure;
     uint8_t  hierarchical_levels;
     uint16_t full_sb_count;
     EbBool   init_pred_struct_position_flag;
     int8_t   hierarchical_layers_diff;
 
-    // HME Flags
+    /*!< HME Flags */
     EbBool enable_hme_flag;
     EbBool enable_hme_level0_flag;
     EbBool enable_hme_level1_flag;
     EbBool enable_hme_level2_flag;
 
-    // HME Flags form Temporal Filtering
+    /*!< HME Flags form Temporal Filtering */
     EbBool tf_enable_hme_flag;
     EbBool tf_enable_hme_level0_flag;
     EbBool tf_enable_hme_level1_flag;
     EbBool tf_enable_hme_level2_flag;
 
-    // MD
+    /*!< MD */
     EbEncMode         enc_mode;
     EbEncMode         snd_pass_enc_mode;
     EB_SB_DEPTH_MODE *sb_depth_mode_array;
     EbBool            use_src_ref;
     EbBool            limit_ois_to_dc_mode_flag;
 
-    // Multi-modes signal(s)
+    /*!< Multi-modes signal(s) */
     EbPictureDepthMode pic_depth_mode;
     uint8_t            loop_filter_mode;
     uint8_t            intra_pred_mode;
     uint8_t            tx_size_search_mode;
-    uint8_t            frame_end_cdf_update_mode; // mm-signal: 0: OFF, 1:ON
-    //**********************************************************************************************************//
+    uint8_t            frame_end_cdf_update_mode; /*!< mm-signal: 0: OFF, 1:ON */
+    /**********************************************************************************************************/
     Av1RpsNode av1_ref_signal;
     EbBool     has_show_existing;
-    int32_t    ref_frame_map[REF_FRAMES]; /* maps fb_idx to reference slot */
+    int32_t    ref_frame_map[REF_FRAMES]; /*!< maps fb_idx to reference slot */
     int32_t    is_skip_mode_allowed;
     int32_t    skip_mode_flag;
 
-    // Flag for a frame used as a reference - not written to the Bitstream
+    /*!< Flag for a frame used as a reference - not written to the Bitstream */
     int32_t is_reference_frame;
 
-    // Flag signaling that the frame is encoded using only INTRA modes.
+    /*!< Flag signaling that the frame is encoded using only INTRA modes. */
     uint8_t intra_only;
-    /* profile settings */
+    /*!< profile settings */
 #if CONFIG_ENTROPY_STATS
     int32_t coef_cdf_category;
 #endif
     int32_t separate_uv_delta_q;
 
-    // Global quant matrix tables
+    /*!< Global quant matrix tables */
     const QmVal *giqmatrix[NUM_QM_LEVELS][3][TX_SIZES_ALL];
     const QmVal *gqmatrix[NUM_QM_LEVELS][3][TX_SIZES_ALL];
     Quants       quants;
@@ -768,18 +767,17 @@ typedef struct PictureParentControlSet {
     Dequants     deq_md;
     int32_t      min_qmlevel;
     int32_t      max_qmlevel;
-    // Encoder
+    /*!< Encoder */
     LoopFilterInfoN lf_info;
 
-    // Flag signaling how frame contexts should be updated at the end of
-    // a frame decode
+    /*!< Flag signaling how frame contexts should be updated at the end of a frame decode */
     RefreshFrameContextMode refresh_frame_context;
     uint32_t                frame_context_idx; /* Context to use/update */
     int32_t                 fb_of_context_type[REF_FRAMES];
     uint64_t                frame_offset;
     uint32_t                large_scale_tile;
     int32_t                 nb_cdef_strengths;
-    // Resolution of delta quant
+    /*!< Resolution of delta quant */
     int32_t num_tg;
     int32_t monochrome;
 #if TILES_PARALLEL
@@ -788,33 +786,33 @@ typedef struct PictureParentControlSet {
     int32_t            prev_qindex;
 #endif
 
-    // Since actual frame level loop filtering level value is not available
-    // at the beginning of the tile (only available during actual filtering)
-    // at encoder side.we record the delta_lf (against the frame level loop
-    // filtering level) and code the delta between previous superblock's delta
-    // lf and current delta lf. It is equivalent to the delta between previous
-    // superblock's actual lf and current lf.
+    /*!< Since actual frame level loop filtering level value is not available
+     *   at the beginning of the tile (only available during actual filtering)
+     *   at encoder side.we record the delta_lf (against the frame level loop
+     *   filtering level) and code the delta between previous superblock's delta
+     *   lf and current delta lf. It is equivalent to the delta between previous
+     *   superblock's actual lf and current lf. */
     int32_t prev_delta_lf_from_base;
     int32_t current_delta_lf_from_base;
 
-    // For this experiment, we have four frame filter levels for different plane
-    // and direction. So, to support the per superblock update, we need to add
-    // a few more params as below.
-    // 0: delta loop filter level for y plane vertical
-    // 1: delta loop filter level for y plane horizontal
-    // 2: delta loop filter level for u plane
-    // 3: delta loop filter level for v plane
-    // To make it consistent with the reference to each filter level in segment,
-    // we need to -1, since
-    // SEG_LVL_ALT_LF_Y_V = 1;
-    // SEG_LVL_ALT_LF_Y_H = 2;
-    // SEG_LVL_ALT_LF_U   = 3;
-    // SEG_LVL_ALT_LF_V   = 4;
-    //
+    /*!< For this experiment, we have four frame filter levels for different plane
+     *   and direction. So, to support the per superblock update, we need to add
+     *   a few more params as below.
+     *   0: delta loop filter level for y plane vertical
+     *   1: delta loop filter level for y plane horizontal
+     *   2: delta loop filter level for u plane
+     *   3: delta loop filter level for v plane
+     *   To make it consistent with the reference to each filter level in segment,
+     *   we need to -1, since
+     *   SEG_LVL_ALT_LF_Y_V = 1;
+     *   SEG_LVL_ALT_LF_Y_H = 2;
+     *   SEG_LVL_ALT_LF_U   = 3;
+     *   SEG_LVL_ALT_LF_V   = 4; */
+
     int32_t prev_delta_lf[FRAME_LF_COUNT];
     int32_t curr_delta_lf[FRAME_LF_COUNT];
 
-    // Resolution of delta quant
+    /*!< Resolution of delta quant */
     // int32_t delta_q_res;
     int32_t              allow_comp_inter_inter;
     int16_t              pan_mvx;
@@ -824,20 +822,20 @@ typedef struct PictureParentControlSet {
     EbWarpedMotionParams global_motion[TOTAL_REFS_PER_FRAME];
     PictureControlSet *  child_pcs;
     Macroblock *         av1x;
-    int32_t film_grain_params_present; //todo (AN): Do we need this flag at picture level?
+    int32_t film_grain_params_present; /*!< todo (AN): Do we need this flag at picture level? */
     AomDenoiseAndModel *denoise_and_model;
-    RestUnitSearchInfo *rusi_picture[3]; //for 3 planes
+    RestUnitSearchInfo *rusi_picture[3]; /*!< for 3 planes */
     int8_t              cdef_filter_mode;
     int32_t             cdef_frame_strength;
     int32_t             cdf_ref_frame_strenght;
     int32_t             use_ref_frame_cdef_strength;
     uint8_t             nsq_search_level;
     uint8_t             palette_mode;
-    uint8_t             nsq_max_shapes_md; // max number of shapes to be tested in MD
+    uint8_t             nsq_max_shapes_md; /*!< max number of shapes to be tested in MD */
     uint8_t             sc_content_detected;
     uint8_t             ibc_mode;
     SkipModeInfo        skip_mode_info;
-    uint64_t picture_number_alt; // The picture number overlay includes all the overlay frames
+    uint64_t picture_number_alt; /*!< The picture number overlay includes all the overlay frames */
     uint8_t  is_alt_ref;
     uint8_t  is_overlay;
     struct PictureParentControlSet *overlay_ppcs_ptr;
@@ -861,8 +859,8 @@ typedef struct PictureParentControlSet {
     uint8_t future_altref_nframes;
     EbBool  temporal_filtering_on;
     uint64_t
-        filtered_sse; // the normalized SSE between filtered and original alt_ref with 8 bit precision.
-    // I Slice has the value of the next ALT_REF picture
+        filtered_sse; /*!< the normalized SSE between filtered and original alt_ref with 8 bit precision. */
+        /*!< I Slice has the value of the next ALT_REF picture */
     uint64_t          filtered_sse_uv;
     FrameHeader       frm_hdr;
     uint8_t           compound_mode;
@@ -870,9 +868,9 @@ typedef struct PictureParentControlSet {
     uint16_t *        altref_buffer_highbd[3];
     uint8_t           enable_inter_intra;
     uint8_t           pic_obmc_mode;
-    StatStruct *      stat_struct_first_pass_ptr; // pointer to stat_struct in the first pass
-    struct StatStruct stat_struct; // stat_struct used in the second pass
-    uint64_t          referenced_area_avg; // average referenced area per frame
+    StatStruct *      stat_struct_first_pass_ptr; /*!< pointer to stat_struct in the first pass */
+    struct StatStruct stat_struct; /*!< stat_struct used in the second pass */
+    uint64_t          referenced_area_avg; /*!< average referenced area per frame */
     uint8_t           referenced_area_has_non_zero;
 #if GLOBAL_WARPED_MOTION
     uint8_t gm_level;
@@ -914,8 +912,8 @@ typedef struct PictureControlSetInitData {
     uint32_t       sb_sz;
     uint8_t        cfg_palette;
     uint32_t
-        sb_size_pix; //since we still have lot of code assuming 64x64 SB, we add a new paramter supporting both128x128 and 64x64,
-    //ultimately the fixed code supporting 64x64 should be upgraded to use 128x128 and the above could be removed.
+        sb_size_pix; /*!< since we still have lot of code assuming 64x64 SB, we add a new paramter supporting both128x128 and 64x64, */
+        /*!< ultimately the fixed code supporting 64x64 should be upgraded to use 128x128 and the above could be removed. */
     uint32_t max_depth;
     //EbBool                             is_16bit;
     uint32_t  ten_bit_format;
@@ -951,9 +949,9 @@ typedef struct Av1Comp {
     Yv12BufferConfig trial_frame_rst;
 } Av1Comp;
 
-/**************************************
-     * Extern Function Declarations
-     **************************************/
+/**************************************/
+/*!< Extern Function Declarations */
+/**************************************/
 extern EbErrorType picture_control_set_creator(EbPtr *object_dbl_ptr, EbPtr object_init_data_ptr);
 
 extern EbErrorType picture_parent_control_set_creator(EbPtr *object_dbl_ptr,

@@ -1,20 +1,18 @@
-/*
- * Copyright (c) 2017, Alliance for Open Media. All rights reserved
+/*!< Copyright (c) 2017, Alliance for Open Media. All rights reserved
  *
  * This source code is subject to the terms of the BSD 2 Clause License and
  * the Alliance for Open Media Patent License 1.0. If the BSD 2 Clause License
  * was not distributed with this source code in the LICENSE file, you can
  * obtain it at www.aomedia.org/license/software. If the Alliance for Open
  * Media Patent License 1.0 was not distributed with this source code in the
- * PATENTS file, you can obtain it at www.aomedia.org/license/patent.
- */
+ * PATENTS file, you can obtain it at www.aomedia.org/license/patent. */
 
 #include <stdlib.h>
 #include "aom_dsp_rtcd.h"
 
-// pre: predictor being evaluated
-// wsrc: target weighted prediction (has been *4096 to keep precision)
-// mask: 2d weights (scaled by 4096)
+/*!< pre: predictor being evaluated
+ *   wsrc: target weighted prediction (has been *4096 to keep precision)
+ *   mask: 2d weights (scaled by 4096) */
 static INLINE unsigned int obmc_sad(const uint8_t *pre, int pre_stride, const int32_t *wsrc,
                                     const int32_t *mask, int width, int height) {
     int          y, x;

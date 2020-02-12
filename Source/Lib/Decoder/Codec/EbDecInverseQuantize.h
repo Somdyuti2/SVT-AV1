@@ -1,7 +1,6 @@
-/*
-* Copyright(c) 2019 Netflix, Inc.
-* SPDX - License - Identifier: BSD - 2 - Clause - Patent
-*/
+/*!<
+ * Copyright(c) 2019 Netflix, Inc.
+ * SPDX - License - Identifier: BSD - 2 - Clause - Patent */
 #ifndef EbDecInverseQuantize_h
 #define EbDecInverseQuantize_h
 

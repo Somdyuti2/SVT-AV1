@@ -1,14 +1,12 @@
-/*
-* Copyright(c) 2019 Netflix, Inc.
-* SPDX - License - Identifier: BSD - 2 - Clause - Patent
-*/
+/*!<
+ * Copyright(c) 2019 Netflix, Inc.
+ * SPDX - License - Identifier: BSD - 2 - Clause - Patent */
 
-// SUMMARY
-//   Contains the Decode related functions
+/*!< SUMMARY: Contains the Decode related functions */
 
-/**************************************
- * Includes
- **************************************/
+/**************************************/
+/*!< Includes */
+/**************************************/
 
 #include "EbDefinitions.h"
 
@@ -21,50 +19,99 @@
 #include "EbDecNbr.h"
 #include "EbUtility.h"
 
-/* decode partition */
-static void decode_partition(DecModCtxt *dec_mod_ctxt,
-                             uint32_t mi_row, uint32_t mi_col,
-                             SBInfo *sb_info) {
+/*!< decode partition */
+static void decode_partition(DecModCtxt *dec_mod_ctxt, uint32_t mi_row, uint32_t mi_col,
+                             BlockSize bsize, SBInfo *sb_info) {
     BlockSize     subsize;
+    PartitionType partition;
 
-    EbDecHandle *dec_handle = (EbDecHandle *)dec_mod_ctxt->dec_handle_ptr;
+    uint8_t  num4x4            = mi_size_wide[bsize];
+    uint32_t half_block_4x4    = (uint32_t)num4x4 >> 1;
+    uint32_t quarter_block_4x4 = half_block_4x4 >> 1;
+
+    uint32_t has_rows = (mi_row + half_block_4x4) < dec_mod_ctxt->frame_header->mi_rows;
+    uint32_t has_cols = (mi_col + half_block_4x4) < dec_mod_ctxt->frame_header->mi_cols;
 
     if (mi_row >= dec_mod_ctxt->frame_header->mi_rows ||
         mi_col >= dec_mod_ctxt->frame_header->mi_cols)
         return;
 
-    BlockModeInfo *mode_info = get_cur_mode_info(dec_handle,
-                                                 mi_row, mi_col, sb_info);
+    partition =
+        get_partition(dec_mod_ctxt, dec_mod_ctxt->frame_header, mi_row, mi_col, sb_info, bsize);
 
-    int n_blocks = sb_info->num_block;
-    int sub_mi_row = 0;
-    int sub_mi_col = 0;
+    subsize              = partition_subsize[partition][bsize];
+    BlockSize split_size = partition_subsize[PARTITION_SPLIT][bsize];
 
-    for (int i = 0; i < n_blocks; i++) {
-        sub_mi_row = mode_info->mi_row_in_sb;
-        sub_mi_col = mode_info->mi_col_in_sb;
-        subsize = mode_info->sb_type;
-        decode_block(dec_mod_ctxt,
-                     mode_info,
-                     mi_row + sub_mi_row,
-                     mi_col + sub_mi_col,
-                     subsize,
-                     &dec_mod_ctxt->cur_tile_info,
-                     sb_info);
-        mode_info++;
+#define DECODE_BLOCK(db_r, db_c, db_subsize) \
+    decode_block(dec_mod_ctxt, db_r, db_c, db_subsize, &dec_mod_ctxt->cur_tile_info, sb_info)
+
+#define DECODE_PARTITION(db_r, db_c, db_subsize) \
+    decode_partition(dec_mod_ctxt, (db_r), (db_c), (db_subsize), sb_info)
+
+    switch ((int)partition) {
+    case PARTITION_NONE: DECODE_BLOCK(mi_row, mi_col, subsize); break;
+    case PARTITION_HORZ:
+        DECODE_BLOCK(mi_row, mi_col, subsize);
+        if (has_rows) DECODE_BLOCK(mi_row + half_block_4x4, mi_col, subsize);
+        break;
+    case PARTITION_VERT:
+        DECODE_BLOCK(mi_row, mi_col, subsize);
+        if (has_cols) DECODE_BLOCK(mi_row, mi_col + half_block_4x4, subsize);
+        break;
+    case PARTITION_SPLIT:
+        DECODE_PARTITION(mi_row, mi_col, subsize);
+        DECODE_PARTITION(mi_row, mi_col + half_block_4x4, subsize);
+        DECODE_PARTITION(mi_row + half_block_4x4, mi_col, subsize);
+        DECODE_PARTITION(mi_row + half_block_4x4, mi_col + half_block_4x4, subsize);
+        break;
+    case PARTITION_HORZ_A:
+        DECODE_BLOCK(mi_row, mi_col, split_size);
+        DECODE_BLOCK(mi_row, mi_col + half_block_4x4, split_size);
+        DECODE_BLOCK(mi_row + half_block_4x4, mi_col, subsize);
+        break;
+    case PARTITION_HORZ_B:
+        DECODE_BLOCK(mi_row, mi_col, subsize);
+        DECODE_BLOCK(mi_row + half_block_4x4, mi_col, split_size);
+        DECODE_BLOCK(mi_row + half_block_4x4, mi_col + half_block_4x4, split_size);
+        break;
+    case PARTITION_VERT_A:
+        DECODE_BLOCK(mi_row, mi_col, split_size);
+        DECODE_BLOCK(mi_row + half_block_4x4, mi_col, split_size);
+        DECODE_BLOCK(mi_row, mi_col + half_block_4x4, subsize);
+        break;
+    case PARTITION_VERT_B:
+        DECODE_BLOCK(mi_row, mi_col, subsize);
+        DECODE_BLOCK(mi_row, mi_col + half_block_4x4, split_size);
+        DECODE_BLOCK(mi_row + half_block_4x4, mi_col + half_block_4x4, split_size);
+        break;
+    case PARTITION_HORZ_4:
+        for (int i = 0; i < 4; ++i) {
+            uint32_t this_mi_row = mi_row + (i * quarter_block_4x4);
+            if (i > 0 && this_mi_row >= dec_mod_ctxt->frame_header->mi_rows) break;
+            DECODE_BLOCK(this_mi_row, mi_col, subsize);
+        }
+        break;
+    case PARTITION_VERT_4:
+        for (int i = 0; i < 4; ++i) {
+            uint32_t this_mi_col = mi_col + (i * quarter_block_4x4);
+            if (i > 0 && this_mi_col >= dec_mod_ctxt->frame_header->mi_cols) break;
+            DECODE_BLOCK(mi_row, this_mi_col, subsize);
+        }
+        break;
+    default: assert(0 && "Invalid partition type");
     }
 }
 
-// decoding of the superblock
+/*!< decoding of the superblock */
 void decode_super_block(DecModCtxt *dec_mod_ctxt, uint32_t mi_row, uint32_t mi_col,
                         SBInfo *sb_info) {
     dec_mod_ctxt->iquant_cur_ptr = dec_mod_ctxt->sb_iquant_ptr;
 
-    /* SB level dequant update */
+    /*!< SB level dequant update */
     update_dequant(dec_mod_ctxt, sb_info);
 
-    /* Decode partition */
-    decode_partition(dec_mod_ctxt, mi_row, mi_col, sb_info);
+    /*!< Decode partition */
+    decode_partition(dec_mod_ctxt, mi_row, mi_col, dec_mod_ctxt->seq_header->sb_size, sb_info);
 }
 
 EbErrorType decode_tile_row(DecModCtxt *dec_mod_ctxt, TilesInfo *tile_info,
@@ -112,11 +159,11 @@ EbErrorType decode_tile_row(DecModCtxt *dec_mod_ctxt, TilesInfo *tile_info,
         dec_mod_ctxt->cur_coeff[AOM_PLANE_Y] = sb_info->sb_coeff[AOM_PLANE_Y];
         dec_mod_ctxt->cur_coeff[AOM_PLANE_U] = sb_info->sb_coeff[AOM_PLANE_U];
         dec_mod_ctxt->cur_coeff[AOM_PLANE_V] = sb_info->sb_coeff[AOM_PLANE_V];
-        /* Top-Right Sync*/
+        /*!< Top-Right Sync */
         if (sb_row_in_tile) {
             while (*sb_completed_in_prev_row < MIN((sb_col + 2), tile_wd_in_sb))
                 ;
-            //Sleep(5); /* ToDo : Change */
+            //Sleep(5); /*!< ToDo : Change */
         }
 
         decode_super_block(dec_mod_ctxt, mi_row, mi_col, sb_info);
@@ -141,20 +188,20 @@ EbErrorType decode_tile(DecModCtxt *dec_mod_ctxt, TilesInfo *tile_info,
             (parse_recon_tile_info_array->tile_info.mi_row_start << MI_SIZE_LOG2) >>
             dec_mod_ctxt->seq_header->sb_size_log2;
 
-        //lock mutex
+        /*!< lock mutex */
         eb_block_on_mutex(parse_recon_tile_info_array->tile_sbrow_mutex);
 
-        //pick up a row and increment the sb row counter
+        /*!< pick up a row and increment the sb row counter */
         if (parse_recon_tile_info_array->sb_row_to_process !=
             parse_recon_tile_info_array->tile_num_sb_rows) {
             sb_row_in_tile = parse_recon_tile_info_array->sb_row_to_process;
             parse_recon_tile_info_array->sb_row_to_process++;
         }
 
-        //unlock mutex
+        /*!< unlock mutex */
         eb_release_mutex(parse_recon_tile_info_array->tile_sbrow_mutex);
 
-        //wait for parse
+        /*!< wait for parse */
         if (-1 != sb_row_in_tile) {
             volatile int32_t *sb_row_parsed = (volatile int32_t *)&parse_recon_tile_info_array
                                                   ->sb_recon_row_parsed[sb_row_in_tile];
@@ -168,14 +215,14 @@ EbErrorType decode_tile(DecModCtxt *dec_mod_ctxt, TilesInfo *tile_info,
             color_config = &dec_mod_ctxt->seq_header->color_config;
             cfl_init(&dec_mod_ctxt->cfl_ctx, color_config);
 
-            //update the row started status
+            /*!< update the row started status */
             parse_recon_tile_info_array->sb_recon_row_started[sb_row_in_tile] = 1;
 
             status = decode_tile_row(
                 dec_mod_ctxt, tile_info, parse_recon_tile_info_array, tile_col, mi_row, sb_row);
         }
 
-        /*if all sb rows have been picked up for processing then break the while loop */
+        /*!< if all sb rows have been picked up for processing then break the while loop */
         if (parse_recon_tile_info_array->sb_row_to_process ==
             parse_recon_tile_info_array->tile_num_sb_rows) {
             break;

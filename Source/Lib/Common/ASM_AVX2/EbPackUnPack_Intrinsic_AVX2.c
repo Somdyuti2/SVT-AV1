@@ -1,7 +1,5 @@
-/*
-* Copyright(c) 2019 Intel Corporation
-* SPDX - License - Identifier: BSD - 2 - Clause - Patent
-*/
+/*!< Copyright(c) 2019 Intel Corporation
+ * SPDX - License - Identifier: BSD - 2 - Clause - Patent */
 
 #include "EbPackUnPack_AVX2.h"
 
@@ -268,9 +266,8 @@ void eb_enc_un_pack8_bit_data_avx2_intrin(uint16_t *in_16bit_buffer, uint32_t in
                     in_16bit_buffer += 4;
                 }
 
-                /* Calculate lefts pixels in 2 lines,
-                 * when width is not divided by 4.
-                 */
+                /*!< Calculate lefts pixels in 2 lines,
+                 *   when width is not divided by 4. */
                 for (; y < width; y++) {
                     in_pixel                        = *in_16bit_buffer;
                     *out_8bit_buffer                = (uint8_t)(in_pixel >> 2);

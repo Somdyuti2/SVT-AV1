@@ -1,13 +1,11 @@
-/*
- * Copyright (c) 2016, Alliance for Open Media. All rights reserved
+/*!< Copyright (c) 2016, Alliance for Open Media. All rights reserved
  *
  * This source code is subject to the terms of the BSD 2 Clause License and
  * the Alliance for Open Media Patent License 1.0. If the BSD 2 Clause License
  * was not distributed with this source code in the LICENSE file, you can
  * obtain it at www.aomedia.org/license/software. If the Alliance for Open
  * Media Patent License 1.0 was not distributed with this source code in the
- * PATENTS file, you can obtain it at www.aomedia.org/license/patent.
- */
+ * PATENTS file, you can obtain it at www.aomedia.org/license/patent. */
 #include <memory.h>
 #include <math.h>
 #include <stdio.h>
@@ -25,8 +23,8 @@
 #define INLIER_THRESHOLD 1.25
 #define MIN_TRIALS 20
 
-////////////////////////////////////////////////////////////////////////////////
-// ransac
+/**************************************************************************************/
+/*!< ransac */
 typedef int (*IsDegenerateFunc)(double *p);
 typedef int (*FindTransformationFunc)(int points, double *points1, double *points2, double *params);
 typedef void (*ProjectPointsDoubleFunc)(double *mat, double *points, double *proj, int n,
@@ -322,7 +320,7 @@ typedef struct {
     int *  inlier_indices;
 } RANSAC_MOTION;
 
-// Return -1 if 'a' is a better motion, 1 if 'b' is better, 0 otherwise.
+/*!< Return -1 if 'a' is a better motion, 1 if 'b' is better, 0 otherwise. */
 static int compare_motions(const void *arg_a, const void *arg_b) {
     const RANSAC_MOTION *motion_a = (RANSAC_MOTION *)arg_a;
     const RANSAC_MOTION *motion_b = (RANSAC_MOTION *)arg_b;
@@ -371,14 +369,14 @@ static int ransac(const int *matched_points, int npoints, int *num_inliers_by_mo
     double *corners1, *corners2;
     double *image1_coord;
 
-    // Store information for the num_desired_motions best transformations found
-    // and the worst motion among them, as well as the motion currently under
-    // consideration.
+    /*!< Store information for the num_desired_motions best transformations found
+     *   and the worst motion among them, as well as the motion currently under
+     *   consideration. */
     RANSAC_MOTION *motions, *worst_kept_motion = NULL;
     RANSAC_MOTION  current_motion;
 
-    // Store the parameters and the indices of the inlier points for the motion
-    // currently under consideration.
+    /*!< Store the parameters and the indices of the inlier points for the motion
+     *   currently under consideration. */
     double params_this_motion[MAX_PARAMDIM];
 
     double *cnp1, *cnp2;
@@ -471,16 +469,16 @@ static int ransac(const int *matched_points, int npoints, int *num_inliers_by_mo
                 mean_distance * mean_distance * ((double)current_motion.num_inliers) /
                     ((double)current_motion.num_inliers - 1.0);
             if (is_better_motion(&current_motion, worst_kept_motion)) {
-                // This motion is better than the worst currently kept motion. Remember
-                // the inlier points and variance. The parameters for each kept motion
-                // will be recomputed later using only the inliers.
+                /*!< This motion is better than the worst currently kept motion. Remember
+                 *   the inlier points and variance. The parameters for each kept motion
+                 *   will be recomputed later using only the inliers. */
                 worst_kept_motion->num_inliers = current_motion.num_inliers;
                 worst_kept_motion->variance    = current_motion.variance;
                 memcpy(worst_kept_motion->inlier_indices,
                        current_motion.inlier_indices,
                        sizeof(*current_motion.inlier_indices) * npoints);
                 assert(npoints > 0);
-                // Determine the new worst kept motion and its num_inliers and variance.
+                /*!< Determine the new worst kept motion and its num_inliers and variance. */
                 for (i = 0; i < num_desired_motions; ++i) {
                     if (is_better_motion(worst_kept_motion, &motions[i])) {
                         worst_kept_motion = &motions[i];
@@ -491,10 +489,10 @@ static int ransac(const int *matched_points, int npoints, int *num_inliers_by_mo
         trial_count++;
     }
 
-    // Sort the motions, best first.
+    /*!< Sort the motions, best first. */
     qsort(motions, num_desired_motions, sizeof(RANSAC_MOTION), compare_motions);
 
-    // Recompute the motions using only the inliers.
+    /*!< Recompute the motions using only the inliers. */
     for (i = 0; i < num_desired_motions; ++i) {
         if (motions[i].num_inliers >= minpts) {
             copy_points_at_indices(
@@ -543,14 +541,14 @@ static int ransac_double_prec(const double *matched_points, int npoints, int *nu
     double *corners1, *corners2;
     double *image1_coord;
 
-    // Store information for the num_desired_motions best transformations found
-    // and the worst motion among them, as well as the motion currently under
-    // consideration.
+    /*!< Store information for the num_desired_motions best transformations found
+     *   and the worst motion among them, as well as the motion currently under
+     *   consideration. */
     RANSAC_MOTION *motions, *worst_kept_motion = NULL;
     RANSAC_MOTION  current_motion;
 
-    // Store the parameters and the indices of the inlier points for the motion
-    // currently under consideration.
+    /*!< Store the parameters and the indices of the inlier points for the motion
+     *   currently under consideration. */
     double params_this_motion[MAX_PARAMDIM];
 
     double *cnp1, *cnp2;
@@ -643,16 +641,16 @@ static int ransac_double_prec(const double *matched_points, int npoints, int *nu
                 mean_distance * mean_distance * ((double)current_motion.num_inliers) /
                     ((double)current_motion.num_inliers - 1.0);
             if (is_better_motion(&current_motion, worst_kept_motion)) {
-                // This motion is better than the worst currently kept motion. Remember
-                // the inlier points and variance. The parameters for each kept motion
-                // will be recomputed later using only the inliers.
+                /*!< This motion is better than the worst currently kept motion. Remember
+                 *   the inlier points and variance. The parameters for each kept motion
+                 *   will be recomputed later using only the inliers. */
                 worst_kept_motion->num_inliers = current_motion.num_inliers;
                 worst_kept_motion->variance    = current_motion.variance;
                 memcpy(worst_kept_motion->inlier_indices,
                        current_motion.inlier_indices,
                        sizeof(*current_motion.inlier_indices) * npoints);
                 assert(npoints > 0);
-                // Determine the new worst kept motion and its num_inliers and variance.
+                /*!< Determine the new worst kept motion and its num_inliers and variance. */
                 for (i = 0; i < num_desired_motions; ++i) {
                     if (is_better_motion(worst_kept_motion, &motions[i])) {
                         worst_kept_motion = &motions[i];
@@ -663,10 +661,10 @@ static int ransac_double_prec(const double *matched_points, int npoints, int *nu
         trial_count++;
     }
 
-    // Sort the motions, best first.
+    /*!< Sort the motions, best first. */
     qsort(motions, num_desired_motions, sizeof(RANSAC_MOTION), compare_motions);
 
-    // Recompute the motions using only the inliers.
+    /*!< Recompute the motions using only the inliers. */
     for (i = 0; i < num_desired_motions; ++i) {
         if (motions[i].num_inliers >= minpts) {
             copy_points_at_indices(

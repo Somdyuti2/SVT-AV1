@@ -1,7 +1,5 @@
-/*
-* Copyright(c) 2019 Intel Corporation
-* SPDX - License - Identifier: BSD - 2 - Clause - Patent
-*/
+/*!< Copyright(c) 2019 Intel Corporation
+ * SPDX - License - Identifier: BSD - 2 - Clause - Patent */
 
 #ifndef EbSvtAv1ErrorCodes_h
 #define EbSvtAv1ErrorCodes_h
@@ -10,7 +8,7 @@
 extern "C" {
 #endif // __cplusplus
 
-#define CHECK_REPORT_ERROR(cond, app_callback_ptr, errorCode)                          \
+#define CHECK_REPORT_ERROR(cond, app_callback_ptr, errorCode)                        \
     {                                                                                \
         if (!(cond)) {                                                               \
             (app_callback_ptr)->error_handler(((app_callback_ptr)->handle), (errorCode)); \

@@ -1,13 +1,11 @@
-/*
- * Copyright (c) 2017, Alliance for Open Media. All rights reserved
+/*!< Copyright (c) 2017, Alliance for Open Media. All rights reserved
  *
  * This source code is subject to the terms of the BSD 2 Clause License and
  * the Alliance for Open Media Patent License 1.0. If the BSD 2 Clause License
  * was not distributed with this source code in the LICENSE file, you can
  * obtain it at www.aomedia.org/license/software. If the Alliance for Open
  * Media Patent License 1.0 was not distributed with this source code in the
- * PATENTS file, you can obtain it at www.aomedia.org/license/patent.
- */
+ * PATENTS file, you can obtain it at www.aomedia.org/license/patent. */
 
 #include <math.h>
 
@@ -27,9 +25,9 @@ float eb_aom_noise_psd_get_default_value(int32_t block_size, float factor) {
     return (factor * factor / 10000) * block_size * block_size / 8;
 }
 
-// Internal representation of noise transform. It keeps track of the
-// transformed data and a temporary working buffer to use during the
-// transform.
+/*!< Internal representation of noise transform. It keeps track of the
+ *   transformed data and a temporary working buffer to use during the
+ *   transform. */
 struct aom_noise_tx_t {
     DECLARE_ALIGNED(32, float, *tx_block);
     DECLARE_ALIGNED(32, float, *temp);
@@ -78,8 +76,8 @@ struct aom_noise_tx_t *eb_aom_noise_tx_malloc(int32_t block_size) {
         eb_aom_noise_tx_free(noise_tx);
         return NULL;
     }
-    // Clear the buffers up front. Some outputs of the forward transform are
-    // real only (the imaginary component will never be touched)
+    /*!< Clear the buffers up front. Some outputs of the forward transform are
+     *   real only (the imaginary component will never be touched) */
     memset(noise_tx->tx_block, 0, 2 * sizeof(*noise_tx->tx_block) * block_size * block_size);
     memset(noise_tx->temp, 0, 2 * sizeof(*noise_tx->temp) * block_size * block_size);
     return noise_tx;

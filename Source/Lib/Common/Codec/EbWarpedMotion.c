@@ -1,13 +1,11 @@
-/*
- * Copyright (c) 2016, Alliance for Open Media. All rights reserved
+/*!< Copyright (c) 2016, Alliance for Open Media. All rights reserved
  *
  * This source code is subject to the terms of the BSD 2 Clause License and
  * the Alliance for Open Media Patent License 1.0. If the BSD 2 Clause License
  * was not distributed with this source code in the LICENSE file, you can
  * obtain it at www.aomedia.org/license/software. If the Alliance for Open
  * Media Patent License 1.0 was not distributed with this source code in the
- * PATENTS file, you can obtain it at www.aomedia.org/license/patent.
- */
+ * PATENTS file, you can obtain it at www.aomedia.org/license/patent. */
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -20,30 +18,30 @@
 #include "convolve.h"
 
 
-#define LS_MV_MAX 256 // max mv in 1/8-pel
-// Use LS_STEP = 8 so that 2 less bits needed for A, bx, by.
+#define LS_MV_MAX 256 /*!< max mv in 1/8-pel */
+/*!< Use LS_STEP = 8 so that 2 less bits needed for A, bx, by. */
 #define LS_STEP 8
 
-// Assuming LS_MV_MAX is < MAX_SB_SIZE * 8,
-// the precision needed is:
-//   (MAX_SB_SIZE_LOG2 + 3) [for sx * sx magnitude] +
-//   (MAX_SB_SIZE_LOG2 + 4) [for sx * dx magnitude] +
-//   1 [for sign] +
-//   LEAST_SQUARES_SAMPLES_MAX_BITS
-//        [for adding up to LEAST_SQUARES_SAMPLES_MAX samples]
-// The value is 23
+/*!< Assuming LS_MV_MAX is < MAX_SB_SIZE * 8,
+ *   the precision needed is:
+ *     (MAX_SB_SIZE_LOG2 + 3) [for sx * sx magnitude] +
+ *     (MAX_SB_SIZE_LOG2 + 4) [for sx * dx magnitude] +
+ *     1 [for sign] +
+ *     LEAST_SQUARES_SAMPLES_MAX_BITS
+ *          [for adding up to LEAST_SQUARES_SAMPLES_MAX samples]
+ *   The value is 23 */
 #define LS_MAT_RANGE_BITS ((MAX_SB_SIZE_LOG2 + 4) * 2 + LEAST_SQUARES_SAMPLES_MAX_BITS)
 
-// Bit-depth reduction from the full-range
+/*!< Bit-depth reduction from the full-range */
 #define LS_MAT_DOWN_BITS 2
 
-// bits range of A, bx and by after downshifting
+/*!< bits range of A, bx and by after downshifting */
 #define LS_MAT_BITS (LS_MAT_RANGE_BITS - LS_MAT_DOWN_BITS)
 #define LS_MAT_MIN (-(1 << (LS_MAT_BITS - 1)))
 #define LS_MAT_MAX ((1 << (LS_MAT_BITS - 1)) - 1)
 
-// by setting LS_STEP = 8, the least 2 bits of every elements in A, bx, by are
-// 0. So, we can reduce LS_MAT_RANGE_BITS(2) bits here.
+/*!< by setting LS_STEP = 8, the least 2 bits of every elements in A, bx, by are
+ *   0. So, we can reduce LS_MAT_RANGE_BITS(2) bits here. */
 #define LS_SQUARE(a) \
     (((a) * (a)*4 + (a)*4 * LS_STEP + LS_STEP * LS_STEP * 2) >> (2 + LS_MAT_DOWN_BITS))
 #define LS_PRODUCT1(a, b) \
@@ -51,15 +49,15 @@
 #define LS_PRODUCT2(a, b) \
     (((a) * (b)*4 + ((a) + (b)) * 2 * LS_STEP + LS_STEP * LS_STEP * 2) >> (2 + LS_MAT_DOWN_BITS))
 
-// For warping, we really use a 6-tap filter, but we do blocks of 8 pixels
-// at a time. The zoom/rotation/shear in the model are applied to the
-// "fractional" position of each pixel, which therefore varies within
-// [-1, 2) * WARPEDPIXEL_PREC_SHIFTS.
-// We need an extra 2 taps to fit this in, for a total of 8 taps.
+/*!< For warping, we really use a 6-tap filter, but we do blocks of 8 pixels
+ *   at a time. The zoom/rotation/shear in the model are applied to the
+ *   "fractional" position of each pixel, which therefore varies within
+ *   [-1, 2) * WARPEDPIXEL_PREC_SHIFTS.
+ *   We need an extra 2 taps to fit this in, for a total of 8 taps. */
 /* clang-format off */
 EB_ALIGN(16) const int16_t eb_warped_filter[WARPEDPIXEL_PREC_SHIFTS * 3 + 1][8] = {
 #if WARPEDPIXEL_PREC_BITS == 6
-        // [-1, 0)
+        /*!< [-1, 0) */
         { 0,   0, 127,   1,   0, 0, 0, 0 }, { 0, - 1, 127,   2,   0, 0, 0, 0 },
         { 1, - 3, 127,   4, - 1, 0, 0, 0 }, { 1, - 4, 126,   6, - 2, 1, 0, 0 },
         { 1, - 5, 126,   8, - 3, 1, 0, 0 }, { 1, - 6, 125,  11, - 4, 1, 0, 0 },
@@ -92,7 +90,7 @@ EB_ALIGN(16) const int16_t eb_warped_filter[WARPEDPIXEL_PREC_SHIFTS * 3 + 1][8] 
         { 1, - 4,  13, 124, - 7, 1, 0, 0 }, { 1, - 4,  11, 125, - 6, 1, 0, 0 },
         { 1, - 3,   8, 126, - 5, 1, 0, 0 }, { 1, - 2,   6, 126, - 4, 1, 0, 0 },
         { 0, - 1,   4, 127, - 3, 1, 0, 0 }, { 0,   0,   2, 127, - 1, 0, 0, 0 },
-        // [0, 1)
+        /*!< [0, 1) */
         { 0,  0,   0, 127,   1,   0,  0,  0}, { 0,  0,  -1, 127,   2,   0,  0,  0},
         { 0,  1,  -3, 127,   4,  -2,  1,  0}, { 0,  1,  -5, 127,   6,  -2,  1,  0},
         { 0,  2,  -6, 126,   8,  -3,  1,  0}, {-1,  2,  -7, 126,  11,  -4,  2, -1},
@@ -125,7 +123,7 @@ EB_ALIGN(16) const int16_t eb_warped_filter[WARPEDPIXEL_PREC_SHIFTS * 3 + 1][8] 
         {-1,  2,  -5,  13, 125,  -8,  3, -1}, {-1,  2,  -4,  11, 126,  -7,  2, -1},
         { 0,  1,  -3,   8, 126,  -6,  2,  0}, { 0,  1,  -2,   6, 127,  -5,  1,  0},
         { 0,  1,  -2,   4, 127,  -3,  1,  0}, { 0,  0,   0,   2, 127,  -1,  0,  0},
-        // [1, 2)
+        /*!< [1, 2) */
         { 0, 0, 0,   1, 127,   0,   0, 0 }, { 0, 0, 0, - 1, 127,   2,   0, 0 },
         { 0, 0, 1, - 3, 127,   4, - 1, 0 }, { 0, 0, 1, - 4, 126,   6, - 2, 1 },
         { 0, 0, 1, - 5, 126,   8, - 3, 1 }, { 0, 0, 1, - 6, 125,  11, - 4, 1 },
@@ -158,10 +156,10 @@ EB_ALIGN(16) const int16_t eb_warped_filter[WARPEDPIXEL_PREC_SHIFTS * 3 + 1][8] 
         { 0, 0, 1, - 4,  13, 124, - 7, 1 }, { 0, 0, 1, - 4,  11, 125, - 6, 1 },
         { 0, 0, 1, - 3,   8, 126, - 5, 1 }, { 0, 0, 1, - 2,   6, 126, - 4, 1 },
         { 0, 0, 0, - 1,   4, 127, - 3, 1 }, { 0, 0, 0,   0,   2, 127, - 1, 0 },
-        // dummy (replicate row index 191)
+        /*!< dummy (replicate row index 191) */
         { 0, 0, 0,   0,   2, 127, - 1, 0 },
 #elif WARPEDPIXEL_PREC_BITS == 5
-// [-1, 0)
+/*!< [-1, 0) */
   {0,   0, 127,   1,   0, 0, 0, 0}, {1,  -3, 127,   4,  -1, 0, 0, 0},
   {1,  -5, 126,   8,  -3, 1, 0, 0}, {1,  -7, 124,  13,  -4, 1, 0, 0},
   {2,  -9, 122,  18,  -6, 1, 0, 0}, {2, -11, 120,  22,  -7, 2, 0, 0},
@@ -178,7 +176,7 @@ EB_ALIGN(16) const int16_t eb_warped_filter[WARPEDPIXEL_PREC_SHIFTS * 3 + 1][8] 
   {2,  -8,  27, 117, -13, 3, 0, 0}, {2,  -7,  22, 120, -11, 2, 0, 0},
   {1,  -6,  18, 122,  -9, 2, 0, 0}, {1,  -4,  13, 124,  -7, 1, 0, 0},
   {1,  -3,   8, 126,  -5, 1, 0, 0}, {0,  -1,   4, 127,  -3, 1, 0, 0},
-  // [0, 1)
+  /*!< [0, 1) */
   { 0,  0,   0, 127,   1,   0,   0,  0}, { 0,  1,  -3, 127,   4,  -2,   1,  0},
   { 0,  2,  -6, 126,   8,  -3,   1,  0}, {-1,  3,  -8, 125,  13,  -5,   2, -1},
   {-1,  4, -11, 123,  18,  -7,   3, -1}, {-1,  4, -13, 121,  23,  -8,   3, -1},
@@ -195,7 +193,7 @@ EB_ALIGN(16) const int16_t eb_warped_filter[WARPEDPIXEL_PREC_SHIFTS * 3 + 1][8] 
   {-1,  4, -10,  27, 119, -15,   5, -1}, {-1,  3,  -8,  23, 121, -13,   4, -1},
   {-1,  3,  -7,  18, 123, -11,   4, -1}, {-1,  2,  -5,  13, 125,  -8,   3, -1},
   { 0,  1,  -3,   8, 126,  -6,   2,  0}, { 0,  1,  -2,   4, 127,  -3,   1,  0},
-  // [1, 2)
+  /*!< [1, 2) */
   {0, 0, 0,   1, 127,   0,   0, 0}, {0, 0, 1,  -3, 127,   4,  -1, 0},
   {0, 0, 1,  -5, 126,   8,  -3, 1}, {0, 0, 1,  -7, 124,  13,  -4, 1},
   {0, 0, 2,  -9, 122,  18,  -6, 1}, {0, 0, 2, -11, 120,  22,  -7, 2},
@@ -212,7 +210,7 @@ EB_ALIGN(16) const int16_t eb_warped_filter[WARPEDPIXEL_PREC_SHIFTS * 3 + 1][8] 
   {0, 0, 2,  -8,  27, 117, -13, 3}, {0, 0, 2,  -7,  22, 120, -11, 2},
   {0, 0, 1,  -6,  18, 122,  -9, 2}, {0, 0, 1,  -4,  13, 124,  -7, 1},
   {0, 0, 1,  -3,   8, 126,  -5, 1}, {0, 0, 0,  -1,   4, 127,  -3, 1},
-  // dummy (replicate row index 95)
+  /*!< dummy (replicate row index 95) */
   {0, 0, 0,  -1,   4, 127,  -3, 1},
 #endif  // WARPEDPIXEL_PREC_BITS == 6
 };
@@ -323,38 +321,38 @@ static const uint16_t div_lut[DIV_LUT_NUM + 1] = {
         8339,  8322,  8306,  8289,  8273,  8257,  8240,  8224,  8208,  8192,
 };
 
-// Decomposes a divisor D such that 1/D = y/2^shift, where y is returned
-// at precision of DIV_LUT_PREC_BITS along with the shift.
+/*!< Decomposes a divisor D such that 1/D = y/2^shift, where y is returned
+ *   at precision of DIV_LUT_PREC_BITS along with the shift. */
 static int16_t resolve_divisor_64(uint64_t D, int16_t *shift) {
     int64_t f;
     *shift =
             (int16_t)((D >> 32) ? get_msb((unsigned int)(D >> 32)) + 32 : get_msb((unsigned int)D));
-    // e is obtained from D after resetting the most significant 1 bit.
+    /*!< e is obtained from D after resetting the most significant 1 bit. */
     const int64_t e = D - ((uint64_t)1 << *shift);
-    // Get the most significant DIV_LUT_BITS (8) bits of e into f
+    /*!< Get the most significant DIV_LUT_BITS (8) bits of e into f */
     if (*shift > DIV_LUT_BITS)
         f = ROUND_POWER_OF_TWO_64(e, *shift - DIV_LUT_BITS);
     else
         f = e << (DIV_LUT_BITS - *shift);
     assert(f <= DIV_LUT_NUM);
     *shift += DIV_LUT_PREC_BITS;
-    // Use f as lookup into the precomputed table of multipliers
+    /*!< Use f as lookup into the precomputed table of multipliers */
     return div_lut[f];
 }
 
 static int16_t resolve_divisor_32(uint32_t D, int16_t *shift) {
     int32_t f;
     *shift = get_msb(D);
-    // e is obtained from D after resetting the most significant 1 bit.
+    /*!< e is obtained from D after resetting the most significant 1 bit. */
     const int32_t e = D - ((uint32_t)1 << *shift);
-    // Get the most significant DIV_LUT_BITS (8) bits of e into f
+    /*!< Get the most significant DIV_LUT_BITS (8) bits of e into f */
     if (*shift > DIV_LUT_BITS)
         f = ROUND_POWER_OF_TWO(e, *shift - DIV_LUT_BITS);
     else
         f = e << (DIV_LUT_BITS - *shift);
     assert(f <= DIV_LUT_NUM);
     *shift += DIV_LUT_PREC_BITS;
-    // Use f as lookup into the precomputed table of multipliers
+    /*!< Use f as lookup into the precomputed table of multipliers */
     return div_lut[f];
 }
 
@@ -389,37 +387,37 @@ static int find_affine_int(int np, const int *pts1, const int *pts2, BlockSize b
     const int isuy = (mi_row * MI_SIZE + rsuy);
     const int isux = (mi_col * MI_SIZE + rsux);
 
-    // Assume the center pixel of the block has exactly the same motion vector
-    // as transmitted for the block. First shift the origin of the source
-    // points to the block center, and the origin of the destination points to
-    // the block center added to the motion vector transmitted.
-    // Let (xi, yi) denote the source points and (xi', yi') denote destination
-    // points after origin shfifting, for i = 0, 1, 2, .... n-1.
-    // Then if  P = [x0, y0,
-    //               x1, y1
-    //               x2, y1,
-    //                ....
-    //              ]
-    //          q = [x0', x1', x2', ... ]'
-    //          r = [y0', y1', y2', ... ]'
-    // the least squares problems that need to be solved are:
-    //          [h1, h2]' = inv(P'P)P'q and
-    //          [h3, h4]' = inv(P'P)P'r
-    // where the affine transformation is given by:
-    //          x' = h1.x + h2.y
-    //          y' = h3.x + h4.y
-    //
-    // The loop below computes: A = P'P, bx = P'q, by = P'r
-    // We need to just compute inv(A).bx and inv(A).by for the solutions.
-    // Contribution from neighbor block
+    /*!< Assume the center pixel of the block has exactly the same motion vector
+     *   as transmitted for the block. First shift the origin of the source
+     *   points to the block center, and the origin of the destination points to
+     *   the block center added to the motion vector transmitted.
+     *   Let (xi, yi) denote the source points and (xi', yi') denote destination
+     *   points after origin shfifting, for i = 0, 1, 2, .... n-1.
+     *   Then if  P = [x0, y0,
+     *                 x1, y1
+     *                 x2, y1,
+     *                  ....
+     *                ]
+     *            q = [x0', x1', x2', ... ]'
+     *            r = [y0', y1', y2', ... ]'
+     *   the least squares problems that need to be solved are:
+     *            [h1, h2]' = inv(P'P)P'q and
+     *            [h3, h4]' = inv(P'P)P'r
+     *   where the affine transformation is given by:
+     *            x' = h1.x + h2.y
+     *            y' = h3.x + h4.y
+     *
+     *   The loop below computes: A = P'P, bx = P'q, by = P'r
+     *   We need to just compute inv(A).bx and inv(A).by for the solutions.
+     *   Contribution from neighbor block */
     for (i = 0; i < np; i++) {
         const int dx = pts2[i * 2] - dux;
         const int dy = pts2[i * 2 + 1] - duy;
         const int sx = pts1[i * 2] - sux;
         const int sy = pts1[i * 2 + 1] - suy;
-        // (TODO)yunqing: This comparison wouldn't be necessary if the sample
-        // selection is done in find_samples(). Also, global offset can be removed
-        // while collecting samples.
+        /*!< (TODO)yunqing: This comparison wouldn't be necessary if the sample
+         *   selection is done in find_samples(). Also, global offset can be removed
+         *   while collecting samples. */
         if (abs(sx - dx) < LS_MV_MAX && abs(sy - dy) < LS_MV_MAX) {
             A[0][0] += LS_SQUARE(sx);
             A[0][1] += LS_PRODUCT1(sx, sy);
@@ -431,7 +429,7 @@ static int find_affine_int(int np, const int *pts1, const int *pts2, BlockSize b
         }
     }
 
-    // Just for debugging, and can be removed later.
+    /*!< Just for debugging, and can be removed later. */
     assert(A[0][0] >= LS_MAT_MIN && A[0][0] <= LS_MAT_MAX);
     assert(A[0][1] >= LS_MAT_MIN && A[0][1] <= LS_MAT_MAX);
     assert(A[1][1] >= LS_MAT_MIN && A[1][1] <= LS_MAT_MAX);
@@ -443,7 +441,7 @@ static int find_affine_int(int np, const int *pts1, const int *pts2, BlockSize b
     int64_t det;
     int16_t i_det, shift;
 
-    // Compute Determinant of A
+    /*!< Compute Determinant of A */
     det = (int64_t)A[0][0] * A[1][1] - (int64_t)A[0][1] * A[0][1];
     if (det == 0) return 1;
     i_det = resolve_divisor_64(llabs(det), &shift) * (det < 0 ? -1 : 1);
@@ -455,7 +453,7 @@ static int find_affine_int(int np, const int *pts1, const int *pts2, BlockSize b
 
     int64_t p_x[2], p_y[2];
 
-    // These divided by the det, are the least squares solutions
+    /*!< These divided by the det, are the least squares solutions */
     p_x[0] = (int64_t)A[1][1] * bx[0] - (int64_t)A[0][1] * bx[1];
     p_x[1] = -(int64_t)A[0][1] * bx[0] + (int64_t)A[0][0] * bx[1];
     p_y[0] = (int64_t)A[1][1] * by[0] - (int64_t)A[0][1] * by[1];
@@ -466,10 +464,10 @@ static int find_affine_int(int np, const int *pts1, const int *pts2, BlockSize b
     wm->wmmat[4] = get_mult_shift_ndiag(p_y[0], i_det, shift);
     wm->wmmat[5] = get_mult_shift_diag(p_y[1], i_det, shift);
 
-    // Note: In the vx, vy expressions below, the max value of each of the
-    // 2nd and 3rd terms are (2^16 - 1) * (2^13 - 1). That leaves enough room
-    // for the first term so that the overall sum in the worst case fits
-    // within 32 bits overall.
+    /*!< Note: In the vx, vy expressions below, the max value of each of the
+     *   2nd and 3rd terms are (2^16 - 1) * (2^13 - 1). That leaves enough room
+     *   for the first term so that the overall sum in the worst case fits
+     *   within 32 bits overall. */
     int32_t vx = mvx * (1 << (WARPEDMODEL_PREC_BITS - 3)) -
                  (isux * (wm->wmmat[2] - (1 << WARPEDMODEL_PREC_BITS)) + isuy * wm->wmmat[3]);
     int32_t vy = mvy * (1 << (WARPEDMODEL_PREC_BITS - 3)) -
@@ -492,91 +490,89 @@ EbBool eb_find_projection(int np, int *pts1, int *pts2, BlockSize bsize, int mvy
 }
 
 
-/* The warp filter for ROTZOOM and AFFINE models works as follows:
-   * Split the input into 8x8 blocks
-   * For each block, project the point (4, 4) within the block, to get the
-     overall block position. Split into integer and fractional coordinates,
-     maintaining full WARPEDMODEL precision
-   * Filter horizontally: Generate 15 rows of 8 pixels each. Each pixel gets a
-     variable horizontal offset. This means that, while the rows of the
-     intermediate buffer align with the rows of the *reference* image, the
-     columns align with the columns of the *destination* image.
-   * Filter vertically: Generate the output block (up to 8x8 pixels, but if the
-     destination is too small we crop the output at this stage). Each pixel has
-     a variable vertical offset, so that the resulting rows are aligned with
-     the rows of the destination image.
-
-   To accomplish these alignments, we factor the warp matrix as a
-   product of two shear / asymmetric zoom matrices:
-   / a b \  = /   1       0    \ * / 1+alpha  beta \
-   \ c d /    \ gamma  1+delta /   \    0      1   /
-   where a, b, c, d are wmmat[2], wmmat[3], wmmat[4], wmmat[5] respectively.
-   The horizontal shear (with alpha and beta) is applied first,
-   then the vertical shear (with gamma and delta) is applied second.
-
-   The only limitation is that, to fit this in a fixed 8-tap filter size,
-   the fractional pixel offsets must be at most +-1. Since the horizontal filter
-   generates 15 rows of 8 columns, and the initial point we project is at (4, 4)
-   within the block, the parameters must satisfy
-   4 * |alpha| + 7 * |beta| <= 1   and   4 * |gamma| + 4 * |delta| <= 1
-   for this filter to be applicable.
-
-   Note: This function assumes that the caller has done all of the relevant
-   checks, ie. that we have a ROTZOOM or AFFINE model, that wm[4] and wm[5]
-   are set appropriately (if using a ROTZOOM model), and that alpha, beta,
-   gamma, delta are all in range.
-
-   TODO(david.barker): Maybe support scaled references?
-*/
-/* A note on hardware implementation:
-    The warp filter is intended to be implementable using the same hardware as
-    the high-precision convolve filters from the loop-restoration and
-    convolve-round experiments.
-
-    For a single filter stage, considering all of the coefficient sets for the
-    warp filter and the regular convolution filter, an input in the range
-    [0, 2^k - 1] is mapped into the range [-56 * (2^k - 1), 184 * (2^k - 1)]
-    before rounding.
-
-    Allowing for some changes to the filter coefficient sets, call the range
-    [-64 * 2^k, 192 * 2^k]. Then, if we initialize the accumulator to 64 * 2^k,
-    we can replace this by the range [0, 256 * 2^k], which can be stored in an
-    unsigned value with 8 + k bits.
-
-    This allows the derivation of the appropriate bit widths and offsets for
-    the various intermediate values: If
-
-    F := FILTER_BITS = 7 (or else the above ranges need adjusting)
-         So a *single* filter stage maps a k-bit input to a (k + F + 1)-bit
-         intermediate value.
-    H := ROUND0_BITS
-    V := VERSHEAR_REDUCE_PREC_BITS
-    (and note that we must have H + V = 2*F for the output to have the same
-     scale as the input)
-
-    then we end up with the following offsets and ranges:
-    Horizontal filter: Apply an offset of 1 << (bd + F - 1), sum fits into a
-                       uint{bd + F + 1}
-    After rounding: The values stored in 'tmp' fit into a uint{bd + F + 1 - H}.
-    Vertical filter: Apply an offset of 1 << (bd + 2*F - H), sum fits into a
-                     uint{bd + 2*F + 2 - H}
-    After rounding: The final value, before undoing the offset, fits into a
-                    uint{bd + 2}.
-
-    Then we need to undo the offsets before clamping to a pixel. Note that,
-    if we do this at the end, the amount to subtract is actually independent
-    of H and V:
-
-    offset to subtract = (1 << ((bd + F - 1) - H + F - V)) +
-                         (1 << ((bd + 2*F - H) - V))
-                      == (1 << (bd - 1)) + (1 << bd)
-
-    This allows us to entirely avoid clamping in both the warp filter and
-    the convolve-round experiment. As of the time of writing, the Wiener filter
-    from loop-restoration can encode a central coefficient up to 216, which
-    leads to a maximum value of about 282 * 2^k after applying the offset.
-    So in that case we still need to clamp.
-*/
+/*!< The warp filter for ROTZOOM and AFFINE models works as follows:
+ *   * Split the input into 8x8 blocks
+ *   * For each block, project the point (4, 4) within the block, to get the
+ *     overall block position. Split into integer and fractional coordinates,
+ *     maintaining full WARPEDMODEL precision
+ *   * Filter horizontally: Generate 15 rows of 8 pixels each. Each pixel gets a
+ *     variable horizontal offset. This means that, while the rows of the
+ *     intermediate buffer align with the rows of the *reference* image, the
+ *     columns align with the columns of the *destination* image.
+ *   * Filter vertically: Generate the output block (up to 8x8 pixels, but if the
+ *     destination is too small we crop the output at this stage). Each pixel has
+ *     a variable vertical offset, so that the resulting rows are aligned with
+ *     the rows of the destination image.
+ *
+ *   To accomplish these alignments, we factor the warp matrix as a
+ *   product of two shear / asymmetric zoom matrices:
+ *   / a b \  = /   1       0    \ * / 1+alpha  beta \
+ *   \ c d /    \ gamma  1+delta /   \    0      1   /
+ *   where a, b, c, d are wmmat[2], wmmat[3], wmmat[4], wmmat[5] respectively.
+ *   The horizontal shear (with alpha and beta) is applied first,
+ *   then the vertical shear (with gamma and delta) is applied second.
+ *
+ *   The only limitation is that, to fit this in a fixed 8-tap filter size,
+ *   the fractional pixel offsets must be at most +-1. Since the horizontal filter
+ *   generates 15 rows of 8 columns, and the initial point we project is at (4, 4)
+ *   within the block, the parameters must satisfy
+ *   4 * |alpha| + 7 * |beta| <= 1   and   4 * |gamma| + 4 * |delta| <= 1
+ *   for this filter to be applicable.
+ *
+ *   Note: This function assumes that the caller has done all of the relevant
+ *   checks, ie. that we have a ROTZOOM or AFFINE model, that wm[4] and wm[5]
+ *   are set appropriately (if using a ROTZOOM model), and that alpha, beta,
+ *   gamma, delta are all in range.
+ *
+ *   TODO(david.barker): Maybe support scaled references? */
+/*!< A note on hardware implementation:
+ *    The warp filter is intended to be implementable using the same hardware as
+ *    the high-precision convolve filters from the loop-restoration and
+ *    convolve-round experiments.
+ *
+ *    For a single filter stage, considering all of the coefficient sets for the
+ *    warp filter and the regular convolution filter, an input in the range
+ *    [0, 2^k - 1] is mapped into the range [-56 * (2^k - 1), 184 * (2^k - 1)]
+ *    before rounding.
+ *
+ *    Allowing for some changes to the filter coefficient sets, call the range
+ *    [-64 * 2^k, 192 * 2^k]. Then, if we initialize the accumulator to 64 * 2^k,
+ *    we can replace this by the range [0, 256 * 2^k], which can be stored in an
+ *    unsigned value with 8 + k bits.
+ *
+ *    This allows the derivation of the appropriate bit widths and offsets for
+ *    the various intermediate values: If
+ *
+ *    F := FILTER_BITS = 7 (or else the above ranges need adjusting)
+ *         So a *single* filter stage maps a k-bit input to a (k + F + 1)-bit
+ *         intermediate value.
+ *    H := ROUND0_BITS
+ *    V := VERSHEAR_REDUCE_PREC_BITS
+ *    (and note that we must have H + V = 2*F for the output to have the same
+ *     scale as the input)
+ *
+ *    then we end up with the following offsets and ranges:
+ *    Horizontal filter: Apply an offset of 1 << (bd + F - 1), sum fits into a
+ *                       uint{bd + F + 1}
+ *    After rounding: The values stored in 'tmp' fit into a uint{bd + F + 1 - H}.
+ *    Vertical filter: Apply an offset of 1 << (bd + 2*F - H), sum fits into a
+ *                     uint{bd + 2*F + 2 - H}
+ *    After rounding: The final value, before undoing the offset, fits into a
+ *                    uint{bd + 2}.
+ *
+ *    Then we need to undo the offsets before clamping to a pixel. Note that,
+ *    if we do this at the end, the amount to subtract is actually independent
+ *    of H and V:
+ *
+ *    offset to subtract = (1 << ((bd + F - 1) - H + F - V)) +
+ *                         (1 << ((bd + 2*F - H) - V))
+ *                      == (1 << (bd - 1)) + (1 << bd)
+ *
+ *    This allows us to entirely avoid clamping in both the warp filter and
+ *    the convolve-round experiment. As of the time of writing, the Wiener filter
+ *    from loop-restoration can encode a central coefficient up to 216, which
+ *    leads to a maximum value of about 282 * 2^k after applying the offset.
+ *    So in that case we still need to clamp. */
 void eb_av1_warp_affine_c(const int32_t *mat, const uint8_t *ref, int width, int height, int stride,
                           uint8_t *pred, int p_col, int p_row, int p_width, int p_height,
                           int p_stride, int subsampling_x, int subsampling_y,
@@ -598,10 +594,10 @@ void eb_av1_warp_affine_c(const int32_t *mat, const uint8_t *ref, int width, int
 
     for (int i = p_row; i < p_row + p_height; i += 8) {
         for (int j = p_col; j < p_col + p_width; j += 8) {
-            // Calculate the center of this 8x8 block,
-            // project to luma coordinates (if in a subsampled chroma plane),
-            // apply the affine transformation,
-            // then convert back to the original coordinates (if necessary)
+            /*!< Calculate the center of this 8x8 block,
+             *   project to luma coordinates (if in a subsampled chroma plane),
+             *   apply the affine transformation,
+             *   then convert back to the original coordinates (if necessary) */
             const int32_t src_x = (j + 4) << subsampling_x;
             const int32_t src_y = (i + 4) << subsampling_y;
             const int32_t dst_x = mat[2] * src_x + mat[3] * src_y + mat[0];
@@ -620,16 +616,16 @@ void eb_av1_warp_affine_c(const int32_t *mat, const uint8_t *ref, int width, int
             sx4 &= ~((1 << WARP_PARAM_REDUCE_BITS) - 1);
             sy4 &= ~((1 << WARP_PARAM_REDUCE_BITS) - 1);
 
-            // Horizontal filter
+            /*!< Horizontal filter */
             for (int k = -7; k < 8; ++k) {
-                // Clamp to top/bottom edge of the frame
+                /*!< Clamp to top/bottom edge of the frame */
                 const int iy = clamp(iy4 + k, 0, height - 1);
 
                 int sx = sx4 + beta * (k + 4);
 
                 for (int l = -4; l < 4; ++l) {
                     int ix = ix4 + l - 3;
-                    // At this point, sx = sx4 + alpha * l + beta * k
+                    /*!< At this point, sx = sx4 + alpha * l + beta * k */
                     const int offs =
                             ROUND_POWER_OF_TWO(sx, WARPEDDIFF_PREC_BITS) + WARPEDPIXEL_PREC_SHIFTS;
                     assert(offs >= 0 && offs <= WARPEDPIXEL_PREC_SHIFTS * 3);
@@ -637,7 +633,7 @@ void eb_av1_warp_affine_c(const int32_t *mat, const uint8_t *ref, int width, int
 
                     int32_t sum = 1 << offset_bits_horiz;
                     for (int m = 0; m < 8; ++m) {
-                        // Clamp to left/right edge of the frame
+                        /*!< Clamp to left/right edge of the frame */
                         const int sample_x = clamp(ix + m, 0, width - 1);
 
                         sum += ref[iy * stride + sample_x] * coeffs[m];
@@ -649,11 +645,11 @@ void eb_av1_warp_affine_c(const int32_t *mat, const uint8_t *ref, int width, int
                 }
             }
 
-            // Vertical filter
+            /*!< Vertical filter */
             for (int k = -4; k < AOMMIN(4, p_row + p_height - i - 4); ++k) {
                 int sy = sy4 + delta * (k + 4);
                 for (int l = -4; l < AOMMIN(4, p_col + p_width - j - 4); ++l) {
-                    // At this point, sy = sy4 + gamma * l + delta * k
+                    /*!< At this point, sy = sy4 + gamma * l + delta * k */
                     const int offs =
                             ROUND_POWER_OF_TWO(sy, WARPEDDIFF_PREC_BITS) + WARPEDPIXEL_PREC_SHIFTS;
                     assert(offs >= 0 && offs <= WARPEDPIXEL_PREC_SHIFTS * 3);
@@ -732,9 +728,8 @@ void warp_plane(EbWarpedMotionParams *wm, const uint8_t *const ref, int width, i
 
 
 
-/* Note: For an explanation of the warp algorithm, and some notes on bit widths
-    for hardware implementations, see the comments above eb_av1_warp_affine_c
-*/
+/*!< Note: For an explanation of the warp algorithm, and some notes on bit widths
+ *      for hardware implementations, see the comments above eb_av1_warp_affine_c */
 void eb_av1_highbd_warp_affine_c(const int32_t *mat, const uint16_t *ref, int width, int height,
                                  int stride, uint16_t *pred, int p_col, int p_row, int p_width,
                                  int p_height, int p_stride, int subsampling_x, int subsampling_y,
@@ -755,10 +750,10 @@ void eb_av1_highbd_warp_affine_c(const int32_t *mat, const uint16_t *ref, int wi
 
     for (int i = p_row; i < p_row + p_height; i += 8) {
         for (int j = p_col; j < p_col + p_width; j += 8) {
-            // Calculate the center of this 8x8 block,
-            // project to luma coordinates (if in a subsampled chroma plane),
-            // apply the affine transformation,
-            // then convert back to the original coordinates (if necessary)
+            /*!< Calculate the center of this 8x8 block,
+             *   project to luma coordinates (if in a subsampled chroma plane),
+             *   apply the affine transformation,
+             *   then convert back to the original coordinates (if necessary) */
             const int32_t src_x = (j + 4) << subsampling_x;
             const int32_t src_y = (i + 4) << subsampling_y;
             const int32_t dst_x = mat[2] * src_x + mat[3] * src_y + mat[0];
@@ -777,7 +772,7 @@ void eb_av1_highbd_warp_affine_c(const int32_t *mat, const uint16_t *ref, int wi
             sx4 &= ~((1 << WARP_PARAM_REDUCE_BITS) - 1);
             sy4 &= ~((1 << WARP_PARAM_REDUCE_BITS) - 1);
 
-            // Horizontal filter
+            /*!< Horizontal filter */
             for (int k = -7; k < 8; ++k) {
                 const int iy = clamp(iy4 + k, 0, height - 1);
 
@@ -801,7 +796,7 @@ void eb_av1_highbd_warp_affine_c(const int32_t *mat, const uint16_t *ref, int wi
                 }
             }
 
-            // Vertical filter
+            /*!< Vertical filter */
             for (int k = -4; k < AOMMIN(4, p_row + p_height - i - 4); ++k) {
                 int sy = sy4 + delta * (k + 4);
                 for (int l = -4; l < AOMMIN(4, p_col + p_width - j - 4); ++l) {
@@ -924,7 +919,7 @@ void eb_av1_warp_plane(EbWarpedMotionParams *wm, int use_hbd, int bd, const uint
 }
 
 
-// Returns 1 on success or 0 on an invalid affine set
+/*!< Returns 1 on success or 0 on an invalid affine set */
 int eb_get_shear_params(EbWarpedMotionParams *wm) {
     const int32_t *mat = wm->wmmat;
     if (!is_affine_valid(wm)) return 0;
@@ -955,7 +950,7 @@ int eb_get_shear_params(EbWarpedMotionParams *wm) {
 }
 
 
-// Select samples according to the motion vector difference.
+/*!< Select samples according to the motion vector difference. */
 int select_samples(MV *mv, int *pts, int *pts_inref, int len, BlockSize bsize) {
     const uint8_t bw                          = block_size_wide[bsize];
     const uint8_t bh                          = block_size_high[bsize];
@@ -964,7 +959,7 @@ int select_samples(MV *mv, int *pts, int *pts_inref, int len, BlockSize bsize) {
     int           i, j, k, l = len;
     int           ret = 0;
 
-    // Obtain the motion vector difference.
+    /*!< Obtain the motion vector difference. */
     for (i = 0; i < len; ++i) {
         pts_mvd[i] = abs(pts_inref[2 * i] - pts[2 * i] - mv->col) +
                      abs(pts_inref[2 * i + 1] - pts[2 * i + 1] - mv->row);
@@ -975,7 +970,7 @@ int select_samples(MV *mv, int *pts, int *pts_inref, int len, BlockSize bsize) {
             ret++;
     }
 
-    // Keep at least 1 sample.
+    /*!< Keep at least 1 sample. */
     if (!ret) return 1;
 
     i = 0;
@@ -989,7 +984,7 @@ int select_samples(MV *mv, int *pts, int *pts_inref, int len, BlockSize bsize) {
         }
         if (i > j) break;
 
-        // Replace the discarded samples;
+        /*!< Replace the discarded samples; */
         pts_mvd[i]           = pts_mvd[j];
         pts[2 * i]           = pts[2 * j];
         pts[2 * i + 1]       = pts[2 * j + 1];

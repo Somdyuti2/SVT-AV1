@@ -1,7 +1,5 @@
-/*
-* Copyright(c) 2019 Intel Corporation
-* SPDX - License - Identifier: BSD - 2 - Clause - Patent
-*/
+/*!< Copyright(c) 2019 Intel Corporation
+ * SPDX - License - Identifier: BSD - 2 - Clause - Patent */
 
 #include "EbDefinitions.h"
 #include "EbRestoration.h"
@@ -35,7 +33,7 @@ void get_proj_subspace_avx2(const uint8_t *src8, int width, int height, int src_
     aom_clear_system_state();
     RunEmms();
 
-    // Default
+    /*!< Default */
     xq[0] = 0;
     xq[1] = 0;
 
@@ -111,7 +109,7 @@ void get_proj_subspace_avx2(const uint8_t *src8, int width, int height, int src_
                 c_1 = _mm256_add_epi32(c_1, out[1]);
             }
 
-            //Complement when width not divided by 16
+            // Complement when width not divided by 16 */
             for (; j < width; ++j) {
                 const double u  = (double)(dat[i * dat_stride + j] << SGRPROJ_RST_BITS);
                 const double s  = (double)(src[i * src_stride + j] << SGRPROJ_RST_BITS) - u;
@@ -124,25 +122,25 @@ void get_proj_subspace_avx2(const uint8_t *src8, int width, int height, int src_
                 C[1] += f2 * s;
             }
 
-            //Summary in each row, to not overflow 32 bits value H_
-            h_00 = _mm256_hadd_epi32(h_00, h_00); //indexes 0,1,4,5
-            h_00 = _mm256_hadd_epi32(h_00, h_00); //indexes 0,4
+            /*!< Summary in each row, to not overflow 32 bits value H_ */
+            h_00 = _mm256_hadd_epi32(h_00, h_00); /*!< indexes 0,1,4,5 */
+            h_00 = _mm256_hadd_epi32(h_00, h_00); /*!< indexes 0,4 */
             H[0][0] += (double)_mm256_extract_epi32(h_00, 0) + _mm256_extract_epi32(h_00, 4);
 
-            h_11 = _mm256_hadd_epi32(h_11, h_11); //indexes 0,1,4,5
-            h_11 = _mm256_hadd_epi32(h_11, h_11); //indexes 0,4
+            h_11 = _mm256_hadd_epi32(h_11, h_11); /*!< indexes 0,1,4,5 */
+            h_11 = _mm256_hadd_epi32(h_11, h_11); /*!< indexes 0,4 */
             H[1][1] += (double)_mm256_extract_epi32(h_11, 0) + _mm256_extract_epi32(h_11, 4);
 
-            h_01 = _mm256_hadd_epi32(h_01, h_01); //indexes 0,1,4,5
-            h_01 = _mm256_hadd_epi32(h_01, h_01); //indexes 0,4
+            h_01 = _mm256_hadd_epi32(h_01, h_01); /*!< indexes 0,1,4,5 */
+            h_01 = _mm256_hadd_epi32(h_01, h_01); /*!< indexes 0,4 */
             H[0][1] += (double)_mm256_extract_epi32(h_01, 0) + _mm256_extract_epi32(h_01, 4);
 
-            c_0 = _mm256_hadd_epi32(c_0, c_0); //indexes 0,1,4,5
-            c_0 = _mm256_hadd_epi32(c_0, c_0); //indexes 0,4
+            c_0 = _mm256_hadd_epi32(c_0, c_0); /*!< indexes 0,1,4,5 */
+            c_0 = _mm256_hadd_epi32(c_0, c_0); /*!< indexes 0,4 */
             C[0] += (double)_mm256_extract_epi32(c_0, 0) + _mm256_extract_epi32(c_0, 4);
 
-            c_1 = _mm256_hadd_epi32(c_1, c_1); //indexes 0,1,4,5
-            c_1 = _mm256_hadd_epi32(c_1, c_1); //indexes 0,4
+            c_1 = _mm256_hadd_epi32(c_1, c_1); /*!< indexes 0,1,4,5 */
+            c_1 = _mm256_hadd_epi32(c_1, c_1); /*!< indexes 0,4 */
             C[1] += (double)_mm256_extract_epi32(c_1, 0) + _mm256_extract_epi32(c_1, 4);
 
             h_00 = _mm256_setzero_si256();
@@ -209,7 +207,7 @@ void get_proj_subspace_avx2(const uint8_t *src8, int width, int height, int src_
                 c_1 = _mm256_add_epi32(c_1, out[1]);
             }
 
-            //Complement when width not divided by 16
+            /*!< Complement when width not divided by 16 */
             for (; j < width; ++j) {
                 const double u  = (double)(dat[i * dat_stride + j] << SGRPROJ_RST_BITS);
                 const double s  = (double)(src[i * src_stride + j] << SGRPROJ_RST_BITS) - u;
@@ -222,25 +220,25 @@ void get_proj_subspace_avx2(const uint8_t *src8, int width, int height, int src_
                 C[1] += f2 * s;
             }
 
-            //Summary in each row, to not overflow 32 bits value H_
-            h_00 = _mm256_hadd_epi32(h_00, h_00); //indexes 0,1,4,5
-            h_00 = _mm256_hadd_epi32(h_00, h_00); //indexes 0,4
+            /*!< Summary in each row, to not overflow 32 bits value H_ */
+            h_00 = _mm256_hadd_epi32(h_00, h_00); /*!< indexes 0,1,4,5 */
+            h_00 = _mm256_hadd_epi32(h_00, h_00); /*!< indexes 0,4 */
             H[0][0] += (double)_mm256_extract_epi32(h_00, 0) + _mm256_extract_epi32(h_00, 4);
 
-            h_11 = _mm256_hadd_epi32(h_11, h_11); //indexes 0,1,4,5
-            h_11 = _mm256_hadd_epi32(h_11, h_11); //indexes 0,4
+            h_11 = _mm256_hadd_epi32(h_11, h_11); /*!< indexes 0,1,4,5 */
+            h_11 = _mm256_hadd_epi32(h_11, h_11); /*!< indexes 0,4 */
             H[1][1] += (double)_mm256_extract_epi32(h_11, 0) + _mm256_extract_epi32(h_11, 4);
 
-            h_01 = _mm256_hadd_epi32(h_01, h_01); //indexes 0,1,4,5
-            h_01 = _mm256_hadd_epi32(h_01, h_01); //indexes 0,4
+            h_01 = _mm256_hadd_epi32(h_01, h_01); /*!< indexes 0,1,4,5 */
+            h_01 = _mm256_hadd_epi32(h_01, h_01); /*!< indexes 0,4 */
             H[0][1] += (double)_mm256_extract_epi32(h_01, 0) + _mm256_extract_epi32(h_01, 4);
 
-            c_0 = _mm256_hadd_epi32(c_0, c_0); //indexes 0,1,4,5
-            c_0 = _mm256_hadd_epi32(c_0, c_0); //indexes 0,4
+            c_0 = _mm256_hadd_epi32(c_0, c_0); /*!< indexes 0,1,4,5 */
+            c_0 = _mm256_hadd_epi32(c_0, c_0); /*!< indexes 0,4 */
             C[0] += (double)_mm256_extract_epi32(c_0, 0) + _mm256_extract_epi32(c_0, 4);
 
-            c_1 = _mm256_hadd_epi32(c_1, c_1); //indexes 0,1,4,5
-            c_1 = _mm256_hadd_epi32(c_1, c_1); //indexes 0,4
+            c_1 = _mm256_hadd_epi32(c_1, c_1); /*!< indexes 0,1,4,5 */
+            c_1 = _mm256_hadd_epi32(c_1, c_1); /*!< indexes 0,4 */
             C[1] += (double)_mm256_extract_epi32(c_1, 0) + _mm256_extract_epi32(c_1, 4);
 
             h_00 = _mm256_setzero_si256();
@@ -258,20 +256,20 @@ void get_proj_subspace_avx2(const uint8_t *src8, int width, int height, int src_
     C[0] /= size;
     C[1] /= size;
     if (params->r[0] == 0) {
-        // H matrix is now only the scalar H[1][1]
-        // C vector is now only the scalar C[1]
+        /*!< H matrix is now only the scalar H[1][1]
+         *   C vector is now only the scalar C[1] */
         det = H[1][1];
-        if (det < 1e-8) return; // ill-posed, return default values
+        if (det < 1e-8) return; /*!< ill-posed, return default values */
         x[0] = 0;
         x[1] = C[1] / det;
 
         xq[0] = 0;
         xq[1] = (int)rint(x[1] * (1 << SGRPROJ_PRJ_BITS));
     } else if (params->r[1] == 0) {
-        // H matrix is now only the scalar H[0][0]
-        // C vector is now only the scalar C[0]
+        /*!< H matrix is now only the scalar H[0][0]
+         *   C vector is now only the scalar C[0] */
         det = H[0][0];
-        if (det < 1e-8) return; // ill-posed, return default values
+        if (det < 1e-8) return; /*!< ill-posed, return default values */
         x[0] = C[0] / det;
         x[1] = 0;
 
@@ -279,7 +277,7 @@ void get_proj_subspace_avx2(const uint8_t *src8, int width, int height, int src_
         xq[1] = 0;
     } else {
         det = (H[0][0] * H[1][1] - H[0][1] * H[1][0]);
-        if (det < 1e-8) return; // ill-posed, return default values
+        if (det < 1e-8) return; /*!< ill-posed, return default values */
         x[0] = (H[1][1] * C[0] - H[0][1] * C[1]) / det;
         x[1] = (H[0][0] * C[1] - H[1][0] * C[0]) / det;
 

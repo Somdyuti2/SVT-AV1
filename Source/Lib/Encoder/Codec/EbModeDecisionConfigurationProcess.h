@@ -1,7 +1,5 @@
-/*
-* Copyright(c) 2019 Intel Corporation
-* SPDX - License - Identifier: BSD - 2 - Clause - Patent
-*/
+/*!< Copyright(c) 2019 Intel Corporation
+ * SPDX - License - Identifier: BSD - 2 - Clause - Patent */
 
 #ifndef EbModeDecisionConfigurationProcess_h
 #define EbModeDecisionConfigurationProcess_h
@@ -19,9 +17,9 @@
 extern "C" {
 #endif
 
-/**************************************
-     * Defines
-     **************************************/
+/**************************************/
+/*!< Defines */
+/**************************************/
 static const uint8_t  depth_offset[4]   = {85, 21, 5, 1};
 static const uint32_t ns_blk_offset[10] = {0, 1, 3, 25, 5, 8, 11, 14, 17, 21};
 static const uint32_t ns_blk_num[10]    = {1, 2, 2, 4, 3, 3, 3, 3, 4, 4};
@@ -43,7 +41,7 @@ typedef struct ModeDecisionConfigurationContext {
     uint64_t                 lambda;
     MdcpLocalBlkStruct      local_blk_array[CU_MAX_COUNT];
 
-    // Inter depth decision
+    /*!< Inter depth decision */
     uint8_t  group_of8x8_blocks_count;
     uint8_t  group_of16x16_blocks_count;
     uint64_t inter_complexity_minimum;
@@ -53,7 +51,7 @@ typedef struct ModeDecisionConfigurationContext {
     uint64_t intra_complexity_maximum;
     uint64_t intra_complexity_average;
 
-    // Adaptive Depth Partitioning
+    /*!< Adaptive Depth Partitioning */
     uint32_t *sb_score_array;
     uint8_t   cost_depth_mode[SB_PRED_OPEN_LOOP_DEPTH_MODE];
     uint8_t * sb_cost_array;
@@ -72,13 +70,13 @@ typedef struct ModeDecisionConfigurationContext {
     BlkStruct *           mdc_blk_ptr;
     uint8_t                qp_index;
 
-    // Multi - Mode signal(s)
+    /*!< Multi - Mode signal(s) */
     uint8_t adp_level;
 } ModeDecisionConfigurationContext;
 
-/**************************************
-     * Extern Function Declarations
-     **************************************/
+/***************************************/
+/*!< Extern Function Declarations */
+/***************************************/
 EbErrorType mode_decision_configuration_context_ctor(EbThreadContext *  thread_context_ptr,
                                                      const EbEncHandle *enc_handle_ptr,
                                                      int input_index, int output_index);

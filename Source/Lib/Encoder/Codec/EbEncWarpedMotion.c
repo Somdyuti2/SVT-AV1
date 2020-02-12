@@ -1,13 +1,11 @@
-/*
- * Copyright (c) 2016, Alliance for Open Media. All rights reserved
+/*!< Copyright (c) 2016, Alliance for Open Media. All rights reserved
  *
  * This source code is subject to the terms of the BSD 2 Clause License and
  * the Alliance for Open Media Patent License 1.0. If the BSD 2 Clause License
  * was not distributed with this source code in the LICENSE file, you can
  * obtain it at www.aomedia.org/license/software. If the Alliance for Open
  * Media Patent License 1.0 was not distributed with this source code in the
- * PATENTS file, you can obtain it at www.aomedia.org/license/patent.
- */
+ * PATENTS file, you can obtain it at www.aomedia.org/license/patent. */
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -23,7 +21,7 @@
 
 /* clang-format off */
 const int error_measure_lut[512] = {
-  // pow 0.7
+  /*!< pow 0.7 */
   16384, 16339, 16294, 16249, 16204, 16158, 16113, 16068,
   16022, 15977, 15932, 15886, 15840, 15795, 15749, 15703,
   15657, 15612, 15566, 15520, 15474, 15427, 15381, 15335,
@@ -125,8 +123,8 @@ static int64_t highbd_warp_error(EbWarpedMotionParams *wm, const uint8_t *const 
     conv_params.use_jnt_comp_avg = 0;
     for (int i = p_row; i < p_row + p_height; i += WARP_ERROR_BLOCK) {
         for (int j = p_col; j < p_col + p_width; j += WARP_ERROR_BLOCK) {
-            // avoid warping extra 8x8 blocks in the padded region of the frame
-            // when p_width and p_height are not multiples of WARP_ERROR_BLOCK
+            /*!< avoid warping extra 8x8 blocks in the padded region of the frame
+             *   when p_width and p_height are not multiples of WARP_ERROR_BLOCK */
             const int warp_w = AOMMIN(error_bsize_w, p_col + p_width - j);
             const int warp_h = AOMMIN(error_bsize_h, p_row + p_height - i);
             highbd_warp_plane(wm,
@@ -183,8 +181,8 @@ static int64_t warp_error(EbWarpedMotionParams *wm, const uint8_t *const ref, in
 
     for (int i = p_row; i < p_row + p_height; i += WARP_ERROR_BLOCK) {
         for (int j = p_col; j < p_col + p_width; j += WARP_ERROR_BLOCK) {
-            // avoid warping extra 8x8 blocks in the padded region of the frame
-            // when p_width and p_height are not multiples of WARP_ERROR_BLOCK
+            /*!< avoid warping extra 8x8 blocks in the padded region of the frame
+             *   when p_width and p_height are not multiples of WARP_ERROR_BLOCK */
             warp_w = AOMMIN(error_bsize_w, p_col + p_width - j);
             warp_h = AOMMIN(error_bsize_h, p_row + p_height - i);
             warp_plane(wm,

@@ -1,7 +1,5 @@
-/*
-* Copyright(c) 2019 Intel Corporation
-* SPDX - License - Identifier: BSD - 2 - Clause - Patent
-*/
+/*!< Copyright(c) 2019 Intel Corporation
+ * SPDX - License - Identifier: BSD - 2 - Clause - Patent */
 
 #ifndef EbAppConfig_h
 #define EbAppConfig_h
@@ -14,50 +12,44 @@
 #define fseeko _fseeki64
 #define ftello _ftelli64
 #endif
-// Define Cross-Platform 64-bit fseek() and ftell()
+/*!< Define Cross-Platform 64-bit fseek() and ftell() */
 
-/** The AppExitConditionType type is used to define the App main loop exit
-conditions.
-*/
+/*!< The AppExitConditionType type is used to define the App main loop exit conditions. */
 typedef enum AppExitConditionType {
     APP_ExitConditionNone = 0,
     APP_ExitConditionFinished,
     APP_ExitConditionError
 } AppExitConditionType;
 
-/** The AppPortActiveType type is used to define the state of output ports in
-the App.
-*/
+/*!< The AppPortActiveType type is used to define the state of output ports in the App. */
 typedef enum AppPortActiveType { APP_PortActive = 0, APP_PortInactive } AppPortActiveType;
 
-/** The EbPtr type is intended to be used to pass pointers to and from the svt
-API.  This is a 32 bit pointer and is aligned on a 32 bit word boundary.
-*/
+/*!< The EbPtr type is intended to be used to pass pointers to and from the svt
+ *   API. This is a 32 bit pointer and is aligned on a 32 bit word boundary. */
 typedef void *EbPtr;
 
-/** The EB_NULL type is used to define the C style NULL pointer.
-*/
+/*!< The EB_NULL type is used to define the C style NULL pointer. */
 #define EB_NULL ((void *)0)
 
-// memory map to be removed and replaced by malloc / free
+/*!< memory map to be removed and replaced by malloc / free */
 typedef enum EbPtrType {
-    EB_N_PTR     = 0, // malloc'd pointer
-    EB_A_PTR     = 1, // malloc'd pointer aligned
-    EB_MUTEX     = 2, // mutex
-    EB_SEMAPHORE = 3, // semaphore
-    EB_THREAD    = 4 // thread handle
+    EB_N_PTR     = 0, /*!< malloc'd pointer */
+    EB_A_PTR     = 1, /*!< malloc'd pointer aligned */
+    EB_MUTEX     = 2, /*!< mutex */
+    EB_SEMAPHORE = 3, /*!< semaphore */
+    EB_THREAD    = 4 /*!< thread handle */
 } EbPtrType;
 typedef struct EbMemoryMapEntry {
-    EbPtr     ptr; // points to a memory pointer
-    EbPtrType ptr_type; // pointer type
+    EbPtr     ptr; /*!< points to a memory pointer */
+    EbPtrType ptr_type; /*!< pointer type */
 } EbMemoryMapEntry;
 
-extern EbMemoryMapEntry *app_memory_map; // App Memory table
-extern uint32_t *        app_memory_map_index; // App Memory index
-extern uint64_t *        total_app_memory; // App Memory malloc'd
+extern EbMemoryMapEntry *app_memory_map; /*!< App Memory table */
+extern uint32_t *        app_memory_map_index; /*!< App Memory index */
+extern uint64_t *        total_app_memory; /*!< App Memory malloc'd */
 extern uint32_t          app_malloc_count;
 
-#define MAX_APP_NUM_PTR (0x186A0 << 2) // Maximum number of pointers to be allocated for the app
+#define MAX_APP_NUM_PTR (0x186A0 << 2) /*!< Maximum number of pointers to be allocated for the app */
 
 #define EB_APP_MALLOC(type, pointer, n_elements, pointer_class, return_type) \
     pointer = (type)malloc(n_elements);                                      \
@@ -112,14 +104,14 @@ extern uint32_t          app_malloc_count;
 #endif
 
 typedef struct EbPerformanceContext {
-    /****************************************
-     * Computational Performance Data
-     ****************************************/
-    uint64_t lib_start_time[2]; // [sec, micro_sec] including init time
-    uint64_t encode_start_time[2]; // [sec, micro_sec] first frame sent
+    /************************************/
+    /*!< Computational Performance Data */
+    /************************************/
+    uint64_t lib_start_time[2]; /*!< [sec, micro_sec] including init time */
+    uint64_t encode_start_time[2]; /*!< [sec, micro_sec] first frame sent */
 
-    double total_execution_time; // includes init
-    double total_encode_time; // not including init
+    double total_execution_time; /*!< includes init */
+    double total_encode_time; /*!< not including init */
 
     uint64_t total_latency;
     uint32_t max_latency;
@@ -145,9 +137,7 @@ typedef struct EbPerformanceContext {
 } EbPerformanceContext;
 
 typedef struct EbConfig {
-    /****************************************
-     * File I/O
-     ****************************************/
+    /*!< File I/O */
     FILE *        config_file;
     FILE *        input_file;
     EbBool        input_file_is_fifo;
@@ -188,9 +178,9 @@ typedef struct EbConfig {
 
     uint8_t latency_mode;
 
-    /*****************************************
-     * Coding Structure
-     *****************************************/
+    /*****************************************/
+    /*!< Coding Structure */
+    /*****************************************/
     uint8_t  enc_mode;
     uint8_t  snd_pass_enc_mode;
     int32_t  intra_period;
@@ -198,137 +188,82 @@ typedef struct EbConfig {
     uint32_t hierarchical_levels;
     uint32_t pred_structure;
 
-    /****************************************
-     * Quantization
-     ****************************************/
+    /*!< Quantization */
     uint32_t qp;
 
-    /****************************************
-     * Film Grain
-     ****************************************/
+    /*!< Film Grain */
     uint32_t film_grain_denoise_strength;
-    /****************************************
-     * DLF
-     ****************************************/
+    /*!< DLF */
     EbBool disable_dlf_flag;
 
-    /****************************************
-     * Local Warped Motion
-     ****************************************/
+    /*!< Local Warped Motion */
     EbBool enable_warped_motion;
 
-    /****************************************
-     * Global Motion
-     ****************************************/
+    /*!< Global Motion */
     EbBool enable_global_motion;
 
-    /****************************************
-     * Restoration filtering
-    ****************************************/
+    /*!< Restoration filtering */
     int enable_restoration_filtering;
 
-    /****************************************
-     * class12
-    ****************************************/
+    /*!< class12 */
     int combine_class_12;
-    /****************************************
-     * edge based skip angle intra
-    ****************************************/
+    /*!< edge based skip angle intra */
     int edge_skp_angle_intra;
-    /****************************************
-     * intra inter compoound
-    ****************************************/
+    /*!< intra inter compoound */
     int inter_intra_compound;
-    /****************************************
-     * motion field motion vector
-    ****************************************/
+    /****************************************/
+    /*!< motion field motion vector */
+    /****************************************/
     int enable_mfmv;
-    /****************************************
-     * redundant block
-    ****************************************/
+    /*!< redundant block */
     int enable_redundant_blk;
-    /****************************************
-      * trellis quant coeff optimization
-     ****************************************/
+    /*!< trellis quant coeff optimization */
     int enable_trellis;
-    /****************************************
-      * spatial sse in full loop
-     ****************************************/
+    /*!< spatial sse in full loop */
     int spatial_sse_fl;
-    /****************************************
-      * subpel
-     ****************************************/
+    /*!< subpel */
     int enable_subpel;
-    /****************************************
-      * over boundry block
-     ****************************************/
+    /*!< over boundry block */
     int over_bndry_blk;
-    /****************************************
-      * new nearest comb injection
-     ****************************************/
+    /*!< new nearest comb injection */
     int new_nearest_comb_inject;
-    /****************************************
-      * nx4 4xn parent motion vector injection
-     ****************************************/
+    /*!< nx4 4xn parent motion vector injection */
     int nx4_4xn_parent_mv_inject;
-    /****************************************
-      * prune unipred at me
-     ****************************************/
+    /*!< prune unipred at me */
     int prune_unipred_me;
-    /****************************************
-      * prune ref frame for rec partitions
-     ****************************************/
+    /*!< prune ref frame for rec partitions */
     int prune_ref_rec_part;
-    /****************************************
-      * nsq table
-     ****************************************/
+    /*!< nsq table */
     int nsq_table;
-    /****************************************
-      * frame end cdf update
-     ****************************************/
+    /*!< frame end cdf update */
     int frame_end_cdf_update;
-    /****************************************
-      * predictive me
-     ****************************************/
+    /*!< predictive me */
     int pred_me;
-    /****************************************
-      * bipred 3x3 injection
-     ****************************************/
+    /*!< bipred 3x3 injection */
     int bipred_3x3_inject;
-    /****************************************
-      * compound level
-     ****************************************/
+    /*!< compound level */
     int compound_level;
 
-    /****************************************
-     * Chroma
+    /*!< Chroma
      *
-     * Level                Settings
-     * CHROMA_MODE_0  0     Full chroma search @ MD
-     * CHROMA_MODE_1  1     Fast chroma search @ MD
-     * CHROMA_MODE_2  2     Chroma blind @ MD + CFL @ EP
-     * CHROMA_MODE_3  3     Chroma blind @ MD + no CFL @ EP
+     *   Level                Settings
+     *   CHROMA_MODE_0  0     Full chroma search @ MD
+     *   CHROMA_MODE_1  1     Fast chroma search @ MD
+     *   CHROMA_MODE_2  2     Chroma blind @ MD + CFL @ EP
+     *   CHROMA_MODE_3  3     Chroma blind @ MD + no CFL @ EP
      *
-     * Default is -1 (AUTO)  */
+     *   Default is -1 (AUTO)  */
     int set_chroma_mode;
 
-    /****************************************
-     * OBMC
-     ****************************************/
+    /*!< OBMC */
     EbBool enable_obmc;
 
-    /****************************************
-     * RDOQ
-     * ****************************************/
+    /*!< RDOQ*/
     int enable_rdoq;
 
-    /****************************************
-     * Filter intra prediction
-     ****************************************/
+    /*!< Filter intra prediction */
     EbBool enable_filter_intra;
-    /****************************************
-     * ME Tools
-     ****************************************/
+    /*!< ME Tools */
     EbBool use_default_me_hme;
     EbBool enable_hme_flag;
     EbBool enable_hme_level0_flag;
@@ -336,15 +271,11 @@ typedef struct EbConfig {
     EbBool enable_hme_level2_flag;
     EbBool ext_block_flag;
 
-    /****************************************
-     * ME Parameters
-     ****************************************/
+    /*!< ME Parameters */
     uint32_t search_area_width;
     uint32_t search_area_height;
 
-    /****************************************
-     * HME Parameters
-     ****************************************/
+    /*!< HME Parameters */
     uint32_t number_hme_search_region_in_width;
     uint32_t number_hme_search_region_in_height;
     uint32_t hme_level0_total_search_area_width;
@@ -362,18 +293,14 @@ typedef struct EbConfig {
     uint32_t hme_level2_search_area_in_width_array[EB_HME_SEARCH_AREA_COLUMN_MAX_COUNT];
     uint32_t hme_level2_search_area_in_height_array[EB_HME_SEARCH_AREA_ROW_MAX_COUNT];
 
-    /****************************************
-     * MD Parameters
-     ****************************************/
+    /*!< MD Parameters */
     int8_t  enable_hbd_mode_decision;
     int32_t enable_palette;
     int32_t tile_columns;
     int32_t tile_rows;
-    int32_t olpd_refinement; // Open Loop Partitioning Decision Refinement
+    int32_t olpd_refinement; /*!< Open Loop Partitioning Decision Refinement */
 
-    /****************************************
-     * Rate Control
-     ****************************************/
+    /*!< Rate Control */
     uint32_t scene_change_detection;
     uint32_t rate_control_mode;
     uint32_t look_ahead_distance;
@@ -384,45 +311,33 @@ typedef struct EbConfig {
 
     EbBool enable_adaptive_quantization;
 
-    /****************************************
-     * Optional Features
-     ****************************************/
+    /*!< Optional Features */
 
     uint32_t screen_content_mode;
     uint32_t high_dynamic_range_input;
     EbBool   unrestricted_motion_vector;
 
-    /****************************************
-     * Annex A Parameters
-     ****************************************/
+    /*!< Annex A Parameters */
     uint32_t profile;
     uint32_t tier;
     uint32_t level;
 
-    /****************************************
-     * On-the-fly Testing
-     ****************************************/
+    /*!< On-the-fly Testing */
     EbBool eos_flag;
 
-    /****************************************
-    * CPU FLAGS available
-    ****************************************/
+    /*!< CPU FLAGS available */
     CPU_FLAGS cpu_flags_limit;
 
-    /****************************************
-     * Computational Performance Data
-     ****************************************/
+    /*!< Computational Performance Data */
     EbPerformanceContext performance_context;
 
-    /****************************************
-    * Instance Info
-    ****************************************/
+    /*!< Instance Info */
     uint32_t channel_id;
     uint32_t active_channel_count;
     uint32_t logical_processors;
     uint32_t unpin_lp1;
     int32_t  target_socket;
-    EbBool   stop_encoder; // to signal CTRL+C Event, need to stop encoding.
+    EbBool   stop_encoder; /*!< to signal CTRL+C Event, need to stop encoding. */
 
     uint64_t processed_frame_count;
     uint64_t processed_byte_count;
@@ -430,34 +345,32 @@ typedef struct EbConfig {
     uint64_t byte_count_since_ivf;
     uint64_t ivf_count;
 
-    // --- start: ALTREF_FILTERING_SUPPORT
-    /****************************************
-     * ALT-REF related Parameters
-     ****************************************/
+    /*!< --- start: ALTREF_FILTERING_SUPPORT */
+    /*!< ALT-REF related Parameters */
     EbBool  enable_altrefs;
     uint8_t altref_strength;
     uint8_t altref_nframes;
     EbBool  enable_overlays;
-    // --- end: ALTREF_FILTERING_SUPPORT
+    /*!< --- end: ALTREF_FILTERING_SUPPORT */
 
-    /****************************************
-     * Super-resolution related Parameters
-     ****************************************/
+    /*****************************************/
+    /*!< Super-resolution related Parameters */
+    /*****************************************/
     SUPERRES_MODE           superres_mode;
     uint8_t                 superres_denom;
     uint8_t                 superres_kf_denom;
     uint8_t                 superres_qthres;
 
-    // square cost weighting for deciding if a/b shapes could be skipped
+    /*!< square cost weighting for deciding if a/b shapes could be skipped */
     uint32_t sq_weight;
 
-    // inter/intra class pruning costs before MD stage 1/2
+    /*!< inter/intra class pruning costs before MD stage 1/2 */
     uint64_t md_fast_cost_class_prune_th;
     uint64_t md_fast_cost_cand_prune_th;
     uint64_t md_full_cost_class_prune_th;
     uint64_t md_full_cost_cand_prune_th;
 
-    // prediction structure
+    /*!< prediction structure */
     PredictionStructureConfigEntry pred_struct[1 << (MAX_HIERARCHICAL_LEVEL - 1)];
     EbBool enable_manual_pred_struct;
     int32_t manual_pred_struct_entry_num;

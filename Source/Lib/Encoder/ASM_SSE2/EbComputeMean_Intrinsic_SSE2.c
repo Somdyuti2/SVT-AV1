@@ -1,14 +1,12 @@
-/*
-* Copyright(c) 2019 Intel Corporation
-* SPDX - License - Identifier: BSD - 2 - Clause - Patent
-*/
+/*!< Copyright(c) 2019 Intel Corporation
+* SPDX - License - Identifier: BSD - 2 - Clause - Patent */
 
 #include "emmintrin.h"
 #include "EbComputeMean_SSE2.h"
 
 uint64_t compute_subd_mean_of_squared_values8x8_sse2_intrin(
-    uint8_t *input_samples, // input parameter, input samples Ptr
-    uint16_t input_stride) // input parameter, input stride
+    uint8_t *input_samples, /*!< input parameter, input samples Ptr */
+    uint16_t input_stride) /*!< input parameter, input stride */
 
 {
     __m128i xmm0, xmm_block_mean, xmm_input;
@@ -48,8 +46,8 @@ uint64_t compute_subd_mean_of_squared_values8x8_sse2_intrin(
 }
 
 uint64_t compute_sub_mean8x8_sse2_intrin(
-    uint8_t *input_samples, // input parameter, input samples Ptr
-    uint16_t input_stride) // input parameter, input stride
+    uint8_t *input_samples, /*!< input parameter, input samples Ptr */
+    uint16_t input_stride) /*!< input parameter, input stride */
 
 {
     __m128i xmm0 = _mm_setzero_si128(), xmm1, xmm3, xmm_sum1, xmm_sum2;
@@ -72,10 +70,10 @@ uint64_t compute_sub_mean8x8_sse2_intrin(
 }
 
 uint64_t compute_mean_of_squared_values8x8_sse2_intrin(
-    uint8_t *input_samples, // input parameter, input samples Ptr
-    uint32_t input_stride, // input parameter, input stride
-    uint32_t input_area_width, // input parameter, input area width
-    uint32_t input_area_height) // input parameter, input area height
+    uint8_t *input_samples, /*!< input parameter, input samples Ptr */
+    uint32_t input_stride, /*!< input parameter, input stride */
+    uint32_t input_area_width, /*!< input parameter, input area width */
+    uint32_t input_area_height) /*!< input parameter, input area height */
 {
     __m128i xmm0, xmm_block_mean, xmm_input;
     (void)input_area_width;
@@ -118,10 +116,10 @@ uint64_t compute_mean_of_squared_values8x8_sse2_intrin(
 }
 
 uint64_t compute_mean8x8_sse2_intrin(
-    uint8_t *input_samples, // input parameter, input samples Ptr
-    uint32_t input_stride, // input parameter, input stride
-    uint32_t input_area_width, // input parameter, input area width
-    uint32_t input_area_height) // input parameter, input area height
+    uint8_t *input_samples, /*!< input parameter, input samples Ptr */
+    uint32_t input_stride, /*!< input parameter, input stride */
+    uint32_t input_area_width, /*!< input parameter, input area width */
+    uint32_t input_area_height) /*!< input parameter, input area height */
 {
     __m128i xmm0 = _mm_setzero_si128(), xmm1, xmm2, xmm3, xmm4, xmm_sum1, xmm_sum2;
 
@@ -146,31 +144,31 @@ uint64_t compute_mean8x8_sse2_intrin(
 }
 
 void compute_interm_var_four8x8_helper_sse2(uint8_t *input_samples, uint16_t input_stride,
-                                            uint64_t *mean_of8x8_blocks, // mean of four  8x8
-                                            uint64_t *mean_of_squared8x8_blocks) // meanSquared
+                                            uint64_t *mean_of8x8_blocks, /*!< mean of four  8x8 */
+                                            uint64_t *mean_of_squared8x8_blocks) /*!< meanSquared */
 {
     uint32_t block_index = 0;
-    // (0,1)
+    /*!< (0,1) */
     mean_of8x8_blocks[0] =
         compute_sub_mean8x8_sse2_intrin(input_samples + block_index, input_stride);
     mean_of_squared8x8_blocks[0] = compute_subd_mean_of_squared_values8x8_sse2_intrin(
         input_samples + block_index, input_stride);
 
-    // (0,2)
+    /*!< (0,2) */
     block_index = block_index + 8;
     mean_of8x8_blocks[1] =
         compute_sub_mean8x8_sse2_intrin(input_samples + block_index, input_stride);
     mean_of_squared8x8_blocks[1] = compute_subd_mean_of_squared_values8x8_sse2_intrin(
         input_samples + block_index, input_stride);
 
-    // (0,3)
+    /*!< (0,3) */
     block_index = block_index + 8;
     mean_of8x8_blocks[2] =
         compute_sub_mean8x8_sse2_intrin(input_samples + block_index, input_stride);
     mean_of_squared8x8_blocks[2] = compute_subd_mean_of_squared_values8x8_sse2_intrin(
         input_samples + block_index, input_stride);
 
-    // (0,4)
+    /*!< (0,4) */
     block_index = block_index + 8;
     mean_of8x8_blocks[3] =
         compute_sub_mean8x8_sse2_intrin(input_samples + block_index, input_stride);

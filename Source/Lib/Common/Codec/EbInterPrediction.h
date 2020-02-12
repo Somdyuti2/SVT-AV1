@@ -1,7 +1,5 @@
-/*
-* Copyright(c) 2019 Intel Corporation
-* SPDX - License - Identifier: BSD - 2 - Clause - Patent
-*/
+/*!< Copyright(c) 2019 Intel Corporation
+ * SPDX - License - Identifier: BSD - 2 - Clause - Patent */
 
 #ifndef EbInterPrediction_h
 #define EbInterPrediction_h
@@ -29,18 +27,18 @@ extern "C" {
 #define RS_SCALE_SUBPEL_MASK ((1 << RS_SCALE_SUBPEL_BITS) - 1)
 #define RS_SCALE_EXTRA_BITS (RS_SCALE_SUBPEL_BITS - RS_SUBPEL_BITS)
 #define RS_SCALE_EXTRA_OFF (1 << (RS_SCALE_EXTRA_BITS - 1))
-#define MV_BORDER (16 << 3) // Allow 16 pels in 1/8th pel units
+#define MV_BORDER (16 << 3) /*!< Allow 16 pels in 1/8th pel units */
 
 
 #define NELEMENTS(x) (int)(sizeof(x) / sizeof(x[0]))
 
-#define INTRABC_DELAY_PIXELS 256 //  Delay of 256 pixels
+#define INTRABC_DELAY_PIXELS 256 /*!< Delay of 256 pixels */
 #define INTRABC_DELAY_SB64 (INTRABC_DELAY_PIXELS / 64)
 
-// HW does not support < 4x4 prediction. To limit the bandwidth requirement, if
-// block-size of current plane is smaller than 8x8, always only blend with the
-// left neighbor(s) (skip blending with the above side).
-#define DISABLE_CHROMA_U8X8_OBMC 0 // 0: one-sided obmc; 1: disable
+/*!< HW does not support < 4x4 prediction. To limit the bandwidth requirement, if
+ *   block-size of current plane is smaller than 8x8, always only blend with the
+ *   left neighbor(s) (skip blending with the above side). */
+#define DISABLE_CHROMA_U8X8_OBMC 0 /*!< 0: one-sided obmc; 1: disable */
 
     extern DECLARE_ALIGNED(256, const InterpKernel, sub_pel_filters_8[SUBPEL_SHIFTS]);
     extern DECLARE_ALIGNED(256, const InterpKernel, sub_pel_filters_4[SUBPEL_SHIFTS]);
@@ -67,7 +65,7 @@ extern "C" {
 
 typedef uint8_t *WedgeMasksType[MAX_WEDGE_TYPES];
 
-// Angles are with respect to horizontal anti-clockwise
+/*!< Angles are with respect to horizontal anti-clockwise */
 typedef enum WedgeDirectionType
 {
     WEDGE_HORIZONTAL = 0,
@@ -85,7 +83,7 @@ static INLINE void clamp_mv(MV *mv, int32_t min_col, int32_t max_col, int32_t mi
     mv->row = (int16_t)clamp(mv->row, min_row, max_row);
 }
 
-// 3-tuple: {direction, x_offset, y_offset}
+/*!< 3-tuple: {direction, x_offset, y_offset} */
 typedef struct WedgeCodeType
 {
     WedgeDirectionType direction;
@@ -119,7 +117,6 @@ typedef struct WedgeParamsType
         const ScaleFactors *sf, int32_t w, int32_t h, ConvolveParams *conv_params,
         InterpFilters interp_filters, int32_t is_intrabc, int32_t bd);
 
-
     void av1_dist_wtd_comp_weight_assign(
         SeqHeader *seq_header,
         int cur_frame_index,
@@ -142,7 +139,7 @@ typedef struct WedgeParamsType
         InterpFilterParams *params_x, InterpFilterParams *params_y,
         int32_t w, int32_t h);
 
-    /* Mapping of interintra to intra mode for use in the intra component */
+    /*!< Mapping of interintra to intra mode for use in the intra component */
     static const PredictionMode interintra_to_intra_mode[INTERINTRA_MODES] = {
       DC_PRED, V_PRED, H_PRED, SMOOTH_PRED
     };
@@ -182,7 +179,6 @@ typedef struct WedgeParamsType
     MV32 av1_scale_mv(const MV *mvq4, int x, int y,
         const ScaleFactors *sf);
 
-
 void build_smooth_interintra_mask(uint8_t *mask, int stride, BlockSize plane_bsize,
                                   InterIntraMode mode);
 
@@ -208,8 +204,7 @@ int get_wedge_params_bits(BlockSize sb_type);
 
 int is_masked_compound_type(COMPOUND_TYPE type);
 
-// Although we assign 32 bit integers, all the values are strictly under 14
-// bits.
+/*!< Although we assign 32 bit integers, all the values are strictly under 14 bits. */
 static int div_mult[32] = {0,    16384, 8192, 5461, 4096, 3276, 2730, 2340, 2048, 1820, 1638,
                            1489, 1365,  1260, 1170, 1092, 1024, 963,  910,  862,  819,  780,
                            744,  712,   682,  655,  630,  606,  585,  564,  546,  528};
@@ -275,7 +270,7 @@ static INLINE int check_sb_border(const int mi_row, const int mi_col, const int 
 
 static INLINE int is_neighbor_overlappable(const MbModeInfo *mbmi) {
     return /*is_intrabc_block(mbmi) ||*/ mbmi->block_mi.ref_frame[0] >
-                                         INTRA_FRAME; // TODO: modify when add intra_bc
+                                         INTRA_FRAME; /*!< TODO: modify when add intra_bc */
 }
 
 static INLINE int32_t is_mv_valid(const MV *mv) {
@@ -341,31 +336,31 @@ static INLINE int bsize_to_max_depth(BlockSize bsize) {
 
 static INLINE PredictionMode compound_ref0_mode(PredictionMode mode) {
     static PredictionMode lut[] = {
-            MB_MODE_COUNT, // DC_PRED
-            MB_MODE_COUNT, // V_PRED
-            MB_MODE_COUNT, // H_PRED
-            MB_MODE_COUNT, // D45_PRED
-            MB_MODE_COUNT, // D135_PRED
-            MB_MODE_COUNT, // D113_PRED
-            MB_MODE_COUNT, // D157_PRED
-            MB_MODE_COUNT, // D203_PRED
-            MB_MODE_COUNT, // D67_PRED
-            MB_MODE_COUNT, // SMOOTH_PRED
-            MB_MODE_COUNT, // SMOOTH_V_PRED
-            MB_MODE_COUNT, // SMOOTH_H_PRED
-            MB_MODE_COUNT, // PAETH_PRED
-            MB_MODE_COUNT, // NEARESTMV
-            MB_MODE_COUNT, // NEARMV
-            MB_MODE_COUNT, // GLOBALMV
-            MB_MODE_COUNT, // NEWMV
-            NEARESTMV, // NEAREST_NEARESTMV
-            NEARMV, // NEAR_NEARMV
-            NEARESTMV, // NEAREST_NEWMV
-            NEWMV, // NEW_NEARESTMV
-            NEARMV, // NEAR_NEWMV
-            NEWMV, // NEW_NEARMV
-            GLOBALMV, // GLOBAL_GLOBALMV
-            NEWMV, // NEW_NEWMV
+            MB_MODE_COUNT, /*!< DC_PRED */
+            MB_MODE_COUNT, /*!< V_PRED */
+            MB_MODE_COUNT, /*!< H_PRED */
+            MB_MODE_COUNT, /*!< D45_PRED */
+            MB_MODE_COUNT, /*!< D135_PRED */
+            MB_MODE_COUNT, /*!< D113_PRED */
+            MB_MODE_COUNT, /*!< D157_PRED */
+            MB_MODE_COUNT, /*!< D203_PRED */
+            MB_MODE_COUNT, /*!< D67_PRED */
+            MB_MODE_COUNT, /*!< SMOOTH_PRED */
+            MB_MODE_COUNT, /*!< SMOOTH_V_PRED */
+            MB_MODE_COUNT, /*!< SMOOTH_H_PRED */
+            MB_MODE_COUNT, /*!< PAETH_PRED */
+            MB_MODE_COUNT, /*!< NEARESTMV */
+            MB_MODE_COUNT, /*!< NEARMV */
+            MB_MODE_COUNT, /*!< GLOBALMV */
+            MB_MODE_COUNT, /*!< NEWMV */
+            NEARESTMV, /*!< NEAREST_NEARESTMV */
+            NEARMV, /*!< NEAR_NEARMV */
+            NEARESTMV, /*!< NEAREST_NEWMV */
+            NEWMV, /*!< NEW_NEARESTMV */
+            NEARMV, /*!< NEAR_NEWMV */
+            NEWMV, /*!< NEW_NEARMV */
+            GLOBALMV, /*!< GLOBAL_GLOBALMV */
+            NEWMV, /*!< NEW_NEWMV */
     };
     assert(NELEMENTS(lut) == MB_MODE_COUNT);
     assert(is_inter_compound_mode(mode));
@@ -374,31 +369,31 @@ static INLINE PredictionMode compound_ref0_mode(PredictionMode mode) {
 
 static INLINE PredictionMode compound_ref1_mode(PredictionMode mode) {
     static PredictionMode lut[] = {
-            MB_MODE_COUNT, // DC_PRED
-            MB_MODE_COUNT, // V_PRED
-            MB_MODE_COUNT, // H_PRED
-            MB_MODE_COUNT, // D45_PRED
-            MB_MODE_COUNT, // D135_PRED
-            MB_MODE_COUNT, // D113_PRED
-            MB_MODE_COUNT, // D157_PRED
-            MB_MODE_COUNT, // D203_PRED
-            MB_MODE_COUNT, // D67_PRED
-            MB_MODE_COUNT, // SMOOTH_PRED
-            MB_MODE_COUNT, // SMOOTH_V_PRED
-            MB_MODE_COUNT, // SMOOTH_H_PRED
-            MB_MODE_COUNT, // PAETH_PRED
-            MB_MODE_COUNT, // NEARESTMV
-            MB_MODE_COUNT, // NEARMV
-            MB_MODE_COUNT, // GLOBALMV
-            MB_MODE_COUNT, // NEWMV
-            NEARESTMV, // NEAREST_NEARESTMV
-            NEARMV, // NEAR_NEARMV
-            NEWMV, // NEAREST_NEWMV
-            NEARESTMV, // NEW_NEARESTMV
-            NEWMV, // NEAR_NEWMV
-            NEARMV, // NEW_NEARMV
-            GLOBALMV, // GLOBAL_GLOBALMV
-            NEWMV, // NEW_NEWMV
+            MB_MODE_COUNT, /*!< DC_PRED */
+            MB_MODE_COUNT, /*!< V_PRED */
+            MB_MODE_COUNT, /*!< H_PRED */
+            MB_MODE_COUNT, /*!< D45_PRED */
+            MB_MODE_COUNT, /*!< D135_PRED */
+            MB_MODE_COUNT, /*!< D113_PRED */
+            MB_MODE_COUNT, /*!< D157_PRED */
+            MB_MODE_COUNT, /*!< D203_PRED */
+            MB_MODE_COUNT, /*!< D67_PRED */
+            MB_MODE_COUNT, /*!< SMOOTH_PRED */
+            MB_MODE_COUNT, /*!< SMOOTH_V_PRED */
+            MB_MODE_COUNT, /*!< SMOOTH_H_PRED */
+            MB_MODE_COUNT, /*!< PAETH_PRED */
+            MB_MODE_COUNT, /*!< NEARESTMV */
+            MB_MODE_COUNT, /*!< NEARMV */
+            MB_MODE_COUNT, /*!< GLOBALMV */
+            MB_MODE_COUNT, /*!< NEWMV */
+            NEARESTMV, /*!< NEAREST_NEARESTMV */
+            NEARMV, /*!< NEAR_NEARMV */
+            NEWMV, /*!< NEAREST_NEWMV */
+            NEARESTMV, /*!< NEW_NEARESTMV */
+            NEWMV, /*!< NEAR_NEWMV */
+            NEARMV, /*!< NEW_NEARMV */
+            GLOBALMV, /*!< GLOBAL_GLOBALMV */
+            NEWMV, /*!< NEW_NEWMV */
     };
     assert(NELEMENTS(lut) == MB_MODE_COUNT);
     assert(is_inter_compound_mode(mode));

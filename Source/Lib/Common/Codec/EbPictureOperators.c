@@ -1,26 +1,22 @@
-/*
-* Copyright(c) 2019 Intel Corporation
-* SPDX - License - Identifier: BSD - 2 - Clause - Patent
-*/
+/*!< Copyright(c) 2019 Intel Corporation
+ * SPDX - License - Identifier: BSD - 2 - Clause - Patent */
 
-/*
-* Copyright (c) 2016, Alliance for Open Media. All rights reserved
-*
-* This source code is subject to the terms of the BSD 2 Clause License and
-* the Alliance for Open Media Patent License 1.0. If the BSD 2 Clause License
-* was not distributed with this source code in the LICENSE file, you can
-* obtain it at www.aomedia.org/license/software. If the Alliance for Open
-* Media Patent License 1.0 was not distributed with this source code in the
-* PATENTS file, you can obtain it at www.aomedia.org/license/patent.
-*/
+/*!< Copyright (c) 2016, Alliance for Open Media. All rights reserved
+ *
+ * This source code is subject to the terms of the BSD 2 Clause License and
+ * the Alliance for Open Media Patent License 1.0. If the BSD 2 Clause License
+ * was not distributed with this source code in the LICENSE file, you can
+ * obtain it at www.aomedia.org/license/software. If the Alliance for Open
+ * Media Patent License 1.0 was not distributed with this source code in the
+ * PATENTS file, you can obtain it at www.aomedia.org/license/patent. */
 
-/*********************************
- * Includes
- *********************************/
+/*********************************/
+/*!< Includes */
+/*********************************/
 
 #include "EbPictureOperators.h"
 #include "EbPackUnPack.h"
-#include "common_dsp_rtcd.h"
+#include "aom_dsp_rtcd.h"
 #include "EbUtility.h"
 
 #define VARIANCE_PRECISION 16
@@ -28,9 +24,9 @@
 
 void *eb_aom_memset16(void *dest, int32_t val, size_t length);
 
-/*********************************
- * Picture Copy
- *********************************/
+/*********************************/
+/*!< Picture Copy */
+/*********************************/
 
 void pic_copy_kernel_8bit(EbByte src, uint32_t src_stride, EbByte dst, uint32_t dst_stride,
                           uint32_t area_width, uint32_t area_height) {
@@ -103,10 +99,10 @@ EbErrorType picture_copy(EbPictureBufferDesc *src, uint32_t src_luma_origin_inde
     return return_error;
 }
 
-/*******************************************
-* Residual Kernel 16bit
-Computes the residual data
-*******************************************/
+/*!< ******************************************
+ * * Residual Kernel 16bit
+ * Computes the residual data
+ ****************************************** */
 void residual_kernel16bit_c(uint16_t *input, uint32_t input_stride, uint16_t *pred,
                             uint32_t pred_stride, int16_t *residual, uint32_t residual_stride,
                             uint32_t area_width, uint32_t area_height) {
@@ -128,10 +124,10 @@ void residual_kernel16bit_c(uint16_t *input, uint32_t input_stride, uint16_t *pr
 
     return;
 }
-/*******************************************
-* Residual Kernel
-Computes the residual data
-*******************************************/
+/*!< ******************************************
+ * * Residual Kernel
+ * Computes the residual data
+ ****************************************** */
 void residual_kernel8bit_c(uint8_t *input, uint32_t input_stride, uint8_t *pred,
                            uint32_t pred_stride, int16_t *residual, uint32_t residual_stride,
                            uint32_t area_width, uint32_t area_height) {
@@ -154,10 +150,10 @@ void residual_kernel8bit_c(uint8_t *input, uint32_t input_stride, uint8_t *pred,
     return;
 }
 
-/*******************************************
-* Picture Full Distortion
-*  Used in the Full Mode Decision Loop for the only case of a MVP-SKIP candidate
-*******************************************/
+/*!< ******************************************
+ * Picture Full Distortion
+ *  Used in the Full Mode Decision Loop for the only case of a MVP-SKIP candidate
+ ****************************************** */
 
 void full_distortion_kernel32_bits_c(int32_t *coeff, uint32_t coeff_stride, int32_t *recon_coeff,
                                      uint32_t recon_coeff_stride,
@@ -214,9 +210,9 @@ uint64_t full_distortion_kernel16_bits_c(uint8_t *input, uint32_t input_offset,
     return sse_distortion;
 }
 
-/*******************************************
-* Picture Distortion Full Kernel CbfZero
-*******************************************/
+/*******************************************/
+/*!< Picture Distortion Full Kernel CbfZero */
+/*******************************************/
 void full_distortion_kernel_cbf_zero32_bits_c(int32_t *coeff, uint32_t coeff_stride,
                                               int32_t *recon_coeff, uint32_t recon_coeff_stride,
                                               uint64_t distortion_result[DIST_CALC_TOTAL],
@@ -253,7 +249,8 @@ EbErrorType picture_full_distortion32_bits(
     COMPONENT_TYPE component_type) {
     EbErrorType return_error = EB_ErrorNone;
 
-    //TODO due to a change in full kernel distortion , ASM has to be updated to not accumulate the input distortion by the output
+    /*!< TODO due to a change in full kernel distortion ,
+     *   ASM has to be updated to not accumulate the input distortion by the output */
 
     if (component_type == COMPONENT_LUMA || component_type == COMPONENT_ALL) {
         y_distortion[0] = 0;
@@ -288,7 +285,7 @@ EbErrorType picture_full_distortion32_bits(
         cb_distortion[0] = 0;
         cb_distortion[1] = 0;
 
-        // CB
+        /*!< CB */
         if (cb_count_non_zero_coeffs) {
             full_distortion_kernel32_bits(
                 &(((int32_t *)coeff->buffer_cb)[coeff_chroma_origin_index]),
@@ -313,7 +310,7 @@ EbErrorType picture_full_distortion32_bits(
         component_type == COMPONENT_ALL) {
         cr_distortion[0] = 0;
         cr_distortion[1] = 0;
-        // CR
+        /*!< CR */
         if (cr_count_non_zero_coeffs) {
             full_distortion_kernel32_bits(
                 &(((int32_t *)coeff->buffer_cr)[coeff_chroma_origin_index]),
@@ -408,9 +405,9 @@ void compressed_pack_sb(uint8_t *in8_bit_buffer, uint32_t in8_stride, uint8_t *i
                              height);
     }
 }
-// Copies the source image into the destination image and updates the
-// destination's UMV borders.
-// Note: The frames are assumed to be identical in size.
+/*!< Copies the source image into the destination image and updates the
+ *   destination's UMV borders. */
+/*!< Note: The frames are assumed to be identical in size. */
 void eb_aom_yv12_copy_y_c(const Yv12BufferConfig *src_ybc, Yv12BufferConfig *dst_ybc) {
     int32_t        row;
     const uint8_t *src = src_ybc->y_buffer;

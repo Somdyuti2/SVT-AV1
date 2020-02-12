@@ -1,7 +1,5 @@
-/*
-* Copyright(c) 2019 Netflix, Inc.
-* SPDX - License - Identifier: BSD - 2 - Clause - Patent
-*/
+/*!< Copyright(c) 2019 Netflix, Inc.
+ * SPDX - License - Identifier: BSD - 2 - Clause - Patent */
 
 #ifndef EbDecIntraPrediction_h
 #define EbDecIntraPrediction_h
@@ -10,8 +8,8 @@
 extern "C" {
 #endif
 
-// Do we need to save the luma pixels from the current block,
-// for a possible future CfL prediction?
+/*!< Do we need to save the luma pixels from the current
+ *   block, for a possible future CfL prediction? */
 CflAllowedType store_cfl_required(const EbColorConfig *cc, PartitionInfo *xd,
                                   int32_t is_chroma_ref);
 

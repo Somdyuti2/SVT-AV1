@@ -1,7 +1,5 @@
-/*
-* Copyright(c) 2019 Netflix, Inc.
-* SPDX - License - Identifier: BSD - 2 - Clause - Patent
-*/
+/*!< Copyright(c) 2019 Netflix, Inc.
+* SPDX - License - Identifier: BSD - 2 - Clause - Patent */
 
 #ifndef EbFileUtils_h
 #define EbFileUtils_h
@@ -27,9 +25,9 @@
 
 static const char *const csp_names[] = {"400", "420", "422", "444", 0};
 
-/**********************************
- * Input image properties
- **********************************/
+/****************************/
+/*!< Input image properties */
+/****************************/
 
 enum VideoFileType { FILE_TYPE_OBU, FILE_TYPE_RAW, FILE_TYPE_IVF, FILE_TYPE_Y4M, FILE_TYPE_WEBM };
 
@@ -76,7 +74,7 @@ typedef struct DecInputContext {
     ObuDecInputContext *obu_ctx;
 } DecInputContext;
 
-/*!\brief OBU types. */
+/*!< brief OBU types. */
 typedef enum ATTRIBUTE_PACKED {
     OBU_SEQUENCE_HEADER        = 1,
     OBU_TEMPORAL_DELIMITER     = 2,
@@ -90,13 +88,13 @@ typedef enum ATTRIBUTE_PACKED {
 } OBU_TYPE;
 
 typedef struct {
-    size_t size; // Size (1 or 2 bytes) of the OBU header (including the
-        // optional OBU extension header) in the Bitstream.
+    size_t size; /*!< Size (1 or 2 bytes) of the OBU header (including the
+                  *   optional OBU extension header) in the Bitstream. */
     OBU_TYPE type;
     int      has_size_field;
     int      has_extension;
-    // The following fields come from the OBU extension header and therefore are
-    // only used if has_extension is true.
+    /*!< The following fields come from the OBU extension header and
+     *   therefore are only used if has_extension is true. */
     int temporal_layer_id;
     int spatial_layer_id;
 } ObuHeader;

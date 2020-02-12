@@ -1,18 +1,14 @@
-/*
-* Copyright(c) 2019 Intel Corporation
-* SPDX - License - Identifier: BSD - 2 - Clause - Patent
-*/
+/*!< Copyright(c) 2019 Intel Corporation
+ * SPDX - License - Identifier: BSD - 2 - Clause - Patent */
 
-/*
-* Copyright (c) 2016, Alliance for Open Media. All rights reserved
-*
-* This source code is subject to the terms of the BSD 2 Clause License and
-* the Alliance for Open Media Patent License 1.0. If the BSD 2 Clause License
-* was not distributed with this source code in the LICENSE file, you can
-* obtain it at www.aomedia.org/license/software. If the Alliance for Open
-* Media Patent License 1.0 was not distributed with this source code in the
-* PATENTS file, you can obtain it at www.aomedia.org/license/patent.
-*/
+/*!< Copyright (c) 2016, Alliance for Open Media. All rights reserved
+ *
+ * This source code is subject to the terms of the BSD 2 Clause License and
+ * the Alliance for Open Media Patent License 1.0. If the BSD 2 Clause License
+ * was not distributed with this source code in the LICENSE file, you can
+ * obtain it at www.aomedia.org/license/software. If the Alliance for Open
+ * Media Patent License 1.0 was not distributed with this source code in the
+ * PATENTS file, you can obtain it at www.aomedia.org/license/patent. */
 
 #ifndef EbTransforms_h
 #define EbTransforms_h
@@ -82,28 +78,28 @@ static const int8_t fidtx64_range_mult2[1]     = {5};
 static INLINE int is_rect_tx(TxSize tx_size) { return tx_size >= TX_SIZES; }
 static INLINE int is_rect_tx_allowed_bsize(BlockSize bsize) {
     static const char lut[BLOCK_SIZES_ALL] = {
-        0, // BLOCK_4X4
-        1, // BLOCK_4X8
-        1, // BLOCK_8X4
-        0, // BLOCK_8X8
-        1, // BLOCK_8X16
-        1, // BLOCK_16X8
-        0, // BLOCK_16X16
-        1, // BLOCK_16X32
-        1, // BLOCK_32X16
-        0, // BLOCK_32X32
-        1, // BLOCK_32X64
-        1, // BLOCK_64X32
-        0, // BLOCK_64X64
-        0, // BLOCK_64X128
-        0, // BLOCK_128X64
-        0, // BLOCK_128X128
-        1, // BLOCK_4X16
-        1, // BLOCK_16X4
-        1, // BLOCK_8X32
-        1, // BLOCK_32X8
-        1, // BLOCK_16X64
-        1, // BLOCK_64X16
+        0, /*!< BLOCK_4X4 */
+        1, /*!< BLOCK_4X8 */
+        1, /*!< BLOCK_8X4 */
+        0, /*!< BLOCK_8X8 */
+        1, /*!< BLOCK_8X16 */
+        1, /*!< BLOCK_16X8 */
+        0, /*!< BLOCK_16X16 */
+        1, /*!< BLOCK_16X32 */
+        1, /*!< BLOCK_32X16 */
+        0, /*!< BLOCK_32X32 */
+        1, /*!< BLOCK_32X64 */
+        1, /*!< BLOCK_64X32 */
+        0, /*!< BLOCK_64X64 */
+        0, /*!< BLOCK_64X128 */
+        0, /*!< BLOCK_128X64 */
+        0, /*!< BLOCK_128X128 */
+        1, /*!< BLOCK_4X16 */
+        1, /*!< BLOCK_16X4 */
+        1, /*!< BLOCK_8X32 */
+        1, /*!< BLOCK_32X8 */
+        1, /*!< BLOCK_16X64 */
+        1, /*!< BLOCK_64X16 */
     };
 
     return lut[bsize];
@@ -116,7 +112,7 @@ static INLINE int is_rect_tx_allowed(/*const MacroBlockD *xd,*/
 }
 
 
-////////////////////// QUANTIZATION//////////////
+/*!< ****************** QUANTIZATION ****************** */
 typedef struct QuantParam {
     int32_t      log_scale;
     TxSize       tx_size;
@@ -135,12 +131,12 @@ extern EbErrorType av1_estimate_transform(int16_t *residual_buffer, uint32_t res
                                           EB_TRANS_COEFF_SHAPE trans_coeff_shape);
 
 extern int32_t av1_quantize_inv_quantize(
-        PictureControlSet *pcs_ptr, ModeDecisionContext *md_context, int32_t *coeff,
-        const uint32_t coeff_stride, int32_t *quant_coeff, int32_t *recon_coeff, uint32_t qp,
-        int32_t segmentation_qp_offset, uint32_t width, uint32_t height, TxSize txsize, uint16_t *eob,
-        uint32_t *y_count_non_zero_coeffs, uint32_t component_type, uint32_t bit_increment,
-        TxType tx_type, ModeDecisionCandidateBuffer *candidate_buffer, int16_t txb_skip_context,
-        int16_t dc_sign_context, PredictionMode pred_mode, EbBool is_intra_bc, EbBool is_encode_pass);
+    PictureControlSet *pcs_ptr, ModeDecisionContext *md_context, int32_t *coeff,
+    const uint32_t coeff_stride, int32_t *quant_coeff, int32_t *recon_coeff, uint32_t qp,
+    int32_t segmentation_qp_offset, uint32_t width, uint32_t height, TxSize txsize, uint16_t *eob,
+    uint32_t *y_count_non_zero_coeffs, uint32_t component_type, uint32_t bit_increment,
+    TxType tx_type, ModeDecisionCandidateBuffer *candidate_buffer, int16_t txb_skip_context,
+    int16_t dc_sign_context, PredictionMode pred_mode, EbBool is_intra_bc, EbBool is_encode_pass);
 
 
 #ifdef __cplusplus

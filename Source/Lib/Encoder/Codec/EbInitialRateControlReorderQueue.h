@@ -1,7 +1,5 @@
-/*
-* Copyright(c) 2019 Intel Corporation
-* SPDX - License - Identifier: BSD - 2 - Clause - Patent
-*/
+/*!< Copyright(c) 2019 Intel Corporation
+ * SPDX - License - Identifier: BSD - 2 - Clause - Patent */
 
 #ifndef EbInitialRateControlReorderQueue_h
 #define EbInitialRateControlReorderQueue_h
@@ -10,9 +8,9 @@
 #include "EbSystemResourceManager.h"
 #include "EbPictureControlSet.h"
 #include "EbObject.h"
-/************************************************
- * Initial Rate Control Reorder Queue Entry
- ************************************************/
+/************************************************/
+/*!< Initial Rate Control Reorder Queue Entry */
+/************************************************/
 typedef struct InitialRateControlReorderEntry {
     EbDctor          dctor;
     uint64_t         picture_number;
@@ -22,9 +20,9 @@ typedef struct InitialRateControlReorderEntry {
 extern EbErrorType initial_rate_control_reorder_entry_ctor(
     InitialRateControlReorderEntry *entry_ptr, uint32_t picture_number);
 
-/************************************************
- * High Level Rate Control Histogram Queue Entry
- ************************************************/
+/***************************************************/
+/*!< High Level Rate Control Histogram Queue Entry */
+/***************************************************/
 typedef struct HlRateControlHistogramEntry {
     EbDctor          dctor;
     uint64_t         picture_number;
@@ -39,7 +37,7 @@ typedef struct HlRateControlHistogramEntry {
     uint32_t         temporal_layer_index;
     uint32_t         frames_in_sw;
 
-    // Motion Estimation Distortion and OIS Historgram
+    /*!< Motion Estimation Distortion and OIS Historgram */
     uint16_t *me_distortion_histogram;
     uint16_t *ois_distortion_histogram;
     uint32_t  full_sb_count;
@@ -48,4 +46,4 @@ typedef struct HlRateControlHistogramEntry {
 extern EbErrorType hl_rate_control_histogram_entry_ctor(HlRateControlHistogramEntry *entry_ptr,
                                                         uint32_t picture_number);
 
-#endif //EbInitialRateControlReorderQueue_h
+#endif // EbInitialRateControlReorderQueue_h

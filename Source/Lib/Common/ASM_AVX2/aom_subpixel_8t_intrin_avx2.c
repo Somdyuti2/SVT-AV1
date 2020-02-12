@@ -1,13 +1,11 @@
-/*
- * Copyright (c) 2016, Alliance for Open Media. All rights reserved
+/*!< Copyright (c) 2016, Alliance for Open Media. All rights reserved
  *
  * This source code is subject to the terms of the BSD 2 Clause License and
  * the Alliance for Open Media Patent License 1.0. If the BSD 2 Clause License
  * was not distributed with this source code in the LICENSE file, you can
  * obtain it at www.aomedia.org/license/software. If the Alliance for Open
  * Media Patent License 1.0 was not distributed with this source code in the
- * PATENTS file, you can obtain it at www.aomedia.org/license/patent.
- */
+ * PATENTS file, you can obtain it at www.aomedia.org/license/patent. */
 
 #include <immintrin.h>
 
@@ -168,7 +166,7 @@ Filter81dFunction aom_filter_block1d4_h2_ssse3;
         }                                                                                          \
     }
 
-// filters for 16
+/*!< filters for 16 */
 DECLARE_ALIGNED(32, static const uint8_t, filt_global_avx2[]) = {
     0,  1,  1, 2,  2,  3,  3,  4,  4, 5,  5,  6,  6,  7,  7,  8,  0,  1,  1,  2,  2,  3,
     3,  4,  4, 5,  5,  6,  6,  7,  7, 8,  2,  3,  3,  4,  4,  5,  5,  6,  6,  7,  7,  8,
@@ -228,36 +226,36 @@ static void aom_filter_block1d4_h4_avx2(const uint8_t *src_ptr, ptrdiff_t src_pi
     add_filter_reg32 = _mm256_set1_epi16(32);
     filters_reg      = _mm_loadu_si128((const __m128i *)filter);
     filters_reg      = _mm_srai_epi16(filters_reg, 1);
-    // converting the 16 bit (short) to 8 bit (byte) and have the same data
-    // in both lanes of 128 bit register.
+    /*!< converting the 16 bit (short) to 8 bit (byte) and have the same data
+     *   in both lanes of 128 bit register. */
     filters_reg = _mm_packs_epi16(filters_reg, filters_reg);
-    // have the same data in both lanes of a 256 bit register
+    /*!< have the same data in both lanes of a 256 bit register */
     const __m256i filters_reg32 = MM256_BROADCASTSI128_SI256(filters_reg);
 
     first_filters = _mm256_shuffle_epi8(filters_reg32, _mm256_set1_epi32(0x5040302u));
     filt1_reg     = _mm256_load_si256((__m256i const *)(filt4_d4_global_avx2));
 
-    // multiple the size of the source and destination stride by two
+    /*!< multiple the size of the source and destination stride by two */
     src_stride = src_pixels_per_line << 1;
     dst_stride = output_pitch << 1;
     for (i = output_height; i > 1; i -= 2) {
-        // load the 2 strides of source
+        /*!< load the 2 strides of source */
         src_reg32b1 = xx_loadu2_mi128(src_ptr + src_pixels_per_line, src_ptr);
 
-        // filter the source buffer
+        /*!< filter the source buffer */
         src_reg_filt32b1_1 = _mm256_shuffle_epi8(src_reg32b1, filt1_reg);
 
-        // multiply 4 adjacent elements with the filter and add the result
+        /*!< multiply 4 adjacent elements with the filter and add the result */
         src_reg_filt32b1_1 = _mm256_maddubs_epi16(src_reg_filt32b1_1, first_filters);
 
         src_reg_filt32b1_1 = _mm256_hadds_epi16(src_reg_filt32b1_1, _mm256_setzero_si256());
 
-        // shift by 6 bit each 16 bit
+        /*!< shift by 6 bit each 16 bit */
         src_reg_filt32b1_1 = _mm256_adds_epi16(src_reg_filt32b1_1, add_filter_reg32);
         src_reg_filt32b1_1 = _mm256_srai_epi16(src_reg_filt32b1_1, 6);
 
-        // shrink to 8 bit each 16 bits, the first lane contain the first
-        // convolve result and the second lane contain the second convolve result
+        /*!< shrink to 8 bit each 16 bits, the first lane contain the first
+         *   convolve result and the second lane contain the second convolve result */
         src_reg_filt32b1_1 = _mm256_packus_epi16(src_reg_filt32b1_1, _mm256_setzero_si256());
 
         src_ptr += src_stride;
@@ -266,29 +264,29 @@ static void aom_filter_block1d4_h4_avx2(const uint8_t *src_ptr, ptrdiff_t src_pi
         output_ptr += dst_stride;
     }
 
-    // if the number of strides is odd.
-    // process only 4 bytes
+    /*!< if the number of strides is odd. */
+    /*!< process only 4 bytes */
     if (i > 0) {
         __m128i src_reg1, src_reg_filt1_1;
 
         src_reg1 = _mm_loadu_si128((const __m128i *)(src_ptr));
 
-        // filter the source buffer
+        /*!< filter the source buffer */
         src_reg_filt1_1 = _mm_shuffle_epi8(src_reg1, _mm256_castsi256_si128(filt1_reg));
 
-        // multiply 4 adjacent elements with the filter and add the result
+        /*!< multiply 4 adjacent elements with the filter and add the result */
         src_reg_filt1_1 = _mm_maddubs_epi16(src_reg_filt1_1, _mm256_castsi256_si128(first_filters));
 
         src_reg_filt1_1 = _mm_hadds_epi16(src_reg_filt1_1, _mm_setzero_si128());
-        // shift by 6 bit each 16 bit
+        /*!< shift by 6 bit each 16 bit */
         src_reg_filt1_1 = _mm_adds_epi16(src_reg_filt1_1, _mm256_castsi256_si128(add_filter_reg32));
         src_reg_filt1_1 = _mm_srai_epi16(src_reg_filt1_1, 6);
 
-        // shrink to 8 bit each 16 bits, the first lane contain the first
-        // convolve result and the second lane contain the second convolve result
+        /*!< shrink to 8 bit each 16 bits, the first lane contain the first
+         *   convolve result and the second lane contain the second convolve result */
         src_reg_filt1_1 = _mm_packus_epi16(src_reg_filt1_1, _mm_setzero_si128());
 
-        // save 4 bytes
+        /*!< save 4 bytes */
         *((uint32_t *)(output_ptr)) = _mm_cvtsi128_si32(src_reg_filt1_1);
     }
 }
@@ -307,49 +305,49 @@ static void aom_filter_block1d4_h8_avx2(const uint8_t *src_ptr, ptrdiff_t src_pi
     add_filter_reg32 = _mm256_set1_epi16(32);
     filters_reg      = _mm_loadu_si128((const __m128i *)filter);
     filters_reg      = _mm_srai_epi16(filters_reg, 1);
-    // converting the 16 bit (short) to 8 bit (byte) and have the same data
-    // in both lanes of 128 bit register.
+    /*!< converting the 16 bit (short) to 8 bit (byte) and have the same data
+     *   in both lanes of 128 bit register. */
     filters_reg = _mm_packs_epi16(filters_reg, filters_reg);
-    // have the same data in both lanes of a 256 bit register
+    /*!< have the same data in both lanes of a 256 bit register */
     const __m256i filters_reg32 = MM256_BROADCASTSI128_SI256(filters_reg);
 
-    // duplicate only the first 32 bits
+    /*!< duplicate only the first 32 bits */
     first_filters = _mm256_shuffle_epi32(filters_reg32, 0);
-    // duplicate only the second 32 bits
+    /*!< duplicate only the second 32 bits */
     second_filters = _mm256_shuffle_epi32(filters_reg32, 0x55);
 
     filt1_reg = _mm256_load_si256((__m256i const *)filt_d4_global_avx2);
     filt2_reg = _mm256_load_si256((__m256i const *)(filt_d4_global_avx2 + 32));
 
-    // multiple the size of the source and destination stride by two
+    /*!< multiple the size of the source and destination stride by two */
     src_stride = src_pixels_per_line << 1;
     dst_stride = output_pitch << 1;
     for (i = output_height; i > 1; i -= 2) {
-        // load the 2 strides of source
+        /*!< load the 2 strides of source */
         src_reg32b1 = xx_loadu2_mi128(src_ptr + src_pixels_per_line, src_ptr);
 
-        // filter the source buffer
+        /*!< filter the source buffer */
         src_reg_filt32b1_1 = _mm256_shuffle_epi8(src_reg32b1, filt1_reg);
 
-        // multiply 4 adjacent elements with the filter and add the result
+        /*!< multiply 4 adjacent elements with the filter and add the result */
         src_reg_filt32b1_1 = _mm256_maddubs_epi16(src_reg_filt32b1_1, first_filters);
 
-        // filter the source buffer
+        /*!< filter the source buffer */
         src_reg_Filt32b2 = _mm256_shuffle_epi8(src_reg32b1, filt2_reg);
 
-        // multiply 4 adjacent elements with the filter and add the result
+        /*!< multiply 4 adjacent elements with the filter and add the result */
         src_reg_Filt32b2 = _mm256_maddubs_epi16(src_reg_Filt32b2, second_filters);
 
         src_reg_filt32b1_1 = _mm256_adds_epi16(src_reg_filt32b1_1, src_reg_Filt32b2);
 
         src_reg_filt32b1_1 = _mm256_hadds_epi16(src_reg_filt32b1_1, _mm256_setzero_si256());
 
-        // shift by 6 bit each 16 bit
+        /*!< shift by 6 bit each 16 bit */
         src_reg_filt32b1_1 = _mm256_adds_epi16(src_reg_filt32b1_1, add_filter_reg32);
         src_reg_filt32b1_1 = _mm256_srai_epi16(src_reg_filt32b1_1, 6);
 
-        // shrink to 8 bit each 16 bits, the first lane contain the first
-        // convolve result and the second lane contain the second convolve result
+        /*!< shrink to 8 bit each 16 bits, the first lane contain the first
+         *   convolve result and the second lane contain the second convolve result */
         src_reg_filt32b1_1 = _mm256_packus_epi16(src_reg_filt32b1_1, _mm256_setzero_si256());
 
         src_ptr += src_stride;
@@ -358,37 +356,37 @@ static void aom_filter_block1d4_h8_avx2(const uint8_t *src_ptr, ptrdiff_t src_pi
         output_ptr += dst_stride;
     }
 
-    // if the number of strides is odd.
-    // process only 4 bytes
+    /*!< if the number of strides is odd. */
+    /*!< process only 4 bytes */
     if (i > 0) {
         __m128i src_reg1, src_reg_filt1_1;
         __m128i src_reg_filt2;
 
         src_reg1 = _mm_loadu_si128((const __m128i *)(src_ptr));
 
-        // filter the source buffer
+        /*!< filter the source buffer */
         src_reg_filt1_1 = _mm_shuffle_epi8(src_reg1, _mm256_castsi256_si128(filt1_reg));
 
-        // multiply 4 adjacent elements with the filter and add the result
+        /*!< multiply 4 adjacent elements with the filter and add the result */
         src_reg_filt1_1 = _mm_maddubs_epi16(src_reg_filt1_1, _mm256_castsi256_si128(first_filters));
 
-        // filter the source buffer
+        /*!< filter the source buffer */
         src_reg_filt2 = _mm_shuffle_epi8(src_reg1, _mm256_castsi256_si128(filt2_reg));
 
-        // multiply 4 adjacent elements with the filter and add the result
+        /*!< multiply 4 adjacent elements with the filter and add the result */
         src_reg_filt2 = _mm_maddubs_epi16(src_reg_filt2, _mm256_castsi256_si128(second_filters));
 
         src_reg_filt1_1 = _mm_adds_epi16(src_reg_filt1_1, src_reg_filt2);
         src_reg_filt1_1 = _mm_hadds_epi16(src_reg_filt1_1, _mm_setzero_si128());
-        // shift by 6 bit each 16 bit
+        /*!< shift by 6 bit each 16 bit */
         src_reg_filt1_1 = _mm_adds_epi16(src_reg_filt1_1, _mm256_castsi256_si128(add_filter_reg32));
         src_reg_filt1_1 = _mm_srai_epi16(src_reg_filt1_1, 6);
 
-        // shrink to 8 bit each 16 bits, the first lane contain the first
-        // convolve result and the second lane contain the second convolve result
+        /*!< shrink to 8 bit each 16 bits, the first lane contain the first
+         *   convolve result and the second lane contain the second convolve result */
         src_reg_filt1_1 = _mm_packus_epi16(src_reg_filt1_1, _mm_setzero_si128());
 
-        // save 4 bytes
+        /*!< save 4 bytes */
         *((uint32_t *)(output_ptr)) = _mm_cvtsi128_si32(src_reg_filt1_1);
     }
 }
@@ -407,44 +405,44 @@ static void aom_filter_block1d8_h4_avx2(const uint8_t *src_ptr, ptrdiff_t src_pi
     add_filter_reg32 = _mm256_set1_epi16(32);
     filters_reg      = _mm_loadu_si128((const __m128i *)filter);
     filters_reg      = _mm_srai_epi16(filters_reg, 1);
-    // converting the 16 bit (short) to 8 bit (byte) and have the same data
-    // in both lanes of 128 bit register.
+    /*!< converting the 16 bit (short) to 8 bit (byte) and have the same data
+     *   in both lanes of 128 bit register. */
     filters_reg = _mm_packs_epi16(filters_reg, filters_reg);
-    // have the same data in both lanes of a 256 bit register
+    /*!< have the same data in both lanes of a 256 bit register */
     filters_reg32 = MM256_BROADCASTSI128_SI256(filters_reg);
 
-    // duplicate only the second 16 bits (third and forth byte)
-    // across 256 bit register
+    /*!< duplicate only the second 16 bits (third and forth byte)
+     *   across 256 bit register */
     second_filters = _mm256_shuffle_epi8(filters_reg32, _mm256_set1_epi16(0x302u));
-    // duplicate only the third 16 bits (fifth and sixth byte)
-    // across 256 bit register
+    /*!< duplicate only the third 16 bits (fifth and sixth byte)
+     *   across 256 bit register */
     third_filters = _mm256_shuffle_epi8(filters_reg32, _mm256_set1_epi16(0x504u));
 
     filt2_reg = _mm256_load_si256((__m256i const *)(filt_global_avx2 + 32));
     filt3_reg = _mm256_load_si256((__m256i const *)(filt_global_avx2 + 32 * 2));
 
-    // multiply the size of the source and destination stride by two
+    /*!< multiply the size of the source and destination stride by two */
     src_stride = src_pixels_per_line << 1;
     dst_stride = output_pitch << 1;
     for (i = output_height; i > 1; i -= 2) {
-        // load the 2 strides of source
+        /*!< load the 2 strides of source */
         src_reg32b1 = xx_loadu2_mi128(src_ptr + src_pixels_per_line, src_ptr);
 
-        // filter the source buffer
+        /*!< filter the source buffer */
         src_reg_Filt32b3 = _mm256_shuffle_epi8(src_reg32b1, filt2_reg);
         src_reg_Filt32b2 = _mm256_shuffle_epi8(src_reg32b1, filt3_reg);
 
-        // multiply 2 adjacent elements with the filter and add the result
+        /*!< multiply 2 adjacent elements with the filter and add the result */
         src_reg_Filt32b3 = _mm256_maddubs_epi16(src_reg_Filt32b3, second_filters);
         src_reg_Filt32b2 = _mm256_maddubs_epi16(src_reg_Filt32b2, third_filters);
 
         src_reg_filt32b1_1 = _mm256_adds_epi16(src_reg_Filt32b3, src_reg_Filt32b2);
 
-        // shift by 6 bit each 16 bit
+        /*!< shift by 6 bit each 16 bit */
         src_reg_filt32b1_1 = _mm256_adds_epi16(src_reg_filt32b1_1, add_filter_reg32);
         src_reg_filt32b1_1 = _mm256_srai_epi16(src_reg_filt32b1_1, 6);
 
-        // shrink to 8 bit each 16 bits
+        /*!< shrink to 8 bit each 16 bits */
         src_reg_filt32b1_1 = _mm256_packus_epi16(src_reg_filt32b1_1, src_reg_filt32b1_1);
 
         src_ptr += src_stride;
@@ -453,33 +451,33 @@ static void aom_filter_block1d8_h4_avx2(const uint8_t *src_ptr, ptrdiff_t src_pi
         output_ptr += dst_stride;
     }
 
-    // if the number of strides is odd.
-    // process only 8 bytes
+    /*!< if the number of strides is odd. */
+    /*!< process only 8 bytes */
     if (i > 0) {
         __m128i src_reg1, src_reg_filt1_1;
         __m128i src_reg_filt2, src_reg_filt3;
 
         src_reg1 = _mm_loadu_si128((const __m128i *)(src_ptr));
 
-        // filter the source buffer
+        /*!< filter the source buffer */
         src_reg_filt2 = _mm_shuffle_epi8(src_reg1, _mm256_castsi256_si128(filt2_reg));
         src_reg_filt3 = _mm_shuffle_epi8(src_reg1, _mm256_castsi256_si128(filt3_reg));
 
-        // multiply 2 adjacent elements with the filter and add the result
+        /*!< multiply 2 adjacent elements with the filter and add the result */
         src_reg_filt2 = _mm_maddubs_epi16(src_reg_filt2, _mm256_castsi256_si128(second_filters));
         src_reg_filt3 = _mm_maddubs_epi16(src_reg_filt3, _mm256_castsi256_si128(third_filters));
 
-        // add and saturate the results together
+        /*!< add and saturate the results together */
         src_reg_filt1_1 = _mm_adds_epi16(src_reg_filt2, src_reg_filt3);
 
-        // shift by 6 bit each 16 bit
+        /*!< shift by 6 bit each 16 bit */
         src_reg_filt1_1 = _mm_adds_epi16(src_reg_filt1_1, _mm256_castsi256_si128(add_filter_reg32));
         src_reg_filt1_1 = _mm_srai_epi16(src_reg_filt1_1, 6);
 
-        // shrink to 8 bit each 16 bits
+        /*!< shrink to 8 bit each 16 bits */
         src_reg_filt1_1 = _mm_packus_epi16(src_reg_filt1_1, _mm_setzero_si128());
 
-        // save 8 bytes
+        /*!< save 8 bytes */
         _mm_storel_epi64((__m128i *)output_ptr, src_reg_filt1_1);
     }
 }
@@ -498,23 +496,23 @@ static void aom_filter_block1d8_h8_avx2(const uint8_t *src_ptr, ptrdiff_t src_pi
     add_filter_reg32 = _mm256_set1_epi16(32);
     filters_reg      = _mm_loadu_si128((const __m128i *)filter);
     filters_reg      = _mm_srai_epi16(filters_reg, 1);
-    // converting the 16 bit (short) to 8 bit (byte) and have the same data
-    // in both lanes of 128 bit register.
+    /*!< converting the 16 bit (short) to 8 bit (byte) and have the same data
+     *   in both lanes of 128 bit register. */
     filters_reg = _mm_packs_epi16(filters_reg, filters_reg);
-    // have the same data in both lanes of a 256 bit register
+    /*!< have the same data in both lanes of a 256 bit register */
     const __m256i filters_reg32 = MM256_BROADCASTSI128_SI256(filters_reg);
 
-    // duplicate only the first 16 bits (first and second byte)
-    // across 256 bit register
+    /*!< duplicate only the first 16 bits (first and second byte)
+     *   across 256 bit register */
     first_filters = _mm256_shuffle_epi8(filters_reg32, _mm256_set1_epi16(0x100u));
-    // duplicate only the second 16 bits (third and forth byte)
-    // across 256 bit register
+    /*!< duplicate only the second 16 bits (third and forth byte)
+     *   across 256 bit register */
     second_filters = _mm256_shuffle_epi8(filters_reg32, _mm256_set1_epi16(0x302u));
-    // duplicate only the third 16 bits (fifth and sixth byte)
-    // across 256 bit register
+    /*!< duplicate only the third 16 bits (fifth and sixth byte)
+     *   across 256 bit register */
     third_filters = _mm256_shuffle_epi8(filters_reg32, _mm256_set1_epi16(0x504u));
-    // duplicate only the forth 16 bits (seventh and eighth byte)
-    // across 256 bit register
+    /*!< duplicate only the forth 16 bits (seventh and eighth byte)
+     *   across 256 bit register */
     forth_filters = _mm256_shuffle_epi8(filters_reg32, _mm256_set1_epi16(0x706u));
 
     filt1_reg = _mm256_load_si256((__m256i const *)filt_global_avx2);
@@ -522,41 +520,41 @@ static void aom_filter_block1d8_h8_avx2(const uint8_t *src_ptr, ptrdiff_t src_pi
     filt3_reg = _mm256_load_si256((__m256i const *)(filt_global_avx2 + 32 * 2));
     filt4_reg = _mm256_load_si256((__m256i const *)(filt_global_avx2 + 32 * 3));
 
-    // multiple the size of the source and destination stride by two
+    /*!< multiple the size of the source and destination stride by two */
     src_stride = src_pixels_per_line << 1;
     dst_stride = output_pitch << 1;
     for (i = output_height; i > 1; i -= 2) {
-        // load the 2 strides of source
+        /*!< load the 2 strides of source */
         src_reg32b1 = xx_loadu2_mi128(src_ptr + src_pixels_per_line, src_ptr);
 
-        // filter the source buffer
+        /*!< filter the source buffer */
         src_reg_filt32b1_1 = _mm256_shuffle_epi8(src_reg32b1, filt1_reg);
         src_reg_Filt32b2   = _mm256_shuffle_epi8(src_reg32b1, filt4_reg);
 
-        // multiply 2 adjacent elements with the filter and add the result
+        /*!< multiply 2 adjacent elements with the filter and add the result */
         src_reg_filt32b1_1 = _mm256_maddubs_epi16(src_reg_filt32b1_1, first_filters);
         src_reg_Filt32b2   = _mm256_maddubs_epi16(src_reg_Filt32b2, forth_filters);
 
-        // add and saturate the results together
+        /*!< add and saturate the results together */
         src_reg_filt32b1_1 = _mm256_adds_epi16(src_reg_filt32b1_1, src_reg_Filt32b2);
 
-        // filter the source buffer
+        /*!< filter the source buffer */
         src_reg_Filt32b3 = _mm256_shuffle_epi8(src_reg32b1, filt2_reg);
         src_reg_Filt32b2 = _mm256_shuffle_epi8(src_reg32b1, filt3_reg);
 
-        // multiply 2 adjacent elements with the filter and add the result
+        /*!< multiply 2 adjacent elements with the filter and add the result */
         src_reg_Filt32b3 = _mm256_maddubs_epi16(src_reg_Filt32b3, second_filters);
         src_reg_Filt32b2 = _mm256_maddubs_epi16(src_reg_Filt32b2, third_filters);
 
         __m256i sum23      = _mm256_adds_epi16(src_reg_Filt32b3, src_reg_Filt32b2);
         src_reg_filt32b1_1 = _mm256_adds_epi16(src_reg_filt32b1_1, sum23);
 
-        // shift by 6 bit each 16 bit
+        /*!< shift by 6 bit each 16 bit */
         src_reg_filt32b1_1 = _mm256_adds_epi16(src_reg_filt32b1_1, add_filter_reg32);
         src_reg_filt32b1_1 = _mm256_srai_epi16(src_reg_filt32b1_1, 6);
 
-        // shrink to 8 bit each 16 bits, the first lane contain the first
-        // convolve result and the second lane contain the second convolve result
+        /*!< shrink to 8 bit each 16 bits, the first lane contain the first
+         *   convolve result and the second lane contain the second convolve result */
         src_reg_filt32b1_1 = _mm256_packus_epi16(src_reg_filt32b1_1, _mm256_setzero_si256());
 
         src_ptr += src_stride;
@@ -565,47 +563,46 @@ static void aom_filter_block1d8_h8_avx2(const uint8_t *src_ptr, ptrdiff_t src_pi
         output_ptr += dst_stride;
     }
 
-    // if the number of strides is odd.
-    // process only 8 bytes
+    /*!< if the number of strides is odd. */
+    /*!< process only 8 bytes */
     if (i > 0) {
         __m128i src_reg1, src_reg_filt1_1;
         __m128i src_reg_filt2, src_reg_filt3;
 
         src_reg1 = _mm_loadu_si128((const __m128i *)(src_ptr));
 
-        // filter the source buffer
+        /*!< filter the source buffer */
         src_reg_filt1_1 = _mm_shuffle_epi8(src_reg1, _mm256_castsi256_si128(filt1_reg));
         src_reg_filt2   = _mm_shuffle_epi8(src_reg1, _mm256_castsi256_si128(filt4_reg));
 
-        // multiply 2 adjacent elements with the filter and add the result
+        /*!< multiply 2 adjacent elements with the filter and add the result */
         src_reg_filt1_1 = _mm_maddubs_epi16(src_reg_filt1_1, _mm256_castsi256_si128(first_filters));
         src_reg_filt2   = _mm_maddubs_epi16(src_reg_filt2, _mm256_castsi256_si128(forth_filters));
 
-        // add and saturate the results together
+        /*!< add and saturate the results together */
         src_reg_filt1_1 = _mm_adds_epi16(src_reg_filt1_1, src_reg_filt2);
 
-        // filter the source buffer
+        /*!< filter the source buffer */
         src_reg_filt3 = _mm_shuffle_epi8(src_reg1, _mm256_castsi256_si128(filt2_reg));
         src_reg_filt2 = _mm_shuffle_epi8(src_reg1, _mm256_castsi256_si128(filt3_reg));
 
-        // multiply 2 adjacent elements with the filter and add the result
+        /*!< multiply 2 adjacent elements with the filter and add the result */
         src_reg_filt3 = _mm_maddubs_epi16(src_reg_filt3, _mm256_castsi256_si128(second_filters));
         src_reg_filt2 = _mm_maddubs_epi16(src_reg_filt2, _mm256_castsi256_si128(third_filters));
 
-        // add and saturate the results together
+        /*!< add and saturate the results together */
         src_reg_filt1_1 =
             _mm_adds_epi16(src_reg_filt1_1, _mm_adds_epi16(src_reg_filt3, src_reg_filt2));
 
-        // shift by 6 bit each 16 bit
+        /*!< shift by 6 bit each 16 bit */
         src_reg_filt1_1 = _mm_adds_epi16(src_reg_filt1_1, _mm256_castsi256_si128(add_filter_reg32));
         src_reg_filt1_1 = _mm_srai_epi16(src_reg_filt1_1, 6);
 
-        // shrink to 8 bit each 16 bits, the first lane contain the first
-        // convolve result and the second lane contain the second convolve
-        // result
+        /*!< shrink to 8 bit each 16 bits, the first lane contain the first
+         *   convolve result and the second lane contain the second convolve result */
         src_reg_filt1_1 = _mm_packus_epi16(src_reg_filt1_1, _mm_setzero_si128());
 
-        // save 8 bytes
+        /*!< save 8 bytes */
         _mm_storel_epi64((__m128i *)output_ptr, src_reg_filt1_1);
     }
 }
@@ -624,62 +621,62 @@ static void aom_filter_block1d16_h4_avx2(const uint8_t *src_ptr, ptrdiff_t src_p
     add_filter_reg32 = _mm256_set1_epi16(32);
     filters_reg      = _mm_loadu_si128((const __m128i *)filter);
     filters_reg      = _mm_srai_epi16(filters_reg, 1);
-    // converting the 16 bit (short) to 8 bit (byte) and have the same data
-    // in both lanes of 128 bit register.
+    /*!< converting the 16 bit (short) to 8 bit (byte) and have the same data
+     *   in both lanes of 128 bit register. */
     filters_reg = _mm_packs_epi16(filters_reg, filters_reg);
-    // have the same data in both lanes of a 256 bit register
+    /*!< have the same data in both lanes of a 256 bit register */
     filters_reg32 = MM256_BROADCASTSI128_SI256(filters_reg);
 
-    // duplicate only the second 16 bits (third and forth byte)
-    // across 256 bit register
+    /*!< duplicate only the second 16 bits (third and forth byte)
+     *   across 256 bit register */
     second_filters = _mm256_shuffle_epi8(filters_reg32, _mm256_set1_epi16(0x302u));
-    // duplicate only the third 16 bits (fifth and sixth byte)
-    // across 256 bit register
+    /*!< duplicate only the third 16 bits (fifth and sixth byte)
+     *   across 256 bit register */
     third_filters = _mm256_shuffle_epi8(filters_reg32, _mm256_set1_epi16(0x504u));
 
     filt2_reg = _mm256_load_si256((__m256i const *)(filt_global_avx2 + 32));
     filt3_reg = _mm256_load_si256((__m256i const *)(filt_global_avx2 + 32 * 2));
 
-    // multiply the size of the source and destination stride by two
+    /*!< multiply the size of the source and destination stride by two */
     src_stride = src_pixels_per_line << 1;
     dst_stride = output_pitch << 1;
     for (i = output_height; i > 1; i -= 2) {
-        // load the 2 strides of source
+        /*!< load the 2 strides of source */
         src_reg32b1 = xx_loadu2_mi128(src_ptr + src_pixels_per_line, src_ptr);
 
-        // filter the source buffer
+        /*!< filter the source buffer */
         src_reg_Filt32b3 = _mm256_shuffle_epi8(src_reg32b1, filt2_reg);
         src_reg_Filt32b2 = _mm256_shuffle_epi8(src_reg32b1, filt3_reg);
 
-        // multiply 2 adjacent elements with the filter and add the result
+        /*!< multiply 2 adjacent elements with the filter and add the result */
         src_reg_Filt32b3 = _mm256_maddubs_epi16(src_reg_Filt32b3, second_filters);
         src_reg_Filt32b2 = _mm256_maddubs_epi16(src_reg_Filt32b2, third_filters);
 
         src_reg_filt32b1_1 = _mm256_adds_epi16(src_reg_Filt32b3, src_reg_Filt32b2);
 
-        // reading 2 strides of the next 16 bytes
-        // (part of it was being read by earlier read)
+        /*!< reading 2 strides of the next 16 bytes
+         *   (part of it was being read by earlier read) */
         src_reg_32b2 = xx_loadu2_mi128(src_ptr + src_pixels_per_line + 8, src_ptr + 8);
 
-        // filter the source buffer
+        /*!< filter the source buffer */
         src_reg_Filt32b3 = _mm256_shuffle_epi8(src_reg_32b2, filt2_reg);
         src_reg_Filt32b2 = _mm256_shuffle_epi8(src_reg_32b2, filt3_reg);
 
-        // multiply 2 adjacent elements with the filter and add the result
+        /*!< multiply 2 adjacent elements with the filter and add the result */
         src_reg_Filt32b3 = _mm256_maddubs_epi16(src_reg_Filt32b3, second_filters);
         src_reg_Filt32b2 = _mm256_maddubs_epi16(src_reg_Filt32b2, third_filters);
 
-        // add and saturate the results together
+        /*!< add and saturate the results together */
         src_reg_Filt32b2_1 = _mm256_adds_epi16(src_reg_Filt32b3, src_reg_Filt32b2);
 
-        // shift by 6 bit each 16 bit
+        /*!< shift by 6 bit each 16 bit */
         src_reg_filt32b1_1 = _mm256_adds_epi16(src_reg_filt32b1_1, add_filter_reg32);
         src_reg_Filt32b2_1 = _mm256_adds_epi16(src_reg_Filt32b2_1, add_filter_reg32);
         src_reg_filt32b1_1 = _mm256_srai_epi16(src_reg_filt32b1_1, 6);
         src_reg_Filt32b2_1 = _mm256_srai_epi16(src_reg_Filt32b2_1, 6);
 
-        // shrink to 8 bit each 16 bits, the first lane contain the first
-        // convolve result and the second lane contain the second convolve result
+        /*!< shrink to 8 bit each 16 bits, the first lane contain the first
+         *   convolve result and the second lane contain the second convolve result */
         src_reg_filt32b1_1 = _mm256_packus_epi16(src_reg_filt32b1_1, src_reg_Filt32b2_1);
 
         src_ptr += src_stride;
@@ -688,8 +685,8 @@ static void aom_filter_block1d16_h4_avx2(const uint8_t *src_ptr, ptrdiff_t src_p
         output_ptr += dst_stride;
     }
 
-    // if the number of strides is odd.
-    // process only 16 bytes
+    /*!< if the number of strides is odd. */
+    /*!< process only 16 bytes */
     if (i > 0) {
         __m256i src_reg1, src_reg12;
         __m256i src_reg_filt2, src_reg_filt3, src_reg_filt1_1;
@@ -697,28 +694,27 @@ static void aom_filter_block1d16_h4_avx2(const uint8_t *src_ptr, ptrdiff_t src_p
         src_reg1  = _mm256_loadu_si256((const __m256i *)(src_ptr));
         src_reg12 = _mm256_permute4x64_epi64(src_reg1, 0x94);
 
-        // filter the source buffer
+        /*!< filter the source buffer */
         src_reg_filt2 = _mm256_shuffle_epi8(src_reg12, filt2_reg);
         src_reg_filt3 = _mm256_shuffle_epi8(src_reg12, filt3_reg);
 
-        // multiply 2 adjacent elements with the filter and add the result
+        /*!< multiply 2 adjacent elements with the filter and add the result */
         src_reg_filt2 = _mm256_maddubs_epi16(src_reg_filt2, second_filters);
         src_reg_filt3 = _mm256_maddubs_epi16(src_reg_filt3, third_filters);
 
-        // add and saturate the results together
+        /*!< add and saturate the results together */
         src_reg_filt1_1 = _mm256_adds_epi16(src_reg_filt2, src_reg_filt3);
 
-        // shift by 6 bit each 16 bit
+        /*!< shift by 6 bit each 16 bit */
         src_reg_filt1_1 = _mm256_adds_epi16(src_reg_filt1_1, add_filter_reg32);
         src_reg_filt1_1 = _mm256_srai_epi16(src_reg_filt1_1, 6);
 
-        // shrink to 8 bit each 16 bits, the first lane contain the first
-        // convolve result and the second lane contain the second convolve
-        // result
+        /*!< shrink to 8 bit each 16 bits, the first lane contain the first
+         *   convolve result and the second lane contain the second convolve result */
         src_reg_filt1_1 = _mm256_packus_epi16(src_reg_filt1_1, src_reg_filt1_1);
         src_reg_filt1_1 = _mm256_permute4x64_epi64(src_reg_filt1_1, 0x8);
 
-        // save 16 bytes
+        /*!< save 16 bytes */
         _mm_store_si128((__m128i *)output_ptr, _mm256_castsi256_si128(src_reg_filt1_1));
     }
 }
@@ -737,23 +733,23 @@ static void aom_filter_block1d16_h8_avx2(const uint8_t *src_ptr, ptrdiff_t src_p
     add_filter_reg32 = _mm256_set1_epi16(32);
     filters_reg      = _mm_loadu_si128((const __m128i *)filter);
     filters_reg      = _mm_srai_epi16(filters_reg, 1);
-    // converting the 16 bit (short) to 8 bit (byte) and have the same data
-    // in both lanes of 128 bit register.
+    /*!< converting the 16 bit (short) to 8 bit (byte) and have the same data
+     *   in both lanes of 128 bit register. */
     filters_reg = _mm_packs_epi16(filters_reg, filters_reg);
-    // have the same data in both lanes of a 256 bit register
+    /*!< have the same data in both lanes of a 256 bit register */
     filters_reg32 = MM256_BROADCASTSI128_SI256(filters_reg);
 
-    // duplicate only the first 16 bits (first and second byte)
-    // across 256 bit register
+    /*!< duplicate only the first 16 bits (first and second byte)
+     *   across 256 bit register */
     first_filters = _mm256_shuffle_epi8(filters_reg32, _mm256_set1_epi16(0x100u));
-    // duplicate only the second 16 bits (third and forth byte)
-    // across 256 bit register
+    /*!< duplicate only the second 16 bits (third and forth byte)
+     *   across 256 bit register */
     second_filters = _mm256_shuffle_epi8(filters_reg32, _mm256_set1_epi16(0x302u));
-    // duplicate only the third 16 bits (fifth and sixth byte)
-    // across 256 bit register
+    /*!< duplicate only the third 16 bits (fifth and sixth byte)
+     *   across 256 bit register */
     third_filters = _mm256_shuffle_epi8(filters_reg32, _mm256_set1_epi16(0x504u));
-    // duplicate only the forth 16 bits (seventh and eighth byte)
-    // across 256 bit register
+    /*!< duplicate only the forth 16 bits (seventh and eighth byte)
+     *   across 256 bit register */
     forth_filters = _mm256_shuffle_epi8(filters_reg32, _mm256_set1_epi16(0x706u));
 
     filt1_reg = _mm256_load_si256((__m256i const *)filt_global_avx2);
@@ -761,70 +757,70 @@ static void aom_filter_block1d16_h8_avx2(const uint8_t *src_ptr, ptrdiff_t src_p
     filt3_reg = _mm256_load_si256((__m256i const *)(filt_global_avx2 + 32 * 2));
     filt4_reg = _mm256_load_si256((__m256i const *)(filt_global_avx2 + 32 * 3));
 
-    // multiple the size of the source and destination stride by two
+    /*!< multiple the size of the source and destination stride by two */
     src_stride = src_pixels_per_line << 1;
     dst_stride = output_pitch << 1;
     for (i = output_height; i > 1; i -= 2) {
-        // load the 2 strides of source
+        /*!< load the 2 strides of source */
         src_reg32b1 = xx_loadu2_mi128(src_ptr + src_pixels_per_line, src_ptr);
 
-        // filter the source buffer
+        /*!< filter the source buffer */
         src_reg_filt32b1_1 = _mm256_shuffle_epi8(src_reg32b1, filt1_reg);
         src_reg_Filt32b2   = _mm256_shuffle_epi8(src_reg32b1, filt4_reg);
 
-        // multiply 2 adjacent elements with the filter and add the result
+        /*!< multiply 2 adjacent elements with the filter and add the result */
         src_reg_filt32b1_1 = _mm256_maddubs_epi16(src_reg_filt32b1_1, first_filters);
         src_reg_Filt32b2   = _mm256_maddubs_epi16(src_reg_Filt32b2, forth_filters);
 
-        // add and saturate the results together
+        /*!< add and saturate the results together */
         src_reg_filt32b1_1 = _mm256_adds_epi16(src_reg_filt32b1_1, src_reg_Filt32b2);
 
-        // filter the source buffer
+        /*!< filter the source buffer */
         src_reg_Filt32b3 = _mm256_shuffle_epi8(src_reg32b1, filt2_reg);
         src_reg_Filt32b2 = _mm256_shuffle_epi8(src_reg32b1, filt3_reg);
 
-        // multiply 2 adjacent elements with the filter and add the result
+        /*!< multiply 2 adjacent elements with the filter and add the result */
         src_reg_Filt32b3 = _mm256_maddubs_epi16(src_reg_Filt32b3, second_filters);
         src_reg_Filt32b2 = _mm256_maddubs_epi16(src_reg_Filt32b2, third_filters);
 
         __m256i sum23      = _mm256_adds_epi16(src_reg_Filt32b3, src_reg_Filt32b2);
         src_reg_filt32b1_1 = _mm256_adds_epi16(src_reg_filt32b1_1, sum23);
 
-        // reading 2 strides of the next 16 bytes
-        // (part of it was being read by earlier read)
+        /*!< reading 2 strides of the next 16 bytes
+         *   (part of it was being read by earlier read) */
         src_reg_32b2 = xx_loadu2_mi128(src_ptr + src_pixels_per_line + 8, src_ptr + 8);
 
-        // filter the source buffer
+        /*!< filter the source buffer */
         src_reg_Filt32b2_1 = _mm256_shuffle_epi8(src_reg_32b2, filt1_reg);
         src_reg_Filt32b2   = _mm256_shuffle_epi8(src_reg_32b2, filt4_reg);
 
-        // multiply 2 adjacent elements with the filter and add the result
+        /*!< multiply 2 adjacent elements with the filter and add the result */
         src_reg_Filt32b2_1 = _mm256_maddubs_epi16(src_reg_Filt32b2_1, first_filters);
         src_reg_Filt32b2   = _mm256_maddubs_epi16(src_reg_Filt32b2, forth_filters);
 
-        // add and saturate the results together
+        /*!< add and saturate the results together */
         src_reg_Filt32b2_1 = _mm256_adds_epi16(src_reg_Filt32b2_1, src_reg_Filt32b2);
 
-        // filter the source buffer
+        /*!< filter the source buffer */
         src_reg_Filt32b3 = _mm256_shuffle_epi8(src_reg_32b2, filt2_reg);
         src_reg_Filt32b2 = _mm256_shuffle_epi8(src_reg_32b2, filt3_reg);
 
-        // multiply 2 adjacent elements with the filter and add the result
+        /*!< multiply 2 adjacent elements with the filter and add the result */
         src_reg_Filt32b3 = _mm256_maddubs_epi16(src_reg_Filt32b3, second_filters);
         src_reg_Filt32b2 = _mm256_maddubs_epi16(src_reg_Filt32b2, third_filters);
 
-        // add and saturate the results together
+        /*!< add and saturate the results together */
         src_reg_Filt32b2_1 = _mm256_adds_epi16(
             src_reg_Filt32b2_1, _mm256_adds_epi16(src_reg_Filt32b3, src_reg_Filt32b2));
 
-        // shift by 6 bit each 16 bit
+        /*!< shift by 6 bit each 16 bit */
         src_reg_filt32b1_1 = _mm256_adds_epi16(src_reg_filt32b1_1, add_filter_reg32);
         src_reg_Filt32b2_1 = _mm256_adds_epi16(src_reg_Filt32b2_1, add_filter_reg32);
         src_reg_filt32b1_1 = _mm256_srai_epi16(src_reg_filt32b1_1, 6);
         src_reg_Filt32b2_1 = _mm256_srai_epi16(src_reg_Filt32b2_1, 6);
 
-        // shrink to 8 bit each 16 bits, the first lane contain the first
-        // convolve result and the second lane contain the second convolve result
+        /*!< shrink to 8 bit each 16 bits, the first lane contain the first
+         *   convolve result and the second lane contain the second convolve result */
         src_reg_filt32b1_1 = _mm256_packus_epi16(src_reg_filt32b1_1, src_reg_Filt32b2_1);
 
         src_ptr += src_stride;
@@ -833,77 +829,76 @@ static void aom_filter_block1d16_h8_avx2(const uint8_t *src_ptr, ptrdiff_t src_p
         output_ptr += dst_stride;
     }
 
-    // if the number of strides is odd.
-    // process only 16 bytes
+    /*!< if the number of strides is odd. */
+    /*!< process only 16 bytes */
     if (i > 0) {
         __m128i src_reg1, src_reg2, src_reg_filt1_1, src_reg_filt2_1;
         __m128i src_reg_filt2, src_reg_filt3;
 
         src_reg1 = _mm_loadu_si128((const __m128i *)(src_ptr));
 
-        // filter the source buffer
+        /*!< filter the source buffer */
         src_reg_filt1_1 = _mm_shuffle_epi8(src_reg1, _mm256_castsi256_si128(filt1_reg));
         src_reg_filt2   = _mm_shuffle_epi8(src_reg1, _mm256_castsi256_si128(filt4_reg));
 
-        // multiply 2 adjacent elements with the filter and add the result
+        /*!< multiply 2 adjacent elements with the filter and add the result */
         src_reg_filt1_1 = _mm_maddubs_epi16(src_reg_filt1_1, _mm256_castsi256_si128(first_filters));
         src_reg_filt2   = _mm_maddubs_epi16(src_reg_filt2, _mm256_castsi256_si128(forth_filters));
 
-        // add and saturate the results together
+        /*!< add and saturate the results together */
         src_reg_filt1_1 = _mm_adds_epi16(src_reg_filt1_1, src_reg_filt2);
 
-        // filter the source buffer
+        /*!< filter the source buffer */
         src_reg_filt3 = _mm_shuffle_epi8(src_reg1, _mm256_castsi256_si128(filt2_reg));
         src_reg_filt2 = _mm_shuffle_epi8(src_reg1, _mm256_castsi256_si128(filt3_reg));
 
-        // multiply 2 adjacent elements with the filter and add the result
+        /*!< multiply 2 adjacent elements with the filter and add the result */
         src_reg_filt3 = _mm_maddubs_epi16(src_reg_filt3, _mm256_castsi256_si128(second_filters));
         src_reg_filt2 = _mm_maddubs_epi16(src_reg_filt2, _mm256_castsi256_si128(third_filters));
 
-        // add and saturate the results together
+        /*!< add and saturate the results together */
         src_reg_filt1_1 =
             _mm_adds_epi16(src_reg_filt1_1, _mm_adds_epi16(src_reg_filt3, src_reg_filt2));
 
-        // reading the next 16 bytes
-        // (part of it was being read by earlier read)
+        /*!< reading the next 16 bytes
+         *   (part of it was being read by earlier read) */
         src_reg2 = _mm_loadu_si128((const __m128i *)(src_ptr + 8));
 
-        // filter the source buffer
+        /*!< filter the source buffer */
         src_reg_filt2_1 = _mm_shuffle_epi8(src_reg2, _mm256_castsi256_si128(filt1_reg));
         src_reg_filt2   = _mm_shuffle_epi8(src_reg2, _mm256_castsi256_si128(filt4_reg));
 
-        // multiply 2 adjacent elements with the filter and add the result
+        /*!< multiply 2 adjacent elements with the filter and add the result */
         src_reg_filt2_1 = _mm_maddubs_epi16(src_reg_filt2_1, _mm256_castsi256_si128(first_filters));
         src_reg_filt2   = _mm_maddubs_epi16(src_reg_filt2, _mm256_castsi256_si128(forth_filters));
 
-        // add and saturate the results together
+        /*!< add and saturate the results together */
         src_reg_filt2_1 = _mm_adds_epi16(src_reg_filt2_1, src_reg_filt2);
 
-        // filter the source buffer
+        /*!< filter the source buffer */
         src_reg_filt3 = _mm_shuffle_epi8(src_reg2, _mm256_castsi256_si128(filt2_reg));
         src_reg_filt2 = _mm_shuffle_epi8(src_reg2, _mm256_castsi256_si128(filt3_reg));
 
-        // multiply 2 adjacent elements with the filter and add the result
+        /*!< multiply 2 adjacent elements with the filter and add the result */
         src_reg_filt3 = _mm_maddubs_epi16(src_reg_filt3, _mm256_castsi256_si128(second_filters));
         src_reg_filt2 = _mm_maddubs_epi16(src_reg_filt2, _mm256_castsi256_si128(third_filters));
 
-        // add and saturate the results together
+        /*!< add and saturate the results together */
         src_reg_filt2_1 =
             _mm_adds_epi16(src_reg_filt2_1, _mm_adds_epi16(src_reg_filt3, src_reg_filt2));
 
-        // shift by 6 bit each 16 bit
+        /*!< shift by 6 bit each 16 bit */
         src_reg_filt1_1 = _mm_adds_epi16(src_reg_filt1_1, _mm256_castsi256_si128(add_filter_reg32));
         src_reg_filt1_1 = _mm_srai_epi16(src_reg_filt1_1, 6);
 
         src_reg_filt2_1 = _mm_adds_epi16(src_reg_filt2_1, _mm256_castsi256_si128(add_filter_reg32));
         src_reg_filt2_1 = _mm_srai_epi16(src_reg_filt2_1, 6);
 
-        // shrink to 8 bit each 16 bits, the first lane contain the first
-        // convolve result and the second lane contain the second convolve
-        // result
+        /*!< shrink to 8 bit each 16 bits, the first lane contain the first
+         *   convolve result and the second lane contain the second convolve result */
         src_reg_filt1_1 = _mm_packus_epi16(src_reg_filt1_1, src_reg_filt2_1);
 
-        // save 16 bytes
+        /*!< save 16 bytes */
         _mm_store_si128((__m128i *)output_ptr, src_reg_filt1_1);
     }
 }
@@ -923,21 +918,21 @@ static void aom_filter_block1d8_v4_avx2(const uint8_t *src_ptr, ptrdiff_t src_pi
 
     add_filter_reg32 = _mm256_set1_epi16(32);
     filters_reg      = _mm_loadu_si128((const __m128i *)filter);
-    // converting the 16 bit (short) to  8 bit (byte) and have the
-    // same data in both lanes of 128 bit register.
+    /*!< converting the 16 bit (short) to  8 bit (byte) and have the
+     *   same data in both lanes of 128 bit register. */
     filters_reg = _mm_srai_epi16(filters_reg, 1);
     filters_reg = _mm_packs_epi16(filters_reg, filters_reg);
-    // have the same data in both lanes of a 256 bit register
+    /*!< have the same data in both lanes of a 256 bit register */
     filters_reg32 = MM256_BROADCASTSI128_SI256(filters_reg);
 
-    // duplicate only the second 16 bits (third and forth byte)
-    // across 256 bit register
+    /*!< duplicate only the second 16 bits (third and forth byte)
+     *   across 256 bit register */
     second_filters = _mm256_shuffle_epi8(filters_reg32, _mm256_set1_epi16(0x302u));
-    // duplicate only the third 16 bits (fifth and sixth byte)
-    // across 256 bit register
+    /*!< duplicate only the third 16 bits (fifth and sixth byte)
+     *   across 256 bit register */
     third_filters = _mm256_shuffle_epi8(filters_reg32, _mm256_set1_epi16(0x504u));
 
-    // multiple the size of the source and destination stride by two
+    /*!< multiple the size of the source and destination stride by two */
     src_stride = src_pitch << 1;
     dst_stride = out_pitch << 1;
 
@@ -945,14 +940,14 @@ static void aom_filter_block1d8_v4_avx2(const uint8_t *src_ptr, ptrdiff_t src_pi
     src_reg_4x =
         _mm256_castsi128_si256(_mm_loadl_epi64((const __m128i *)(src_ptr + src_pitch * 4)));
 
-    // have consecutive loads on the same 256 register
+    /*!< have consecutive loads on the same 256 register */
     src_reg_34 = _mm256_permute2x128_si256(src_reg23, src_reg_4x, 0x21);
 
     src_reg_23_34_lo = _mm256_unpacklo_epi8(src_reg23, src_reg_34);
 
     for (i = output_height; i > 1; i -= 2) {
-        // load the last 2 loads of 16 bytes and have every two
-        // consecutive loads in the same 256 bit register
+        /*!< load the last 2 loads of 16 bytes and have every two
+         *   consecutive loads in the same 256 bit register */
         src_reg_5x =
             _mm256_castsi128_si256(_mm_loadl_epi64((const __m128i *)(src_ptr + src_pitch * 5)));
         src_reg_45 = _mm256_inserti128_si256(src_reg_4x, _mm256_castsi256_si128(src_reg_5x), 1);
@@ -961,23 +956,23 @@ static void aom_filter_block1d8_v4_avx2(const uint8_t *src_ptr, ptrdiff_t src_pi
             _mm256_castsi128_si256(_mm_loadl_epi64((const __m128i *)(src_ptr + src_pitch * 6)));
         src_reg_56 = _mm256_inserti128_si256(src_reg_5x, _mm256_castsi256_si128(src_reg_6x), 1);
 
-        // merge every two consecutive registers
+        /*!< merge every two consecutive registers */
         src_reg_45_56_lo = _mm256_unpacklo_epi8(src_reg_45, src_reg_56);
 
-        // multiply 2 adjacent elements with the filter and add the result
+        /*!< multiply 2 adjacent elements with the filter and add the result */
         res_reg23_34_lo = _mm256_maddubs_epi16(src_reg_23_34_lo, second_filters);
         res_reg45_56_lo = _mm256_maddubs_epi16(src_reg_45_56_lo, third_filters);
 
-        // add and saturate the results together
+        /*!< add and saturate the results together */
         res_reg_lo = _mm256_adds_epi16(res_reg23_34_lo, res_reg45_56_lo);
 
-        // shift by 6 bit each 16 bit
+        /*!< shift by 6 bit each 16 bit */
         res_reg_lo = _mm256_adds_epi16(res_reg_lo, add_filter_reg32);
         res_reg_lo = _mm256_srai_epi16(res_reg_lo, 6);
 
-        // shrink to 8 bit each 16 bits, the first lane contain the first
-        // convolve result and the second lane contain the second convolve
-        // result
+        /*!< shrink to 8 bit each 16 bits, the first lane contain the first
+         *   convolve result and the second lane contain the second convolve
+         *   result */
         res_reg = _mm256_packus_epi16(res_reg_lo, res_reg_lo);
 
         src_ptr += src_stride;
@@ -986,7 +981,7 @@ static void aom_filter_block1d8_v4_avx2(const uint8_t *src_ptr, ptrdiff_t src_pi
 
         output_ptr += dst_stride;
 
-        // save part of the registers for next strides
+        /*!< save part of the registers for next strides */
         src_reg_23_34_lo = src_reg_45_56_lo;
         src_reg_4x       = src_reg_6x;
     }
@@ -1006,49 +1001,49 @@ static void aom_filter_block1d8_v8_avx2(const uint8_t *src_ptr, ptrdiff_t src_pi
 
     add_filter_reg32 = _mm256_set1_epi16(32);
     filters_reg      = _mm_loadu_si128((const __m128i *)filter);
-    // converting the 16 bit (short) to  8 bit (byte) and have the
-    // same data in both lanes of 128 bit register.
+    /*!< converting the 16 bit (short) to  8 bit (byte) and have the
+     *   same data in both lanes of 128 bit register. */
     filters_reg = _mm_srai_epi16(filters_reg, 1);
     filters_reg = _mm_packs_epi16(filters_reg, filters_reg);
-    // have the same data in both lanes of a 256 bit register
+    /*!< have the same data in both lanes of a 256 bit register */
     filters_reg32 = MM256_BROADCASTSI128_SI256(filters_reg);
 
-    // duplicate only the first 16 bits (first and second byte)
-    // across 256 bit register
+    /*!< duplicate only the first 16 bits (first and second byte)
+     *   across 256 bit register */
     first_filters = _mm256_shuffle_epi8(filters_reg32, _mm256_set1_epi16(0x100u));
-    // duplicate only the second 16 bits (third and forth byte)
-    // across 256 bit register
+    /*!< duplicate only the second 16 bits (third and forth byte)
+     *   across 256 bit register */
     second_filters = _mm256_shuffle_epi8(filters_reg32, _mm256_set1_epi16(0x302u));
-    // duplicate only the third 16 bits (fifth and sixth byte)
-    // across 256 bit register
+    /*!< duplicate only the third 16 bits (fifth and sixth byte)
+     *   across 256 bit register */
     third_filters = _mm256_shuffle_epi8(filters_reg32, _mm256_set1_epi16(0x504u));
-    // duplicate only the forth 16 bits (seventh and eighth byte)
-    // across 256 bit register
+    /*!< duplicate only the forth 16 bits (seventh and eighth byte)
+     *   across 256 bit register */
     forth_filters = _mm256_shuffle_epi8(filters_reg32, _mm256_set1_epi16(0x706u));
 
-    // multiple the size of the source and destination stride by two
+    /*!< multiple the size of the source and destination stride by two */
     src_stride = src_pitch << 1;
     dst_stride = out_pitch << 1;
 
-    // load 16 bytes 7 times in stride of src_pitch
+    /*!< load 16 bytes 7 times in stride of src_pitch */
     src_reg32b1  = xx_loadu2_epi64(src_ptr + src_pitch, src_ptr);
     src_reg_32b3 = xx_loadu2_epi64(src_ptr + src_pitch * 3, src_ptr + src_pitch * 2);
     src_reg_32b5 = xx_loadu2_epi64(src_ptr + src_pitch * 5, src_ptr + src_pitch * 4);
     src_reg_32b7 =
         _mm256_castsi128_si256(_mm_loadl_epi64((const __m128i *)(src_ptr + src_pitch * 6)));
 
-    // have each consecutive loads on the same 256 register
+    /*!< have each consecutive loads on the same 256 register */
     src_reg_32b2 = _mm256_permute2x128_si256(src_reg32b1, src_reg_32b3, 0x21);
     src_reg_32b4 = _mm256_permute2x128_si256(src_reg_32b3, src_reg_32b5, 0x21);
     src_reg_32b6 = _mm256_permute2x128_si256(src_reg_32b5, src_reg_32b7, 0x21);
-    // merge every two consecutive registers except the last one
+    /*!< merge every two consecutive registers except the last one */
     src_reg_32b10 = _mm256_unpacklo_epi8(src_reg32b1, src_reg_32b2);
     src_reg_32b11 = _mm256_unpacklo_epi8(src_reg_32b3, src_reg_32b4);
     src_reg_32b2  = _mm256_unpacklo_epi8(src_reg_32b5, src_reg_32b6);
 
     for (i = output_height; i > 1; i -= 2) {
-        // load the last 2 loads of 16 bytes and have every two
-        // consecutive loads in the same 256 bit register
+        /*!< load the last 2 loads of 16 bytes and have every two
+         *   consecutive loads in the same 256 bit register */
         src_reg_32b8 =
             _mm256_castsi128_si256(_mm_loadl_epi64((const __m128i *)(src_ptr + src_pitch * 7)));
         src_reg_32b7 =
@@ -1058,32 +1053,31 @@ static void aom_filter_block1d8_v8_avx2(const uint8_t *src_ptr, ptrdiff_t src_pi
         src_reg_32b8 =
             _mm256_inserti128_si256(src_reg_32b8, _mm256_castsi256_si128(src_reg_32b9), 1);
 
-        // merge every two consecutive registers
-        // save
+        /*!< merge every two consecutive registers */
+        /*!< save */
         src_reg_32b4 = _mm256_unpacklo_epi8(src_reg_32b7, src_reg_32b8);
 
-        // multiply 2 adjacent elements with the filter and add the result
+        /*!< multiply 2 adjacent elements with the filter and add the result */
         src_reg_32b10 = _mm256_maddubs_epi16(src_reg_32b10, first_filters);
         src_reg_32b6  = _mm256_maddubs_epi16(src_reg_32b4, forth_filters);
 
-        // add and saturate the results together
+        /*!< add and saturate the results together */
         src_reg_32b10 = _mm256_adds_epi16(src_reg_32b10, src_reg_32b6);
 
-        // multiply 2 adjacent elements with the filter and add the result
+        /*!< multiply 2 adjacent elements with the filter and add the result */
         src_reg_32b8  = _mm256_maddubs_epi16(src_reg_32b11, second_filters);
         src_reg_32b12 = _mm256_maddubs_epi16(src_reg_32b2, third_filters);
 
-        // add and saturate the results together
+        /*!< add and saturate the results together */
         src_reg_32b10 =
             _mm256_adds_epi16(src_reg_32b10, _mm256_adds_epi16(src_reg_32b8, src_reg_32b12));
 
-        // shift by 6 bit each 16 bit
+        /*!< shift by 6 bit each 16 bit */
         src_reg_32b10 = _mm256_adds_epi16(src_reg_32b10, add_filter_reg32);
         src_reg_32b10 = _mm256_srai_epi16(src_reg_32b10, 6);
 
-        // shrink to 8 bit each 16 bits, the first lane contain the first
-        // convolve result and the second lane contain the second convolve
-        // result
+        /*!< shrink to 8 bit each 16 bits, the first lane contain the first
+         *   convolve result and the second lane contain the second convolve result */
         src_reg32b1 = _mm256_packus_epi16(src_reg_32b10, _mm256_setzero_si256());
 
         src_ptr += src_stride;
@@ -1092,7 +1086,7 @@ static void aom_filter_block1d8_v8_avx2(const uint8_t *src_ptr, ptrdiff_t src_pi
 
         output_ptr += dst_stride;
 
-        // save part of the registers for next strides
+        /*!< save part of the registers for next strides */
         src_reg_32b10 = src_reg_32b11;
         src_reg_32b11 = src_reg_32b2;
         src_reg_32b2  = src_reg_32b4;
@@ -1100,40 +1094,40 @@ static void aom_filter_block1d8_v8_avx2(const uint8_t *src_ptr, ptrdiff_t src_pi
     }
     if (i > 0) {
         __m128i src_reg_filt1, src_reg_filt4, src_reg_filt6, src_reg_filt8;
-        // load the last 16 bytes
+        /*!< load the last 16 bytes */
         src_reg_filt8 = _mm_loadl_epi64((const __m128i *)(src_ptr + src_pitch * 7));
 
-        // merge the last 2 results together
+        /*!< merge the last 2 results together */
         src_reg_filt4 = _mm_unpacklo_epi8(_mm256_castsi256_si128(src_reg_32b7), src_reg_filt8);
 
-        // multiply 2 adjacent elements with the filter and add the result
+        /*!< multiply 2 adjacent elements with the filter and add the result */
         src_reg_filt1 = _mm_maddubs_epi16(_mm256_castsi256_si128(src_reg_32b10),
                                           _mm256_castsi256_si128(first_filters));
         src_reg_filt4 = _mm_maddubs_epi16(src_reg_filt4, _mm256_castsi256_si128(forth_filters));
 
-        // add and saturate the results together
+        /*!< add and saturate the results together */
         src_reg_filt1 = _mm_adds_epi16(src_reg_filt1, src_reg_filt4);
 
-        // multiply 2 adjacent elements with the filter and add the result
+        /*!< multiply 2 adjacent elements with the filter and add the result */
         src_reg_filt4 = _mm_maddubs_epi16(_mm256_castsi256_si128(src_reg_32b11),
                                           _mm256_castsi256_si128(second_filters));
 
-        // multiply 2 adjacent elements with the filter and add the result
+        /*!< multiply 2 adjacent elements with the filter and add the result */
         src_reg_filt6 = _mm_maddubs_epi16(_mm256_castsi256_si128(src_reg_32b2),
                                           _mm256_castsi256_si128(third_filters));
 
-        // add and saturate the results together
+        /*!< add and saturate the results together */
         src_reg_filt1 = _mm_adds_epi16(src_reg_filt1, _mm_adds_epi16(src_reg_filt4, src_reg_filt6));
 
-        // shift by 6 bit each 16 bit
+        /*!< shift by 6 bit each 16 bit */
         src_reg_filt1 = _mm_adds_epi16(src_reg_filt1, _mm256_castsi256_si128(add_filter_reg32));
         src_reg_filt1 = _mm_srai_epi16(src_reg_filt1, 6);
 
-        // shrink to 8 bit each 16 bits, the first lane contain the first
-        // convolve result and the second lane contain the second convolve result
+        /*!< shrink to 8 bit each 16 bits, the first lane contain the first
+         *   convolve result and the second lane contain the second convolve result */
         src_reg_filt1 = _mm_packus_epi16(src_reg_filt1, _mm_setzero_si128());
 
-        // save 8 bytes
+        /*!< save 8 bytes */
         _mm_storel_epi64((__m128i *)output_ptr, src_reg_filt1);
     }
 }
@@ -1153,21 +1147,21 @@ static void aom_filter_block1d16_v4_avx2(const uint8_t *src_ptr, ptrdiff_t src_p
 
     add_filter_reg32 = _mm256_set1_epi16(32);
     filters_reg      = _mm_loadu_si128((const __m128i *)filter);
-    // converting the 16 bit (short) to  8 bit (byte) and have the
-    // same data in both lanes of 128 bit register.
+    /*!< converting the 16 bit (short) to  8 bit (byte) and have the
+     *   same data in both lanes of 128 bit register. */
     filters_reg = _mm_srai_epi16(filters_reg, 1);
     filters_reg = _mm_packs_epi16(filters_reg, filters_reg);
-    // have the same data in both lanes of a 256 bit register
+    /*!< have the same data in both lanes of a 256 bit register */
     filters_reg32 = MM256_BROADCASTSI128_SI256(filters_reg);
 
-    // duplicate only the second 16 bits (third and forth byte)
-    // across 256 bit register
+    /*!< duplicate only the second 16 bits (third and forth byte)
+     *   across 256 bit register */
     second_filters = _mm256_shuffle_epi8(filters_reg32, _mm256_set1_epi16(0x302u));
-    // duplicate only the third 16 bits (fifth and sixth byte)
-    // across 256 bit register
+    /*!< duplicate only the third 16 bits (fifth and sixth byte)
+     *   across 256 bit register */
     third_filters = _mm256_shuffle_epi8(filters_reg32, _mm256_set1_epi16(0x504u));
 
-    // multiple the size of the source and destination stride by two
+    /*!< multiple the size of the source and destination stride by two */
     src_stride = src_pitch << 1;
     dst_stride = out_pitch << 1;
 
@@ -1175,15 +1169,15 @@ static void aom_filter_block1d16_v4_avx2(const uint8_t *src_ptr, ptrdiff_t src_p
     src_reg_4x =
         _mm256_castsi128_si256(_mm_loadu_si128((const __m128i *)(src_ptr + src_pitch * 4)));
 
-    // have consecutive loads on the same 256 register
+    /*!< have consecutive loads on the same 256 register */
     src_reg_34 = _mm256_permute2x128_si256(src_reg23, src_reg_4x, 0x21);
 
     src_reg_23_34_lo = _mm256_unpacklo_epi8(src_reg23, src_reg_34);
     src_reg_23_34_hi = _mm256_unpackhi_epi8(src_reg23, src_reg_34);
 
     for (i = output_height; i > 1; i -= 2) {
-        // load the last 2 loads of 16 bytes and have every two
-        // consecutive loads in the same 256 bit register
+        /*!< load the last 2 loads of 16 bytes and have every two
+         *   consecutive loads in the same 256 bit register */
         src_reg_5x =
             _mm256_castsi128_si256(_mm_loadu_si128((const __m128i *)(src_ptr + src_pitch * 5)));
         src_reg_45 = _mm256_inserti128_si256(src_reg_4x, _mm256_castsi256_si128(src_reg_5x), 1);
@@ -1192,33 +1186,32 @@ static void aom_filter_block1d16_v4_avx2(const uint8_t *src_ptr, ptrdiff_t src_p
             _mm256_castsi128_si256(_mm_loadu_si128((const __m128i *)(src_ptr + src_pitch * 6)));
         src_reg_56 = _mm256_inserti128_si256(src_reg_5x, _mm256_castsi256_si128(src_reg_6x), 1);
 
-        // merge every two consecutive registers
+        /*!< merge every two consecutive registers */
         src_reg_45_56_lo = _mm256_unpacklo_epi8(src_reg_45, src_reg_56);
         src_reg_45_56_hi = _mm256_unpackhi_epi8(src_reg_45, src_reg_56);
 
-        // multiply 2 adjacent elements with the filter and add the result
+        /*!< multiply 2 adjacent elements with the filter and add the result */
         res_reg23_34_lo = _mm256_maddubs_epi16(src_reg_23_34_lo, second_filters);
         res_reg45_56_lo = _mm256_maddubs_epi16(src_reg_45_56_lo, third_filters);
 
-        // add and saturate the results together
+        /*!< add and saturate the results together */
         res_reg_lo = _mm256_adds_epi16(res_reg23_34_lo, res_reg45_56_lo);
 
-        // multiply 2 adjacent elements with the filter and add the result
+        /*!< multiply 2 adjacent elements with the filter and add the result */
         res_reg23_34_hi = _mm256_maddubs_epi16(src_reg_23_34_hi, second_filters);
         res_reg45_56_hi = _mm256_maddubs_epi16(src_reg_45_56_hi, third_filters);
 
-        // add and saturate the results together
+        /*!< add and saturate the results together */
         res_reg_hi = _mm256_adds_epi16(res_reg23_34_hi, res_reg45_56_hi);
 
-        // shift by 6 bit each 16 bit
+        /*!< shift by 6 bit each 16 bit */
         res_reg_lo = _mm256_adds_epi16(res_reg_lo, add_filter_reg32);
         res_reg_hi = _mm256_adds_epi16(res_reg_hi, add_filter_reg32);
         res_reg_lo = _mm256_srai_epi16(res_reg_lo, 6);
         res_reg_hi = _mm256_srai_epi16(res_reg_hi, 6);
 
-        // shrink to 8 bit each 16 bits, the first lane contain the first
-        // convolve result and the second lane contain the second convolve
-        // result
+        /*!< shrink to 8 bit each 16 bits, the first lane contain the first
+         *   convolve result and the second lane contain the second convolve result */
         res_reg = _mm256_packus_epi16(res_reg_lo, res_reg_hi);
 
         src_ptr += src_stride;
@@ -1227,7 +1220,7 @@ static void aom_filter_block1d16_v4_avx2(const uint8_t *src_ptr, ptrdiff_t src_p
 
         output_ptr += dst_stride;
 
-        // save part of the registers for next strides
+        /*!< save part of the registers for next strides */
         src_reg_23_34_lo = src_reg_45_56_lo;
         src_reg_23_34_hi = src_reg_45_56_hi;
         src_reg_4x       = src_reg_6x;
@@ -1248,54 +1241,54 @@ static void aom_filter_block1d16_v8_avx2(const uint8_t *src_ptr, ptrdiff_t src_p
 
     add_filter_reg32 = _mm256_set1_epi16(32);
     filters_reg      = _mm_loadu_si128((const __m128i *)filter);
-    // converting the 16 bit (short) to  8 bit (byte) and have the
-    // same data in both lanes of 128 bit register.
+    /*!< converting the 16 bit (short) to  8 bit (byte) and have the
+     *   same data in both lanes of 128 bit register. */
     filters_reg = _mm_srai_epi16(filters_reg, 1);
     filters_reg = _mm_packs_epi16(filters_reg, filters_reg);
-    // have the same data in both lanes of a 256 bit register
+    /*!< have the same data in both lanes of a 256 bit register */
     filters_reg32 = MM256_BROADCASTSI128_SI256(filters_reg);
 
-    // duplicate only the first 16 bits (first and second byte)
-    // across 256 bit register
+    /*!< duplicate only the first 16 bits (first and second byte)
+     *   across 256 bit register */
     first_filters = _mm256_shuffle_epi8(filters_reg32, _mm256_set1_epi16(0x100u));
-    // duplicate only the second 16 bits (third and forth byte)
-    // across 256 bit register
+    /*!< duplicate only the second 16 bits (third and forth byte)
+     *   across 256 bit register */
     second_filters = _mm256_shuffle_epi8(filters_reg32, _mm256_set1_epi16(0x302u));
-    // duplicate only the third 16 bits (fifth and sixth byte)
-    // across 256 bit register
+    /*!< duplicate only the third 16 bits (fifth and sixth byte)
+     *   across 256 bit register */
     third_filters = _mm256_shuffle_epi8(filters_reg32, _mm256_set1_epi16(0x504u));
-    // duplicate only the forth 16 bits (seventh and eighth byte)
-    // across 256 bit register
+    /*!< duplicate only the forth 16 bits (seventh and eighth byte)
+     *   across 256 bit register */
     forth_filters = _mm256_shuffle_epi8(filters_reg32, _mm256_set1_epi16(0x706u));
 
-    // multiple the size of the source and destination stride by two
+    /*!< multiple the size of the source and destination stride by two */
     src_stride = src_pitch << 1;
     dst_stride = out_pitch << 1;
 
-    // load 16 bytes 7 times in stride of src_pitch
+    /*!< load 16 bytes 7 times in stride of src_pitch */
     src_reg32b1  = xx_loadu2_mi128(src_ptr + src_pitch, src_ptr);
     src_reg_32b3 = xx_loadu2_mi128(src_ptr + src_pitch * 3, src_ptr + src_pitch * 2);
     src_reg_32b5 = xx_loadu2_mi128(src_ptr + src_pitch * 5, src_ptr + src_pitch * 4);
     src_reg_32b7 =
         _mm256_castsi128_si256(_mm_loadu_si128((const __m128i *)(src_ptr + src_pitch * 6)));
 
-    // have each consecutive loads on the same 256 register
+    /*!< have each consecutive loads on the same 256 register */
     src_reg_32b2 = _mm256_permute2x128_si256(src_reg32b1, src_reg_32b3, 0x21);
     src_reg_32b4 = _mm256_permute2x128_si256(src_reg_32b3, src_reg_32b5, 0x21);
     src_reg_32b6 = _mm256_permute2x128_si256(src_reg_32b5, src_reg_32b7, 0x21);
-    // merge every two consecutive registers except the last one
+    /*!< merge every two consecutive registers except the last one */
     src_reg_32b10 = _mm256_unpacklo_epi8(src_reg32b1, src_reg_32b2);
     src_reg32b1   = _mm256_unpackhi_epi8(src_reg32b1, src_reg_32b2);
 
-    // save
+    /*!< save */
     src_reg_32b11 = _mm256_unpacklo_epi8(src_reg_32b3, src_reg_32b4);
     src_reg_32b3  = _mm256_unpackhi_epi8(src_reg_32b3, src_reg_32b4);
     src_reg_32b2  = _mm256_unpacklo_epi8(src_reg_32b5, src_reg_32b6);
     src_reg_32b5  = _mm256_unpackhi_epi8(src_reg_32b5, src_reg_32b6);
 
     for (i = output_height; i > 1; i -= 2) {
-        // load the last 2 loads of 16 bytes and have every two
-        // consecutive loads in the same 256 bit register
+        /*!< load the last 2 loads of 16 bytes and have every two
+         *   consecutive loads in the same 256 bit register */
         src_reg_32b8 =
             _mm256_castsi128_si256(_mm_loadu_si128((const __m128i *)(src_ptr + src_pitch * 7)));
         src_reg_32b7 =
@@ -1305,49 +1298,48 @@ static void aom_filter_block1d16_v8_avx2(const uint8_t *src_ptr, ptrdiff_t src_p
         src_reg_32b8 =
             _mm256_inserti128_si256(src_reg_32b8, _mm256_castsi256_si128(src_reg_32b9), 1);
 
-        // merge every two consecutive registers
-        // save
+        /*!< merge every two consecutive registers */
+        /*!< save */
         src_reg_32b4 = _mm256_unpacklo_epi8(src_reg_32b7, src_reg_32b8);
         src_reg_32b7 = _mm256_unpackhi_epi8(src_reg_32b7, src_reg_32b8);
 
-        // multiply 2 adjacent elements with the filter and add the result
+        /*!< multiply 2 adjacent elements with the filter and add the result */
         src_reg_32b10 = _mm256_maddubs_epi16(src_reg_32b10, first_filters);
         src_reg_32b6  = _mm256_maddubs_epi16(src_reg_32b4, forth_filters);
 
-        // add and saturate the results together
+        /*!< add and saturate the results together */
         src_reg_32b10 = _mm256_adds_epi16(src_reg_32b10, src_reg_32b6);
 
-        // multiply 2 adjacent elements with the filter and add the result
+        /*!< multiply 2 adjacent elements with the filter and add the result */
         src_reg_32b8  = _mm256_maddubs_epi16(src_reg_32b11, second_filters);
         src_reg_32b12 = _mm256_maddubs_epi16(src_reg_32b2, third_filters);
 
-        // add and saturate the results together
+        /*!< add and saturate the results together */
         src_reg_32b10 =
             _mm256_adds_epi16(src_reg_32b10, _mm256_adds_epi16(src_reg_32b8, src_reg_32b12));
 
-        // multiply 2 adjacent elements with the filter and add the result
+        /*!< multiply 2 adjacent elements with the filter and add the result */
         src_reg32b1  = _mm256_maddubs_epi16(src_reg32b1, first_filters);
         src_reg_32b6 = _mm256_maddubs_epi16(src_reg_32b7, forth_filters);
 
         src_reg32b1 = _mm256_adds_epi16(src_reg32b1, src_reg_32b6);
 
-        // multiply 2 adjacent elements with the filter and add the result
+        /*!< multiply 2 adjacent elements with the filter and add the result */
         src_reg_32b8  = _mm256_maddubs_epi16(src_reg_32b3, second_filters);
         src_reg_32b12 = _mm256_maddubs_epi16(src_reg_32b5, third_filters);
 
-        // add and saturate the results together
+        /*!< add and saturate the results together */
         src_reg32b1 =
             _mm256_adds_epi16(src_reg32b1, _mm256_adds_epi16(src_reg_32b8, src_reg_32b12));
 
-        // shift by 6 bit each 16 bit
+        /*!< shift by 6 bit each 16 bit */
         src_reg_32b10 = _mm256_adds_epi16(src_reg_32b10, add_filter_reg32);
         src_reg32b1   = _mm256_adds_epi16(src_reg32b1, add_filter_reg32);
         src_reg_32b10 = _mm256_srai_epi16(src_reg_32b10, 6);
         src_reg32b1   = _mm256_srai_epi16(src_reg32b1, 6);
 
-        // shrink to 8 bit each 16 bits, the first lane contain the first
-        // convolve result and the second lane contain the second convolve
-        // result
+        /*!< shrink to 8 bit each 16 bits, the first lane contain the first
+         *   convolve result and the second lane contain the second convolve result */
         src_reg32b1 = _mm256_packus_epi16(src_reg_32b10, src_reg32b1);
 
         src_ptr += src_stride;
@@ -1356,7 +1348,7 @@ static void aom_filter_block1d16_v8_avx2(const uint8_t *src_ptr, ptrdiff_t src_p
 
         output_ptr += dst_stride;
 
-        // save part of the registers for next strides
+        /*!< save part of the registers for next strides */
         src_reg_32b10 = src_reg_32b11;
         src_reg32b1   = src_reg_32b3;
         src_reg_32b11 = src_reg_32b2;
@@ -1368,14 +1360,14 @@ static void aom_filter_block1d16_v8_avx2(const uint8_t *src_ptr, ptrdiff_t src_p
     if (i > 0) {
         __m128i src_reg_filt1, src_reg_filt3, src_reg_filt4, src_reg_filt5;
         __m128i src_reg_filt6, src_reg_filt7, src_reg_filt8;
-        // load the last 16 bytes
+        /*!< load the last 16 bytes */
         src_reg_filt8 = _mm_loadu_si128((const __m128i *)(src_ptr + src_pitch * 7));
 
-        // merge the last 2 results together
+        /*!< merge the last 2 results together */
         src_reg_filt4 = _mm_unpacklo_epi8(_mm256_castsi256_si128(src_reg_32b7), src_reg_filt8);
         src_reg_filt7 = _mm_unpackhi_epi8(_mm256_castsi256_si128(src_reg_32b7), src_reg_filt8);
 
-        // multiply 2 adjacent elements with the filter and add the result
+        /*!< multiply 2 adjacent elements with the filter and add the result */
         src_reg_filt1 = _mm_maddubs_epi16(_mm256_castsi256_si128(src_reg_32b10),
                                           _mm256_castsi256_si128(first_filters));
         src_reg_filt4 = _mm_maddubs_epi16(src_reg_filt4, _mm256_castsi256_si128(forth_filters));
@@ -1383,38 +1375,37 @@ static void aom_filter_block1d16_v8_avx2(const uint8_t *src_ptr, ptrdiff_t src_p
                                           _mm256_castsi256_si128(first_filters));
         src_reg_filt7 = _mm_maddubs_epi16(src_reg_filt7, _mm256_castsi256_si128(forth_filters));
 
-        // add and saturate the results together
+        /*!< add and saturate the results together */
         src_reg_filt1 = _mm_adds_epi16(src_reg_filt1, src_reg_filt4);
         src_reg_filt3 = _mm_adds_epi16(src_reg_filt3, src_reg_filt7);
 
-        // multiply 2 adjacent elements with the filter and add the result
+        /*!< multiply 2 adjacent elements with the filter and add the result */
         src_reg_filt4 = _mm_maddubs_epi16(_mm256_castsi256_si128(src_reg_32b11),
                                           _mm256_castsi256_si128(second_filters));
         src_reg_filt5 = _mm_maddubs_epi16(_mm256_castsi256_si128(src_reg_32b3),
                                           _mm256_castsi256_si128(second_filters));
 
-        // multiply 2 adjacent elements with the filter and add the result
+        /*!< multiply 2 adjacent elements with the filter and add the result */
         src_reg_filt6 = _mm_maddubs_epi16(_mm256_castsi256_si128(src_reg_32b2),
                                           _mm256_castsi256_si128(third_filters));
         src_reg_filt7 = _mm_maddubs_epi16(_mm256_castsi256_si128(src_reg_32b5),
                                           _mm256_castsi256_si128(third_filters));
 
-        // add and saturate the results together
+        /*!< add and saturate the results together */
         src_reg_filt1 = _mm_adds_epi16(src_reg_filt1, _mm_adds_epi16(src_reg_filt4, src_reg_filt6));
         src_reg_filt3 = _mm_adds_epi16(src_reg_filt3, _mm_adds_epi16(src_reg_filt5, src_reg_filt7));
 
-        // shift by 6 bit each 16 bit
+        /*!< shift by 6 bit each 16 bit */
         src_reg_filt1 = _mm_adds_epi16(src_reg_filt1, _mm256_castsi256_si128(add_filter_reg32));
         src_reg_filt3 = _mm_adds_epi16(src_reg_filt3, _mm256_castsi256_si128(add_filter_reg32));
         src_reg_filt1 = _mm_srai_epi16(src_reg_filt1, 6);
         src_reg_filt3 = _mm_srai_epi16(src_reg_filt3, 6);
 
-        // shrink to 8 bit each 16 bits, the first lane contain the first
-        // convolve result and the second lane contain the second convolve
-        // result
+        /*!< shrink to 8 bit each 16 bits, the first lane contain the first
+         *   convolve result and the second lane contain the second convolve result */
         src_reg_filt1 = _mm_packus_epi16(src_reg_filt1, src_reg_filt3);
 
-        // save 16 bytes
+        /*!< save 16 bytes */
         _mm_store_si128((__m128i *)output_ptr, src_reg_filt1);
     }
 }
@@ -1434,16 +1425,16 @@ static void aom_filter_block1d4_v4_avx2(const uint8_t *src_ptr, ptrdiff_t src_pi
 
     add_filter_reg32 = _mm256_set1_epi16(32);
     filters_reg      = _mm_loadu_si128((const __m128i *)filter);
-    // converting the 16 bit (short) to  8 bit (byte) and have the
-    // same data in both lanes of 128 bit register.
+    /*!< converting the 16 bit (short) to  8 bit (byte) and have the
+     *   same data in both lanes of 128 bit register. */
     filters_reg = _mm_srai_epi16(filters_reg, 1);
     filters_reg = _mm_packs_epi16(filters_reg, filters_reg);
-    // have the same data in both lanes of a 256 bit register
+    /*!< have the same data in both lanes of a 256 bit register */
     filters_reg32 = MM256_BROADCASTSI128_SI256(filters_reg);
 
     first_filters = _mm256_shuffle_epi8(filters_reg32, _mm256_set1_epi32(0x5040302u));
 
-    // multiple the size of the source and destination stride by two
+    /*!< multiple the size of the source and destination stride by two */
     src_stride = src_pitch << 1;
     dst_stride = out_pitch << 1;
 
@@ -1451,14 +1442,14 @@ static void aom_filter_block1d4_v4_avx2(const uint8_t *src_ptr, ptrdiff_t src_pi
     src_reg_4x =
         _mm256_castsi128_si256(_mm_loadl_epi64((const __m128i *)(src_ptr + src_pitch * 4)));
 
-    // have consecutive loads on the same 256 register
+    /*!< have consecutive loads on the same 256 register */
     src_reg_34 = _mm256_permute2x128_si256(src_reg23, src_reg_4x, 0x21);
 
     src_reg_23_34_lo = _mm256_unpacklo_epi8(src_reg23, src_reg_34);
 
     for (i = output_height; i > 1; i -= 2) {
-        // load the last 2 loads of 16 bytes and have every two
-        // consecutive loads in the same 256 bit register
+        /*!< load the last 2 loads of 16 bytes and have every two
+         *   consecutive loads in the same 256 bit register */
         src_reg_5x =
             _mm256_castsi128_si256(_mm_loadl_epi64((const __m128i *)(src_ptr + src_pitch * 5)));
         src_reg_45 = _mm256_inserti128_si256(src_reg_4x, _mm256_castsi256_si128(src_reg_5x), 1);
@@ -1467,23 +1458,22 @@ static void aom_filter_block1d4_v4_avx2(const uint8_t *src_ptr, ptrdiff_t src_pi
             _mm256_castsi128_si256(_mm_loadl_epi64((const __m128i *)(src_ptr + src_pitch * 6)));
         src_reg_56 = _mm256_inserti128_si256(src_reg_5x, _mm256_castsi256_si128(src_reg_6x), 1);
 
-        // merge every two consecutive registers
+        /*!< merge every two consecutive registers */
         src_reg_45_56_lo = _mm256_unpacklo_epi8(src_reg_45, src_reg_56);
 
         src_reg_2345_3456_lo = _mm256_unpacklo_epi16(src_reg_23_34_lo, src_reg_45_56_lo);
 
-        // multiply 2 adjacent elements with the filter and add the result
+        /*!< multiply 2 adjacent elements with the filter and add the result */
         res_reg_lo = _mm256_maddubs_epi16(src_reg_2345_3456_lo, first_filters);
 
         res_reg_lo = _mm256_hadds_epi16(res_reg_lo, _mm256_setzero_si256());
 
-        // shift by 6 bit each 16 bit
+        /*!< shift by 6 bit each 16 bit */
         res_reg_lo = _mm256_adds_epi16(res_reg_lo, add_filter_reg32);
         res_reg_lo = _mm256_srai_epi16(res_reg_lo, 6);
 
-        // shrink to 8 bit each 16 bits, the first lane contain the first
-        // convolve result and the second lane contain the second convolve
-        // result
+        /*!< shrink to 8 bit each 16 bits, the first lane contain the first
+         *   convolve result and the second lane contain the second convolve result */
         res_reg = _mm256_packus_epi16(res_reg_lo, res_reg_lo);
 
         src_ptr += src_stride;
@@ -1492,7 +1482,7 @@ static void aom_filter_block1d4_v4_avx2(const uint8_t *src_ptr, ptrdiff_t src_pi
 
         output_ptr += dst_stride;
 
-        // save part of the registers for next strides
+        /*!< save part of the registers for next strides */
         src_reg_23_34_lo = src_reg_45_56_lo;
         src_reg_4x       = src_reg_6x;
     }

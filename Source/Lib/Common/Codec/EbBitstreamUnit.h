@@ -1,7 +1,5 @@
-/*
-* Copyright(c) 2019 Intel Corporation
-* SPDX - License - Identifier: BSD - 2 - Clause - Patent
-*/
+/*!< Copyright(c) 2019 Intel Corporation
+ * SPDX - License - Identifier: BSD - 2 - Clause - Patent */
 
 #ifndef EbBitstreamUnit_h
 #define EbBitstreamUnit_h
@@ -19,24 +17,20 @@ extern "C" {
 #endif
 #endif
 
-// Bistream Slice Buffer Size
+/*!< Bistream Slice Buffer Size */
 #define EB_BITSTREAM_SLICE_BUFFER_SIZE 0x300000
 #define SLICE_HEADER_COUNT 256
 
-/**********************************
- * Bitstream Unit Types
- **********************************/
+/*!< Bitstream Unit Types */
 typedef struct OutputBitstreamUnit {
     EbDctor  dctor;
-    uint32_t size; // allocated buffer size
-    uint32_t written_bits_count; // count of written bits
-    uint8_t *buffer_begin_av1; // the byte buffer
-    uint8_t *buffer_av1; // the byte buffer
+    uint32_t size; /*!< allocated buffer size */
+    uint32_t written_bits_count; /*!< count of written bits */
+    uint8_t *buffer_begin_av1; /*!< the byte buffer */
+    uint8_t *buffer_av1; /*!< the byte buffer */
 } OutputBitstreamUnit;
 
-/**********************************
-     * Extern Function Declarations
-     **********************************/
+/*!< Extern Function Declarations */
 extern EbErrorType output_bitstream_unit_ctor(OutputBitstreamUnit *bitstream_ptr,
                                               uint32_t             buffer_size);
 
@@ -53,12 +47,12 @@ extern EbErrorType output_bitstream_rbsp_to_payload(OutputBitstreamUnit *bitstre
 /********************************************************************************************************************************/
 #include "EbCabacContextModel.h"
 /********************************************************************************************************************************/
-// bitops.h
-// These versions of get_msb() are only valid when n != 0 because all
-// of the optimized versions are undefined when n == 0:
-// https://gcc.gnu.org/onlinedocs/gcc/Other-Builtins.html
+/*!< bitops.h
+ *   These versions of get_msb() are only valid when n != 0 because
+ *   all of the optimized versions are undefined when n == 0:
+ *   https://gcc.gnu.org/onlinedocs/gcc/Other-Builtins.html
+ *   use GNU builtins where available. */
 
-// use GNU builtins where available.
 #if defined(__GNUC__) && ((__GNUC__ == 3 && __GNUC_MINOR__ >= 4) || __GNUC__ >= 4)
 static INLINE int32_t get_msb(uint32_t n) {
     assert(n != 0);
@@ -75,8 +69,8 @@ static INLINE int32_t get_msb(uint32_t n) {
 }
 #undef USE_MSC_INTRINSICS
 #else
-// Returns (int32_t)floor(log2(n)). n must be > 0.
-/*static*/ INLINE int32_t get_msb(uint32_t n) {
+/*!< Returns (int32_t)floor(log2(n)). n must be > 0. */
+/*!< static */ INLINE int32_t get_msb(uint32_t n) {
     int32_t  log   = 0;
     uint32_t value = n;
     int32_t  i;
@@ -95,13 +89,13 @@ static INLINE int32_t get_msb(uint32_t n) {
 }
 #endif
 /********************************************************************************************************************************/
-//odintrin.h
+/*!< odintrin.h */
 
 #define OD_DIVU_DMAX (1024)
 
 extern uint32_t od_divu_small_consts[OD_DIVU_DMAX][2];
 
-/*Translate unsigned division by small divisors into multiplications.*/
+/*!< Translate unsigned division by small divisors into multiplications.*/
 #define OD_DIVU_SMALL(_x, _d)                                                                    \
     ((uint32_t)(                                                                                 \
          (od_divu_small_consts[(_d)-1][0] * (uint64_t)(_x) + od_divu_small_consts[(_d)-1][1]) >> \
@@ -118,7 +112,7 @@ extern uint32_t od_divu_small_consts[OD_DIVU_DMAX][2];
 #define OD_CLZ(x) (-get_msb(x))
 #define OD_ILOG_NZ(x) (OD_CLZ0 - OD_CLZ(x))
 
-/*Enable special features for gcc and compatible compilers.*/
+/*!< Enable special features for gcc and compatible compilers.*/
 #if defined(__GNUC__) && defined(__GNUC_MINOR__) && defined(__GNUC_PATCHLEVEL__)
 #define OD_GNUC_PREREQ(maj, min, pat)                                  \
     ((__GNUC__ << 16) + (__GNUC_MINOR__ << 8) + __GNUC_PATCHLEVEL__ >= \
@@ -139,68 +133,68 @@ extern uint32_t od_divu_small_consts[OD_DIVU_DMAX][2];
 #define OD_ARG_NONNULL(x)
 #endif
 
-/** Copy n elements of memory from src to dst. The 0* term provides
-compile-time type checking  */
+/*!< Copy n elements of memory from src to dst. The 0* term provides
+ *   compile-time type checking  */
 #if !defined(OVERRIDE_OD_COPY)
 #define OD_COPY(dst, src, n) (memcpy((dst), (src), sizeof(*(dst)) * (n) + 0 * ((dst) - (src))))
 #endif
 
-/** Copy n elements of memory from src to dst, allowing overlapping regions.
-The 0* term provides compile-time type checking */
+/*!< Copy n elements of memory from src to dst, allowing overlapping
+ *   regions. The 0* term provides compile-time type checking */
 #if !defined(OVERRIDE_OD_MOVE)
 #define OD_MOVE(dst, src, n) (memmove((dst), (src), sizeof(*(dst)) * (n) + 0 * ((dst) - (src))))
 #endif
 
-/*All of these macros should expect floats as arguments.*/
+/*!< All of these macros should expect floats as arguments. */
 #define OD_SIGNMASK(a) (-((a) < 0))
 #define OD_FLIPSIGNI(a, b) (((a) + OD_SIGNMASK(b)) ^ OD_SIGNMASK(b))
 
 /********************************************************************************************************************************/
-//entcode.h
+/*!<* entcode.h */
 #define EC_PROB_SHIFT 6
-#define EC_MIN_PROB 4 // must be <= (1<<EC_PROB_SHIFT)/16
+#define EC_MIN_PROB 4 /*!< must be <= (1<<EC_PROB_SHIFT)/16 */
 
-/*OPT: OdEcWindow must be at least 32 bits, but if you have fast arithmetic
-on a larger type, you can speed up the decoder by using it here.*/
+/*!< OPT: OdEcWindow must be at least 32 bits, but if you have fast arithmetic
+ *        on a larger type, you can speed up the decoder by using it here. */
 typedef uint32_t OdEcWindow;
 
 #define OD_EC_WINDOW_SIZE ((int32_t)sizeof(OdEcWindow) * CHAR_BIT)
 
-/*The resolution of fractional-precision bit usage measurements, i.e.,
-    3 => 1/8th bits.*/
+/*!< The resolution of fractional-precision bit usage measurements,
+ *   i.e., 3 => 1/8th bits.*/
 #define OD_BITRES (3)
 
 #define OD_ICDF AOM_ICDF
 
 /********************************************************************************************************************************/
-//entenc.h
+/*!< entenc.h */
 typedef struct OdEcEnc OdEcEnc;
 
 #define OD_MEASURE_EC_OVERHEAD (0)
 
-/*The entropy encoder context.*/
+/*!< The entropy encoder context. */
 struct OdEcEnc {
-    /*Buffered output.
-        This contains only the raw bits until the final call to eb_od_ec_enc_done(),
-        where all the arithmetic-coded data gets prepended to it.*/
+    /*!< Buffered output.
+     *   This contains only the raw bits until the final call to eb_od_ec_enc_done(),
+     *   where all the arithmetic-coded data gets prepended to it. */
     uint8_t *buf;
-    /*The size of the buffer.*/
+    /*!< The size of the buffer. */
     uint32_t storage;
-    /*The offset at which the last byte containing raw bits was written.*/
+    /*!< The offset at which the last byte containing raw bits was written. */
 
-    /*A buffer for output bytes with their associated carry flags.*/
+    /*!< A buffer for output bytes with their associated carry flags. */
     uint16_t *precarry_buf;
-    /*The size of the pre-carry buffer.*/
+    /*!< The size of the pre-carry buffer. */
     uint32_t precarry_storage;
-    /*The offset at which the next entropy-coded byte will be written.*/
+    /*!< The offset at which the next entropy-coded byte will be written. */
     uint32_t offs;
-    /*The low end of the current range.*/
+    /*!< The low end of the current range. */
     OdEcWindow low;
-    /*The number of values in the current range.*/
+    /*!< The number of values in the current range. */
     uint16_t rng;
-    /*The number of bits of data in the current value.*/
+    /*!< The number of bits of data in the current value. */
     int16_t cnt;
-    /*Nonzero if an error occurred.*/
+    /*!< Nonzero if an error occurred. */
     int32_t error;
 #if OD_MEASURE_EC_OVERHEAD
     double  entropy;
@@ -208,7 +202,7 @@ struct OdEcEnc {
 #endif
 };
 
-/*See entenc.c for further documentation.*/
+/*!< See entenc.c for further documentation. */
 
 void eb_od_ec_enc_init(OdEcEnc *enc, uint32_t size) OD_ARG_NONNULL(1);
 void eb_od_ec_enc_reset(OdEcEnc *enc) OD_ARG_NONNULL(1);
@@ -226,7 +220,7 @@ OD_WARN_UNUSED_RESULT uint8_t *eb_od_ec_enc_done(OdEcEnc *enc, uint32_t *nbytes)
 OD_WARN_UNUSED_RESULT int32_t eb_od_ec_enc_tell(const OdEcEnc *enc) OD_ARG_NONNULL(1);
 
 /********************************************************************************************************************************/
-//daalaboolwriter.h
+/*!< daalaboolwriter.h */
 struct DaalaWriter {
     uint32_t pos;
     uint8_t *buffer;
@@ -257,7 +251,7 @@ static INLINE void daala_write_symbol(DaalaWriter *w, int32_t symb, const AomCdf
 }
 
 /********************************************************************************************************************************/
-// bitwriter.h
+/*!<* bitwriter.h */
 typedef struct DaalaWriter AomWriter;
 
 static INLINE void aom_start_encode(AomWriter *bc, uint8_t *buffer) {
@@ -271,7 +265,7 @@ static INLINE void aom_write(AomWriter *br, int32_t bit, int32_t probability) {
 }
 
 static INLINE void aom_write_bit(AomWriter *w, int32_t bit) {
-    aom_write(w, bit, 128); // aom_prob_half
+    aom_write(w, bit, 128); /*!< aom_prob_half */
 }
 
 static INLINE void aom_write_literal(AomWriter *w, int32_t data, int32_t bits) {

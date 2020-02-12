@@ -1,7 +1,5 @@
-/*
-* Copyright(c) 2019 Netflix, Inc.
-* SPDX - License - Identifier: BSD - 2 - Clause - Patent
-*/
+/*!< Copyright(c) 2019 Netflix, Inc.
+ * SPDX - License - Identifier: BSD - 2 - Clause - Patent */
 
 #ifndef EbDecBlock_h
 #define EbDecBlock_h
@@ -56,7 +54,7 @@ static const BlockSize partition_subsize[10][BlockSizeS_ALL] = {
 
 #define MFMV_STACK_SIZE 3
 typedef struct TemporalMvRef {
-    /* Motion Filed MV */
+    /*!< Motion Filed MV */
     IntMv  mf_mv0;
     int8_t ref_frame_offset;
 } TemporalMvRef;
@@ -72,7 +70,7 @@ typedef struct TransformInfo {
                           1: Residual exists for the block */
     int8_t cbf;
 
-    /*!< x offset for a block in mi unit*/
+    /*!< x offset for a block in mi unit */
     uint8_t txb_x_offset;
     /*!< y offset for a block in mi unit */
     uint8_t txb_y_offset;
@@ -167,7 +165,7 @@ typedef struct PartitionInfo {
     /*!< Holds the index for the blocks Y plane and UV plane top left samples. */
     uint16_t color_index_map_offset[2];
 
-    /* CFL ctxt */
+    /*!< CFL ctxt */
     void *pv_cfl_ctxt;
 
     int is_sec_rect;
@@ -178,9 +176,9 @@ typedef struct PartitionInfo {
     uint8_t subsampling_x;
     uint8_t subsampling_y;
 
-    /*ToDo: block_ref_sf are used both in parsing & decoding sides,
-      we need implement a logic to avoid two sides calculation of block_ref_sf*/
-    /* pointers to reference frame scale factors */
+    /*!< ToDo: block_ref_sf are used both in parsing & decoding sides,
+     *   we need implement a logic to avoid two sides calculation of block_ref_sf */
+    /*!< pointers to reference frame scale factors */
     const struct ScaleFactors *block_ref_sf[2];
     const struct ScaleFactors *sf_identity;
 
@@ -188,7 +186,7 @@ typedef struct PartitionInfo {
 
     int32_t is_chroma_ref;
 #if MC_DYNAMIC_PAD
-    /*MC temp buff for dynamic padding*/
+    /*!< MC temp buff for dynamic padding */
     uint8_t *mc_buf[2];
 #endif
 } PartitionInfo;

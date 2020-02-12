@@ -1,13 +1,11 @@
-/*
- * Copyright (c) 2018, Alliance for Open Media. All rights reserved
+/*!< Copyright (c) 2018, Alliance for Open Media. All rights reserved
  *
  * This source code is subject to the terms of the BSD 2 Clause License and
  * the Alliance for Open Media Patent License 1.0. If the BSD 2 Clause License
  * was not distributed with this source code in the LICENSE file, you can
  * obtain it at www.aomedia.org/license/software. If the Alliance for Open
  * Media Patent License 1.0 was not distributed with this source code in the
- * PATENTS file, you can obtain it at www.aomedia.org/license/patent.
- */
+ * PATENTS file, you can obtain it at www.aomedia.org/license/patent. */
 
 #include <immintrin.h>
 #include "common_dsp_rtcd.h"
@@ -835,8 +833,7 @@ void jnt_convolve_y_4tap_avx2(const uint8_t *const src, const int32_t src_stride
                     s_64[1] = _mm_loadl_epi64((__m128i *)(src_ptr + 1 * src_stride));
                     s_64[2] = _mm_loadl_epi64((__m128i *)(src_ptr + 2 * src_stride));
 
-                    // Load lines a and b. Line a to lower 128, line b to upper
-                    // 128
+                    /*!< Load lines a and b. Line a to lower 128, line b to upper 128 */
                     const __m256i src01 = _mm256_setr_m128i(s_64[0], s_64[1]);
                     const __m256i src12 = _mm256_setr_m128i(s_64[1], s_64[2]);
 
@@ -868,8 +865,7 @@ void jnt_convolve_y_4tap_avx2(const uint8_t *const src, const int32_t src_stride
                     s_128[1] = _mm_loadu_si128((__m128i *)(src_ptr + 1 * src_stride));
                     s_128[2] = _mm_loadu_si128((__m128i *)(src_ptr + 2 * src_stride));
 
-                    // Load lines a and b. Line a to lower 128, line b to upper
-                    // 128
+                    /*!< Load lines a and b. Line a to lower 128, line b to upper 128 */
                     const __m256i src01 = _mm256_setr_m128i(s_128[0], s_128[1]);
                     const __m256i src12 = _mm256_setr_m128i(s_128[1], s_128[2]);
 
@@ -961,8 +957,7 @@ void jnt_convolve_y_4tap_avx2(const uint8_t *const src, const int32_t src_stride
                     s_64[1] = _mm_loadl_epi64((__m128i *)(src_ptr + 1 * src_stride));
                     s_64[2] = _mm_loadl_epi64((__m128i *)(src_ptr + 2 * src_stride));
 
-                    // Load lines a and b. Line a to lower 128, line b to upper
-                    // 128
+                    /*!< Load lines a and b. Line a to lower 128, line b to upper 128 */
                     const __m256i src01 = _mm256_setr_m128i(s_64[0], s_64[1]);
                     const __m256i src12 = _mm256_setr_m128i(s_64[1], s_64[2]);
 
@@ -989,8 +984,7 @@ void jnt_convolve_y_4tap_avx2(const uint8_t *const src, const int32_t src_stride
                     s_128[1] = _mm_loadu_si128((__m128i *)(src_ptr + 1 * src_stride));
                     s_128[2] = _mm_loadu_si128((__m128i *)(src_ptr + 2 * src_stride));
 
-                    // Load lines a and b. Line a to lower 128, line b to upper
-                    // 128
+                    /*!< Load lines a and b. Line a to lower 128, line b to upper 128 */
                     const __m256i src01 = _mm256_setr_m128i(s_128[0], s_128[1]);
                     const __m256i src12 = _mm256_setr_m128i(s_128[1], s_128[2]);
 
@@ -1079,7 +1073,7 @@ void jnt_convolve_y_4tap_avx2(const uint8_t *const src, const int32_t src_stride
                 s_64[1] = _mm_loadl_epi64((__m128i *)(src_ptr + 1 * src_stride));
                 s_64[2] = _mm_loadl_epi64((__m128i *)(src_ptr + 2 * src_stride));
 
-                // Load lines a and b. Line a to lower 128, line b to upper 128
+                /*!< Load lines a and b. Line a to lower 128, line b to upper 128 */
                 const __m256i src01 = _mm256_setr_m128i(s_64[0], s_64[1]);
                 const __m256i src12 = _mm256_setr_m128i(s_64[1], s_64[2]);
 
@@ -1104,7 +1098,7 @@ void jnt_convolve_y_4tap_avx2(const uint8_t *const src, const int32_t src_stride
                 s_128[1] = _mm_loadu_si128((__m128i *)(src_ptr + 1 * src_stride));
                 s_128[2] = _mm_loadu_si128((__m128i *)(src_ptr + 2 * src_stride));
 
-                // Load lines a and b. Line a to lower 128, line b to upper 128
+                /*!< Load lines a and b. Line a to lower 128, line b to upper 128 */
                 const __m256i src01 = _mm256_setr_m128i(s_128[0], s_128[1]);
                 const __m256i src12 = _mm256_setr_m128i(s_128[1], s_128[2]);
 
@@ -1248,8 +1242,7 @@ static void jnt_convolve_y_6tap_avx2(const uint8_t *const src, const int32_t src
                     s_64[3] = _mm_loadl_epi64((__m128i *)(src_ptr + 3 * src_stride));
                     s_64[4] = _mm_loadl_epi64((__m128i *)(src_ptr + 4 * src_stride));
 
-                    // Load lines a and b. Line a to lower 128, line b to upper
-                    // 128
+                    /*!< Load lines a and b. Line a to lower 128, line b to upper 128 */
                     const __m256i src01 = _mm256_setr_m128i(s_64[0], s_64[1]);
                     const __m256i src12 = _mm256_setr_m128i(s_64[1], s_64[2]);
                     const __m256i src23 = _mm256_setr_m128i(s_64[2], s_64[3]);
@@ -1286,8 +1279,7 @@ static void jnt_convolve_y_6tap_avx2(const uint8_t *const src, const int32_t src
                     s_128[3] = _mm_loadu_si128((__m128i *)(src_ptr + 3 * src_stride));
                     s_128[4] = _mm_loadu_si128((__m128i *)(src_ptr + 4 * src_stride));
 
-                    // Load lines a and b. Line a to lower 128, line b to upper
-                    // 128
+                    /*!< Load lines a and b. Line a to lower 128, line b to upper 128 */
                     const __m256i src01 = _mm256_setr_m128i(s_128[0], s_128[1]);
                     const __m256i src12 = _mm256_setr_m128i(s_128[1], s_128[2]);
                     const __m256i src23 = _mm256_setr_m128i(s_128[2], s_128[3]);
@@ -1459,8 +1451,7 @@ static void jnt_convolve_y_6tap_avx2(const uint8_t *const src, const int32_t src
                     s_64[3] = _mm_loadl_epi64((__m128i *)(src_ptr + 3 * src_stride));
                     s_64[4] = _mm_loadl_epi64((__m128i *)(src_ptr + 4 * src_stride));
 
-                    // Load lines a and b. Line a to lower 128, line b to upper
-                    // 128
+                    /*!< Load lines a and b. Line a to lower 128, line b to upper 128 */
                     const __m256i src01 = _mm256_setr_m128i(s_64[0], s_64[1]);
                     const __m256i src12 = _mm256_setr_m128i(s_64[1], s_64[2]);
                     const __m256i src23 = _mm256_setr_m128i(s_64[2], s_64[3]);
@@ -1492,8 +1483,7 @@ static void jnt_convolve_y_6tap_avx2(const uint8_t *const src, const int32_t src
                     s_128[3] = _mm_loadu_si128((__m128i *)(src_ptr + 3 * src_stride));
                     s_128[4] = _mm_loadu_si128((__m128i *)(src_ptr + 4 * src_stride));
 
-                    // Load lines a and b. Line a to lower 128, line b to upper
-                    // 128
+                    /*!< Load lines a and b. Line a to lower 128, line b to upper 128 */
                     const __m256i src01 = _mm256_setr_m128i(s_128[0], s_128[1]);
                     const __m256i src12 = _mm256_setr_m128i(s_128[1], s_128[2]);
                     const __m256i src23 = _mm256_setr_m128i(s_128[2], s_128[3]);
@@ -1658,7 +1648,7 @@ static void jnt_convolve_y_6tap_avx2(const uint8_t *const src, const int32_t src
                 s_64[3] = _mm_loadl_epi64((__m128i *)(src_ptr + 3 * src_stride));
                 s_64[4] = _mm_loadl_epi64((__m128i *)(src_ptr + 4 * src_stride));
 
-                // Load lines a and b. Line a to lower 128, line b to upper 128
+                /*!< Load lines a and b. Line a to lower 128, line b to upper 128 */
                 const __m256i src01 = _mm256_setr_m128i(s_64[0], s_64[1]);
                 const __m256i src12 = _mm256_setr_m128i(s_64[1], s_64[2]);
                 const __m256i src23 = _mm256_setr_m128i(s_64[2], s_64[3]);
@@ -1688,7 +1678,7 @@ static void jnt_convolve_y_6tap_avx2(const uint8_t *const src, const int32_t src
                 s_128[3] = _mm_loadu_si128((__m128i *)(src_ptr + 3 * src_stride));
                 s_128[4] = _mm_loadu_si128((__m128i *)(src_ptr + 4 * src_stride));
 
-                // Load lines a and b. Line a to lower 128, line b to upper 128
+                /*!< Load lines a and b. Line a to lower 128, line b to upper 128 */
                 const __m256i src01 = _mm256_setr_m128i(s_128[0], s_128[1]);
                 const __m256i src12 = _mm256_setr_m128i(s_128[1], s_128[2]);
                 const __m256i src23 = _mm256_setr_m128i(s_128[2], s_128[3]);
@@ -1903,8 +1893,7 @@ static void jnt_convolve_y_8tap_avx2(const uint8_t *const src, const int32_t src
                     s_64[5] = _mm_loadl_epi64((__m128i *)(src_ptr + 5 * src_stride));
                     s_64[6] = _mm_loadl_epi64((__m128i *)(src_ptr + 6 * src_stride));
 
-                    // Load lines a and b. Line a to lower 128, line b to upper
-                    // 128
+                    /*!< Load lines a and b. Line a to lower 128, line b to upper 128 */
                     const __m256i src01 = _mm256_setr_m128i(s_64[0], s_64[1]);
                     const __m256i src12 = _mm256_setr_m128i(s_64[1], s_64[2]);
                     const __m256i src23 = _mm256_setr_m128i(s_64[2], s_64[3]);
@@ -1947,8 +1936,7 @@ static void jnt_convolve_y_8tap_avx2(const uint8_t *const src, const int32_t src
                     s_128[5] = _mm_loadu_si128((__m128i *)(src_ptr + 5 * src_stride));
                     s_128[6] = _mm_loadu_si128((__m128i *)(src_ptr + 6 * src_stride));
 
-                    // Load lines a and b. Line a to lower 128, line b to upper
-                    // 128
+                    /*!< Load lines a and b. Line a to lower 128, line b to upper 128 */
                     const __m256i src01 = _mm256_setr_m128i(s_128[0], s_128[1]);
                     const __m256i src12 = _mm256_setr_m128i(s_128[1], s_128[2]);
                     const __m256i src23 = _mm256_setr_m128i(s_128[2], s_128[3]);
@@ -2150,8 +2138,7 @@ static void jnt_convolve_y_8tap_avx2(const uint8_t *const src, const int32_t src
                     s_64[5] = _mm_loadl_epi64((__m128i *)(src_ptr + 5 * src_stride));
                     s_64[6] = _mm_loadl_epi64((__m128i *)(src_ptr + 6 * src_stride));
 
-                    // Load lines a and b. Line a to lower 128, line b to upper
-                    // 128
+                    /*!< Load lines a and b. Line a to lower 128, line b to upper 128 */
                     const __m256i src01 = _mm256_setr_m128i(s_64[0], s_64[1]);
                     const __m256i src12 = _mm256_setr_m128i(s_64[1], s_64[2]);
                     const __m256i src23 = _mm256_setr_m128i(s_64[2], s_64[3]);
@@ -2189,8 +2176,7 @@ static void jnt_convolve_y_8tap_avx2(const uint8_t *const src, const int32_t src
                     s_128[5] = _mm_loadu_si128((__m128i *)(src_ptr + 5 * src_stride));
                     s_128[6] = _mm_loadu_si128((__m128i *)(src_ptr + 6 * src_stride));
 
-                    // Load lines a and b. Line a to lower 128, line b to upper
-                    // 128
+                    /*!< Load lines a and b. Line a to lower 128, line b to upper 128 */
                     const __m256i src01 = _mm256_setr_m128i(s_128[0], s_128[1]);
                     const __m256i src12 = _mm256_setr_m128i(s_128[1], s_128[2]);
                     const __m256i src23 = _mm256_setr_m128i(s_128[2], s_128[3]);
@@ -2385,7 +2371,7 @@ static void jnt_convolve_y_8tap_avx2(const uint8_t *const src, const int32_t src
                 s_64[5] = _mm_loadl_epi64((__m128i *)(src_ptr + 5 * src_stride));
                 s_64[6] = _mm_loadl_epi64((__m128i *)(src_ptr + 6 * src_stride));
 
-                // Load lines a and b. Line a to lower 128, line b to upper 128
+                /*!< Load lines a and b. Line a to lower 128, line b to upper 128 */
                 const __m256i src01 = _mm256_setr_m128i(s_64[0], s_64[1]);
                 const __m256i src12 = _mm256_setr_m128i(s_64[1], s_64[2]);
                 const __m256i src23 = _mm256_setr_m128i(s_64[2], s_64[3]);
@@ -2421,7 +2407,7 @@ static void jnt_convolve_y_8tap_avx2(const uint8_t *const src, const int32_t src
                 s_128[5] = _mm_loadu_si128((__m128i *)(src_ptr + 5 * src_stride));
                 s_128[6] = _mm_loadu_si128((__m128i *)(src_ptr + 6 * src_stride));
 
-                // Load lines a and b. Line a to lower 128, line b to upper 128
+                /*!< Load lines a and b. Line a to lower 128, line b to upper 128 */
                 const __m256i src01 = _mm256_setr_m128i(s_128[0], s_128[1]);
                 const __m256i src12 = _mm256_setr_m128i(s_128[1], s_128[2]);
                 const __m256i src23 = _mm256_setr_m128i(s_128[2], s_128[3]);

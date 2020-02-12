@@ -1,7 +1,5 @@
-/*
-* Copyright(c) 2019 Intel Corporation
-* SPDX - License - Identifier: BSD - 2 - Clause - Patent
-*/
+/*!< Copyright(c) 2019 Intel Corporation
+ * SPDX - License - Identifier: BSD - 2 - Clause - Patent */
 
 #ifndef EbPictureManager_h
 #define EbPictureManager_h
@@ -13,9 +11,9 @@
 extern "C" {
 #endif
 
-/***************************************
-     * Extern Function Declaration
-     ***************************************/
+/***************************************/
+/*!< Extern Function Declaration */
+/***************************************/
 EbErrorType picture_manager_context_ctor(EbThreadContext *  thread_context_ptr,
                                          const EbEncHandle *enc_handle_ptr, int rate_control_index);
 

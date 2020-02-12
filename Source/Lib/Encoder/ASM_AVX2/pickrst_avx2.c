@@ -1,15 +1,13 @@
-/*
- * Copyright (c) 2018, Alliance for Open Media. All rights reserved
+/*!<* Copyright (c) 2018, Alliance for Open Media. All rights reserved
  *
  * This source code is subject to the terms of the BSD 2 Clause License and
  * the Alliance for Open Media Patent License 1.0. If the BSD 2 Clause License
  * was not distributed with this source code in the LICENSE file, you can
  * obtain it at www.aomedia.org/license/software. If the Alliance for Open
  * Media Patent License 1.0 was not distributed with this source code in the
- * PATENTS file, you can obtain it at www.aomedia.org/license/patent.
- */
+ * PATENTS file, you can obtain it at www.aomedia.org/license/patent. */
 
-#include <immintrin.h> // AVX2
+#include <immintrin.h> /*!< AVX2 */
 #include "synonyms.h"
 #include "synonyms_avx2.h"
 #include "aom_dsp_rtcd.h"
@@ -204,8 +202,7 @@ static INLINE uint16_t find_average_highbd_avx2(const uint16_t *src, int32_t h_s
     return (uint16_t)avg;
 }
 
-// Note: when n = (width % 16) is not 0, it writes (16 - n) more data than
-// required.
+/*!< Note: when n = (width % 16) is not 0, it writes (16 - n) more data than required. */
 static INLINE void sub_avg_block_avx2(const uint8_t *src, const int32_t src_stride,
                                       const uint8_t avg, const int32_t width, const int32_t height,
                                       int16_t *dst, const int32_t dst_stride) {
@@ -227,8 +224,7 @@ static INLINE void sub_avg_block_avx2(const uint8_t *src, const int32_t src_stri
     } while (--i);
 }
 
-// Note: when n = (width % 16) is not 0, it writes (16 - n) more data than
-// required.
+/*!< Note: when n = (width % 16) is not 0, it writes (16 - n) more data than required. */
 static INLINE void sub_avg_block_highbd_avx2(const uint16_t *src, const int32_t src_stride,
                                              const uint16_t avg, const int32_t width,
                                              const int32_t height, int16_t *dst,
@@ -707,18 +703,18 @@ static INLINE void derive_triangle_win7_avx2(const __m256i d_is[WIENER_WIN - 1],
 static INLINE __m256i div4_avx2(const __m256i src) {
     __m256i sign, dst;
 
-    // get sign
+    /*!< get sign */
     sign = _mm256_srli_epi64(src, 63);
     sign = _mm256_sub_epi64(_mm256_setzero_si256(), sign);
 
-    // abs
+    /*!< abs */
     dst = _mm256_xor_si256(src, sign);
     dst = _mm256_sub_epi64(dst, sign);
 
-    // divide by 4
+    /*!< divide by 4 */
     dst = _mm256_srli_epi64(dst, 2);
 
-    // apply sign
+    /*!< apply sign */
     dst = _mm256_xor_si256(dst, sign);
     return _mm256_sub_epi64(dst, sign);
 }
@@ -726,18 +722,18 @@ static INLINE __m256i div4_avx2(const __m256i src) {
 static INLINE __m256i div16_avx2(const __m256i src) {
     __m256i sign, dst;
 
-    // get sign
+    /*!< get sign */
     sign = _mm256_srli_epi64(src, 63);
     sign = _mm256_sub_epi64(_mm256_setzero_si256(), sign);
 
-    // abs
+    /*!< abs */
     dst = _mm256_xor_si256(src, sign);
     dst = _mm256_sub_epi64(dst, sign);
 
-    // divide by 16
+    /*!< divide by 16 */
     dst = _mm256_srli_epi64(dst, 4);
 
-    // apply sign
+    /*!< apply sign */
     dst = _mm256_xor_si256(dst, sign);
     return _mm256_sub_epi64(dst, sign);
 }
@@ -776,8 +772,7 @@ static INLINE void div16_4x4_avx2(const int32_t wiener_win2, int64_t *const H, _
     _mm256_storeu_si256((__m256i *)(H + 3 * wiener_win2), out[3]);
 }
 
-// Transpose each 4x4 block starting from the second column, and save the needed
-// points only.
+/*!< Transpose each 4x4 block starting from the second column, and save the needed points only. */
 static INLINE void diagonal_copy_stats_avx2(const int32_t wiener_win2, int64_t *const H) {
     for (int32_t i = 0; i < wiener_win2 - 1; i += 4) {
         __m256i in[4], out[4];
@@ -812,10 +807,10 @@ static INLINE void diagonal_copy_stats_avx2(const int32_t wiener_win2, int64_t *
     }
 }
 
-// Transpose each 4x4 block starting from the second column, and save the needed
-// points only.
-// H[4 * k * wiener_win2 + 4 * k] on the diagonal is omitted, and must be
-// processed separately.
+/*!< Transpose each 4x4 block starting from the second column, and save the needed
+ *   points only.
+ *   H[4 * k * wiener_win2 + 4 * k] on the diagonal is omitted, and must be
+ *   processed separately. */
 static INLINE void div4_diagonal_copy_stats_avx2(const int32_t wiener_win2, int64_t *const H) {
     for (int32_t i = 0; i < wiener_win2 - 1; i += 4) {
         __m256i in[4], out[4];
@@ -842,10 +837,10 @@ static INLINE void div4_diagonal_copy_stats_avx2(const int32_t wiener_win2, int6
     }
 }
 
-// Transpose each 4x4 block starting from the second column, and save the needed
-// points only.
-// H[4 * k * wiener_win2 + 4 * k] on the diagonal is omitted, and must be
-// processed separately.
+/*!< Transpose each 4x4 block starting from the second column, and save the needed
+ *   points only.
+ *   H[4 * k * wiener_win2 + 4 * k] on the diagonal is omitted, and must be
+ *   processed separately. */
 static INLINE void div16_diagonal_copy_stats_avx2(const int32_t wiener_win2, int64_t *const H) {
     for (int32_t i = 0; i < wiener_win2 - 1; i += 4) {
         __m256i in[4], out[4];
@@ -886,8 +881,8 @@ static INLINE void compute_stats_win3_avx2(const int16_t *const d, const int32_t
     int32_t       i, j, x, y;
 
     if (bit_depth == AOM_BITS_8) {
-        // Step 1: Calculate the top edge of the whole matrix, i.e., the top
-        // edge of each triangle and square on the top row.
+        /*!< Step 1: Calculate the top edge of the whole matrix, i.e., the top
+         *   edge of each triangle and square on the top row. */
         j = 0;
         do {
             const int16_t *s_t                    = s;
@@ -922,12 +917,11 @@ static INLINE void compute_stats_win3_avx2(const int16_t *const d, const int32_t
             _mm_storel_epi64((__m128i *)&M[wiener_win * j + 2], _mm256_extracti128_si256(s_m, 1));
 
             const __m256i s_h = hadd_four_32_to_64_avx2(sum_h[0], sum_h[1], sum_h[2], sum_h[2]);
-            // Writing one more H on the top edge falls to the second row, so it
-            // won't overflow.
+            /*!< Writing one more H on the top edge falls to the second row, so it won't overflow. */
             _mm256_storeu_si256((__m256i *)(H + wiener_win * j), s_h);
         } while (++j < wiener_win);
 
-        // Step 2: Calculate the left edge of each square on the top row.
+        /*!< Step 2: Calculate the left edge of each square on the top row. */
         j = 1;
         do {
             const int16_t *d_t                        = d;
@@ -956,11 +950,11 @@ static INLINE void compute_stats_win3_avx2(const int16_t *const d, const int32_t
             _mm_storeh_epi64((__m128i *)&H[2 * wiener_win2 + j * wiener_win], sum);
         } while (++j < wiener_win);
     } else {
-        const int32_t num_bit_left = 32 - 1 /* sign */ - 2 * bit_depth /* energy */ + 3 /* SIMD */;
+        const int32_t num_bit_left = 32 - 1 /*!< sign */ - 2 * bit_depth /*!< energy */ + 3 /*!< SIMD */;
         const int32_t h_allowed    = (1 << num_bit_left) / (w16 + ((w16 != width) ? 16 : 0));
 
-        // Step 1: Calculate the top edge of the whole matrix, i.e., the top
-        // edge of each triangle and square on the top row.
+        /*!< Step 1: Calculate the top edge of the whole matrix, i.e., the top
+         *   edge of each triangle and square on the top row. */
         j = 0;
         do {
             const int16_t *s_t                    = s;
@@ -1013,12 +1007,11 @@ static INLINE void compute_stats_win3_avx2(const int16_t *const d, const int32_t
             _mm_storel_epi64((__m128i *)&M[wiener_win * j + 2], _mm256_extracti128_si256(s_m, 1));
 
             const __m256i s_h = hadd_four_64_avx2(sum_h[0], sum_h[1], sum_h[2], sum_h[2]);
-            // Writing one more H on the top edge falls to the second row, so it
-            // won't overflow.
+            /*!< Writing one more H on the top edge falls to the second row, so it won't overflow. */
             _mm256_storeu_si256((__m256i *)(H + wiener_win * j), s_h);
         } while (++j < wiener_win);
 
-        // Step 2: Calculate the left edge of each square on the top row.
+        /*!< Step 2: Calculate the left edge of each square on the top row. */
         j = 1;
         do {
             const int16_t *d_t                        = d;
@@ -1060,11 +1053,10 @@ static INLINE void compute_stats_win3_avx2(const int16_t *const d, const int32_t
         } while (++j < wiener_win);
     }
 
-    // Step 3: Derive the top edge of each triangle along the diagonal. No
-    // triangle in top row.
+    /*!< Step 3: Derive the top edge of each triangle along the diagonal. No triangle in top row. */
     {
         const int16_t *d_t       = d;
-        __m256i        dd        = _mm256_setzero_si256(); // Initialize to avoid warning.
+        __m256i        dd        = _mm256_setzero_si256(); /*!< Initialize to avoid warning. */
         __m256i        deltas[4] = {0};
         __m256i        delta;
 
@@ -1076,16 +1068,16 @@ static INLINE void compute_stats_win3_avx2(const int16_t *const d, const int32_t
         if (bit_depth < AOM_BITS_12) {
             step3_win3_avx2(&d_t, d_stride, width, h4, &dd, deltas);
 
-            // 00 00 10 10  00 00 10 10
-            // 01 01 11 11  01 01 11 11
-            // 02 02 12 12  02 02 12 12
-            deltas[0] = _mm256_hadd_epi32(deltas[0], deltas[1]); // 00 10 01 11  00 10 01 11
-            deltas[2] = _mm256_hadd_epi32(deltas[2], deltas[2]); // 02 12 02 12  02 12 02 12
-            const __m128i delta0 = sub_hi_lo_32_avx2(deltas[0]); // 00 10 01 11
-            const __m128i delta1 = sub_hi_lo_32_avx2(deltas[2]); // 02 12 02 12
+            /*!< 00 00 10 10  00 00 10 10
+             *   01 01 11 11  01 01 11 11
+             *   02 02 12 12  02 02 12 12 */
+            deltas[0] = _mm256_hadd_epi32(deltas[0], deltas[1]); /*!< 00 10 01 11  00 10 01 11 */
+            deltas[2] = _mm256_hadd_epi32(deltas[2], deltas[2]); /*!< 02 12 02 12  02 12 02 12 */
+            const __m128i delta0 = sub_hi_lo_32_avx2(deltas[0]); /*!< 00 10 01 11 */
+            const __m128i delta1 = sub_hi_lo_32_avx2(deltas[2]); /*!< 02 12 02 12 */
             delta                = _mm256_inserti128_si256(_mm256_castsi128_si256(delta0),
                                             delta1,
-                                            1); // 00 10 01 11  02 12 02 12
+                                            1); /*!< 00 10 01 11  02 12 02 12 */
         } else {
             int32_t h4_t = 0;
 
@@ -1096,11 +1088,11 @@ static INLINE void compute_stats_win3_avx2(const int16_t *const d, const int32_t
 
                 step3_win3_avx2(&d_t, d_stride, width, h_t, &dd, deltas_t);
 
-                deltas_t[0] = hsub_32x8_to_64x4_avx2(deltas_t[0]); // 00 00 10 10
-                deltas_t[1] = hsub_32x8_to_64x4_avx2(deltas_t[1]); // 01 01 11 11
-                deltas_t[2] = hsub_32x8_to_64x4_avx2(deltas_t[2]); // 02 02 12 12
-                deltas_t[0] = hadd_x_64_avx2(deltas_t[0], deltas_t[1]); // 00 10 01 11
-                deltas_t[2] = hadd_x_64_avx2(deltas_t[2], deltas_t[2]); // 02 12 02 12
+                deltas_t[0] = hsub_32x8_to_64x4_avx2(deltas_t[0]); /*!< 00 00 10 10 */
+                deltas_t[1] = hsub_32x8_to_64x4_avx2(deltas_t[1]); /*!< 01 01 11 11 */
+                deltas_t[2] = hsub_32x8_to_64x4_avx2(deltas_t[2]); /*!< 02 02 12 12 */
+                deltas_t[0] = hadd_x_64_avx2(deltas_t[0], deltas_t[1]); /*!< 00 10 01 11 */
+                deltas_t[2] = hadd_x_64_avx2(deltas_t[2], deltas_t[2]); /*!< 02 12 02 12 */
                 deltas[0]   = _mm256_add_epi64(deltas[0], deltas_t[0]);
                 deltas[1]   = _mm256_add_epi64(deltas[1], deltas_t[2]);
 
@@ -1111,9 +1103,9 @@ static INLINE void compute_stats_win3_avx2(const int16_t *const d, const int32_t
         }
 
         if (h4 != height) {
-            // 16-bit idx: 0, 2, 1, 3, 0, 2, 1, 3
+            /*!< 16-bit idx: 0, 2, 1, 3, 0, 2, 1, 3 */
             const __m128i shf0 = _mm_setr_epi8(0, 1, 4, 5, 2, 3, 6, 7, 0, 1, 4, 5, 2, 3, 6, 7);
-            // 16-bit idx: 0, 2, 1, 3, 4, 6, 5, 7, 0, 2, 1, 3, 4, 6, 5, 7
+            /*!< 16-bit idx: 0, 2, 1, 3, 4, 6, 5, 7, 0, 2, 1, 3, 4, 6, 5, 7 */
             const __m256i shf1 = _mm256_setr_epi8(0,
                                                   1,
                                                   4,
@@ -1156,32 +1148,32 @@ static INLINE void compute_stats_win3_avx2(const int16_t *const d, const int32_t
             do {
                 __m128i t0;
 
-                // -00s -01s 00e 01e
+                /*!< -00s -01s 00e 01e */
                 t0 = _mm_cvtsi32_si128(*(int32_t *)d_t);
                 t0 = _mm_sub_epi16(_mm_setzero_si128(), t0);
                 t0 = _mm_insert_epi32(t0, *(int32_t *)(d_t + width), 1);
                 t0 = _mm_shuffle_epi8(t0, shf0);
-                // -00s 00e -01s 01e -00s 00e -01s 01e  -00s 00e -01s 01e -00s
-                // 00e -01s 01e
+                /*!< -00s 00e -01s 01e -00s 00e -01s 01e  -00s 00e -01s 01e -00s
+                 *   00e -01s 01e */
                 const __m256i t = _mm256_inserti128_si256(_mm256_castsi128_si256(t0), t0, 1);
 
-                // 00s 01s 00e 01e 10s 11s 10e 11e  20s 21s 20e 21e xx xx xx xx
+                /*!< 00s 01s 00e 01e 10s 11s 10e 11e  20s 21s 20e 21e xx xx xx xx */
                 dd = _mm256_insert_epi32(dd, *(int32_t *)(d_t + 2 * d_stride), 4);
                 dd = _mm256_insert_epi32(dd, *(int32_t *)(d_t + 2 * d_stride + width), 5);
-                // 00s 00e 01s 01e 10s 10e 11s 11e  20s 20e 21e 21s xx xx xx xx
+                /*!< 00s 00e 01s 01e 10s 10e 11s 11e  20s 20e 21e 21s xx xx xx xx */
                 const __m256i dd_t = _mm256_shuffle_epi8(dd, shf1);
                 madd_avx2(t, dd_t, &delta);
 
-                dd = _mm256_permute4x64_epi64(dd, 0x39); // right shift 8 bytes
+                dd = _mm256_permute4x64_epi64(dd, 0x39); /*!< right shift 8 bytes */
                 d_t += d_stride;
             } while (--y);
         }
 
-        // Writing one more H on the top edge of a triangle along the diagonal
-        // falls to the next triangle in the same row, which would be calculated
-        // later, so it won't overflow.
+        /*!< Writing one more H on the top edge of a triangle along the diagonal
+         *   falls to the next triangle in the same row, which would be calculated
+         *   later, so it won't overflow. */
         if (bit_depth < AOM_BITS_12) {
-            // 00 01 02 02  10 11 12 12
+            /*!< 00 01 02 02  10 11 12 12 */
             delta = _mm256_permutevar8x32_epi32(delta, _mm256_setr_epi32(0, 2, 4, 6, 1, 3, 5, 7));
 
             update_4_stats_avx2(H + 0 * wiener_win * wiener_win2 + 0 * wiener_win,
@@ -1196,11 +1188,11 @@ static INLINE void compute_stats_win3_avx2(const int16_t *const d, const int32_t
             deltas[0]        = _mm256_add_epi64(deltas[0], d0);
             deltas[1]        = _mm256_add_epi64(deltas[1], d1);
 
-            deltas[2] = _mm256_unpacklo_epi64(deltas[0], deltas[1]); // 00 02 01 02
-            deltas[3] = _mm256_unpackhi_epi64(deltas[0], deltas[1]); // 10 12 11 12
+            deltas[2] = _mm256_unpacklo_epi64(deltas[0], deltas[1]); /*!< 00 02 01 02 */
+            deltas[3] = _mm256_unpackhi_epi64(deltas[0], deltas[1]); /*!< 10 12 11 12 */
 
-            deltas[2] = _mm256_permute4x64_epi64(deltas[2], 0xD8); // 00 01 02 02
-            deltas[3] = _mm256_permute4x64_epi64(deltas[3], 0xD8); // 10 11 12 12
+            deltas[2] = _mm256_permute4x64_epi64(deltas[2], 0xD8); /*!< 00 01 02 02 */
+            deltas[3] = _mm256_permute4x64_epi64(deltas[3], 0xD8); /*!< 10 11 12 12 */
 
             update_4_stats_highbd_avx2(H + 0 * wiener_win * wiener_win2 + 0 * wiener_win,
                                        deltas[2],
@@ -1211,19 +1203,18 @@ static INLINE void compute_stats_win3_avx2(const int16_t *const d, const int32_t
         }
     }
 
-    // Step 4: Derive the top and left edge of each square. No square in top and
-    // bottom row.
+    /*!< Step 4: Derive the top and left edge of each square. No square in top and bottom row. */
     {
         const int16_t *d_t                             = d;
         __m256i        deltas[2 * WIENER_WIN_3TAP - 1] = {0};
         __m256i        dd[WIENER_WIN_3TAP], ds[WIENER_WIN_3TAP];
         __m256i        se0, se1, xx, yy;
         __m256i        delta;
-        se0 = _mm256_setzero_si256(); // Initialize to avoid warning.
+        se0 = _mm256_setzero_si256(); /*!< Initialize to avoid warning. */
 
         y = 0;
         do {
-            // 00s 01s 10s 11s 20s 21s 30s 31s  00e 01e 10e 11e 20e 21e 30e 31e
+            /*!< 00s 01s 10s 11s 20s 21s 30s 31s  00e 01e 10e 11e 20e 21e 30e 31e */
             se0 = _mm256_insert_epi32(se0, *(int32_t *)(d_t + 0 * d_stride), 0);
             se0 = _mm256_insert_epi32(se0, *(int32_t *)(d_t + 0 * d_stride + width), 4);
             se0 = _mm256_insert_epi32(se0, *(int32_t *)(d_t + 1 * d_stride), 1);
@@ -1233,7 +1224,7 @@ static INLINE void compute_stats_win3_avx2(const int16_t *const d, const int32_t
             se0 = _mm256_insert_epi32(se0, *(int32_t *)(d_t + 3 * d_stride), 3);
             se0 = _mm256_insert_epi32(se0, *(int32_t *)(d_t + 3 * d_stride + width), 7);
 
-            // 40s 41s 50s 51s 60s 61s 70s 71s  40e 41e 50e 51e 60e 61e 70e 71e
+            /*!< 40s 41s 50s 51s 60s 61s 70s 71s  40e 41e 50e 51e 60e 61e 70e 71e */
             se1 = _mm256_insert_epi32(se0, *(int32_t *)(d_t + 4 * d_stride), 0);
             se1 = _mm256_insert_epi32(se1, *(int32_t *)(d_t + 4 * d_stride + width), 4);
             se1 = _mm256_insert_epi32(se1, *(int32_t *)(d_t + 5 * d_stride), 1);
@@ -1243,14 +1234,14 @@ static INLINE void compute_stats_win3_avx2(const int16_t *const d, const int32_t
             se1 = _mm256_insert_epi32(se1, *(int32_t *)(d_t + 7 * d_stride), 3);
             se1 = _mm256_insert_epi32(se1, *(int32_t *)(d_t + 7 * d_stride + width), 7);
 
-            // 00s 10s 20s 30s 40s 50s 60s 70s  00e 10e 20e 30e 40e 50e 60e 70e
+            /*!< 00s 10s 20s 30s 40s 50s 60s 70s  00e 10e 20e 30e 40e 50e 60e 70e */
             xx    = _mm256_slli_epi32(se0, 16);
             yy    = _mm256_slli_epi32(se1, 16);
             xx    = _mm256_srai_epi32(xx, 16);
             yy    = _mm256_srai_epi32(yy, 16);
             dd[0] = _mm256_packs_epi32(xx, yy);
 
-            // 01s 11s 21s 31s 41s 51s 61s 71s  01e 11e 21e 31e 41e 51e 61e 71e
+            /*!< 01s 11s 21s 31s 41s 51s 61s 71s  01e 11e 21e 31e 41e 51e 61e 71e */
             se0   = _mm256_srai_epi32(se0, 16);
             se1   = _mm256_srai_epi32(se1, 16);
             ds[0] = _mm256_packs_epi32(se0, se1);
@@ -1271,25 +1262,25 @@ static INLINE void compute_stats_win3_avx2(const int16_t *const d, const int32_t
         } while (y < h8);
 
         if (bit_depth < AOM_BITS_12) {
-            deltas[0] = _mm256_hadd_epi32(deltas[0], deltas[1]); // T0 T0 t1 t1  T0 T0 t1 t1
-            deltas[2] = _mm256_hadd_epi32(deltas[2], deltas[2]); // t2 t2 t2 t2  t2 t2 t2 t2
-            deltas[3] = _mm256_hadd_epi32(deltas[3], deltas[4]); // L0 L0 L1 L1  L0 L0 L1 L1
-            deltas[0] = _mm256_hadd_epi32(deltas[0], deltas[2]); // T0 t1 t2 t2  T0 t1 t2 t2
-            deltas[3] = _mm256_hadd_epi32(deltas[3], deltas[3]); // L0 L1 L0 L1  L0 L1 L0 L1
-            const __m128i delta0 = sub_hi_lo_32_avx2(deltas[0]); // T0 t1 t2 t2
-            const __m128i delta1 = sub_hi_lo_32_avx2(deltas[3]); // L0 L1 L0 L1
+            deltas[0] = _mm256_hadd_epi32(deltas[0], deltas[1]); /*!< T0 T0 t1 t1  T0 T0 t1 t1 */
+            deltas[2] = _mm256_hadd_epi32(deltas[2], deltas[2]); /*!< t2 t2 t2 t2  t2 t2 t2 t2 */
+            deltas[3] = _mm256_hadd_epi32(deltas[3], deltas[4]); /*!< L0 L0 L1 L1  L0 L0 L1 L1 */
+            deltas[0] = _mm256_hadd_epi32(deltas[0], deltas[2]); /*!< T0 t1 t2 t2  T0 t1 t2 t2 */
+            deltas[3] = _mm256_hadd_epi32(deltas[3], deltas[3]); /*!< L0 L1 L0 L1  L0 L1 L0 L1 */
+            const __m128i delta0 = sub_hi_lo_32_avx2(deltas[0]); /*!< T0 t1 t2 t2 */
+            const __m128i delta1 = sub_hi_lo_32_avx2(deltas[3]); /*!< L0 L1 L0 L1 */
             delta = _mm256_inserti128_si256(_mm256_castsi128_si256(delta0), delta1, 1);
         } else {
-            deltas[0] = hsub_32x8_to_64x4_avx2(deltas[0]); // T0 T0 T0 T0
-            deltas[1] = hsub_32x8_to_64x4_avx2(deltas[1]); // t1 t1 t1 t1
-            deltas[2] = hsub_32x8_to_64x4_avx2(deltas[2]); // t2 t2 t2 t2
-            deltas[3] = hsub_32x8_to_64x4_avx2(deltas[3]); // L0 L0 L0 L0
-            deltas[4] = hsub_32x8_to_64x4_avx2(deltas[4]); // L1 L1 L1 L1
-            deltas[0] = hadd_x_64_avx2(deltas[0], deltas[1]); // T0 T0 t1 t1
-            deltas[2] = hadd_x_64_avx2(deltas[2], deltas[2]); // t2 t2 t2 t2
-            deltas[3] = hadd_x_64_avx2(deltas[3], deltas[4]); // L0 L0 L1 L1
-            deltas[0] = hadd_x_64_avx2(deltas[0], deltas[2]); // T0 t1 t2 t2
-            deltas[1] = hadd_x_64_avx2(deltas[3], deltas[3]); // L0 L1 L0 L1
+            deltas[0] = hsub_32x8_to_64x4_avx2(deltas[0]); /*!< T0 T0 T0 T0 */
+            deltas[1] = hsub_32x8_to_64x4_avx2(deltas[1]); /*!< t1 t1 t1 t1 */
+            deltas[2] = hsub_32x8_to_64x4_avx2(deltas[2]); /*!< t2 t2 t2 t2 */
+            deltas[3] = hsub_32x8_to_64x4_avx2(deltas[3]); /*!< L0 L0 L0 L0 */
+            deltas[4] = hsub_32x8_to_64x4_avx2(deltas[4]); /*!< L1 L1 L1 L1 */
+            deltas[0] = hadd_x_64_avx2(deltas[0], deltas[1]); /*!< T0 T0 t1 t1 */
+            deltas[2] = hadd_x_64_avx2(deltas[2], deltas[2]); /*!< t2 t2 t2 t2 */
+            deltas[3] = hadd_x_64_avx2(deltas[3], deltas[4]); /*!< L0 L0 L1 L1 */
+            deltas[0] = hadd_x_64_avx2(deltas[0], deltas[2]); /*!< T0 t1 t2 t2 */
+            deltas[1] = hadd_x_64_avx2(deltas[3], deltas[3]); /*!< L0 L1 L0 L1 */
             delta     = _mm256_setzero_si256();
         }
 
@@ -1322,16 +1313,16 @@ static INLINE void compute_stats_win3_avx2(const int16_t *const d, const int32_t
 
                 madd_avx2(dd[0], ds[0], &delta);
 
-                // right shift 4 bytes
+                /*!< right shift 4 bytes */
                 dd[0] = _mm256_permutevar8x32_epi32(dd[0], perm);
                 ds[0] = _mm256_permutevar8x32_epi32(ds[0], perm);
                 d_t += d_stride;
             } while (++y < height);
         }
 
-        // Writing one more H on the top edge of a square falls to the next
-        // square in the same row or the first H in the next row, which would be
-        // calculated later, so it won't overflow.
+        /*!< Writing one more H on the top edge of a square falls to the next
+         *   square in the same row or the first H in the next row, which would be
+         *   calculated later, so it won't overflow. */
         if (bit_depth < AOM_BITS_12) {
             update_4_stats_avx2(H + 0 * wiener_win * wiener_win2 + 1 * wiener_win,
                                 _mm256_extracti128_si256(delta, 0),
@@ -1360,7 +1351,7 @@ static INLINE void compute_stats_win3_avx2(const int16_t *const d, const int32_t
         }
     }
 
-    // Step 5: Derive other points of each square. No square in bottom row.
+    /*!< Step 5: Derive other points of each square. No square in bottom row. */
     i = 0;
     do {
         const int16_t *const di = d + i;
@@ -1409,7 +1400,7 @@ static INLINE void compute_stats_win3_avx2(const int16_t *const d, const int32_t
         } while (++j < wiener_win);
     } while (++i < wiener_win - 1);
 
-    // Step 6: Derive other points of each upper triangle along the diagonal.
+    /*!< Step 6: Derive other points of each upper triangle along the diagonal. */
     i = 0;
     do {
         const int16_t *const di                                                  = d + i;
@@ -1470,8 +1461,8 @@ static INLINE void compute_stats_win5_avx2(const int16_t *const d, const int32_t
     int32_t       i, j, x, y;
 
     if (bit_depth == AOM_BITS_8) {
-        // Step 1: Calculate the top edge of the whole matrix, i.e., the top
-        // edge of each triangle and square on the top row.
+        /*!< Step 1: Calculate the top edge of the whole matrix, i.e., the top
+         *   edge of each triangle and square on the top row. */
         j = 0;
         do {
             const int16_t *s_t                      = s;
@@ -1511,7 +1502,7 @@ static INLINE void compute_stats_win5_avx2(const int16_t *const d, const int32_t
             _mm_storeh_epi64((__m128i *)&H[wiener_win * j + 4], s_m_h);
         } while (++j < wiener_win);
 
-        // Step 2: Calculate the left edge of each square on the top row.
+        /*!< Step 2: Calculate the left edge of each square on the top row. */
         j = 1;
         do {
             const int16_t *d_t                          = d;
@@ -1546,11 +1537,11 @@ static INLINE void compute_stats_win5_avx2(const int16_t *const d, const int32_t
                              _mm256_extracti128_si256(sum, 1));
         } while (++j < wiener_win);
     } else {
-        const int32_t num_bit_left = 32 - 1 /* sign */ - 2 * bit_depth /* energy */ + 3 /* SIMD */;
+        const int32_t num_bit_left = 32 - 1 /*!< sign */ - 2 * bit_depth /*!< energy */ + 3 /*!< SIMD */;
         const int32_t h_allowed    = (1 << num_bit_left) / (w16 + ((w16 != width) ? 16 : 0));
 
-        // Step 1: Calculate the top edge of the whole matrix, i.e., the top
-        // edge of each triangle and square on the top row.
+        /*!< Step 1: Calculate the top edge of the whole matrix, i.e., the top
+         *   edge of each triangle and square on the top row. */
         j = 0;
         do {
             const int16_t *s_t                      = s;
@@ -1612,7 +1603,7 @@ static INLINE void compute_stats_win5_avx2(const int16_t *const d, const int32_t
             _mm_storeh_epi64((__m128i *)&H[wiener_win * j + 4], s_m_h);
         } while (++j < wiener_win);
 
-        // Step 2: Calculate the left edge of each square on the top row.
+        /*!< Step 2: Calculate the left edge of each square on the top row. */
         j = 1;
         do {
             const int16_t *d_t                          = d;
@@ -1662,11 +1653,11 @@ static INLINE void compute_stats_win5_avx2(const int16_t *const d, const int32_t
         } while (++j < wiener_win);
     }
 
-    // Step 3: Derive the top edge of each triangle along the diagonal. No
-    // triangle in top row.
+    /*!< Step 3: Derive the top edge of each triangle along the diagonal. No
+     *   triangle in top row. */
     {
         const int16_t *d_t = d;
-        // 16-bit idx: 0, 4, 1, 5, 2, 6, 3, 7
+        /*!< 16-bit idx: 0, 4, 1, 5, 2, 6, 3, 7 */
         const __m256i shf                       = _mm256_setr_epi8(0,
                                              1,
                                              8,
@@ -1700,25 +1691,25 @@ static INLINE void compute_stats_win5_avx2(const int16_t *const d, const int32_t
                                              14,
                                              15);
         __m256i       deltas[WIENER_WIN_CHROMA] = {0};
-        __m256i       dd = _mm256_setzero_si256(); // Initialize to avoid warning.
+        __m256i       dd = _mm256_setzero_si256(); /*!< Initialize to avoid warning. */
         __m256i       ds[WIENER_WIN_CHROMA];
 
-        // 00s 01s 02s 03s 10s 11s 12s 13s  00e 01e 02e 03e 10e 11e 12e 13e
+        /*!< 00s 01s 02s 03s 10s 11s 12s 13s  00e 01e 02e 03e 10e 11e 12e 13e */
         dd = _mm256_insert_epi64(dd, *(int64_t *)(d_t + 0 * d_stride), 0);
         dd = _mm256_insert_epi64(dd, *(int64_t *)(d_t + 0 * d_stride + width), 2);
         dd = _mm256_insert_epi64(dd, *(int64_t *)(d_t + 1 * d_stride), 1);
         dd = _mm256_insert_epi64(dd, *(int64_t *)(d_t + 1 * d_stride + width), 3);
-        // 00s 10s 01s 11s 02s 12s 03s 13s  00e 10e 01e 11e 02e 12e 03e 13e
+        /*!< 00s 10s 01s 11s 02s 12s 03s 13s  00e 10e 01e 11e 02e 12e 03e 13e */
         ds[0] = _mm256_shuffle_epi8(dd, shf);
 
-        // 10s 11s 12s 13s 20s 21s 22s 23s  10e 11e 12e 13e 20e 21e 22e 23e
+        /*!< 10s 11s 12s 13s 20s 21s 22s 23s  10e 11e 12e 13e 20e 21e 22e 23e */
         load_more_64_avx2(d_t + 2 * d_stride, width, &dd);
-        // 10s 20s 11s 21s 12s 22s 13s 23s  10e 20e 11e 21e 12e 22e 13e 23e
+        /*!< 10s 20s 11s 21s 12s 22s 13s 23s  10e 20e 11e 21e 12e 22e 13e 23e */
         ds[1] = _mm256_shuffle_epi8(dd, shf);
 
-        // 20s 21s 22s 23s 30s 31s 32s 33s  20e 21e 22e 23e 30e 31e 32e 33e
+        /*!< 20s 21s 22s 23s 30s 31s 32s 33s  20e 21e 22e 23e 30e 31e 32e 33e */
         load_more_64_avx2(d_t + 3 * d_stride, width, &dd);
-        // 20s 30s 21s 31s 22s 32s 23s 33s  20e 30e 21e 31e 22e 32e 23e 33e
+        /*!< 20s 30s 21s 31s 22s 32s 23s 33s  20e 30e 21e 31e 22e 32e 23e 33e */
         ds[2] = _mm256_shuffle_epi8(dd, shf);
 
         if (bit_depth < AOM_BITS_12) {
@@ -1801,8 +1792,7 @@ static INLINE void compute_stats_win5_avx2(const int16_t *const d, const int32_t
         }
     }
 
-    // Step 4: Derive the top and left edge of each square. No square in top and
-    // bottom row.
+    /*!< Step 4: Derive the top and left edge of each square. No square in top and bottom row. */
     i = 1;
     do {
         j = i + 1;
@@ -1814,8 +1804,8 @@ static INLINE void compute_stats_win5_avx2(const int16_t *const d, const int32_t
             __m256i        deltas[2 * WIENER_WIN_CHROMA - 1] = {0};
             __m256i        dd[WIENER_WIN_CHROMA], ds[WIENER_WIN_CHROMA];
 
-            dd[0] = _mm256_setzero_si256(); // Initialize to avoid warning.
-            ds[0] = _mm256_setzero_si256(); // Initialize to avoid warning.
+            dd[0] = _mm256_setzero_si256(); /*!< Initialize to avoid warning. */
+            ds[0] = _mm256_setzero_si256(); /*!< Initialize to avoid warning. */
 
             dd[0] = _mm256_insert_epi16(dd[0], di[0 * d_stride], 0);
             dd[0] = _mm256_insert_epi16(dd[0], di[0 * d_stride + width], 8);
@@ -1837,8 +1827,8 @@ static INLINE void compute_stats_win5_avx2(const int16_t *const d, const int32_t
 
             y = 0;
             do {
-                // 00s 10s 20s 30s 40s 50s 60s 70s  00e 10e 20e 30e 40e 50e 60e
-                // 70e
+                /*!< 00s 10s 20s 30s 40s 50s 60s 70s  00e 10e 20e 30e 40e 50e 60e
+                 *   70e */
                 dd[0] = _mm256_insert_epi16(dd[0], di[4 * d_stride], 4);
                 dd[0] = _mm256_insert_epi16(dd[0], di[4 * d_stride + width], 12);
                 dd[0] = _mm256_insert_epi16(dd[0], di[5 * d_stride], 5);
@@ -1848,8 +1838,8 @@ static INLINE void compute_stats_win5_avx2(const int16_t *const d, const int32_t
                 dd[0] = _mm256_insert_epi16(dd[0], di[7 * d_stride], 7);
                 dd[0] = _mm256_insert_epi16(dd[0], di[7 * d_stride + width], 15);
 
-                // 01s 11s 21s 31s 41s 51s 61s 71s  01e 11e 21e 31e 41e 51e 61e
-                // 71e
+                /*!< 01s 11s 21s 31s 41s 51s 61s 71s  01e 11e 21e 31e 41e 51e 61e
+                 *   71e */
                 ds[0] = _mm256_insert_epi16(ds[0], d_j[4 * d_stride], 4);
                 ds[0] = _mm256_insert_epi16(ds[0], d_j[4 * d_stride + width], 12);
                 ds[0] = _mm256_insert_epi16(ds[0], d_j[5 * d_stride], 5);
@@ -1965,7 +1955,7 @@ static INLINE void compute_stats_win5_avx2(const int16_t *const d, const int32_t
                     madd_avx2(dd[0], ds[0], &delta);
                     madd_sse2(dd128, ds128, &delta128);
 
-                    // right shift 4 bytes
+                    /*!< right shift 4 bytes */
                     ds[0] = _mm256_permutevar8x32_epi32(ds[0], perm);
                     dd128 = _mm_srli_si128(dd128, 4);
                     di += d_stride;
@@ -2025,7 +2015,7 @@ static INLINE void compute_stats_win5_avx2(const int16_t *const d, const int32_t
         } while (++j < wiener_win);
     } while (++i < wiener_win - 1);
 
-    // Step 5: Derive other points of each square. No square in bottom row.
+    /*!< Step 5: Derive other points of each square. No square in bottom row. */
     i = 0;
     do {
         const int16_t *const di = d + i;
@@ -2098,7 +2088,7 @@ static INLINE void compute_stats_win5_avx2(const int16_t *const d, const int32_t
         } while (++j < wiener_win);
     } while (++i < wiener_win - 1);
 
-    // Step 6: Derive other points of each upper triangle along the diagonal.
+    /*!< Step 6: Derive other points of each upper triangle along the diagonal. */
     i = 0;
     do {
         const int16_t *const di                                                      = d + i;
@@ -2193,8 +2183,8 @@ static INLINE void compute_stats_win7_avx2(const int16_t *const d, const int32_t
     int32_t       i, j, x, y;
 
     if (bit_depth == AOM_BITS_8) {
-        // Step 1: Calculate the top edge of the whole matrix, i.e., the top
-        // edge of each triangle and square on the top row.
+        /*!< Step 1: Calculate the top edge of the whole matrix, i.e., the top
+         *   edge of each triangle and square on the top row. */
         j = 0;
         do {
             const int16_t *s_t               = s;
@@ -2234,12 +2224,12 @@ static INLINE void compute_stats_win7_avx2(const int16_t *const d, const int32_t
             const __m256i sh_0 = hadd_four_32_to_64_avx2(sum_h[0], sum_h[1], sum_h[2], sum_h[3]);
             const __m256i sh_1 = hadd_four_32_to_64_avx2(sum_h[4], sum_h[5], sum_h[6], sum_h[6]);
             _mm256_storeu_si256((__m256i *)(H + wiener_win * j + 0), sh_0);
-            // Writing one more H on the top edge falls to the second row, so it
-            // won't overflow.
+            /*!< Writing one more H on the top edge falls to the second row, so it
+             *   won't overflow. */
             _mm256_storeu_si256((__m256i *)(H + wiener_win * j + 4), sh_1);
         } while (++j < wiener_win);
 
-        // Step 2: Calculate the left edge of each square on the top row.
+        /*!< Step 2: Calculate the left edge of each square on the top row. */
         j = 1;
         do {
             const int16_t *d_t                   = d;
@@ -2278,11 +2268,11 @@ static INLINE void compute_stats_win7_avx2(const int16_t *const d, const int32_t
             _mm_storeh_epi64((__m128i *)&H[6 * wiener_win2 + j * wiener_win], sum45);
         } while (++j < wiener_win);
     } else {
-        const int32_t num_bit_left = 32 - 1 /* sign */ - 2 * bit_depth /* energy */ + 3 /* SIMD */;
+        const int32_t num_bit_left = 32 - 1 /*!< sign */ - 2 * bit_depth /*!< energy */ + 3 /*!< SIMD */;
         const int32_t h_allowed    = (1 << num_bit_left) / (w16 + ((w16 != width) ? 16 : 0));
 
-        // Step 1: Calculate the top edge of the whole matrix, i.e., the top
-        // edge of each triangle and square on the top row.
+        /*!< Step 1: Calculate the top edge of the whole matrix, i.e., the top
+         *   edge of each triangle and square on the top row. */
         j = 0;
         do {
             const int16_t *s_t               = s;
@@ -2348,12 +2338,12 @@ static INLINE void compute_stats_win7_avx2(const int16_t *const d, const int32_t
             const __m256i sh_0 = hadd_four_64_avx2(sum_h[0], sum_h[1], sum_h[2], sum_h[3]);
             const __m256i sh_1 = hadd_four_64_avx2(sum_h[4], sum_h[5], sum_h[6], sum_h[6]);
             _mm256_storeu_si256((__m256i *)(H + wiener_win * j + 0), sh_0);
-            // Writing one more H on the top edge falls to the second row, so it
-            // won't overflow.
+            /*!< Writing one more H on the top edge falls to the second row, so it
+             *   won't overflow. */
             _mm256_storeu_si256((__m256i *)(H + wiener_win * j + 4), sh_1);
         } while (++j < wiener_win);
 
-        // Step 2: Calculate the left edge of each square on the top row.
+        /*!< Step 2: Calculate the left edge of each square on the top row. */
         j = 1;
         do {
             const int16_t *d_t                   = d;
@@ -2409,20 +2399,20 @@ static INLINE void compute_stats_win7_avx2(const int16_t *const d, const int32_t
         } while (++j < wiener_win);
     }
 
-    // Step 3: Derive the top edge of each triangle along the diagonal. No
-    // triangle in top row.
+    /*!< Step 3: Derive the top edge of each triangle along the diagonal. No
+     *   triangle in top row. */
     {
         const int16_t *d_t = d;
-        // Pad to call transpose function.
+        /*!< Pad to call transpose function. */
         __m256i deltas[WIENER_WIN + 1] = {0};
         __m256i ds[WIENER_WIN];
 
-        // 00s 00e 01s 01e 02s 02e 03s 03e  04s 04e 05s 05e 06s 06e 07s 07e
-        // 10s 10e 11s 11e 12s 12e 13s 13e  14s 14e 15s 15e 16s 16e 17s 17e
-        // 20s 20e 21s 21e 22s 22e 23s 23e  24s 24e 25s 25e 26s 26e 27s 27e
-        // 30s 30e 31s 31e 32s 32e 33s 33e  34s 34e 35s 35e 36s 36e 37s 37e
-        // 40s 40e 41s 41e 42s 42e 43s 43e  44s 44e 45s 45e 46s 46e 47s 47e
-        // 50s 50e 51s 51e 52s 52e 53s 53e  54s 54e 55s 55e 56s 56e 57s 57e
+        /*!< 00s 00e 01s 01e 02s 02e 03s 03e  04s 04e 05s 05e 06s 06e 07s 07e
+         *   10s 10e 11s 11e 12s 12e 13s 13e  14s 14e 15s 15e 16s 16e 17s 17e
+         *   20s 20e 21s 21e 22s 22e 23s 23e  24s 24e 25s 25e 26s 26e 27s 27e
+         *   30s 30e 31s 31e 32s 32e 33s 33e  34s 34e 35s 35e 36s 36e 37s 37e
+         *   40s 40e 41s 41e 42s 42e 43s 43e  44s 44e 45s 45e 46s 46e 47s 47e
+         *   50s 50e 51s 51e 52s 52e 53s 53e  54s 54e 55s 55e 56s 56e 57s 57e */
         ds[0] = load_win7_avx2(d_t + 0 * d_stride, width);
         ds[1] = load_win7_avx2(d_t + 1 * d_stride, width);
         ds[2] = load_win7_avx2(d_t + 2 * d_stride, width);
@@ -2529,8 +2519,7 @@ static INLINE void compute_stats_win7_avx2(const int16_t *const d, const int32_t
         }
     }
 
-    // Step 4: Derive the top and left edge of each square. No square in top and
-    // bottom row.
+    /*!< Step 4: Derive the top and left edge of each square. No square in top and bottom row. */
     i = 1;
     do {
         j = i + 1;
@@ -2540,8 +2529,8 @@ static INLINE void compute_stats_win7_avx2(const int16_t *const d, const int32_t
             __m256i        deltas[2 * WIENER_WIN - 1] = {0};
             __m256i        deltas_t[8], deltas_tt[4];
             __m256i        dd[WIENER_WIN], ds[WIENER_WIN];
-            dd[0] = _mm256_setzero_si256(); // Initialize to avoid warning.
-            ds[0] = _mm256_setzero_si256(); // Initialize to avoid warning.
+            dd[0] = _mm256_setzero_si256(); /*!< Initialize to avoid warning. */
+            ds[0] = _mm256_setzero_si256(); /*!< Initialize to avoid warning. */
 
             dd[0] = _mm256_insert_epi16(dd[0], di[0 * d_stride], 0);
             dd[0] = _mm256_insert_epi16(dd[0], di[0 * d_stride + width], 8);
@@ -2571,16 +2560,16 @@ static INLINE void compute_stats_win7_avx2(const int16_t *const d, const int32_t
 
             y = 0;
             do {
-                // 00s 10s 20s 30s 40s 50s 60s 70s  00e 10e 20e 30e 40e 50e 60e
-                // 70e
+                /*!< 00s 10s 20s 30s 40s 50s 60s 70s  00e 10e 20e 30e 40e 50e 60e
+                 *   70e */
                 dd[0] = _mm256_insert_epi16(dd[0], di[6 * d_stride], 6);
                 dd[0] = _mm256_insert_epi16(dd[0], di[6 * d_stride + width], 14);
                 dd[0] = _mm256_insert_epi16(dd[0], di[7 * d_stride], 7);
                 dd[0] = _mm256_insert_epi16(dd[0], di[7 * d_stride + width], 15);
 
-                // 00s 10s 20s 30s 40s 50s 60s 70s  00e 10e 20e 30e 40e 50e 60e
-                // 70e 01s 11s 21s 31s 41s 51s 61s 71s  01e 11e 21e 31e 41e 51e
-                // 61e 71e
+                /*!< 00s 10s 20s 30s 40s 50s 60s 70s  00e 10e 20e 30e 40e 50e 60e
+                 *   70e 01s 11s 21s 31s 41s 51s 61s 71s  01e 11e 21e 31e 41e 51e
+                 *   61e 71e */
                 ds[0] = _mm256_insert_epi16(ds[0], d_j[6 * d_stride], 6);
                 ds[0] = _mm256_insert_epi16(ds[0], d_j[6 * d_stride + width], 14);
                 ds[0] = _mm256_insert_epi16(ds[0], d_j[7 * d_stride], 7);
@@ -2721,7 +2710,7 @@ static INLINE void compute_stats_win7_avx2(const int16_t *const d, const int32_t
                     madd_avx2(dd[0], ds[0], &deltas[0]);
                     madd_avx2(dd[2], ds[2], &deltas[1]);
 
-                    // right shift 4 bytes
+                    /*!< right shift 4 bytes */
                     dd[2] = _mm256_permutevar8x32_epi32(dd[2], perm);
                     ds[0] = _mm256_permutevar8x32_epi32(ds[0], perm);
                     di += d_stride;
@@ -2729,9 +2718,9 @@ static INLINE void compute_stats_win7_avx2(const int16_t *const d, const int32_t
                 } while (++y < height);
             }
 
-            // Writing one more H on the top edge of a square falls to the next
-            // square in the same row or the first H in the next row, which
-            // would be calculated later, so it won't overflow.
+            /*!< Writing one more H on the top edge of a square falls to the next
+             *   square in the same row or the first H in the next row, which
+             *   would be calculated later, so it won't overflow. */
             if (bit_depth < AOM_BITS_12) {
                 update_8_stats_avx2(H + (i - 1) * wiener_win * wiener_win2 + (j - 1) * wiener_win,
                                     deltas[0],
@@ -2797,7 +2786,7 @@ static INLINE void compute_stats_win7_avx2(const int16_t *const d, const int32_t
         } while (++j < wiener_win);
     } while (++i < wiener_win - 1);
 
-    // Step 5: Derive other points of each square. No square in bottom row.
+    /*!< Step 5: Derive other points of each square. No square in bottom row. */
     i = 0;
     do {
         const int16_t *const di = d + i;
@@ -2890,7 +2879,7 @@ static INLINE void compute_stats_win7_avx2(const int16_t *const d, const int32_t
         } while (++j < wiener_win);
     } while (++i < wiener_win - 1);
 
-    // Step 6: Derive other points of each upper triangle along the diagonal.
+    /*!< Step 6: Derive other points of each upper triangle along the diagonal. */
     i = 0;
     do {
         const int16_t *const di                                        = d + i;
@@ -2925,7 +2914,7 @@ static INLINE void compute_stats_win7_avx2(const int16_t *const d, const int32_t
         }
 
         if (bit_depth < AOM_BITS_12) {
-            // Row 1: 6 points
+            /*!< Row 1: 6 points */
             hadd_update_6_stats_avx2(H + (i * wiener_win + 0) * wiener_win2 + i * wiener_win,
                                      deltas,
                                      H + (i * wiener_win + 1) * wiener_win2 + i * wiener_win + 1);
@@ -2937,7 +2926,7 @@ static INLINE void compute_stats_win7_avx2(const int16_t *const d, const int32_t
             const __m128i delta2 = _mm_cvtepi32_epi64(delta0);
             const __m128i delta3 = _mm_cvtepi32_epi64(delta1);
 
-            // Row 2: 5 points
+            /*!< Row 2: 5 points */
             hadd_update_4_stats_avx2(H + (i * wiener_win + 1) * wiener_win2 + i * wiener_win + 1,
                                      deltas + 6,
                                      H + (i * wiener_win + 2) * wiener_win2 + i * wiener_win + 2);
@@ -2945,12 +2934,12 @@ static INLINE void compute_stats_win7_avx2(const int16_t *const d, const int32_t
                 H[(i * wiener_win + 1) * wiener_win2 + i * wiener_win + 5] +
                 _mm_extract_epi32(delta0, 3);
 
-            // Row 3: 4 points
+            /*!< Row 3: 4 points */
             hadd_update_4_stats_avx2(H + (i * wiener_win + 2) * wiener_win2 + i * wiener_win + 2,
                                      deltas + 11,
                                      H + (i * wiener_win + 3) * wiener_win2 + i * wiener_win + 3);
 
-            // Row 4: 3 points
+            /*!< Row 4: 3 points */
             update_2_stats_sse2(H + (i * wiener_win + 3) * wiener_win2 + i * wiener_win + 3,
                                 delta2,
                                 H + (i * wiener_win + 4) * wiener_win2 + i * wiener_win + 4);
@@ -2958,17 +2947,17 @@ static INLINE void compute_stats_win7_avx2(const int16_t *const d, const int32_t
                 H[(i * wiener_win + 3) * wiener_win2 + i * wiener_win + 5] +
                 _mm_extract_epi32(delta0, 2);
 
-            // Row 5: 2 points
+            /*!< Row 5: 2 points */
             update_2_stats_sse2(H + (i * wiener_win + 4) * wiener_win2 + i * wiener_win + 4,
                                 delta3,
                                 H + (i * wiener_win + 5) * wiener_win2 + i * wiener_win + 5);
 
-            // Row 6: 1 points
+            /*!< Row 6: 1 points */
             H[(i * wiener_win + 6) * wiener_win2 + i * wiener_win + 6] =
                 H[(i * wiener_win + 5) * wiener_win2 + i * wiener_win + 5] +
                 _mm_extract_epi32(delta1, 2);
         } else {
-            // Row 1: 6 points
+            /*!< Row 1: 6 points */
             hadd_update_6_stats_highbd_avx2(
                 H + (i * wiener_win + 0) * wiener_win2 + i * wiener_win,
                 deltas,
@@ -2979,7 +2968,7 @@ static INLINE void compute_stats_win7_avx2(const int16_t *const d, const int32_t
             const __m256i delta1 =
                 hadd_four_31_to_64_avx2(deltas[18], deltas[19], deltas[20], deltas[20]);
 
-            // Row 2: 5 points
+            /*!< Row 2: 5 points */
             hadd_update_4_stats_highbd_avx2(
                 H + (i * wiener_win + 1) * wiener_win2 + i * wiener_win + 1,
                 deltas + 6,
@@ -2988,13 +2977,13 @@ static INLINE void compute_stats_win7_avx2(const int16_t *const d, const int32_t
                 H[(i * wiener_win + 1) * wiener_win2 + i * wiener_win + 5] +
                 _mm256_extract_epi64(delta0, 3);
 
-            // Row 3: 4 points
+            /*!< Row 3: 4 points */
             hadd_update_4_stats_highbd_avx2(
                 H + (i * wiener_win + 2) * wiener_win2 + i * wiener_win + 2,
                 deltas + 11,
                 H + (i * wiener_win + 3) * wiener_win2 + i * wiener_win + 3);
 
-            // Row 4: 3 points
+            /*!< Row 4: 3 points */
             update_2_stats_sse2(H + (i * wiener_win + 3) * wiener_win2 + i * wiener_win + 3,
                                 _mm256_extracti128_si256(delta0, 0),
                                 H + (i * wiener_win + 4) * wiener_win2 + i * wiener_win + 4);
@@ -3002,12 +2991,12 @@ static INLINE void compute_stats_win7_avx2(const int16_t *const d, const int32_t
                 H[(i * wiener_win + 3) * wiener_win2 + i * wiener_win + 5] +
                 _mm256_extract_epi64(delta0, 2);
 
-            // Row 5: 2 points
+            /*!< Row 5: 2 points */
             update_2_stats_sse2(H + (i * wiener_win + 4) * wiener_win2 + i * wiener_win + 4,
                                 _mm256_extracti128_si256(delta1, 0),
                                 H + (i * wiener_win + 5) * wiener_win2 + i * wiener_win + 5);
 
-            // Row 6: 1 points
+            /*!< Row 6: 1 points */
             H[(i * wiener_win + 6) * wiener_win2 + i * wiener_win + 6] =
                 H[(i * wiener_win + 5) * wiener_win2 + i * wiener_win + 5] +
                 _mm256_extract_epi64(delta1, 2);
@@ -3027,10 +3016,9 @@ void eb_av1_compute_stats_avx2(int32_t wiener_win, const uint8_t *dgd, const uin
     const int32_t s_stride = (width + 15) & ~15;
     int16_t *     d, *s;
 
-    // The maximum input size is width * height, which is
-    // (9 / 4) * RESTORATION_UNITSIZE_MAX * RESTORATION_UNITSIZE_MAX. Enlarge to
-    // 3 * RESTORATION_UNITSIZE_MAX * RESTORATION_UNITSIZE_MAX considering
-    // paddings.
+    /*!< The maximum input size is width * height, which is
+     *   (9 / 4) * RESTORATION_UNITSIZE_MAX * RESTORATION_UNITSIZE_MAX. Enlarge to
+     *   3 * RESTORATION_UNITSIZE_MAX * RESTORATION_UNITSIZE_MAX considering paddings. */
     d = eb_aom_memalign(32, sizeof(*d) * 6 * RESTORATION_UNITSIZE_MAX * RESTORATION_UNITSIZE_MAX);
     s = d + 3 * RESTORATION_UNITSIZE_MAX * RESTORATION_UNITSIZE_MAX;
 
@@ -3055,8 +3043,8 @@ void eb_av1_compute_stats_avx2(int32_t wiener_win, const uint8_t *dgd, const uin
         compute_stats_win3_avx2(d, d_stride, s, s_stride, width, height, M, H, 8);
     }
 
-    // H is a symmetric matrix, so we only need to fill out the upper triangle.
-    // We can copy it down to the lower triangle outside the (i, j) loops.
+    /*!< H is a symmetric matrix, so we only need to fill out the upper triangle.
+     *   We can copy it down to the lower triangle outside the (i, j) loops. */
     diagonal_copy_stats_avx2(wiener_win2, H);
 
     eb_aom_free(d);
@@ -3081,10 +3069,9 @@ void eb_av1_compute_stats_highbd_avx2(int32_t wiener_win, const uint8_t *dgd8, c
 
     assert(!(height % 2));
 
-    // The maximum input size is width * height, which is
-    // (9 / 4) * RESTORATION_UNITSIZE_MAX * RESTORATION_UNITSIZE_MAX. Enlarge to
-    // 3 * RESTORATION_UNITSIZE_MAX * RESTORATION_UNITSIZE_MAX considering
-    // paddings.
+    /*!< The maximum input size is width * height, which is
+     *   (9 / 4) * RESTORATION_UNITSIZE_MAX * RESTORATION_UNITSIZE_MAX. Enlarge to
+     *   3 * RESTORATION_UNITSIZE_MAX * RESTORATION_UNITSIZE_MAX considering paddings. */
     d = eb_aom_memalign(32, sizeof(*d) * 6 * RESTORATION_UNITSIZE_MAX * RESTORATION_UNITSIZE_MAX);
     s = d + 3 * RESTORATION_UNITSIZE_MAX * RESTORATION_UNITSIZE_MAX;
 
@@ -3108,8 +3095,8 @@ void eb_av1_compute_stats_highbd_avx2(int32_t wiener_win, const uint8_t *dgd8, c
         compute_stats_win3_avx2(d, d_stride, s, s_stride, width, height, M, H, bit_depth);
     }
 
-    // H is a symmetric matrix, so we only need to fill out the upper triangle.
-    // We can copy it down to the lower triangle outside the (i, j) loops.
+    /*!< H is a symmetric matrix, so we only need to fill out the upper triangle.
+     *   We can copy it down to the lower triangle outside the (i, j) loops. */
     if (bit_depth == AOM_BITS_8) {
         diagonal_copy_stats_avx2(wiener_win2, H);
     } else if (bit_depth == AOM_BITS_10) {
@@ -3293,63 +3280,63 @@ int64_t eb_av1_highbd_pixel_proj_error_avx2(const uint8_t *src8, int32_t width, 
     const uint16_t *src      = CONVERT_TO_SHORTPTR(src8);
     const uint16_t *dat      = CONVERT_TO_SHORTPTR(dat8);
     int64_t         err      = 0;
-    if (params->r[0] > 0 && params->r[1] > 0) { // Both filters are enabled
+    if (params->r[0] > 0 && params->r[1] > 0) { /*!< Both filters are enabled */
         const __m256i xq0 = _mm256_set1_epi32(xq[0]);
         const __m256i xq1 = _mm256_set1_epi32(xq[1]);
         for (i = 0; i < height; ++i) {
             __m256i sum32 = _mm256_setzero_si256();
-            for (j = 0; j <= width - 16; j += 16) { // Process 16 pixels at a time
-                // Load 16 pixels each from source image and corrupted image
+            for (j = 0; j <= width - 16; j += 16) { /*!< Process 16 pixels at a time */
+                /*!< Load 16 pixels each from source image and corrupted image */
                 const __m256i s0 = yy_loadu_256(src + j);
                 const __m256i d0 = yy_loadu_256(dat + j);
-                // s0 = [15 14 13 12 11 10 9 8] [7 6 5 4 3 2 1 0] as u16 (indices)
+                /*!< s0 = [15 14 13 12 11 10 9 8] [7 6 5 4 3 2 1 0] as u16 (indices) */
 
-                // Shift-up each pixel to match filtered image scaling
+                /*!< Shift-up each pixel to match filtered image scaling */
                 const __m256i u0 = _mm256_slli_epi16(d0, SGRPROJ_RST_BITS);
 
-                // Split u0 into two halves and pad each from u16 to i32
+                /*!< Split u0 into two halves and pad each from u16 to i32 */
                 const __m256i u0l = _mm256_cvtepu16_epi32(_mm256_castsi256_si128(u0));
                 const __m256i u0h = _mm256_cvtepu16_epi32(_mm256_extracti128_si256(u0, 1));
-                // u0h, u0l = [15 14 13 12] [11 10 9 8], [7 6 5 4] [3 2 1 0] as u32
+                /*!< u0h, u0l = [15 14 13 12] [11 10 9 8], [7 6 5 4] [3 2 1 0] as u32 */
 
-                // Load 16 pixels from each filtered image
+                /*!< Load 16 pixels from each filtered image */
                 const __m256i flt0l = yy_loadu_256(flt0 + j);
                 const __m256i flt0h = yy_loadu_256(flt0 + j + 8);
                 const __m256i flt1l = yy_loadu_256(flt1 + j);
                 const __m256i flt1h = yy_loadu_256(flt1 + j + 8);
-                // flt?l, flt?h = [15 14 13 12] [11 10 9 8], [7 6 5 4] [3 2 1 0] as u32
+                /*!< flt?l, flt?h = [15 14 13 12] [11 10 9 8], [7 6 5 4] [3 2 1 0] as u32 */
 
-                // Subtract shifted corrupt image from each filtered image
+                /*!< Subtract shifted corrupt image from each filtered image */
                 const __m256i flt0l_subu = _mm256_sub_epi32(flt0l, u0l);
                 const __m256i flt0h_subu = _mm256_sub_epi32(flt0h, u0h);
                 const __m256i flt1l_subu = _mm256_sub_epi32(flt1l, u0l);
                 const __m256i flt1h_subu = _mm256_sub_epi32(flt1h, u0h);
 
-                // Multiply basis vectors by appropriate coefficients
+                /*!< Multiply basis vectors by appropriate coefficients */
                 const __m256i v0l = _mm256_mullo_epi32(flt0l_subu, xq0);
                 const __m256i v0h = _mm256_mullo_epi32(flt0h_subu, xq0);
                 const __m256i v1l = _mm256_mullo_epi32(flt1l_subu, xq1);
                 const __m256i v1h = _mm256_mullo_epi32(flt1h_subu, xq1);
 
-                // Add together the contributions from the two basis vectors
+                /*!< Add together the contributions from the two basis vectors */
                 const __m256i vl = _mm256_add_epi32(v0l, v1l);
                 const __m256i vh = _mm256_add_epi32(v0h, v1h);
 
-                // Right-shift v with appropriate rounding
+                /*!< Right-shift v with appropriate rounding */
                 const __m256i vrl = _mm256_srai_epi32(_mm256_add_epi32(vl, rounding), shift);
                 const __m256i vrh = _mm256_srai_epi32(_mm256_add_epi32(vh, rounding), shift);
-                // vrh, vrl = [15 14 13 12] [11 10 9 8], [7 6 5 4] [3 2 1 0]
+                /*!< vrh, vrl = [15 14 13 12] [11 10 9 8], [7 6 5 4] [3 2 1 0] */
 
-                // Saturate each i32 to an i16 then combine both halves
-                // The permute (control=[3 1 2 0]) fixes weird ordering from AVX lanes
+                /*!< Saturate each i32 to an i16 then combine both halves
+                 *   The permute (control=[3 1 2 0]) fixes weird ordering from AVX lanes */
                 const __m256i vr = _mm256_permute4x64_epi64(_mm256_packs_epi32(vrl, vrh), 0xd8);
-                // intermediate = [15 14 13 12 7 6 5 4] [11 10 9 8 3 2 1 0]
-                // vr = [15 14 13 12 11 10 9 8] [7 6 5 4 3 2 1 0]
+                /*!< intermediate = [15 14 13 12 7 6 5 4] [11 10 9 8 3 2 1 0] */
+                /*!< vr = [15 14 13 12 11 10 9 8] [7 6 5 4 3 2 1 0] */
 
-                // Add twin-subspace-sgr-filter to corrupt image then subtract source
+                /*!< Add twin-subspace-sgr-filter to corrupt image then subtract source */
                 const __m256i e0 = _mm256_sub_epi16(_mm256_add_epi16(vr, d0), s0);
 
-                // Calculate squared error and add adjacent values
+                /*!< Calculate squared error and add adjacent values */
                 const __m256i err0 = _mm256_madd_epi16(e0, e0);
 
                 sum32 = _mm256_add_epi32(sum32, err0);
@@ -3360,7 +3347,7 @@ int64_t eb_av1_highbd_pixel_proj_error_avx2(const uint8_t *src8, int32_t width, 
             const __m256i sum32h = _mm256_cvtepu32_epi64(_mm256_extracti128_si256(sum32, 1));
             sum64                = _mm256_add_epi64(sum64, sum32h);
 
-            // Process remaining pixels in this row (modulo 16)
+            /*!< Process remaining pixels in this row (modulo 16) */
             for (k = j; k < width; ++k) {
                 const int32_t u = (int32_t)(dat[k] << SGRPROJ_RST_BITS);
                 int32_t       v = xq[0] * (flt0[k] - u) + xq[1] * (flt1[k] - u);
@@ -3372,7 +3359,7 @@ int64_t eb_av1_highbd_pixel_proj_error_avx2(const uint8_t *src8, int32_t width, 
             flt0 += flt0_stride;
             flt1 += flt1_stride;
         }
-    } else if (params->r[0] > 0 || params->r[1] > 0) { // Only one filter enabled
+    } else if (params->r[0] > 0 || params->r[1] > 0) { /*!< Only one filter enabled */
         const int32_t  xq_on       = (params->r[0] > 0) ? xq[0] : xq[1];
         const __m256i  xq_active   = _mm256_set1_epi32(xq_on);
         const __m256i  xq_inactive = _mm256_set1_epi32(-xq_on * (1 << SGRPROJ_RST_BITS));
@@ -3381,21 +3368,21 @@ int64_t eb_av1_highbd_pixel_proj_error_avx2(const uint8_t *src8, int32_t width, 
         for (i = 0; i < height; ++i) {
             __m256i sum32 = _mm256_setzero_si256();
             for (j = 0; j <= width - 16; j += 16) {
-                // Load 16 pixels from source image
+                /*!< Load 16 pixels from source image */
                 const __m256i s0 = yy_loadu_256(src + j);
-                // s0 = [15 14 13 12 11 10 9 8] [7 6 5 4 3 2 1 0] as u16
+                /*!< s0 = [15 14 13 12 11 10 9 8] [7 6 5 4 3 2 1 0] as u16 */
 
-                // Load 16 pixels from corrupted image and pad each u16 to i32
+                /*!< Load 16 pixels from corrupted image and pad each u16 to i32 */
                 const __m256i d0  = yy_loadu_256(dat + j);
                 const __m256i d0h = _mm256_cvtepu16_epi32(_mm256_extracti128_si256(d0, 1));
                 const __m256i d0l = _mm256_cvtepu16_epi32(_mm256_castsi256_si128(d0));
-                // d0 = [15 14 13 12 11 10 9 8] [7 6 5 4 3 2 1 0] as u16
-                // d0h, d0l = [15 14 13 12] [11 10 9 8], [7 6 5 4] [3 2 1 0] as i32
+                /*!< d0 = [15 14 13 12 11 10 9 8] [7 6 5 4 3 2 1 0] as u16 */
+                /*!< d0h, d0l = [15 14 13 12] [11 10 9 8], [7 6 5 4] [3 2 1 0] as i32 */
 
-                // Load 16 pixels from the filtered image
+                /*!< Load 16 pixels from the filtered image */
                 const __m256i flth = yy_loadu_256(flt + j + 8);
                 const __m256i fltl = yy_loadu_256(flt + j);
-                // flth, fltl = [15 14 13 12] [11 10 9 8], [7 6 5 4] [3 2 1 0] as i32
+                /*!< flth, fltl = [15 14 13 12] [11 10 9 8], [7 6 5 4] [3 2 1 0] as i32 */
 
                 const __m256i flth_xq = _mm256_mullo_epi32(flth, xq_active);
                 const __m256i fltl_xq = _mm256_mullo_epi32(fltl, xq_active);
@@ -3405,21 +3392,21 @@ int64_t eb_av1_highbd_pixel_proj_error_avx2(const uint8_t *src8, int32_t width, 
                 const __m256i vh = _mm256_add_epi32(flth_xq, d0h_xq);
                 const __m256i vl = _mm256_add_epi32(fltl_xq, d0l_xq);
 
-                // Shift this down with appropriate rounding
+                /*!< Shift this down with appropriate rounding */
                 const __m256i vrh = _mm256_srai_epi32(_mm256_add_epi32(vh, rounding), shift);
                 const __m256i vrl = _mm256_srai_epi32(_mm256_add_epi32(vl, rounding), shift);
-                // vrh, vrl = [15 14 13 12] [11 10 9 8], [7 6 5 4] [3 2 1 0] as i32
+                /*!< vrh, vrl = [15 14 13 12] [11 10 9 8], [7 6 5 4] [3 2 1 0] as i32 */
 
-                // Saturate each i32 to an i16 then combine both halves
-                // The permute (control=[3 1 2 0]) fixes weird ordering from AVX lanes
+                /*!< Saturate each i32 to an i16 then combine both halves
+                 *   The permute (control=[3 1 2 0]) fixes weird ordering from AVX lanes */
                 const __m256i vr = _mm256_permute4x64_epi64(_mm256_packs_epi32(vrl, vrh), 0xd8);
-                // intermediate = [15 14 13 12 7 6 5 4] [11 10 9 8 3 2 1 0] as u16
-                // vr = [15 14 13 12 11 10 9 8] [7 6 5 4 3 2 1 0] as u16
+                /*!< intermediate = [15 14 13 12 7 6 5 4] [11 10 9 8 3 2 1 0] as u16 */
+                /*!< vr = [15 14 13 12 11 10 9 8] [7 6 5 4 3 2 1 0] as u16 */
 
-                // Subtract twin-subspace-sgr filtered from source image to get error
+                /*!< Subtract twin-subspace-sgr filtered from source image to get error */
                 const __m256i e0 = _mm256_sub_epi16(_mm256_add_epi16(vr, d0), s0);
 
-                // Calculate squared error and add adjacent values
+                /*!< Calculate squared error and add adjacent values */
                 const __m256i err0 = _mm256_madd_epi16(e0, e0);
 
                 sum32 = _mm256_add_epi32(sum32, err0);
@@ -3430,7 +3417,7 @@ int64_t eb_av1_highbd_pixel_proj_error_avx2(const uint8_t *src8, int32_t width, 
             const __m256i sum32h = _mm256_cvtepu32_epi64(_mm256_extracti128_si256(sum32, 1));
             sum64                = _mm256_add_epi64(sum64, sum32h);
 
-            // Process remaining pixels in this row (modulo 16)
+            /*!< Process remaining pixels in this row (modulo 16) */
             for (k = j; k < width; ++k) {
                 const int32_t u = (int32_t)(dat[k] << SGRPROJ_RST_BITS);
                 int32_t       v = xq_on * (flt[k] - u);
@@ -3441,23 +3428,23 @@ int64_t eb_av1_highbd_pixel_proj_error_avx2(const uint8_t *src8, int32_t width, 
             src += src_stride;
             flt += flt_stride;
         }
-    } else { // Neither filter is enabled
+    } else { /*!< Neither filter is enabled */
         for (i = 0; i < height; ++i) {
             __m256i sum32 = _mm256_setzero_si256();
             for (j = 0; j <= width - 32; j += 32) {
-                // Load 2x16 u16 from source image
+                /*!< Load 2x16 u16 from source image */
                 const __m256i s0l = yy_loadu_256(src + j);
                 const __m256i s0h = yy_loadu_256(src + j + 16);
 
-                // Load 2x16 u16 from corrupted image
+                /*!< Load 2x16 u16 from corrupted image */
                 const __m256i d0l = yy_loadu_256(dat + j);
                 const __m256i d0h = yy_loadu_256(dat + j + 16);
 
-                // Subtract corrupted image from source image
+                /*!< Subtract corrupted image from source image */
                 const __m256i diffl = _mm256_sub_epi16(d0l, s0l);
                 const __m256i diffh = _mm256_sub_epi16(d0h, s0h);
 
-                // Square error and add adjacent values
+                /*!< Square error and add adjacent values */
                 const __m256i err0l = _mm256_madd_epi16(diffl, diffl);
                 const __m256i err0h = _mm256_madd_epi16(diffh, diffh);
 
@@ -3470,7 +3457,7 @@ int64_t eb_av1_highbd_pixel_proj_error_avx2(const uint8_t *src8, int32_t width, 
             const __m256i sum32h = _mm256_cvtepu32_epi64(_mm256_extracti128_si256(sum32, 1));
             sum64                = _mm256_add_epi64(sum64, sum32h);
 
-            // Process remaining pixels (modulu 16)
+            /*!< Process remaining pixels (modulu 16) */
             for (k = j; k < width; ++k) {
                 const int32_t e = (int32_t)(dat[k]) - src[k];
                 err += e * e;
@@ -3480,7 +3467,7 @@ int64_t eb_av1_highbd_pixel_proj_error_avx2(const uint8_t *src8, int32_t width, 
         }
     }
 
-    // Sum 4 values from sum64l and sum64h into err
+    /*!< Sum 4 values from sum64l and sum64h into err */
     int64_t sum[4];
     yy_storeu_256(sum, sum64);
     err += sum[0] + sum[1] + sum[2] + sum[3];

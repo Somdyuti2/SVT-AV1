@@ -1,7 +1,5 @@
-/*
-* Copyright(c) 2019 Intel Corporation
-* SPDX - License - Identifier: BSD - 2 - Clause - Patent
-*/
+/*!< Copyright(c) 2019 Intel Corporation
+ * SPDX - License - Identifier: BSD - 2 - Clause - Patent */
 
 #ifndef EbEntropyCodingProcess_h
 #define EbEntropyCodingProcess_h
@@ -17,19 +15,19 @@
 #include "EbCodingUnit.h"
 #include "EbObject.h"
 
-/**************************************
- * Enc Dec Context
- **************************************/
+/**************************************/
+/*!< Enc Dec Context */
+/**************************************/
 typedef struct EntropyCodingContext {
     EbDctor  dctor;
     EbFifo * enc_dec_input_fifo_ptr;
-    EbFifo * entropy_coding_output_fifo_ptr; // to packetization
-    EbFifo * rate_control_output_fifo_ptr; // feedback to rate control
+    EbFifo * entropy_coding_output_fifo_ptr; /*!< to packetization */
+    EbFifo * rate_control_output_fifo_ptr; /*!< feedback to rate control */
     uint32_t sb_total_count;
-    // Coding Unit Workspace---------------------------
-    EbPictureBufferDesc *coeff_buffer_sb; //Used to hold quantized coeff for one TB in EncPass.
+    /*!< Coding Unit Workspace--------------------------- */
+    EbPictureBufferDesc *coeff_buffer_sb; /*!< Used to hold quantized coeff for one TB in EncPass. */
 
-    //  Context Variables---------------------------------
+    /*!<  Context Variables--------------------------------- */
     BlkStruct *blk_ptr;
     //const CodedBlockStats           *cu_stats;
     uint32_t        blk_index;
@@ -55,16 +53,16 @@ typedef struct EntropyCodingContext {
     uint32_t       txb_origin_y;
     uint32_t       txb_size;
 
-    // MCP Context
-    EbBool      is_16bit; //enable 10 bit encode in CL
+    /*!< MCP Context */
+    EbBool      is_16bit; /*!< enable 10 bit encode in CL */
     int32_t     coded_area_sb;
     int32_t     coded_area_sb_uv;
     TOKENEXTRA *tok;
 } EntropyCodingContext;
 
-/**************************************
- * Extern Function Declarations
- **************************************/
+/**************************************/
+/*!< Extern Function Declarations */
+/**************************************/
 extern EbErrorType entropy_coding_context_ctor(EbThreadContext *  thread_context_ptr,
                                                const EbEncHandle *enc_handle_ptr, int index,
                                                int rate_control_index);

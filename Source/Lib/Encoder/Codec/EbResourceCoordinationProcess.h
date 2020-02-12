@@ -1,7 +1,5 @@
-/*
-* Copyright(c) 2019 Intel Corporation
-* SPDX - License - Identifier: BSD - 2 - Clause - Patent
-*/
+/*!< Copyright(c) 2019 Intel Corporation
+ * SPDX - License - Identifier: BSD - 2 - Clause - Patent */
 
 #ifndef EbResourceCoordination_h
 #define EbResourceCoordination_h
@@ -10,9 +8,9 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
-/***************************************
-     * Extern Function Declaration
-     ***************************************/
+/***************************************/
+/*!< Extern Function Declaration */
+/***************************************/
 EbErrorType resource_coordination_context_ctor(EbThreadContext* thread_context_ptr,
                                                EbEncHandle*     enc_handle_ptr);
 

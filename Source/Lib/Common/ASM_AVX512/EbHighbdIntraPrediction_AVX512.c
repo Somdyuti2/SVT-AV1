@@ -1,7 +1,5 @@
-/*
- * Copyright(c) 2019 Intel Corporation
- * SPDX - License - Identifier: BSD - 2 - Clause - Patent
- */
+/*!< Copyright(c) 2019 Intel Corporation
+ * SPDX - License - Identifier: BSD - 2 - Clause - Patent */
 
 #include "EbDefinitions.h"
 
@@ -16,181 +14,181 @@
 
 EB_ALIGN(32)
 static const uint16_t sm_weights_32[64] = {
-    255, 1,   240, 16,  225, 31,  210, 46, //  0  1  2  3
-    145, 111, 133, 123, 122, 134, 111, 145, //  8  9 10 11
-    66,  190, 59,  197, 52,  204, 45,  211, // 16 17 18 19
-    21,  235, 17,  239, 14,  242, 12,  244, // 24 25 26 27
-    196, 60,  182, 74,  169, 87,  157, 99, //  4  5  6  7
-    101, 155, 92,  164, 83,  173, 74,  182, // 12 13 14 15
-    39,  217, 34,  222, 29,  227, 25,  231, // 20 21 22 23
-    10,  246, 9,   247, 8,   248, 8,   248 // 28 29 30 31
+    255, 1,   240, 16,  225, 31,  210, 46, /*!<  0  1  2  3 */
+    145, 111, 133, 123, 122, 134, 111, 145, /*!<  8  9 10 11 */
+    66,  190, 59,  197, 52,  204, 45,  211, /*!< 16 17 18 19 */
+    21,  235, 17,  239, 14,  242, 12,  244, /*!< 24 25 26 27 */
+    196, 60,  182, 74,  169, 87,  157, 99, /*!<  4  5  6  7 */
+    101, 155, 92,  164, 83,  173, 74,  182, /*!< 12 13 14 15 */
+    39,  217, 34,  222, 29,  227, 25,  231, /*!< 20 21 22 23 */
+    10,  246, 9,   247, 8,   248, 8,   248 /*!< 28 29 30 31 */
 };
 
-// bs = 8
+/*!< bs = 8 */
 EB_ALIGN(32)
 static const uint16_t sm_weights_d_8[64] = {
-    255, 1,   197, 59,  146, 110, 105, 151, //  0  1  2  3
-    255, 1,   197, 59,  146, 110, 105, 151, //  0  1  2  3
-    255, 1,   197, 59,  146, 110, 105, 151, //  0  1  2  3
-    255, 1,   197, 59,  146, 110, 105, 151, //  0  1  2  3
-    73,  183, 50,  206, 37,  219, 32,  224, //  4  5  6  7
-    73,  183, 50,  206, 37,  219, 32,  224, //  4  5  6  7
-    73,  183, 50,  206, 37,  219, 32,  224, //  4  5  6  7
-    73,  183, 50,  206, 37,  219, 32,  224 //  4  5  6  7
+    255, 1,   197, 59,  146, 110, 105, 151, /*!<  0  1  2  3 */
+    255, 1,   197, 59,  146, 110, 105, 151, /*!<  0  1  2  3 */
+    255, 1,   197, 59,  146, 110, 105, 151, /*!<  0  1  2  3 */
+    255, 1,   197, 59,  146, 110, 105, 151, /*!<  0  1  2  3 */
+    73,  183, 50,  206, 37,  219, 32,  224, /*!<  4  5  6  7 */
+    73,  183, 50,  206, 37,  219, 32,  224, /*!<  4  5  6  7 */
+    73,  183, 50,  206, 37,  219, 32,  224, /*!<  4  5  6  7 */
+    73,  183, 50,  206, 37,  219, 32,  224 /*!<  4  5  6  7 */
 };
 
-//bs = 16
+/*!< bs = 16 */
 EB_ALIGN(32)
 static const uint16_t sm_weights_d_16[128] = {
-    255, 1,   225, 31,  196, 60,  170, 86, //  0  1  2  3
-    255, 1,   225, 31,  196, 60,  170, 86, //  0  1  2  3
-    255, 1,   225, 31,  196, 60,  170, 86, //  0  1  2  3
-    255, 1,   225, 31,  196, 60,  170, 86, //  0  1  2  3
-    145, 111, 123, 133, 102, 154, 84,  172, //  4  5  6  7
-    145, 111, 123, 133, 102, 154, 84,  172, //  4  5  6  7
-    145, 111, 123, 133, 102, 154, 84,  172, //  4  5  6  7
-    145, 111, 123, 133, 102, 154, 84,  172, //  4  5  6  7
-    68,  188, 54,  202, 43,  213, 33,  223, //  8  9 10 11
-    68,  188, 54,  202, 43,  213, 33,  223, //  8  9 10 11
-    68,  188, 54,  202, 43,  213, 33,  223, //  8  9 10 11
-    68,  188, 54,  202, 43,  213, 33,  223, //  8  9 10 11
-    26,  230, 20,  236, 17,  239, 16,  240, // 12 13 14 15
-    26,  230, 20,  236, 17,  239, 16,  240, // 12 13 14 15
-    26,  230, 20,  236, 17,  239, 16,  240, // 12 13 14 15
-    26,  230, 20,  236, 17,  239, 16,  240 // 12 13 14 15
+    255, 1,   225, 31,  196, 60,  170, 86, /*!<  0  1  2  3 */
+    255, 1,   225, 31,  196, 60,  170, 86, /*!<  0  1  2  3 */
+    255, 1,   225, 31,  196, 60,  170, 86, /*!<  0  1  2  3 */
+    255, 1,   225, 31,  196, 60,  170, 86, /*!<  0  1  2  3 */
+    145, 111, 123, 133, 102, 154, 84,  172, /*!<  4  5  6  7 */
+    145, 111, 123, 133, 102, 154, 84,  172, /*!<  4  5  6  7 */
+    145, 111, 123, 133, 102, 154, 84,  172, /*!<  4  5  6  7 */
+    145, 111, 123, 133, 102, 154, 84,  172, /*!<  4  5  6  7 */
+    68,  188, 54,  202, 43,  213, 33,  223, /*!<  8  9 10 11 */
+    68,  188, 54,  202, 43,  213, 33,  223, /*!<  8  9 10 11 */
+    68,  188, 54,  202, 43,  213, 33,  223, /*!<  8  9 10 11 */
+    68,  188, 54,  202, 43,  213, 33,  223, /*!<  8  9 10 11 */
+    26,  230, 20,  236, 17,  239, 16,  240, /*!< 12 13 14 15 */
+    26,  230, 20,  236, 17,  239, 16,  240, /*!< 12 13 14 15 */
+    26,  230, 20,  236, 17,  239, 16,  240, /*!< 12 13 14 15 */
+    26,  230, 20,  236, 17,  239, 16,  240 /*!< 12 13 14 15 */
 };
 
-// bs = 32
+/*!< bs = 32 */
 EB_ALIGN(32)
 static const uint16_t sm_weights_d_32[256] = {
-    255, 1,   240, 16,  225, 31,  210, 46, //  0  1  2  3
-    255, 1,   240, 16,  225, 31,  210, 46, //  0  1  2  3
-    255, 1,   240, 16,  225, 31,  210, 46, //  0  1  2  3
-    255, 1,   240, 16,  225, 31,  210, 46, //  0  1  2  3
-    196, 60,  182, 74,  169, 87,  157, 99, //  4  5  6  7
-    196, 60,  182, 74,  169, 87,  157, 99, //  4  5  6  7
-    196, 60,  182, 74,  169, 87,  157, 99, //  4  5  6  7
-    196, 60,  182, 74,  169, 87,  157, 99, //  4  5  6  7
-    145, 111, 133, 123, 122, 134, 111, 145, //  8  9 10 11
-    145, 111, 133, 123, 122, 134, 111, 145, //  8  9 10 11
-    145, 111, 133, 123, 122, 134, 111, 145, //  8  9 10 11
-    145, 111, 133, 123, 122, 134, 111, 145, //  8  9 10 11
-    101, 155, 92,  164, 83,  173, 74,  182, // 12 13 14 15
-    101, 155, 92,  164, 83,  173, 74,  182, // 12 13 14 15
-    101, 155, 92,  164, 83,  173, 74,  182, // 12 13 14 15
-    101, 155, 92,  164, 83,  173, 74,  182, // 12 13 14 15
-    66,  190, 59,  197, 52,  204, 45,  211, // 16 17 18 19
-    66,  190, 59,  197, 52,  204, 45,  211, // 16 17 18 19
-    66,  190, 59,  197, 52,  204, 45,  211, // 16 17 18 19
-    66,  190, 59,  197, 52,  204, 45,  211, // 16 17 18 19
-    39,  217, 34,  222, 29,  227, 25,  231, // 20 21 22 23
-    39,  217, 34,  222, 29,  227, 25,  231, // 20 21 22 23
-    39,  217, 34,  222, 29,  227, 25,  231, // 20 21 22 23
-    39,  217, 34,  222, 29,  227, 25,  231, // 20 21 22 23
-    21,  235, 17,  239, 14,  242, 12,  244, // 24 25 26 27
-    21,  235, 17,  239, 14,  242, 12,  244, // 24 25 26 27
-    21,  235, 17,  239, 14,  242, 12,  244, // 24 25 26 27
-    21,  235, 17,  239, 14,  242, 12,  244, // 24 25 26 27
-    10,  246, 9,   247, 8,   248, 8,   248, // 28 29 30 31
-    10,  246, 9,   247, 8,   248, 8,   248, // 28 29 30 31
-    10,  246, 9,   247, 8,   248, 8,   248, // 28 29 30 31
-    10,  246, 9,   247, 8,   248, 8,   248 // 28 29 30 31
+    255, 1,   240, 16,  225, 31,  210, 46, /*!<  0  1  2  3 */
+    255, 1,   240, 16,  225, 31,  210, 46, /*!<  0  1  2  3 */
+    255, 1,   240, 16,  225, 31,  210, 46, /*!<  0  1  2  3 */
+    255, 1,   240, 16,  225, 31,  210, 46, /*!<  0  1  2  3 */
+    196, 60,  182, 74,  169, 87,  157, 99, /*!<  4  5  6  7 */
+    196, 60,  182, 74,  169, 87,  157, 99, /*!<  4  5  6  7 */
+    196, 60,  182, 74,  169, 87,  157, 99, /*!<  4  5  6  7 */
+    196, 60,  182, 74,  169, 87,  157, 99, /*!<  4  5  6  7 */
+    145, 111, 133, 123, 122, 134, 111, 145, /*!<  8  9 10 11 */
+    145, 111, 133, 123, 122, 134, 111, 145, /*!<  8  9 10 11 */
+    145, 111, 133, 123, 122, 134, 111, 145, /*!<  8  9 10 11 */
+    145, 111, 133, 123, 122, 134, 111, 145, /*!<  8  9 10 11 */
+    101, 155, 92,  164, 83,  173, 74,  182, /*!< 12 13 14 15 */
+    101, 155, 92,  164, 83,  173, 74,  182, /*!< 12 13 14 15 */
+    101, 155, 92,  164, 83,  173, 74,  182, /*!< 12 13 14 15 */
+    101, 155, 92,  164, 83,  173, 74,  182, /*!< 12 13 14 15 */
+    66,  190, 59,  197, 52,  204, 45,  211, /*!< 16 17 18 19 */
+    66,  190, 59,  197, 52,  204, 45,  211, /*!< 16 17 18 19 */
+    66,  190, 59,  197, 52,  204, 45,  211, /*!< 16 17 18 19 */
+    66,  190, 59,  197, 52,  204, 45,  211, /*!< 16 17 18 19 */
+    39,  217, 34,  222, 29,  227, 25,  231, /*!< 20 21 22 23 */
+    39,  217, 34,  222, 29,  227, 25,  231, /*!< 20 21 22 23 */
+    39,  217, 34,  222, 29,  227, 25,  231, /*!< 20 21 22 23 */
+    39,  217, 34,  222, 29,  227, 25,  231, /*!< 20 21 22 23 */
+    21,  235, 17,  239, 14,  242, 12,  244, /*!< 24 25 26 27 */
+    21,  235, 17,  239, 14,  242, 12,  244, /*!< 24 25 26 27 */
+    21,  235, 17,  239, 14,  242, 12,  244, /*!< 24 25 26 27 */
+    21,  235, 17,  239, 14,  242, 12,  244, /*!< 24 25 26 27 */
+    10,  246, 9,   247, 8,   248, 8,   248, /*!< 28 29 30 31 */
+    10,  246, 9,   247, 8,   248, 8,   248, /*!< 28 29 30 31 */
+    10,  246, 9,   247, 8,   248, 8,   248, /*!< 28 29 30 31 */
+    10,  246, 9,   247, 8,   248, 8,   248 /*!< 28 29 30 31 */
 };
 
-// bs = 64
+/*!< bs = 64 */
 EB_ALIGN(32)
 static const uint16_t sm_weights_d_64[512] = {
-    255, 1,   248, 8,   240, 16,  233, 23, //  0  1  2  3
-    255, 1,   248, 8,   240, 16,  233, 23, //  0  1  2  3
-    255, 1,   248, 8,   240, 16,  233, 23, //  0  1  2  3
-    255, 1,   248, 8,   240, 16,  233, 23, //  0  1  2  3
-    225, 31,  218, 38,  210, 46,  203, 53, //  4  5  6  7
-    225, 31,  218, 38,  210, 46,  203, 53, //  4  5  6  7
-    225, 31,  218, 38,  210, 46,  203, 53, //  4  5  6  7
-    225, 31,  218, 38,  210, 46,  203, 53, //  4  5  6  7
-    196, 60,  189, 67,  182, 74,  176, 80, //  8  9 10 11
-    196, 60,  189, 67,  182, 74,  176, 80, //  8  9 10 11
-    196, 60,  189, 67,  182, 74,  176, 80, //  8  9 10 11
-    196, 60,  189, 67,  182, 74,  176, 80, //  8  9 10 11
-    169, 87,  163, 93,  156, 100, 150, 106, // 12 13 14 15
-    169, 87,  163, 93,  156, 100, 150, 106, // 12 13 14 15
-    169, 87,  163, 93,  156, 100, 150, 106, // 12 13 14 15
-    169, 87,  163, 93,  156, 100, 150, 106, // 12 13 14 15
-    144, 112, 138, 118, 133, 123, 127, 129, // 16 17 18 19
-    144, 112, 138, 118, 133, 123, 127, 129, // 16 17 18 19
-    144, 112, 138, 118, 133, 123, 127, 129, // 16 17 18 19
-    144, 112, 138, 118, 133, 123, 127, 129, // 16 17 18 19
-    121, 135, 116, 140, 111, 145, 106, 150, // 20 21 22 23
-    121, 135, 116, 140, 111, 145, 106, 150, // 20 21 22 23
-    121, 135, 116, 140, 111, 145, 106, 150, // 20 21 22 23
-    121, 135, 116, 140, 111, 145, 106, 150, // 20 21 22 23
-    101, 155, 96,  160, 91,  165, 86,  170, // 24 25 26 27
-    101, 155, 96,  160, 91,  165, 86,  170, // 24 25 26 27
-    101, 155, 96,  160, 91,  165, 86,  170, // 24 25 26 27
-    101, 155, 96,  160, 91,  165, 86,  170, // 24 25 26 27
-    82,  174, 77,  179, 73,  183, 69,  187, // 28 29 30 31
-    82,  174, 77,  179, 73,  183, 69,  187, // 28 29 30 31
-    82,  174, 77,  179, 73,  183, 69,  187, // 28 29 30 31
-    82,  174, 77,  179, 73,  183, 69,  187, // 28 29 30 31
-    65,  191, 61,  195, 57,  199, 54,  202, // 32 33 34 35
-    65,  191, 61,  195, 57,  199, 54,  202, // 32 33 34 35
-    65,  191, 61,  195, 57,  199, 54,  202, // 32 33 34 35
-    65,  191, 61,  195, 57,  199, 54,  202, // 32 33 34 35
-    50,  206, 47,  209, 44,  212, 41,  215, // 36 37 38 39
-    50,  206, 47,  209, 44,  212, 41,  215, // 36 37 38 39
-    50,  206, 47,  209, 44,  212, 41,  215, // 36 37 38 39
-    50,  206, 47,  209, 44,  212, 41,  215, // 36 37 38 39
-    38,  218, 35,  221, 32,  224, 29,  227, // 40 41 42 43
-    38,  218, 35,  221, 32,  224, 29,  227, // 40 41 42 43
-    38,  218, 35,  221, 32,  224, 29,  227, // 40 41 42 43
-    38,  218, 35,  221, 32,  224, 29,  227, // 40 41 42 43
-    27,  229, 25,  231, 22,  234, 20,  236, // 44 45 46 47
-    27,  229, 25,  231, 22,  234, 20,  236, // 44 45 46 47
-    27,  229, 25,  231, 22,  234, 20,  236, // 44 45 46 47
-    27,  229, 25,  231, 22,  234, 20,  236, // 44 45 46 47
-    18,  238, 16,  240, 15,  241, 13,  243, // 48 49 50 51
-    18,  238, 16,  240, 15,  241, 13,  243, // 48 49 50 51
-    18,  238, 16,  240, 15,  241, 13,  243, // 48 49 50 51
-    18,  238, 16,  240, 15,  241, 13,  243, // 48 49 50 51
-    12,  244, 10,  246, 9,   247, 8,   248, // 52 53 54 55
-    12,  244, 10,  246, 9,   247, 8,   248, // 52 53 54 55
-    12,  244, 10,  246, 9,   247, 8,   248, // 52 53 54 55
-    12,  244, 10,  246, 9,   247, 8,   248, // 52 53 54 55
-    7,   249, 6,   250, 6,   250, 5,   251, // 56 57 58 59
-    7,   249, 6,   250, 6,   250, 5,   251, // 56 57 58 59
-    7,   249, 6,   250, 6,   250, 5,   251, // 56 57 58 59
-    7,   249, 6,   250, 6,   250, 5,   251, // 56 57 58 59
-    5,   251, 4,   252, 4,   252, 4,   252, // 60 61 62 63
-    5,   251, 4,   252, 4,   252, 4,   252, // 60 61 62 63
-    5,   251, 4,   252, 4,   252, 4,   252, // 60 61 62 63
-    5,   251, 4,   252, 4,   252, 4,   252 // 60 61 62 63
+    255, 1,   248, 8,   240, 16,  233, 23, /*!<  0  1  2  3 */
+    255, 1,   248, 8,   240, 16,  233, 23, /*!<  0  1  2  3 */
+    255, 1,   248, 8,   240, 16,  233, 23, /*!<  0  1  2  3 */
+    255, 1,   248, 8,   240, 16,  233, 23, /*!<  0  1  2  3 */
+    225, 31,  218, 38,  210, 46,  203, 53, /*!<  4  5  6  7 */
+    225, 31,  218, 38,  210, 46,  203, 53, /*!<  4  5  6  7 */
+    225, 31,  218, 38,  210, 46,  203, 53, /*!<  4  5  6  7 */
+    225, 31,  218, 38,  210, 46,  203, 53, /*!<  4  5  6  7 */
+    196, 60,  189, 67,  182, 74,  176, 80, /*!<  8  9 10 11 */
+    196, 60,  189, 67,  182, 74,  176, 80, /*!<  8  9 10 11 */
+    196, 60,  189, 67,  182, 74,  176, 80, /*!<  8  9 10 11 */
+    196, 60,  189, 67,  182, 74,  176, 80, /*!<  8  9 10 11 */
+    169, 87,  163, 93,  156, 100, 150, 106, /*!< 12 13 14 15 */
+    169, 87,  163, 93,  156, 100, 150, 106, /*!< 12 13 14 15 */
+    169, 87,  163, 93,  156, 100, 150, 106, /*!< 12 13 14 15 */
+    169, 87,  163, 93,  156, 100, 150, 106, /*!< 12 13 14 15 */
+    144, 112, 138, 118, 133, 123, 127, 129, /*!< 16 17 18 19 */
+    144, 112, 138, 118, 133, 123, 127, 129, /*!< 16 17 18 19 */
+    144, 112, 138, 118, 133, 123, 127, 129, /*!< 16 17 18 19 */
+    144, 112, 138, 118, 133, 123, 127, 129, /*!< 16 17 18 19 */
+    121, 135, 116, 140, 111, 145, 106, 150, /*!< 20 21 22 23 */
+    121, 135, 116, 140, 111, 145, 106, 150, /*!< 20 21 22 23 */
+    121, 135, 116, 140, 111, 145, 106, 150, /*!< 20 21 22 23 */
+    121, 135, 116, 140, 111, 145, 106, 150, /*!< 20 21 22 23 */
+    101, 155, 96,  160, 91,  165, 86,  170, /*!< 24 25 26 27 */
+    101, 155, 96,  160, 91,  165, 86,  170, /*!< 24 25 26 27 */
+    101, 155, 96,  160, 91,  165, 86,  170, /*!< 24 25 26 27 */
+    101, 155, 96,  160, 91,  165, 86,  170, /*!< 24 25 26 27 */
+    82,  174, 77,  179, 73,  183, 69,  187, /*!< 28 29 30 31 */
+    82,  174, 77,  179, 73,  183, 69,  187, /*!< 28 29 30 31 */
+    82,  174, 77,  179, 73,  183, 69,  187, /*!< 28 29 30 31 */
+    82,  174, 77,  179, 73,  183, 69,  187, /*!< 28 29 30 31 */
+    65,  191, 61,  195, 57,  199, 54,  202, /*!< 32 33 34 35 */
+    65,  191, 61,  195, 57,  199, 54,  202, /*!< 32 33 34 35 */
+    65,  191, 61,  195, 57,  199, 54,  202, /*!< 32 33 34 35 */
+    65,  191, 61,  195, 57,  199, 54,  202, /*!< 32 33 34 35 */
+    50,  206, 47,  209, 44,  212, 41,  215, /*!< 36 37 38 39 */
+    50,  206, 47,  209, 44,  212, 41,  215, /*!< 36 37 38 39 */
+    50,  206, 47,  209, 44,  212, 41,  215, /*!< 36 37 38 39 */
+    50,  206, 47,  209, 44,  212, 41,  215, /*!< 36 37 38 39 */
+    38,  218, 35,  221, 32,  224, 29,  227, /*!< 40 41 42 43 */
+    38,  218, 35,  221, 32,  224, 29,  227, /*!< 40 41 42 43 */
+    38,  218, 35,  221, 32,  224, 29,  227, /*!< 40 41 42 43 */
+    38,  218, 35,  221, 32,  224, 29,  227, /*!< 40 41 42 43 */
+    27,  229, 25,  231, 22,  234, 20,  236, /*!< 44 45 46 47 */
+    27,  229, 25,  231, 22,  234, 20,  236, /*!< 44 45 46 47 */
+    27,  229, 25,  231, 22,  234, 20,  236, /*!< 44 45 46 47 */
+    27,  229, 25,  231, 22,  234, 20,  236, /*!< 44 45 46 47 */
+    18,  238, 16,  240, 15,  241, 13,  243, /*!< 48 49 50 51 */
+    18,  238, 16,  240, 15,  241, 13,  243, /*!< 48 49 50 51 */
+    18,  238, 16,  240, 15,  241, 13,  243, /*!< 48 49 50 51 */
+    18,  238, 16,  240, 15,  241, 13,  243, /*!< 48 49 50 51 */
+    12,  244, 10,  246, 9,   247, 8,   248, /*!< 52 53 54 55 */
+    12,  244, 10,  246, 9,   247, 8,   248, /*!< 52 53 54 55 */
+    12,  244, 10,  246, 9,   247, 8,   248, /*!< 52 53 54 55 */
+    12,  244, 10,  246, 9,   247, 8,   248, /*!< 52 53 54 55 */
+    7,   249, 6,   250, 6,   250, 5,   251, /*!< 56 57 58 59 */
+    7,   249, 6,   250, 6,   250, 5,   251, /*!< 56 57 58 59 */
+    7,   249, 6,   250, 6,   250, 5,   251, /*!< 56 57 58 59 */
+    7,   249, 6,   250, 6,   250, 5,   251, /*!< 56 57 58 59 */
+    5,   251, 4,   252, 4,   252, 4,   252, /*!< 60 61 62 63 */
+    5,   251, 4,   252, 4,   252, 4,   252, /*!< 60 61 62 63 */
+    5,   251, 4,   252, 4,   252, 4,   252, /*!< 60 61 62 63 */
+    5,   251, 4,   252, 4,   252, 4,   252 /*!< 60 61 62 63 */
 };
 
-// bs = 64
+/*!< bs = 64 */
 EB_ALIGN(32)
 static const uint16_t sm_weights_64[128] = {
-    255, 1,   248, 8,   240, 16,  233, 23, //  0  1  2  3
-    196, 60,  189, 67,  182, 74,  176, 80, //  8  9 10 11
-    144, 112, 138, 118, 133, 123, 127, 129, // 16 17 18 19
-    101, 155, 96,  160, 91,  165, 86,  170, // 24 25 26 27
-    225, 31,  218, 38,  210, 46,  203, 53, //  4  5  6  7
-    169, 87,  163, 93,  156, 100, 150, 106, // 12 13 14 15
-    121, 135, 116, 140, 111, 145, 106, 150, // 20 21 22 23
-    82,  174, 77,  179, 73,  183, 69,  187, // 28 29 30 31
-    65,  191, 61,  195, 57,  199, 54,  202, // 32 33 34 35
-    38,  218, 35,  221, 32,  224, 29,  227, // 40 41 42 43
-    18,  238, 16,  240, 15,  241, 13,  243, // 48 49 50 51
-    7,   249, 6,   250, 6,   250, 5,   251, // 56 57 58 59
-    50,  206, 47,  209, 44,  212, 41,  215, // 36 37 38 39
-    27,  229, 25,  231, 22,  234, 20,  236, // 44 45 46 47
-    12,  244, 10,  246, 9,   247, 8,   248, // 52 53 54 55
-    5,   251, 4,   252, 4,   252, 4,   252 // 60 61 62 63
+    255, 1,   248, 8,   240, 16,  233, 23, /*!<  0  1  2  3 */
+    196, 60,  189, 67,  182, 74,  176, 80, /*!<  8  9 10 11 */
+    144, 112, 138, 118, 133, 123, 127, 129, /*!< 16 17 18 19 */
+    101, 155, 96,  160, 91,  165, 86,  170, /*!< 24 25 26 27 */
+    225, 31,  218, 38,  210, 46,  203, 53, /*!<  4  5  6  7 */
+    169, 87,  163, 93,  156, 100, 150, 106, /*!< 12 13 14 15 */
+    121, 135, 116, 140, 111, 145, 106, 150, /*!< 20 21 22 23 */
+    82,  174, 77,  179, 73,  183, 69,  187, /*!< 28 29 30 31 */
+    65,  191, 61,  195, 57,  199, 54,  202, /*!< 32 33 34 35 */
+    38,  218, 35,  221, 32,  224, 29,  227, /*!< 40 41 42 43 */
+    18,  238, 16,  240, 15,  241, 13,  243, /*!< 48 49 50 51 */
+    7,   249, 6,   250, 6,   250, 5,   251, /*!< 56 57 58 59 */
+    50,  206, 47,  209, 44,  212, 41,  215, /*!< 36 37 38 39 */
+    27,  229, 25,  231, 22,  234, 20,  236, /*!< 44 45 46 47 */
+    12,  244, 10,  246, 9,   247, 8,   248, /*!< 52 53 54 55 */
+    5,   251, 4,   252, 4,   252, 4,   252 /*!< 60 61 62 63 */
 };
 // =============================================================================
 
-// DC RELATED PRED
+/*!< DC RELATED PRED */
 
-// Handle number of elements: up to 64.
+/*!< Handle number of elements: up to 64. */
 static INLINE __m128i dc_sum_large(const __m256i src) {
     const __m128i s_lo = _mm256_extracti128_si256(src, 0);
     const __m128i s_hi = _mm256_extracti128_si256(src, 1);
@@ -198,7 +196,7 @@ static INLINE __m128i dc_sum_large(const __m256i src) {
     sum    = _mm_add_epi16(s_lo, s_hi);
     sum_hi = _mm_srli_si128(sum, 8);
     sum    = _mm_add_epi16(sum, sum_hi);
-    // Unpack to avoid 12-bit overflow.
+    /*!< Unpack to avoid 12-bit overflow. */
     sum = _mm_unpacklo_epi16(sum, _mm_setzero_si128());
 
     return dc_sum_4x32bit(sum);
@@ -261,7 +259,7 @@ static INLINE __m128i dc_sum_64(const uint16_t *const src) {
     return dc_sum_large(sum);
 }
 
-// 32xN
+/*!< 32xN */
 
 void aom_highbd_dc_left_predictor_32x8_avx512(uint16_t *dst, ptrdiff_t stride,
                                               const uint16_t *above, const uint16_t *left,
@@ -319,7 +317,7 @@ void aom_highbd_dc_left_predictor_32x64_avx512(uint16_t *dst, ptrdiff_t stride,
     dc_common_predictor_32xh(dst, stride, 64, sum);
 }
 
-// 64xN
+/*!< 64xN */
 
 void aom_highbd_dc_left_predictor_64x16_avx512(uint16_t *dst, ptrdiff_t stride,
                                                const uint16_t *above, const uint16_t *left,
@@ -363,9 +361,9 @@ void aom_highbd_dc_left_predictor_64x64_avx512(uint16_t *dst, ptrdiff_t stride,
     dc_common_predictor_64xh(dst, stride, 64, sum);
 }
 
-/*highbd dc top predictors */
+/*!< highbd dc top predictors */
 
-// 32xN
+/*!< 32xN */
 
 static INLINE void dc_top_predictor_32xh(uint16_t *const dst, const ptrdiff_t stride,
                                          const uint16_t *const above, const int32_t h,
@@ -408,7 +406,7 @@ void aom_highbd_dc_top_predictor_32x64_avx512(uint16_t *dst, ptrdiff_t stride,
     dc_top_predictor_32xh(dst, stride, above, 64, bd);
 }
 
-// 64xN
+/*!< 64xN */
 
 static INLINE void dc_top_predictor_64xh(uint16_t *const dst, const ptrdiff_t stride,
                                          const uint16_t *const above, const int32_t h,
@@ -444,9 +442,9 @@ void aom_highbd_dc_top_predictor_64x64_avx512(uint16_t *dst, ptrdiff_t stride,
     dc_top_predictor_64xh(dst, stride, above, 64, bd);
 }
 
-/* highbd dc predictor */
+/*!< highbd dc predictor */
 
-// 32xN
+/*!< 32xN */
 
 static INLINE __m128i dc_sum_8_32(const uint16_t *const src_8, const uint16_t *const src_32) {
     const __m128i s_8      = _mm_loadu_si128((const __m128i *)src_8);
@@ -471,13 +469,13 @@ static INLINE __m128i dc_sum_16_32(const uint16_t *const src_16, const uint16_t 
     return dc_sum_large(sum);
 }
 
-// Handle number of elements: 65 to 128.
+/*!< Handle number of elements: 65 to 128. */
 static INLINE __m128i dc_sum_larger(const __m256i src) {
     const __m128i s_lo = _mm256_extracti128_si256(src, 0);
     const __m128i s_hi = _mm256_extracti128_si256(src, 1);
     __m128i       sum, sum_hi;
     sum = _mm_add_epi16(s_lo, s_hi);
-    // Unpack to avoid 12-bit overflow.
+    /*!< Unpack to avoid 12-bit overflow. */
     sum_hi = _mm_unpackhi_epi16(sum, _mm_setzero_si128());
     sum    = _mm_unpacklo_epi16(sum, _mm_setzero_si128());
     sum    = _mm_add_epi32(sum, sum_hi);
@@ -583,7 +581,7 @@ void aom_highbd_dc_predictor_32x64_avx512(uint16_t *dst, ptrdiff_t stride, const
     dc_common_predictor_32xh_kernel_avx512(dst, stride, 64, dc);
 }
 
-// 64xN
+/*!< 64xN */
 
 void aom_highbd_dc_predictor_64x16_avx512(uint16_t *dst, ptrdiff_t stride, const uint16_t *above,
                                           const uint16_t *left, int32_t bd) {
@@ -620,23 +618,23 @@ void aom_highbd_dc_predictor_64x64_avx512(uint16_t *dst, ptrdiff_t stride, const
 
 // =============================================================================
 
-// H_PRED
+/*!< H_PRED */
 
 // -----------------------------------------------------------------------------
 
-// 32xN
+/*!< 32xN */
 
 static INLINE void h_pred_32(uint16_t **const dst, const ptrdiff_t stride, const __m128i left) {
-    // Broadcast the 16-bit left pixel to 256-bit register.
+    /*!< Broadcast the 16-bit left pixel to 256-bit register. */
     const __m512i row = _mm512_broadcastw_epi16(left);
 
     _mm512_storeu_si512((__m512i *)(*dst + 0x00), row);
     *dst += stride;
 }
 
-// Process 8 rows.
+/*!< Process 8 rows. */
 static INLINE void h_pred_32x8(uint16_t **dst, const ptrdiff_t stride, const uint16_t *const left) {
-    // dst and it's stride must be 32-byte aligned.
+    /*!< dst and it's stride must be 32-byte aligned. */
     assert(!((intptr_t)*dst % 32));
     assert(!(stride % 32));
 
@@ -652,7 +650,7 @@ static INLINE void h_pred_32x8(uint16_t **dst, const ptrdiff_t stride, const uin
     h_pred_32(dst, stride, _mm_srli_si128(left_u16, 14));
 }
 
-// 32x8
+/*!< 32x8 */
 
 void aom_highbd_h_predictor_32x8_avx512(uint16_t *dst, ptrdiff_t stride, const uint16_t *above,
                                         const uint16_t *left, int32_t bd) {
@@ -662,7 +660,7 @@ void aom_highbd_h_predictor_32x8_avx512(uint16_t *dst, ptrdiff_t stride, const u
     h_pred_32x8(&dst, stride, left);
 }
 
-// 32x64
+/*!< 32x64 */
 
 void aom_highbd_h_predictor_32x64_avx512(uint16_t *dst, ptrdiff_t stride, const uint16_t *above,
                                          const uint16_t *left, int32_t bd) {
@@ -672,7 +670,7 @@ void aom_highbd_h_predictor_32x64_avx512(uint16_t *dst, ptrdiff_t stride, const 
     for (int32_t i = 0; i < 8; i++, left += 8) { h_pred_32x8(&dst, stride, left); }
 }
 
-//32x16 32x32
+/*!<32x16 32x32 */
 static INLINE void h_store_32_unpacklo(uint16_t **dst, const ptrdiff_t stride, const __m128i *row) {
     const __m128i val  = _mm_unpacklo_epi64(*row, *row);
     const __m512i val2 = _mm512_broadcast_i32x4(val);
@@ -731,12 +729,12 @@ void aom_highbd_h_predictor_32x32_avx512(uint16_t *dst, ptrdiff_t stride, const 
     }
 }
 
-// ---------------------------------------------------------------------------- -
+// ----------------------------------------------------------------------------
 
-// 64xN
+/*!< 64xN */
 
 static INLINE void h_pred_64(uint16_t **const dst, const ptrdiff_t stride, const __m128i left) {
-    // Broadcast the 16-bit left pixel to 256-bit register.
+    /*!< Broadcast the 16-bit left pixel to 256-bit register. */
     const __m512i row = _mm512_broadcastw_epi16(left);
 
     zz_store_512(*dst + 0x00, row);
@@ -745,9 +743,9 @@ static INLINE void h_pred_64(uint16_t **const dst, const ptrdiff_t stride, const
     *dst += stride;
 }
 
-// Process 8 rows.
+/*!< Process 8 rows. */
 static INLINE void h_pred_64x8(uint16_t **dst, const ptrdiff_t stride, const uint16_t *const left) {
-    // dst and it's stride must be 32-byte aligned.
+    /*!< dst and it's stride must be 32-byte aligned. */
     assert(!((intptr_t)*dst % 32));
     assert(!(stride % 32));
 
@@ -759,7 +757,7 @@ static INLINE void h_pred_64x8(uint16_t **dst, const ptrdiff_t stride, const uin
     }
 }
 
-// 64x16
+/*!< 64x16 */
 
 void aom_highbd_h_predictor_64x16_avx512(uint16_t *dst, ptrdiff_t stride, const uint16_t *above,
                                          const uint16_t *left, int32_t bd) {
@@ -769,7 +767,7 @@ void aom_highbd_h_predictor_64x16_avx512(uint16_t *dst, ptrdiff_t stride, const 
     for (int32_t i = 0; i < 2; i++, left += 8) { h_pred_64x8(&dst, stride, left); }
 }
 
-// 64x32
+/*!< 64x32 */
 
 void aom_highbd_h_predictor_64x32_avx512(uint16_t *dst, ptrdiff_t stride, const uint16_t *above,
                                          const uint16_t *left, int32_t bd) {
@@ -779,7 +777,7 @@ void aom_highbd_h_predictor_64x32_avx512(uint16_t *dst, ptrdiff_t stride, const 
     for (int32_t i = 0; i < 4; i++, left += 8) { h_pred_64x8(&dst, stride, left); }
 }
 
-// 64x64
+/*!< 64x64 */
 
 void aom_highbd_h_predictor_64x64_avx512(uint16_t *dst, ptrdiff_t stride, const uint16_t *above,
                                          const uint16_t *left, int32_t bd) {
@@ -791,21 +789,21 @@ void aom_highbd_h_predictor_64x64_avx512(uint16_t *dst, ptrdiff_t stride, const 
 
 // =============================================================================
 
-// V_PRED
+/*!< V_PRED */
 
 // -----------------------------------------------------------------------------
 
-// 32xN
+/*!< 32xN */
 
 static INLINE void v_pred_32(uint16_t **const dst, const ptrdiff_t stride, const __m512i above01) {
     _mm512_storeu_si512((__m512i *)(*dst + 0x00), above01);
     *dst += stride;
 }
 
-// Process 8 rows.
+/*!< Process 8 rows. */
 static INLINE void v_pred_32x8(uint16_t **const dst, const ptrdiff_t stride,
                                const __m512i above01) {
-    // dst and it's stride must be 32-byte aligned.
+    /*!< dst and it's stride must be 32-byte aligned. */
     assert(!((intptr_t)*dst % 32));
     assert(!(stride % 32));
 
@@ -819,11 +817,11 @@ static INLINE void v_pred_32x8(uint16_t **const dst, const ptrdiff_t stride,
     v_pred_32(dst, stride, above01);
 }
 
-// 32x8
+/*!< 32x8 */
 
 void aom_highbd_v_predictor_32x8_avx512(uint16_t *dst, ptrdiff_t stride, const uint16_t *above,
                                         const uint16_t *left, int32_t bd) {
-    // Load all 32 pixels in a row into 256-bit registers.
+    /*!< Load all 32 pixels in a row into 256-bit registers. */
     const __m512i above01 = _mm512_loadu_si512((const __m512i *)(above + 0x00));
 
     (void)left;
@@ -832,11 +830,11 @@ void aom_highbd_v_predictor_32x8_avx512(uint16_t *dst, ptrdiff_t stride, const u
     v_pred_32x8(&dst, stride, above01);
 }
 
-// 32x16
+/*!< 32x16 */
 
 void aom_highbd_v_predictor_32x16_avx512(uint16_t *dst, ptrdiff_t stride, const uint16_t *above,
                                          const uint16_t *left, int32_t bd) {
-    // Load all 32 pixels in a row into 512-bit registers.
+    /*!< Load all 32 pixels in a row into 512-bit registers. */
     const __m512i above01 = _mm512_loadu_si512((const __m512i *)(above + 0x00));
 
     (void)left;
@@ -845,11 +843,11 @@ void aom_highbd_v_predictor_32x16_avx512(uint16_t *dst, ptrdiff_t stride, const 
     for (int32_t i = 0; i < 2; i++) { v_pred_32x8(&dst, stride, above01); }
 }
 
-// 32x32
+/*!< 32x32 */
 
 void aom_highbd_v_predictor_32x32_avx512(uint16_t *dst, ptrdiff_t stride, const uint16_t *above,
                                          const uint16_t *left, int32_t bd) {
-    // Load all 32 pixels in a row into 512-bit registers.
+    /*!< Load all 32 pixels in a row into 512-bit registers. */
     const __m512i above01 = _mm512_loadu_si512((const __m512i *)(above + 0x00));
 
     (void)left;
@@ -858,11 +856,11 @@ void aom_highbd_v_predictor_32x32_avx512(uint16_t *dst, ptrdiff_t stride, const 
     for (int32_t i = 0; i < 4; i++) { v_pred_32x8(&dst, stride, above01); }
 }
 
-// 32x64
+/*!< 32x64 */
 
 void aom_highbd_v_predictor_32x64_avx512(uint16_t *dst, ptrdiff_t stride, const uint16_t *above,
                                          const uint16_t *left, int32_t bd) {
-    // Load all 32 pixels in a row into 512-bit registers.
+    /*!< Load all 32 pixels in a row into 512-bit registers. */
     const __m512i above01 = _mm512_loadu_si512((const __m512i *)(above + 0x00));
 
     (void)left;
@@ -873,7 +871,7 @@ void aom_highbd_v_predictor_32x64_avx512(uint16_t *dst, ptrdiff_t stride, const 
 
 // -----------------------------------------------------------------------------
 
-// 64xN
+/*!< 64xN */
 
 static INLINE void v_pred_64(uint16_t **const dst, const ptrdiff_t stride, const __m512i above0,
                              const __m512i above1) {
@@ -882,10 +880,10 @@ static INLINE void v_pred_64(uint16_t **const dst, const ptrdiff_t stride, const
     *dst += stride;
 }
 
-// Process 8 rows.
+/*!< Process 8 rows. */
 static INLINE void v_pred_64x8(uint16_t **const dst, const ptrdiff_t stride, const __m512i above0,
                                const __m512i above1) {
-    // dst and it's stride must be 32-byte aligned.
+    /*!< dst and it's stride must be 32-byte aligned. */
     assert(!((intptr_t)*dst % 32));
     assert(!(stride % 32));
 
@@ -899,11 +897,11 @@ static INLINE void v_pred_64x8(uint16_t **const dst, const ptrdiff_t stride, con
     v_pred_64(dst, stride, above0, above1);
 }
 
-// 64x16
+/*!< 64x16 */
 
 void aom_highbd_v_predictor_64x16_avx512(uint16_t *dst, ptrdiff_t stride, const uint16_t *above,
                                          const uint16_t *left, int32_t bd) {
-    // Load all 64 pixels in a row into 512-bit registers.
+    /*!< Load all 64 pixels in a row into 512-bit registers. */
     const __m512i above0 = _mm512_loadu_si512((const __m512i *)(above + 0x00));
     const __m512i above1 = _mm512_loadu_si512((const __m512i *)(above + 0x20));
 
@@ -913,11 +911,11 @@ void aom_highbd_v_predictor_64x16_avx512(uint16_t *dst, ptrdiff_t stride, const 
     for (int32_t i = 0; i < 2; i++) { v_pred_64x8(&dst, stride, above0, above1); }
 }
 
-// 64x32
+/*!< 64x32 */
 
 void aom_highbd_v_predictor_64x32_avx512(uint16_t *dst, ptrdiff_t stride, const uint16_t *above,
                                          const uint16_t *left, int32_t bd) {
-    // Load all 64 pixels in a row into 512-bit registers.
+    /*!< Load all 64 pixels in a row into 512-bit registers. */
     const __m512i above0 = _mm512_loadu_si512((const __m512i *)(above + 0x00));
     const __m512i above1 = _mm512_loadu_si512((const __m512i *)(above + 0x20));
 
@@ -927,11 +925,11 @@ void aom_highbd_v_predictor_64x32_avx512(uint16_t *dst, ptrdiff_t stride, const 
     for (int32_t i = 0; i < 4; i++) { v_pred_64x8(&dst, stride, above0, above1); }
 }
 
-// 64x64
+/*!< 64x64 */
 
 void aom_highbd_v_predictor_64x64_avx512(uint16_t *dst, ptrdiff_t stride, const uint16_t *above,
                                          const uint16_t *left, int32_t bd) {
-    // Load all 64 pixels in a row into 512-bit registers.
+    /*!< Load all 64 pixels in a row into 512-bit registers. */
     const __m512i above0 = _mm512_loadu_si512((const __m512i *)(above + 0x00));
     const __m512i above1 = _mm512_loadu_si512((const __m512i *)(above + 0x20));
 
@@ -943,7 +941,7 @@ void aom_highbd_v_predictor_64x64_avx512(uint16_t *dst, ptrdiff_t stride, const 
 
 // =============================================================================
 
-// High bd Smooth Predictor Kernel
+/*!< High bd Smooth Predictor Kernel */
 
 // -----------------------------------------------------------------------------
 
@@ -955,7 +953,7 @@ static INLINE void load_left_8(const uint16_t *const left, const __m512i r, __m5
 }
 
 // -----------------------------------------------------------------------------
-// 32xN
+/*!< 32xN */
 
 static INLINE void load_right_weights_32(const uint16_t *const above, __m512i *const r,
                                          __m512i *const weights) {
@@ -966,7 +964,7 @@ static INLINE void load_right_weights_32(const uint16_t *const above, __m512i *c
 }
 
 // -----------------------------------------------------------------------------
-// 64xN
+/*!< 64xN */
 
 static INLINE void load_right_weights_64(const uint16_t *const above, __m512i *const r,
                                          __m512i *const weights) {
@@ -1048,7 +1046,7 @@ static INLINE void smooth_pred_32x8(const uint16_t *const left, const __m512i *c
     smooth_pred_32x4(weights_w, sm_weights_h + 32, rep, ab, lr[1], dst, stride);
 }
 
-// 32x8
+/*!< 32x8 */
 
 void aom_highbd_smooth_predictor_32x8_avx512(uint16_t *dst, ptrdiff_t stride, const uint16_t *above,
                                              const uint16_t *left, int32_t bd) {
@@ -1060,7 +1058,7 @@ void aom_highbd_smooth_predictor_32x8_avx512(uint16_t *dst, ptrdiff_t stride, co
     smooth_pred_32x8(left, weights_w, sm_weights_d_8, rep, ab, r, &dst, stride);
 }
 
-// 32x16
+/*!< 32x16 */
 
 void aom_highbd_smooth_predictor_32x16_avx512(uint16_t *dst, ptrdiff_t stride,
                                               const uint16_t *above, const uint16_t *left,
@@ -1076,7 +1074,7 @@ void aom_highbd_smooth_predictor_32x16_avx512(uint16_t *dst, ptrdiff_t stride,
     }
 }
 
-//32x32
+/*!< 32x32 */
 void aom_highbd_smooth_predictor_32x32_avx512(uint16_t *dst, ptrdiff_t stride,
                                               const uint16_t *above, const uint16_t *left,
                                               int32_t bd) {
@@ -1091,7 +1089,7 @@ void aom_highbd_smooth_predictor_32x32_avx512(uint16_t *dst, ptrdiff_t stride,
     }
 }
 
-// 32x64
+/*!< 32x64 */
 
 void aom_highbd_smooth_predictor_32x64_avx512(uint16_t *dst, ptrdiff_t stride,
                                               const uint16_t *above, const uint16_t *left,
@@ -1156,7 +1154,7 @@ static INLINE void smooth_pred_64x8(const uint16_t *const left, const __m512i *c
     smooth_pred_64x4(weights_w, sm_weights_h + 32, rep, ab, lr[1], dst, stride);
 }
 
-// 64x16
+/*!< 64x16 */
 
 void aom_highbd_smooth_predictor_64x16_avx512(uint16_t *dst, ptrdiff_t stride,
                                               const uint16_t *above, const uint16_t *left,
@@ -1172,7 +1170,7 @@ void aom_highbd_smooth_predictor_64x16_avx512(uint16_t *dst, ptrdiff_t stride,
     }
 }
 
-// 64x32
+/*!< 64x32 */
 
 void aom_highbd_smooth_predictor_64x32_avx512(uint16_t *dst, ptrdiff_t stride,
                                               const uint16_t *above, const uint16_t *left,
@@ -1188,7 +1186,7 @@ void aom_highbd_smooth_predictor_64x32_avx512(uint16_t *dst, ptrdiff_t stride,
     }
 }
 
-// 64x64
+/*!< 64x64 */
 
 void aom_highbd_smooth_predictor_64x64_avx512(uint16_t *dst, ptrdiff_t stride,
                                               const uint16_t *above, const uint16_t *left,
@@ -1206,7 +1204,7 @@ void aom_highbd_smooth_predictor_64x64_avx512(uint16_t *dst, ptrdiff_t stride,
 
 // =============================================================================
 
-// High bd Smooth V Predictor Kernel
+/*!< High bd Smooth V Predictor Kernel */
 
 // -----------------------------------------------------------------------------
 
@@ -1243,7 +1241,7 @@ static INLINE void smooth_v_pred_32x4(const uint16_t *const sm_weights_h, const 
     smooth_v_pred_32(weights, rep[2], ab, dst, stride);
     smooth_v_pred_32(weights, rep[3], ab, dst, stride);
 }
-// 32x8
+/*!< 32x8 */
 
 static INLINE void smooth_v_pred_32x8(const uint16_t *const sm_weights_h, const __m512i *const rep,
                                       const __m512i *const ab, uint16_t **const dst,
@@ -1274,7 +1272,7 @@ void aom_highbd_smooth_v_predictor_32x8_avx512(uint16_t *dst, ptrdiff_t stride,
     smooth_v_pred_32x8(sm_weights_d_8, rep, ab, &dst, stride);
 }
 
-// 32x16
+/*!< 32x16 */
 
 void aom_highbd_smooth_v_predictor_32x16_avx512(uint16_t *dst, ptrdiff_t stride,
                                                 const uint16_t *above, const uint16_t *left,
@@ -1289,7 +1287,7 @@ void aom_highbd_smooth_v_predictor_32x16_avx512(uint16_t *dst, ptrdiff_t stride,
     }
 }
 
-// 32x32
+/*!< 32x32 */
 
 void aom_highbd_smooth_v_predictor_32x32_avx512(uint16_t *dst, ptrdiff_t stride,
                                                 const uint16_t *above, const uint16_t *left,
@@ -1304,7 +1302,7 @@ void aom_highbd_smooth_v_predictor_32x32_avx512(uint16_t *dst, ptrdiff_t stride,
     }
 }
 
-// 32x64
+/*!< 32x64 */
 
 void aom_highbd_smooth_v_predictor_32x64_avx512(uint16_t *dst, ptrdiff_t stride,
                                                 const uint16_t *above, const uint16_t *left,
@@ -1320,7 +1318,7 @@ void aom_highbd_smooth_v_predictor_32x64_avx512(uint16_t *dst, ptrdiff_t stride,
 }
 
 // -----------------------------------------------------------------------------
-// 64xN
+/*!< 64xN */
 
 static INLINE void smooth_v_init_64(const uint16_t *const above, const uint16_t *const left,
                                     const int32_t h, __m512i *const ab, __m512i *const rep) {
@@ -1365,7 +1363,7 @@ static INLINE void smooth_v_pred_64x8(const uint16_t *const sm_weights_h, const 
     smooth_v_pred_64x4(sm_weights_h + 32, rep, ab, dst, stride);
 }
 
-// 64x16
+/*!< 64x16 */
 
 void aom_highbd_smooth_v_predictor_64x16_avx512(uint16_t *dst, ptrdiff_t stride,
                                                 const uint16_t *above, const uint16_t *left,
@@ -1379,7 +1377,7 @@ void aom_highbd_smooth_v_predictor_64x16_avx512(uint16_t *dst, ptrdiff_t stride,
         smooth_v_pred_64x8(sm_weights_d_16 + 64 * i, rep, ab, &dst, stride);
     }
 }
-// 64x32
+/*!< 64x32 */
 
 void aom_highbd_smooth_v_predictor_64x32_avx512(uint16_t *dst, ptrdiff_t stride,
                                                 const uint16_t *above, const uint16_t *left,
@@ -1394,7 +1392,7 @@ void aom_highbd_smooth_v_predictor_64x32_avx512(uint16_t *dst, ptrdiff_t stride,
     }
 }
 
-// 64x64
+/*!< 64x64 */
 
 void aom_highbd_smooth_v_predictor_64x64_avx512(uint16_t *dst, ptrdiff_t stride,
                                                 const uint16_t *above, const uint16_t *left,
@@ -1411,7 +1409,7 @@ void aom_highbd_smooth_v_predictor_64x64_avx512(uint16_t *dst, ptrdiff_t stride,
 
 // =============================================================================
 
-// SMOOTH_H_PRED
+/*!< SMOOTH_H_PRED */
 
 // -----------------------------------------------------------------------------
 static INLINE __m512i smooth_h_pred_kernel(const __m512i *const weights, const __m512i lr) {
@@ -1427,7 +1425,7 @@ static INLINE __m512i smooth_h_pred_kernel(const __m512i *const weights, const _
 }
 
 // -----------------------------------------------------------------------------
-// 32xN
+/*!< 32xN */
 
 static INLINE void smooth_h_pred_32(const __m512i *const weights, __m512i *const lr,
                                     uint16_t **const dst, const ptrdiff_t stride) {
@@ -1465,7 +1463,7 @@ static INLINE void smooth_h_pred_32x8(uint16_t *dst, const ptrdiff_t stride,
     }
 }
 
-// 32x8
+/*!< 32x8 */
 
 void aom_highbd_smooth_h_predictor_32x8_avx512(uint16_t *dst, ptrdiff_t stride,
                                                const uint16_t *above, const uint16_t *left,
@@ -1474,7 +1472,7 @@ void aom_highbd_smooth_h_predictor_32x8_avx512(uint16_t *dst, ptrdiff_t stride,
     smooth_h_pred_32x8(dst, stride, above, left, 1);
 }
 
-// 32x16
+/*!< 32x16 */
 
 void aom_highbd_smooth_h_predictor_32x16_avx512(uint16_t *dst, ptrdiff_t stride,
                                                 const uint16_t *above, const uint16_t *left,
@@ -1483,7 +1481,7 @@ void aom_highbd_smooth_h_predictor_32x16_avx512(uint16_t *dst, ptrdiff_t stride,
     smooth_h_pred_32x8(dst, stride, above, left, 2);
 }
 
-// 32x32
+/*!< 32x32 */
 
 void aom_highbd_smooth_h_predictor_32x32_avx512(uint16_t *dst, ptrdiff_t stride,
                                                 const uint16_t *above, const uint16_t *left,
@@ -1492,7 +1490,7 @@ void aom_highbd_smooth_h_predictor_32x32_avx512(uint16_t *dst, ptrdiff_t stride,
     smooth_h_pred_32x8(dst, stride, above, left, 4);
 }
 
-// 32x64
+/*!< 32x64 */
 
 void aom_highbd_smooth_h_predictor_32x64_avx512(uint16_t *dst, ptrdiff_t stride,
                                                 const uint16_t *above, const uint16_t *left,
@@ -1540,7 +1538,7 @@ static INLINE void smooth_h_pred_64x8(uint16_t *dst, const ptrdiff_t stride,
     }
 }
 
-// 64x16
+/*!< 64x16 */
 
 void aom_highbd_smooth_h_predictor_64x16_avx512(uint16_t *dst, ptrdiff_t stride,
                                                 const uint16_t *above, const uint16_t *left,
@@ -1549,7 +1547,7 @@ void aom_highbd_smooth_h_predictor_64x16_avx512(uint16_t *dst, ptrdiff_t stride,
     smooth_h_pred_64x8(dst, stride, above, left, 2);
 }
 
-// 64x32
+/*!< 64x32 */
 
 void aom_highbd_smooth_h_predictor_64x32_avx512(uint16_t *dst, ptrdiff_t stride,
                                                 const uint16_t *above, const uint16_t *left,
@@ -1558,7 +1556,7 @@ void aom_highbd_smooth_h_predictor_64x32_avx512(uint16_t *dst, ptrdiff_t stride,
     smooth_h_pred_64x8(dst, stride, above, left, 4);
 }
 
-// 64x64
+/*!< 64x64 */
 
 void aom_highbd_smooth_h_predictor_64x64_avx512(uint16_t *dst, ptrdiff_t stride,
                                                 const uint16_t *above, const uint16_t *left,

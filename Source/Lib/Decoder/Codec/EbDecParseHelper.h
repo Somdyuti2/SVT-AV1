@@ -1,7 +1,5 @@
-/*
-* Copyright(c) 2019 Netflix, Inc.
-* SPDX - License - Identifier: BSD - 2 - Clause - Patent
-*/
+/* Copyright(c) 2019 Netflix, Inc.
+ * SPDX - License - Identifier: BSD - 2 - Clause - Patent */
 
 #ifndef EbDecParseHelper_h
 #define EbDecParseHelper_h
@@ -27,14 +25,14 @@ static INLINE CflAllowedType is_cfl_allowed(PartitionInfo *xd, EbColorConfig *co
     const BlockSize      bsize = mbmi->sb_type;
     assert(bsize < BlockSizeS_ALL);
     if (lossless_array[mbmi->segment_id]) {
-        // In lossless, CfL is available when the partition size is equal to the
-        // transform size.
+        /*!< In lossless, CfL is available when the partition size is equal to the
+         *   transform size. */
         const int ssx         = color_cfg->subsampling_x;
         const int ssy         = color_cfg->subsampling_y;
         const int plane_bsize = get_plane_block_size(bsize, ssx, ssy);
         return (CflAllowedType)(plane_bsize == BLOCK_4X4);
     }
-    // Spec: CfL is available to luma partitions lesser than or equal to 32x32
+    /*!< Spec: CfL is available to luma partitions lesser than or equal to 32x32 */
     return (CflAllowedType)(block_size_wide[bsize] <= 32 && block_size_high[bsize] <= 32);
 }
 
@@ -49,7 +47,7 @@ static INLINE int max_block_wide(PartitionInfo *part_info, int plane_bsize, int 
     int max_blocks_wide = block_size_wide[plane_bsize];
     if (part_info->mb_to_right_edge < 0)
         max_blocks_wide += part_info->mb_to_right_edge >> (3 + subx);
-    //Scale width in the transform block unit.
+    /*!< Scale width in the transform block unit. */
     return max_blocks_wide >> tx_size_wide_log2[0];
 }
 
@@ -57,7 +55,7 @@ static INLINE int max_block_high(PartitionInfo *part_info, int plane_bsize, int 
     int max_blocks_high = block_size_high[plane_bsize];
     if (part_info->mb_to_bottom_edge < 0)
         max_blocks_high += part_info->mb_to_bottom_edge >> (3 + suby);
-    // Scale the height in the transform block unit.
+    /*!< Scale the height in the transform block unit. */
     return max_blocks_high >> tx_size_high_log2[0];
 }
 

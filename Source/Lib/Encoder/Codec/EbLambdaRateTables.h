@@ -1,9 +1,7 @@
-/*
-* Copyright(c) 2019 Intel Corporation
-* SPDX - License - Identifier: BSD - 2 - Clause - Patent
-*/
+/*!< Copyright(c) 2019 Intel Corporation
+ * SPDX - License - Identifier: BSD - 2 - Clause - Patent */
 
-// EbLambdaRateTables.h file contains all material to estimate the rate of intra, inter and skip modes
+/*!< EbLambdaRateTables.h file contains all material to estimate the rate of intra, inter and skip modes */
 #ifndef EbLambdaRateTables_h
 #define EbLambdaRateTables_h
 #ifdef __cplusplus
@@ -12,46 +10,46 @@ extern "C" {
 
 #define NUMBER_OF_INTRA_MODES_MINUS_TWO 34
 #define LUMA_INTRA_MODE_BITS_GRE31 \
-    196608 // farctional number of bit required for signaling luma intra mode greater than 31
+    196608 /*!< farctional number of bit required for signaling luma intra mode greater than 31 */
 #define QP_NUM 52
 
-// *Note - As of Oct 2011, the JCT-VC uses the PSNR forumula
-//  PSNR = (LUMA_WEIGHT * PSNRy + PSNRu + PSNRv) / (2+LUMA_WEIGHT)
+/*!< *Note - As of Oct 2011, the JCT-VC uses the PSNR forumula
+ *    PSNR = (LUMA_WEIGHT * PSNRy + PSNRu + PSNRv) / (2+LUMA_WEIGHT) */
 #define LUMA_WEIGHT 1
 #define CHROMA_WEIGHT 1
 #define RATE_WEIGHT 1
 
-// Precision macros used in the mode decision
+/*!< Precision macros used in the mode decision */
 #define BIT_ESTIMATE_PRECISION 15
 #define LAMBDA_PRECISION 16
 #define COST_PRECISION 8
 #define MD_SHIFT (BIT_ESTIMATE_PRECISION + LAMBDA_PRECISION - COST_PRECISION)
 #define MD_OFFSET (1 << (MD_SHIFT - 1))
 
-// Precision macros for chroma weight
-// *Note - As in JCTVC-G1102,
+/*!< Precision macros for chroma weight
+ *   *Note - As in JCTVC-G1102, */
 #define CHROMA_WEIGHT_PRECISION 16
 #define CHROMA_WEIGHT_SHIFT (CHROMA_WEIGHT_PRECISION - COST_PRECISION)
 #define CHROMA_WEIGHT_OFFSET (1 << (CHROMA_WEIGHT_SHIFT - 1))
 
-// Precision macro used in the motion estimation search
+/*!< Precision macro used in the motion estimation search */
 #define ME_SHIFT (BIT_ESTIMATE_PRECISION + LAMBDA_PRECISION)
 
-// Syntax element macro
+/*!< Syntax element macro */
 #define ZERO_COST 0
 #define TU_SPLIT_ZERO 0
-#define TU_SPLIT_TAB_OFFSET 4 // offset to parse transSubDivFlag tables
-#define CBF_TAB_OFFSET 3 // offset to parse Cbf tables
+#define TU_SPLIT_TAB_OFFSET 4 /*!< offset to parse transSubDivFlag tables */
+#define CBF_TAB_OFFSET 3 /*!< offset to parse Cbf tables */
 #define SPLIT_FLAG_ZERO 0
-#define SPLIT_TAB_OFFSET 3 // offset to parse split flag tables
+#define SPLIT_TAB_OFFSET 3 /*!< offset to parse split flag tables */
 #define SKIP_FLAG_ZERO 0
 #define SKIP_FLAG_ONE 1
-#define SKIP_TAB_OFFSET 3 // offset to parse skip flag tables
+#define SKIP_TAB_OFFSET 3 /*!< offset to parse skip flag tables */
 
-// Lamda table for mode decision -
-// GOP structure: IPPPP...
-// lambda values are << 16
-// From JCTVC-F802
+/*!< Lamda table for mode decision -
+ *   GOP structure: IPPPP...
+ *   lambda values are << 16
+ *   From JCTVC-F802 */
 static const uint32_t lambda_mode_decision_ld_sad[QP_NUM] = {
     12456,   13982,   15694,   17616,   19773,   22194,   24912,   27963,   31388,
     35231,   39546,   44389,   49825,   55926,   62775,   70463,   79092,   88777,
@@ -95,41 +93,41 @@ static const uint32_t lambda_chroma_mode_decision_ld_sse_qp_scaling[QP_NUM] = {
     2424308,  3258065,  4361462,  4361462,  5818339,  7737905,  10262263, 10262263, 13576123,
     17919360, 17919360, 23603205, 23603205, 31031139, 31031139, 39096785, 39096785, 39096785,
     49258862, 49258862, 49258862, 62062277, 62062277, 62062277, 62062277};
-// Chroma weight table for mode decision -
-// weight values are << 16
-// From JCTVC-G1102
+/*!< Chroma weight table for mode decision -
+ *   weight values are << 16
+ *   From JCTVC-G1102 */
 static const uint32_t chroma_weight_factor_ld[QP_NUM] = {
-    65536,  65536,  65536,  65536, //QP 0-3
-    65536,  65536,  65536,  65536, //QP 4-7
-    65536,  65536,  65536,  65536, //QP 8-11
-    65536,  65536,  65536,  65536, //QP 12-15
-    65536,  65536,  65536,  65536, //QP 16-19
-    65536,  65536,  65536,  65536, //QP 20-23
-    65536,  65536,  65536,  65536, //QP 24-27
-    65536,  65536,  82570,  82570, //QP 28-31
-    82570,  82570,  104032, 104032, //QP 32-35
-    104032, 131072, 131072, 165140, //QP 36-39
-    165140, 208064, 208064, 262144, //QP 40-43
-    330281, 330281, 416128, 524288, //QP 44-47
-    524288, 660561, 832255, 1048576 //QP 48-51
+    65536,  65536,  65536,  65536, /*!< QP 0-3 */
+    65536,  65536,  65536,  65536, /*!< QP 4-7 */
+    65536,  65536,  65536,  65536, /*!< QP 8-11 */
+    65536,  65536,  65536,  65536, /*!< QP 12-15 */
+    65536,  65536,  65536,  65536, /*!< QP 16-19 */
+    65536,  65536,  65536,  65536, /*!< QP 20-23 */
+    65536,  65536,  65536,  65536, /*!< QP 24-27 */
+    65536,  65536,  82570,  82570, /*!< QP 28-31 */
+    82570,  82570,  104032, 104032, /*!< QP 32-35 */
+    104032, 131072, 131072, 165140, /*!< QP 36-39 */
+    165140, 208064, 208064, 262144, /*!< QP 40-43 */
+    330281, 330281, 416128, 524288, /*!< QP 44-47 */
+    524288, 660561, 832255, 1048576 /*!< QP 48-51 */
 };
 static const uint32_t chroma_weight_factor_ld_qp_scaling[QP_NUM] = {
-    65536,  65536,  65536,  65536, //QP 0-3
-    65536,  65536,  65536,  65536, //QP 4-7
-    65536,  65536,  65536,  65536, //QP 8-11
-    65536,  65536,  65536,  65536, //QP 12-15
-    65536,  65536,  65536,  65536, //QP 16-19
-    65536,  65536,  65536,  65536, //QP 20-23
-    65536,  65536,  65536,  65536, //QP 24-27
-    65536,  65536,  87427,  87157, //QP 28-31
-    86916,  86699,  114435, 113940, //QP 32-35
-    113489, 142988, 136771, 172320, //QP 36-39
-    165140, 208064, 208064, 262144, //QP 40-43
-    330281, 330281, 416128, 524288, //QP 44-47
-    524288, 660561, 832255, 1048576 //QP 48-51
+    65536,  65536,  65536,  65536, /*!< QP 0-3 */
+    65536,  65536,  65536,  65536, /*!< QP 4-7 */
+    65536,  65536,  65536,  65536, /*!< QP 8-11 */
+    65536,  65536,  65536,  65536, /*!< QP 12-15 */
+    65536,  65536,  65536,  65536, /*!< QP 16-19 */
+    65536,  65536,  65536,  65536, /*!< QP 20-23 */
+    65536,  65536,  65536,  65536, /*!< QP 24-27 */
+    65536,  65536,  87427,  87157, /*!< QP 28-31 */
+    86916,  86699,  114435, 113940, /*!< QP 32-35 */
+    113489, 142988, 136771, 172320, /*!< QP 36-39 */
+    165140, 208064, 208064, 262144, /*!< QP 40-43 */
+    330281, 330281, 416128, 524288, /*!< QP 44-47 */
+    524288, 660561, 832255, 1048576 /*!< QP 48-51 */
 };
 
-// For I_SLICE in the base layer
+/*!< For I_SLICE in the base layer */
 static const uint32_t lambda_mode_decision_i_slice_sad[QP_NUM] = {
     9973,    11194,   12565,   14104,   15831,   17769,   19945,   22388,   25130,
     28207,   31661,   35539,   39891,   44776,   50259,   56414,   63323,   71078,
@@ -145,7 +143,7 @@ static const uint32_t lambda_mode_decision_i_slice_sse[QP_NUM] = {
     6215959,  7831617,  9867219,  12431917, 15663234,  19734438,  24863834, 31326468, 39468876,
     49727668, 62652936, 78937753, 99455336, 125305872, 157875506, 198910673};
 
-// For Random Access
+/*!< For Random Access */
 static const uint32_t lambda_mode_decision_ra_sad[QP_NUM] = {
     10893,   12227,   13724,   15404,   17291,   19408,   21785,   24453,   27448,
     30809,   34582,   38817,   43570,   48906,   54895,   61618,   69164,   77634,
@@ -211,14 +209,14 @@ static const uint32_t chroma_weight_factor_ra_qp_scaling_l3[QP_NUM] = {
     330281, 330281, 416128, 524288, 524288, 660561, 832255, 1048576};
 
 static const uint32_t intra_luma_mode_mapping[] = {
-    // intra luma mode mapping for scaling
+    /*!< intra luma mode mapping for scaling */
     3, 4, 4, 3, 5, 5, 5, 3, 1, 1, 1, 3, 6, 6, 6, 3, 7,
-    7, 4, 3, 8, 8, 8, 3, 2, 2, 2, 3, 9, 9, 9, 3, 3, 3, // conversion to 9 modes
+    7, 4, 3, 8, 8, 8, 3, 2, 2, 2, 3, 9, 9, 9, 3, 3, 3, /*!< conversion to 9 modes */
     3, 3, 3, 3, 3, 3, 3, 1, 1, 1, 1, 1, 1, 1, 3, 3, 3,
-    3, 3, 3, 3, 2, 2, 2, 2, 2, 2, 2, 2, 2, 3, 3, 3, 3 // conversion to 3 modes
+    3, 3, 3, 3, 2, 2, 2, 2, 2, 2, 2, 2, 2, 3, 3, 3, 3 /*!< conversion to 3 modes */
 };
-// Lambda Table for bit-depth 8
-static const uint32_t av1_lambda_mode_decision8_bit_sse[QINDEX_RANGE /*256*/] = {
+/*!< Lambda Table for bit-depth 8 */
+static const uint32_t av1_lambda_mode_decision8_bit_sse[QINDEX_RANGE /*!< 256 */] = {
     58,      234,     234,     297,     366,     443,     528,     528,     619,     718,
     825,     938,     1059,    1188,    1323,    1323,    1466,    1617,    1774,    1939,
     2112,    2291,    2478,    2478,    2673,    2874,    3083,    3300,    3523,    3754,
@@ -245,8 +243,8 @@ static const uint32_t av1_lambda_mode_decision8_bit_sse[QINDEX_RANGE /*256*/] = 
     1436878, 1501866, 1568292, 1636154, 1715472, 1796666, 1884993, 1986218, 2090091, 2202291,
     2323258, 2459457, 2605713, 2768923, 2943658, 3137291, 3344091, 3579194, 3829774, 4104334,
     4420548, 4756843, 5140138, 5565354, 6026254, 6544618};
-// Lambda Table for bit-depth 10
-static const uint32_t av1lambda_mode_decision10_bit_sse[QINDEX_RANGE /*256*/] = {
+/*!< Lambda Table for bit-depth 10 */
+static const uint32_t av1lambda_mode_decision10_bit_sse[QINDEX_RANGE /*!< 256 */] = {
     4,       19,      23,      39,      52,      66,      92,      111,     143,     180,
     220,     265,     314,     367,     424,     506,     573,     644,     745,     825,
     939,     1060,    1155,    1289,    1394,    1541,    1695,    1856,    1982,    2156,
@@ -273,8 +271,8 @@ static const uint32_t av1lambda_mode_decision10_bit_sse[QINDEX_RANGE /*256*/] = 
     1441473, 1503040, 1568292, 1639831, 1716726, 1799234, 1888939, 1986219, 2090092, 2205134,
     2329100, 2465467, 2610352, 2772111, 2946945, 3140684, 3349346, 3581006, 3831649, 4112097,
     4424575, 4763110, 5142310, 5567614, 6030956, 6551969};
-// Lambda Table for bit-depth 12
-static const uint32_t av1lambda_mode_decision12_bit_sse[QINDEX_RANGE /*256*/] = {
+/*!< Lambda Table for bit-depth 12 */
+static const uint32_t av1lambda_mode_decision12_bit_sse[QINDEX_RANGE /*!< 256 */] = {
     1,       2,       5,       9,       16,      24,      36,      52,      70,      92,
     119,     152,     189,     231,     281,     335,     395,     464,     539,     620,
     706,     805,     902,     1013,    1131,    1255,    1394,    1532,    1685,    1836,
@@ -302,7 +300,7 @@ static const uint32_t av1lambda_mode_decision12_bit_sse[QINDEX_RANGE /*256*/] = 
     2328369, 2464715, 2610738, 2772509, 2946534, 3140260, 3348470, 3581006, 3831649, 4111612,
     4424071, 4763633, 5142852, 5568743, 6031544, 6551356};
 
-static const uint32_t av1_lambda_mode_decision8_bit_sad[QINDEX_RANGE /*256*/] = {
+static const uint32_t av1_lambda_mode_decision8_bit_sad[QINDEX_RANGE /*!< 256 */] = {
     86,    173,   173,   194,   216,   238,   259,   259,   281,   303,   324,   346,   368,
     389,   411,   411,   433,   454,   476,   498,   519,   541,   563,   563,   584,   606,
     628,   649,   671,   693,   693,   714,   736,   758,   779,   801,   823,   823,   844,
@@ -323,8 +321,8 @@ static const uint32_t av1_lambda_mode_decision8_bit_sad[QINDEX_RANGE /*256*/] = 
     11481, 11676, 11893, 12110, 12326, 12543, 12781, 13041, 13301, 13561, 13865, 14168, 14471,
     14818, 15164, 15533, 15944, 16356, 16789, 17244, 17742, 18262, 18826, 19411, 20039, 20689,
     21404, 22140, 22920, 23787, 24675, 25650, 26690, 27773, 28943};
-// Lambda Table for bit-depth 10
-static const uint32_t av1lambda_mode_decision10_bit_sad[QINDEX_RANGE /*256*/] = {
+/*!< Lambda Table for bit-depth 10 */
+static const uint32_t av1lambda_mode_decision10_bit_sad[QINDEX_RANGE /*!< 256 */] = {
     22,    49,    54,    70,    81,    91,    108,   119,   135,   151,   167,   184,   200,
     216,   232,   254,   270,   287,   308,   324,   346,   368,   384,   406,   422,   444,
     465,   487,   503,   525,   547,   568,   590,   611,   628,   649,   671,   693,   714,
@@ -345,8 +343,8 @@ static const uint32_t av1lambda_mode_decision10_bit_sad[QINDEX_RANGE /*256*/] = 
     11498, 11693, 11899, 12110, 12326, 12559, 12798, 13052, 13312, 13583, 13870, 14168, 14487,
     14823, 15175, 15549, 15944, 16356, 16800, 17266, 17764, 18279, 18836, 19421, 20050, 20705,
     21409, 22146, 22942, 23798, 24691, 25655, 26695, 27784, 28959};
-// Lambda Table for bit-depth 12
-static const uint32_t av1lambda_mode_decision12_bit_sad[QINDEX_RANGE /*256*/] = {
+/*!< Lambda Table for bit-depth 12 */
+static const uint32_t av1lambda_mode_decision12_bit_sad[QINDEX_RANGE /*!< 256 */] = {
     11,    16,    25,    33,    45,    55,    67,    81,    94,    108,   123,   139,   155,
     171,   189,   207,   224,   243,   262,   281,   300,   320,   339,   360,   380,   400,
     422,   442,   464,   484,   506,   528,   548,   570,   591,   613,   634,   655,   677,

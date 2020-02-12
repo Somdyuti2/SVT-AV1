@@ -1,7 +1,5 @@
-/*
-* Copyright(c) 2019 Intel Corporation
-* SPDX - License - Identifier: BSD - 2 - Clause - Patent
-*/
+/*!< Copyright(c) 2019 Intel Corporation
+* SPDX - License - Identifier: BSD - 2 - Clause - Patent */
 
 #include "EbMeSadCalculation_SSE2.h"
 #include <emmintrin.h>
@@ -36,11 +34,11 @@ void sad_calculation_8x8_16x16_sse2_intrin(uint8_t *src, uint32_t src_stride, ui
 
     xmm_sad8x8[0] = xmm_sad8x8[1] = _mm_setzero_si128();
 
-    //sad8x8_0, sad8x8_1
+    /*!< sad8x8_0, sad8x8_1 */
     sad8x4x2_sse2_intrin(
         src + 0 * src_stride, src_stride, ref + 0 * ref_stride, ref_stride, &xmm_sad8x8[0]);
 
-    //sad8x8_2, sad8x8_3
+    /*!< sad8x8_2, sad8x8_3 */
     sad8x4x2_sse2_intrin(
         src + 8 * src_stride, src_stride, ref + 8 * ref_stride, ref_stride, &xmm_sad8x8[1]);
 
@@ -48,11 +46,11 @@ void sad_calculation_8x8_16x16_sse2_intrin(uint8_t *src, uint32_t src_stride, ui
         xmm_sad8x8[0] = _mm_slli_epi32(xmm_sad8x8[0], 1);
         xmm_sad8x8[1] = _mm_slli_epi32(xmm_sad8x8[1], 1);
     } else {
-        //sad8x8_0, sad8x8_1
+        /*!< sad8x8_0, sad8x8_1 */
         sad8x4x2_sse2_intrin(
             src + 1 * src_stride, src_stride, ref + 1 * ref_stride, ref_stride, &xmm_sad8x8[0]);
 
-        //sad8x8_2, sad8x8_3
+        /*!< sad8x8_2, sad8x8_3 */
         sad8x4x2_sse2_intrin(
             src + 9 * src_stride, src_stride, ref + 9 * ref_stride, ref_stride, &xmm_sad8x8[1]);
     }
@@ -71,7 +69,7 @@ void sad_calculation_8x8_16x16_sse2_intrin(uint8_t *src, uint32_t src_stride, ui
     xmm_p_best_sad_8x8 = _mm_loadu_si128((__m128i *)p_best_sad_8x8);
     xmm_p_best_mv_8x8  = _mm_loadu_si128((__m128i *)p_best_mv8x8);
 
-    // sad8x8_0 < p_best_sad_8x8[0] for 0 to 3
+    /*!< sad8x8_0 < p_best_sad_8x8[0] for 0 to 3 */
     sad8x8_less_than_bitmask = _mm_cmplt_epi32(sad8x8_0_3, xmm_p_best_sad_8x8);
 
     xmm_n1 = _mm_cmpeq_epi8(xmm_sad8x8[0], xmm_sad8x8[0]);
@@ -131,7 +129,7 @@ void sad_calculation_32x32_64x64_sse2_intrin(uint32_t *p_sad16x16, uint32_t *p_b
         xmm_p_best_sad_32x32, xmm_sad64x64); // _mm_cmplt_epi32(xmm_p_best_sad_32x32, xmm_sad64x64);
 
     xmm_n1 =
-        _mm_cmpeq_epi8(xmm_mv, xmm_mv); // anything compared to itself is equal (get 0xFFFFFFFF)
+        _mm_cmpeq_epi8(xmm_mv, xmm_mv); /*!< anything compared to itself is equal (get 0xFFFFFFFF) */
     sad32x32_less_than_or_eq_bitmask = _mm_sub_epi32(xmm_n1, sad32x32_greater_than_bitmask);
 
     best_sad32x32 =
@@ -163,12 +161,12 @@ void initialize_buffer_32bits_sse2_intrin(uint32_t *pointer, uint32_t count128, 
         _mm_storeu_si128((__m128i *)pointer, xmm2);
         pointer += 4;
     }
-    if (count32 == 3) { //Initialize 96 bits
+    if (count32 == 3) { /*!< Initialize 96 bits */
         _mm_storel_epi64((__m128i *)(pointer), xmm2);
         *(pointer + 2) = _mm_cvtsi128_si32(xmm2);
-    } else if (count32 == 2) { // Initialize 64 bits
+    } else if (count32 == 2) { /*!< Initialize 64 bits */
         _mm_storel_epi64((__m128i *)pointer, xmm2);
-    } else if (count32 == 1) { // Initialize 32 bits
+    } else if (count32 == 1) { /*!< Initialize 32 bits */
         *(pointer) = _mm_cvtsi128_si32(xmm2);
     }
 }

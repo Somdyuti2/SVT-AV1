@@ -1,13 +1,11 @@
-/*
- * Copyright (c) 2018, Alliance for Open Media. All rights reserved
+/*!< Copyright (c) 2018, Alliance for Open Media. All rights reserved
  *
  * This source code is subject to the terms of the BSD 2 Clause License and
  * the Alliance for Open Media Patent License 1.0. If the BSD 2 Clause License
  * was not distributed with this source code in the LICENSE file, you can
  * obtain it at www.aomedia.org/license/software. If the Alliance for Open
  * Media Patent License 1.0 was not distributed with this source code in the
- * PATENTS file, you can obtain it at www.aomedia.org/license/patent.
- */
+ * PATENTS file, you can obtain it at www.aomedia.org/license/patent. */
 #ifndef AV1_COMMON_X86_AV1_TXFM_COMMON_AVX2_H_
 #define AV1_COMMON_X86_AV1_TXFM_COMMON_AVX2_H_
 
@@ -21,7 +19,7 @@ extern "C" {
 
 #define pair_set_epi16(a, b) _mm_set1_epi32((int32_t)(((uint16_t)(a)) | (((uint32_t)(b)) << 16)))
 
-// Reverse the 8 16 bit words in __m128i
+/*!< Reverse the 8 16 bit words in __m128i */
 static INLINE __m128i mm_reverse_epi16(const __m128i x) {
     const __m128i a = _mm_shufflelo_epi16(x, 0x1b);
     const __m128i b = _mm_shufflehi_epi16(a, 0x1b);
@@ -113,22 +111,22 @@ static INLINE void load_buffer_32bit_to_16bit_w16_avx2(const int32_t *in, int st
 }
 
 static INLINE void transpose_16bit_16x16_avx2(const __m256i *const in, __m256i *const out) {
-    // Unpack 16 bit elements. Goes from:
-    // in[0]: 00 01 02 03  08 09 0a 0b  04 05 06 07  0c 0d 0e 0f
-    // in[1]: 10 11 12 13  18 19 1a 1b  14 15 16 17  1c 1d 1e 1f
-    // in[2]: 20 21 22 23  28 29 2a 2b  24 25 26 27  2c 2d 2e 2f
-    // in[3]: 30 31 32 33  38 39 3a 3b  34 35 36 37  3c 3d 3e 3f
-    // in[4]: 40 41 42 43  48 49 4a 4b  44 45 46 47  4c 4d 4e 4f
-    // in[5]: 50 51 52 53  58 59 5a 5b  54 55 56 57  5c 5d 5e 5f
-    // in[6]: 60 61 62 63  68 69 6a 6b  64 65 66 67  6c 6d 6e 6f
-    // in[7]: 70 71 72 73  78 79 7a 7b  74 75 76 77  7c 7d 7e 7f
-    // in[8]: 80 81 82 83  88 89 8a 8b  84 85 86 87  8c 8d 8e 8f
-    // to:
-    // a0:    00 10 01 11  02 12 03 13  04 14 05 15  06 16 07 17
-    // a1:    20 30 21 31  22 32 23 33  24 34 25 35  26 36 27 37
-    // a2:    40 50 41 51  42 52 43 53  44 54 45 55  46 56 47 57
-    // a3:    60 70 61 71  62 72 63 73  64 74 65 75  66 76 67 77
-    // ...
+    /*!< Unpack 16 bit elements. Goes from:
+     *   in[0]: 00 01 02 03  08 09 0a 0b  04 05 06 07  0c 0d 0e 0f
+     *   in[1]: 10 11 12 13  18 19 1a 1b  14 15 16 17  1c 1d 1e 1f
+     *   in[2]: 20 21 22 23  28 29 2a 2b  24 25 26 27  2c 2d 2e 2f
+     *   in[3]: 30 31 32 33  38 39 3a 3b  34 35 36 37  3c 3d 3e 3f
+     *   in[4]: 40 41 42 43  48 49 4a 4b  44 45 46 47  4c 4d 4e 4f
+     *   in[5]: 50 51 52 53  58 59 5a 5b  54 55 56 57  5c 5d 5e 5f
+     *   in[6]: 60 61 62 63  68 69 6a 6b  64 65 66 67  6c 6d 6e 6f
+     *   in[7]: 70 71 72 73  78 79 7a 7b  74 75 76 77  7c 7d 7e 7f
+     *   in[8]: 80 81 82 83  88 89 8a 8b  84 85 86 87  8c 8d 8e 8f
+     *   to:
+     *   a0:    00 10 01 11  02 12 03 13  04 14 05 15  06 16 07 17
+     *   a1:    20 30 21 31  22 32 23 33  24 34 25 35  26 36 27 37
+     *   a2:    40 50 41 51  42 52 43 53  44 54 45 55  46 56 47 57
+     *   a3:    60 70 61 71  62 72 63 73  64 74 65 75  66 76 67 77
+     *   ... */
     __m256i a[16];
     for (int i = 0; i < 16; i += 2) {
         a[i / 2 + 0] = _mm256_unpacklo_epi16(in[i], in[i + 1]);

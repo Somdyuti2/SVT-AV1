@@ -1,13 +1,11 @@
-/*
- * Copyright (c) 2018, Alliance for Open Media. All rights reserved
+/*!< Copyright (c) 2018, Alliance for Open Media. All rights reserved
  *
  * This source code is subject to the terms of the BSD 2 Clause License and
  * the Alliance for Open Media Patent License 1.0. If the BSD 2 Clause License
  * was not distributed with this source code in the LICENSE file, you can
  * obtain it at www.aomedia.org/license/software. If the Alliance for Open
  * Media Patent License 1.0 was not distributed with this source code in the
- * PATENTS file, you can obtain it at www.aomedia.org/license/patent.
- */
+ * PATENTS file, you can obtain it at www.aomedia.org/license/patent. */
 
 #include "EbDefinitions.h"
 // #include <immintrin.h>
@@ -30,15 +28,14 @@
 // #include "obmc_intrinsic_ssse3.h"
 #include "synonyms.h"
 
-// Loads and stores to do away with the tedium of casting the address
-// to the right type.
+/*!< Loads and stores to do away with the tedium of casting the address to the right type. */
 static INLINE int32_t xx_hsum_epi32_si32(__m128i v_d) {
     v_d = _mm_hadd_epi32(v_d, v_d);
     v_d = _mm_hadd_epi32(v_d, v_d);
     return _mm_cvtsi128_si32(v_d);
 }
 ////////////////////////////////////////////////////////////////////////////////
-// 8 bit
+/*!< 8 bit */
 ////////////////////////////////////////////////////////////////////////////////
 
 static INLINE unsigned int obmc_sad_w4_avx2(const uint8_t *pre, const int pre_stride,
@@ -57,15 +54,15 @@ static INLINE unsigned int obmc_sad_w4_avx2(const uint8_t *pre, const int pre_st
 
         const __m256i v_p_d = _mm256_cvtepu8_epi32(v_p_b);
 
-        // Values in both pre and mask fit in 15 bits, and are packed at 32 bit
-        // boundaries. We use pmaddwd, as it has lower latency on Haswell
-        // than pmulld but produces the same result with these inputs.
+        /*!< Values in both pre and mask fit in 15 bits, and are packed at 32 bit
+         *   boundaries. We use pmaddwd, as it has lower latency on Haswell
+         *   than pmulld but produces the same result with these inputs. */
         const __m256i v_pm_d = _mm256_madd_epi16(v_p_d, v_m_d);
 
         const __m256i v_diff_d    = _mm256_sub_epi32(v_w_d, v_pm_d);
         const __m256i v_absdiff_d = _mm256_abs_epi32(v_diff_d);
 
-        // Rounded absolute difference
+        /*!< Rounded absolute difference */
         const __m256i v_tmp_d = _mm256_add_epi32(v_absdiff_d, v_bias_d);
         const __m256i v_rad_d = _mm256_srli_epi32(v_tmp_d, 12);
 
@@ -98,15 +95,15 @@ static INLINE unsigned int obmc_sad_w8n_avx2(const uint8_t *pre, const int pre_s
 
         const __m256i v_p0_d = _mm256_cvtepu8_epi32(v_p0_b);
 
-        // Values in both pre and mask fit in 15 bits, and are packed at 32 bit
-        // boundaries. We use pmaddwd, as it has lower latency on Haswell
-        // than pmulld but produces the same result with these inputs.
+        /*!< Values in both pre and mask fit in 15 bits, and are packed at 32 bit
+         *   boundaries. We use pmaddwd, as it has lower latency on Haswell
+         *   than pmulld but produces the same result with these inputs. */
         const __m256i v_pm0_d = _mm256_madd_epi16(v_p0_d, v_m0_d);
 
         const __m256i v_diff0_d    = _mm256_sub_epi32(v_w0_d, v_pm0_d);
         const __m256i v_absdiff0_d = _mm256_abs_epi32(v_diff0_d);
 
-        // Rounded absolute difference
+        /*!< Rounded absolute difference */
         const __m256i v_tmp_d  = _mm256_add_epi32(v_absdiff0_d, v_bias_d);
         const __m256i v_rad0_d = _mm256_srli_epi32(v_tmp_d, 12);
 

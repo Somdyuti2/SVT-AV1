@@ -1,13 +1,11 @@
-/*
- * Copyright (c) 2018, Alliance for Open Media. All rights reserved
+/*!< Copyright (c) 2018, Alliance for Open Media. All rights reserved
  *
  * This source code is subject to the terms of the BSD 2 Clause License and
  * the Alliance for Open Media Patent License 1.0. If the BSD 2 Clause License
  * was not distributed with this source code in the LICENSE file, you can
  * obtain it at www.aomedia.org/license/software. If the Alliance for Open
  * Media Patent License 1.0 was not distributed with this source code in the
- * PATENTS file, you can obtain it at www.aomedia.org/license/patent.
- */
+ * PATENTS file, you can obtain it at www.aomedia.org/license/patent. */
 
 #include <assert.h>
 #include <immintrin.h>
@@ -295,13 +293,13 @@ static INLINE void pack_store_32x2_avx512(const __m512i res0, const __m512i res1
     storeu_u8_32x2_avx512(d, dst, stride);
 }
 
-// Note: If this function crash in Windows, please pay attention to the pointer
-// filter_x, which could be overridden by other instructions. It's a bug from
-// Visual Studio compiler. Please adjust the positions of the following 2
-// instructions randomly to work around, or even duplicate instruction 1 to
-// several locations before coeffs_x is referenced.
-// 1. const __m128i coeffs_x = xx_loadu_128(filter_x);
-// 2. const int cnt_zero_coef = calc_zero_coef(filter_x, filter_y);
+/*!< Note: If this function crash in Windows, please pay attention to the pointer
+ *   filter_x, which could be overridden by other instructions. It's a bug from
+ *   Visual Studio compiler. Please adjust the positions of the following 2
+ *   instructions randomly to work around, or even duplicate instruction 1 to
+ *   several locations before coeffs_x is referenced.
+ *   1. const __m128i coeffs_x = xx_loadu_128(filter_x);
+ *   2. const int cnt_zero_coef = calc_zero_coef(filter_x, filter_y); */
 void eb_av1_wiener_convolve_add_src_avx512(const uint8_t* const src, const ptrdiff_t src_stride,
                                            uint8_t* const dst, const ptrdiff_t dst_stride,
                                            const int16_t* const filter_x,
@@ -352,9 +350,9 @@ void eb_av1_wiener_convolve_add_src_avx512(const uint8_t* const src, const ptrdi
             filt_512[2]                   = zz_load_512(filt3_global_avx);
             filt_512[3]                   = zz_load_512(filt4_global_avx);
             populate_coeffs_8tap_avx512(coeffs_x, coeffs_h_512);
-            // coeffs 0 1 0 1 0 1 0 1
+            /*!< coeffs 0 1 0 1 0 1 0 1 */
             coeffs_v_512[0] = _mm512_shuffle_epi32(filter_coeffs_y_512, 0x00);
-            // coeffs 2 3 2 3 2 3 2 3
+            /*!< coeffs 2 3 2 3 2 3 2 3 */
             coeffs_v_512[1] = _mm512_shuffle_epi32(filter_coeffs_y_512, 0x55);
 
             width -= x;
@@ -533,9 +531,9 @@ void eb_av1_wiener_convolve_add_src_avx512(const uint8_t* const src, const ptrdi
         filt[2]                   = yy_load_256(filt3_global_avx);
         filt[3]                   = yy_load_256(filt4_global_avx);
         populate_coeffs_8tap_avx2(coeffs_x, coeffs_h);
-        // coeffs 0 1 0 1 0 1 0 1
+        /*!< coeffs 0 1 0 1 0 1 0 1 */
         coeffs_v[0] = _mm256_shuffle_epi32(filter_coeffs_y, 0x00);
-        // coeffs 2 3 2 3 2 3 2 3
+        /*!< coeffs 2 3 2 3 2 3 2 3 */
         coeffs_v[1] = _mm256_shuffle_epi32(filter_coeffs_y, 0x55);
 
         if (width >= 16) {
@@ -661,10 +659,10 @@ void eb_av1_wiener_convolve_add_src_avx512(const uint8_t* const src, const ptrdi
             const __m512i filt_center_512 = zz_load_512(filt_center_tap5_global_avx);
             filt_512[2]                   = zz_load_512(filt3_global_avx);
             populate_coeffs_6tap_avx512(coeffs_x, coeffs_h_512);
-            // coeffs 1 2 1 2 1 2 1 2
+            /*!< coeffs 1 2 1 2 1 2 1 2 */
             coeffs_v_512[0] =
                 _mm512_shuffle_epi8(filter_coeffs_y_512, _mm512_set1_epi32(0x05040302u));
-            // coeffs 3 4 3 4 3 4 3 4
+            /*!< coeffs 3 4 3 4 3 4 3 4 */
             coeffs_v_512[1] =
                 _mm512_shuffle_epi8(filter_coeffs_y_512, _mm512_set1_epi32(0x09080706u));
 
@@ -809,9 +807,9 @@ void eb_av1_wiener_convolve_add_src_avx512(const uint8_t* const src, const ptrdi
         filt[2]                   = yy_load_256(filt3_global_avx);
         coeffs_x                  = xx_loadu_128(filter_x);
         populate_coeffs_6tap_avx2(coeffs_x, coeffs_h);
-        // coeffs 1 2 1 2 1 2 1 2
+        /*!< coeffs 1 2 1 2 1 2 1 2 */
         coeffs_v[0] = _mm256_shuffle_epi8(filter_coeffs_y, _mm256_set1_epi32(0x05040302u));
-        // coeffs 3 4 3 4 3 4 3 4
+        /*!< coeffs 3 4 3 4 3 4 3 4 */
         coeffs_v[1] = _mm256_shuffle_epi8(filter_coeffs_y, _mm256_set1_epi32(0x09080706u));
 
         if (width >= 16) {
@@ -916,9 +914,9 @@ void eb_av1_wiener_convolve_add_src_avx512(const uint8_t* const src, const ptrdi
 
             const __m512i filt_center_512 = zz_load_512(filt_center_tap3_global_avx);
             populate_coeffs_4tap_avx512(coeffs_x, coeffs_h_512);
-            // coeffs 2 3 2 3 2 3 2 3
+            /*!< coeffs 2 3 2 3 2 3 2 3 */
             coeffs_v_512[0] = _mm512_shuffle_epi32(filter_coeffs_y_512, 0x55);
-            // coeffs 4 5 4 5 4 5 4 5
+            /*!< coeffs 4 5 4 5 4 5 4 5 */
             coeffs_v_512[1] = _mm512_shuffle_epi32(filter_coeffs_y_512, 0xaa);
 
             width -= x;
@@ -1024,9 +1022,9 @@ void eb_av1_wiener_convolve_add_src_avx512(const uint8_t* const src, const ptrdi
 
         const __m256i filt_center = yy_load_256(filt_center_tap3_global_avx);
         populate_coeffs_4tap_avx2(coeffs_x, coeffs_h);
-        // coeffs 2 3 2 3 2 3 2 3
+        /*!< coeffs 2 3 2 3 2 3 2 3 */
         coeffs_v[0] = _mm256_shuffle_epi32(filter_coeffs_y, 0x55);
-        // coeffs 4 5 4 5 4 5 4 5
+        /*!< coeffs 4 5 4 5 4 5 4 5 */
         coeffs_v[1] = _mm256_shuffle_epi32(filter_coeffs_y, 0xaa);
 
         if (width >= 16) {

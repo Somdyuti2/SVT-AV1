@@ -1,18 +1,14 @@
-/*
-* Copyright(c) 2019 Intel Corporation
-* SPDX - License - Identifier: BSD - 2 - Clause - Patent
-*/
+/*!< Copyright(c) 2019 Intel Corporation
+ * SPDX - License - Identifier: BSD - 2 - Clause - Patent */
 
-/*
-* Copyright (c) 2016, Alliance for Open Media. All rights reserved
-*
-* This source code is subject to the terms of the BSD 2 Clause License and
-* the Alliance for Open Media Patent License 1.0. If the BSD 2 Clause License
-* was not distributed with this source code in the LICENSE file, you can
-* obtain it at www.aomedia.org/license/software. If the Alliance for Open
-* Media Patent License 1.0 was not distributed with this source code in the
-* PATENTS file, you can obtain it at www.aomedia.org/license/patent.
-*/
+/*!< Copyright (c) 2016, Alliance for Open Media. All rights reserved
+ *
+ * This source code is subject to the terms of the BSD 2 Clause License and
+ * the Alliance for Open Media Patent License 1.0. If the BSD 2 Clause License
+ * was not distributed with this source code in the LICENSE file, you can
+ * obtain it at www.aomedia.org/license/software. If the Alliance for Open
+ * Media Patent License 1.0 was not distributed with this source code in the
+ * PATENTS file, you can obtain it at www.aomedia.org/license/patent. */
 
 #ifndef EbEntropyCoding_h
 #define EbEntropyCoding_h
@@ -39,9 +35,9 @@ extern "C" {
 struct ModeDecisionCandidateBuffer;
 struct ModeDecisionCandidate;
 
-/**************************************
-     * Extern Function Declarations
-     **************************************/
+/**************************************/
+/*!< Extern Function Declarations */
+/**************************************/
 struct EntropyCodingContext;
 #if TILES_PARALLEL
 extern EbErrorType write_sb(struct EntropyCodingContext *context_ptr, SuperBlock *tb_ptr,
@@ -78,8 +74,8 @@ extern EbErrorType copy_payload(Bitstream *bitstream_ptr, EbByte output_buffer,
                                                   uint32_t *     output_buffer_size,
                                                   EncodeContext *encode_context_ptr);
 
-//**********************************************************************************************************//
-//onyxc_int.h
+/**********************************************************************************************************/
+/*!< onyxc_int.h */
 static INLINE int32_t frame_is_intra_only(const PictureParentControlSet *const pcs_ptr) {
     return pcs_ptr->frm_hdr.frame_type == KEY_FRAME ||
            pcs_ptr->frm_hdr.frame_type == INTRA_ONLY_FRAME;
@@ -89,7 +85,7 @@ static INLINE int32_t frame_is_sframe(const PictureParentControlSet *pcs_ptr) {
     return pcs_ptr->frm_hdr.frame_type == S_FRAME;
 }
 
-// Returns 1 if this frame might allow mvs from some reference frame.
+/*!< Returns 1 if this frame might allow mvs from some reference frame. */
 
 static INLINE int32_t frame_might_allow_ref_frame_mvs(const PictureParentControlSet *pcs_ptr,
                                                       SequenceControlSet *           scs_ptr) {
@@ -98,7 +94,7 @@ static INLINE int32_t frame_might_allow_ref_frame_mvs(const PictureParentControl
            scs_ptr->seq_header.order_hint_info.enable_order_hint && !frame_is_intra_only(pcs_ptr);
 }
 
-// Returns 1 if this frame might use warped_motion
+/*!< Returns 1 if this frame might use warped_motion */
 static INLINE int32_t frame_might_allow_warped_motion(const PictureParentControlSet *pcs_ptr,
                                                       SequenceControlSet *           scs_ptr) {
     return !pcs_ptr->frm_hdr.error_resilient_mode && !frame_is_intra_only(pcs_ptr) &&
@@ -110,16 +106,16 @@ static INLINE uint8_t major_minor_to_seq_level_idx(BitstreamLevel bl) {
     return ((bl.major - LEVEL_MAJOR_MIN) << LEVEL_MINOR_BITS) + bl.minor;
 }
 
-//**********************************************************************************************************//
-//encoder.h
+/**********************************************************************************************************/
+/*!< encoder.h */
 static INLINE int32_t get_ref_frame_map_idx(const PictureParentControlSet *pcs_ptr,
                                             MvReferenceFrame               ref_frame) {
     return pcs_ptr->av1_ref_signal
-            .ref_dpb_index[ref_frame - LAST_FRAME]; //LAST-LAST2-LAST3-GOLDEN-BWD-ALT2-ALT
+            .ref_dpb_index[ref_frame - LAST_FRAME]; /*!< LAST-LAST2-LAST3-GOLDEN-BWD-ALT2-ALT */
 }
 
-//*******************************************************************************************//
-// bitwriter_buffer.h
+/*******************************************************************************************/
+/*!< bitwriter_buffer.h */
 struct AomWriteBitBuffer {
     uint8_t *bit_buffer;
     uint32_t bit_offset;
@@ -132,8 +128,8 @@ void eb_aom_wb_write_bit(struct AomWriteBitBuffer *wb, int32_t bit);
 void eb_aom_wb_write_literal(struct AomWriteBitBuffer *wb, int32_t data, int32_t bits);
 
 void eb_aom_wb_write_inv_signed_literal(struct AomWriteBitBuffer *wb, int32_t data, int32_t bits);
-//*******************************************************************************************//
-// Bitstream.h
+/*******************************************************************************************/
+/*!< Bitstream.h */
 struct AomWriteBitBuffer;
 
 void write_sequence_header(SequenceControlSet *      scs_ptr /*Av1Comp *cpi*/,
@@ -144,7 +140,7 @@ uint32_t write_obu_header(ObuType ObuType, int32_t obuExtension, uint8_t *const 
 int32_t write_uleb_obu_size(uint32_t obu_header_size, uint32_t obu_payload_size, uint8_t *dest);
 
 //*******************************************************************************************//
-// blockd.h
+/*!< blockd.h */
 
 void get_txb_ctx(PictureControlSet *pcs_ptr, const int32_t plane,
                  NeighborArrayUnit *dc_sign_level_coeff_neighbor_array, uint32_t blk_origin_x,
@@ -160,60 +156,60 @@ extern int32_t eb_av1_get_comp_reference_type_context(
     NeighborArrayUnit *inter_pred_dir_neighbor_array);
 
 extern void av1_collect_neighbors_ref_counts_new(MacroBlockD *const xd);
-// Obtain contexts to signal a reference frame be either BWDREF/ALTREF2, or
-// ALTREF.
-//extern int32_t get_pred_context_brfarf2_or_arf(const MacroBlockD *xd);
-// Obtain contexts to signal a reference frame be either BWDREF or ALTREF2.
-//extern int32_t get_pred_context_brf_or_arf2(const MacroBlockD *xd);
-// == Context functions for comp ref ==
-//
-// Returns a context number for the given MB prediction signal
-// Signal the first reference frame for a compound mode be either
-// GOLDEN/LAST3, or LAST/LAST2.
+/*!< Obtain contexts to signal a reference frame be either BWDREF/ALTREF2, or
+ *   ALTREF.
+ *   extern int32_t get_pred_context_brfarf2_or_arf(const MacroBlockD *xd);
+ *   Obtain contexts to signal a reference frame be either BWDREF or ALTREF2.
+ *   extern int32_t get_pred_context_brf_or_arf2(const MacroBlockD *xd);
+ *   == Context functions for comp ref ==
+ *
+ *   Returns a context number for the given MB prediction signal
+ *   Signal the first reference frame for a compound mode be either
+ *   GOLDEN/LAST3, or LAST/LAST2. */
 extern int32_t eb_av1_get_pred_context_comp_ref_p(const MacroBlockD *xd);
 
-// Returns a context number for the given MB prediction signal
-// Signal the first reference frame for a compound mode be LAST,
-// conditioning on that it is known either LAST/LAST2.
+/*!< Returns a context number for the given MB prediction signal
+ *   Signal the first reference frame for a compound mode be LAST,
+ *   conditioning on that it is known either LAST/LAST2. */
 extern int32_t eb_av1_get_pred_context_comp_ref_p1(const MacroBlockD *xd);
 
-// Returns a context number for the given MB prediction signal
-// Signal the first reference frame for a compound mode be GOLDEN,
-// conditioning on that it is known either GOLDEN or LAST3.
+/*!< Returns a context number for the given MB prediction signal
+ *   Signal the first reference frame for a compound mode be GOLDEN,
+ *   conditioning on that it is known either GOLDEN or LAST3. */
 extern int32_t eb_av1_get_pred_context_comp_ref_p2(const MacroBlockD *xd);
 
-// Signal the 2nd reference frame for a compound mode be either
-// ALTREF, or ALTREF2/BWDREF.
+/*!< Signal the 2nd reference frame for a compound
+ *   mode be either ALTREF, or ALTREF2/BWDREF. */
 extern int32_t eb_av1_get_pred_context_comp_bwdref_p(const MacroBlockD *xd);
 
-// Signal the 2nd reference frame for a compound mode be either
-// ALTREF2 or BWDREF.
+/*!< Signal the 2nd reference frame for a compound
+ *   mode be either ALTREF2 or BWDREF. */
 extern int32_t eb_av1_get_pred_context_comp_bwdref_p1(const MacroBlockD *xd);
-// == Context functions for single ref ==
-//
-// For the bit to signal whether the single reference is a forward reference
-// frame or a backward reference frame.
+/*!< == Context functions for single ref ==
+ *
+ *   For the bit to signal whether the single reference is a forward reference
+ *   frame or a backward reference frame. */
 extern int32_t eb_av1_get_pred_context_single_ref_p1(const MacroBlockD *xd);
 
-// For the bit to signal whether the single reference is ALTREF_FRAME or
-// non-ALTREF backward reference frame, knowing that it shall be either of
-// these 2 choices.
+/*!< For the bit to signal whether the single reference is ALTREF_FRAME or
+ *   non-ALTREF backward reference frame, knowing that it shall be either of
+ *   these 2 choices. */
 extern int32_t eb_av1_get_pred_context_single_ref_p2(const MacroBlockD *xd);
 
-// For the bit to signal whether the single reference is LAST3/GOLDEN or
-// LAST2/LAST, knowing that it shall be either of these 2 choices.
+/*!< For the bit to signal whether the single reference is LAST3/GOLDEN or
+ *   LAST2/LAST, knowing that it shall be either of these 2 choices. */
 extern int32_t eb_av1_get_pred_context_single_ref_p3(const MacroBlockD *xd);
 
-// For the bit to signal whether the single reference is LAST2_FRAME or
-// LAST_FRAME, knowing that it shall be either of these 2 choices.
+/*!< For the bit to signal whether the single reference is LAST2_FRAME or
+ *   LAST_FRAME, knowing that it shall be either of these 2 choices. */
 extern int32_t eb_av1_get_pred_context_single_ref_p4(const MacroBlockD *xd);
 
-// For the bit to signal whether the single reference is GOLDEN_FRAME or
-// LAST3_FRAME, knowing that it shall be either of these 2 choices.
+/*!< For the bit to signal whether the single reference is GOLDEN_FRAME or
+ *   LAST3_FRAME, knowing that it shall be either of these 2 choices. */
 extern int32_t eb_av1_get_pred_context_single_ref_p5(const MacroBlockD *xd);
 
-// For the bit to signal whether the single reference is ALTREF2_FRAME or
-// BWDREF_FRAME, knowing that it shall be either of these 2 choices.
+/*!< For the bit to signal whether the single reference is ALTREF2_FRAME or
+ *   BWDREF_FRAME, knowing that it shall be either of these 2 choices. */
 extern int32_t eb_av1_get_pred_context_single_ref_p6(const MacroBlockD *xd);
 
 extern EbErrorType write_frame_header_av1(Bitstream *bitstream_ptr, SequenceControlSet *scs_ptr,
@@ -221,7 +217,7 @@ extern EbErrorType write_frame_header_av1(Bitstream *bitstream_ptr, SequenceCont
 extern EbErrorType encode_td_av1(uint8_t *bitstream_ptr);
 extern EbErrorType encode_sps_av1(Bitstream *bitstream_ptr, SequenceControlSet *scs_ptr);
 
-//*******************************************************************************************//
+/*******************************************************************************************/
 
 MotionMode motion_mode_allowed(const PictureControlSet *pcs_ptr, const BlkStruct *blk_ptr,
                                const BlockSize bsize, MvReferenceFrame rf0, MvReferenceFrame rf1,

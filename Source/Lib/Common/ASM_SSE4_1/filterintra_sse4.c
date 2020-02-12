@@ -1,13 +1,11 @@
-/*
- * Copyright (c) 2018, Alliance for Open Media. All rights reserved
+/*!< Copyright (c) 2018, Alliance for Open Media. All rights reserved
  *
  * This source code is subject to the terms of the BSD 2 Clause License and
  * the Alliance for Open Media Patent License 1.0. If the BSD 2 Clause License
  * was not distributed with this source code in the LICENSE file, you can
  * obtain it at www.aomedia.org/license/software. If the Alliance for Open
  * Media Patent License 1.0 was not distributed with this source code in the
- * PATENTS file, you can obtain it at www.aomedia.org/license/patent.
- */
+ * PATENTS file, you can obtain it at www.aomedia.org/license/patent. */
 
 #include <smmintrin.h>
 #include "common_dsp_rtcd.h"
@@ -27,7 +25,7 @@ void eb_av1_filter_intra_predictor_sse4_1(uint8_t *dst, ptrdiff_t stride, TxSize
 
     assert(bw <= 32 && bh <= 32);
 
-    // The initialization is just for silencing Jenkins static analysis warnings
+    /*!< The initialization is just for silencing Jenkins static analysis warnings */
     for (r = 0; r < bh + 1; ++r) memset(buffer[r], 0, (bw + 1) * sizeof(buffer[0][0]));
 
     for (r = 0; r < bh; ++r) buffer[r + 1][0] = left[r];
@@ -55,11 +53,11 @@ void eb_av1_filter_intra_predictor_sse4_1(uint8_t *dst, ptrdiff_t stride, TxSize
             const __m128i out_0123     = _mm_hadd_epi16(out_01, out_23);
             const __m128i out_4567     = _mm_hadd_epi16(out_45, out_67);
             const __m128i out_01234567 = _mm_hadd_epi16(out_0123, out_4567);
-            // Rounding
+            /*!< Rounding */
             const __m128i round_w = _mm_mulhrs_epi16(out_01234567, filter_intra_scale_bits);
             const __m128i out_r   = _mm_packus_epi16(round_w, round_w);
             const __m128i out_r1  = _mm_srli_si128(out_r, 4);
-            // Storing
+            /*!< Storing */
             xx_storel_32(&buffer[r][c], out_r);
             xx_storel_32(&buffer[r + 1][c], out_r1);
         }

@@ -1,18 +1,14 @@
-/*
-* Copyright(c) 2019 Intel Corporation
-* SPDX - License - Identifier: BSD - 2 - Clause - Patent
-*/
+/*!< Copyright(c) 2019 Intel Corporation
+ * SPDX - License - Identifier: BSD - 2 - Clause - Patent */
 
-/*
-* Copyright (c) 2016, Alliance for Open Media. All rights reserved
-*
-* This source code is subject to the terms of the BSD 2 Clause License and
-* the Alliance for Open Media Patent License 1.0. If the BSD 2 Clause License
-* was not distributed with this source code in the LICENSE file, you can
-* obtain it at www.aomedia.org/license/software. If the Alliance for Open
-* Media Patent License 1.0 was not distributed with this source code in the
-* PATENTS file, you can obtain it at www.aomedia.org/license/patent.
-*/
+/*!< Copyright (c) 2016, Alliance for Open Media. All rights reserved
+ *
+ * This source code is subject to the terms of the BSD 2 Clause License and
+ * the Alliance for Open Media Patent License 1.0. If the BSD 2 Clause License
+ * was not distributed with this source code in the LICENSE file, you can
+ * obtain it at www.aomedia.org/license/software. If the Alliance for Open
+ * Media Patent License 1.0 was not distributed with this source code in the
+ * PATENTS file, you can obtain it at www.aomedia.org/license/patent. */
 
 #include <stdlib.h>
 
@@ -28,7 +24,7 @@
 void global_motion_estimation(PictureParentControlSet *pcs_ptr, MeContext *context_ptr,
                               EbPictureBufferDesc *input_picture_ptr) {
 #if GLOBAL_WARPED_MOTION
-    // Get downsampled pictures with a downsampling factor of 2 in each dimension
+    /*!< Get downsampled pictures with a downsampling factor of 2 in each dimension */
     EbPaReferenceObject *pa_reference_object;
     EbPictureBufferDesc *quarter_ref_pic_ptr;
     EbPictureBufferDesc *quarter_picture_ptr;
@@ -54,10 +50,10 @@ void global_motion_estimation(PictureParentControlSet *pcs_ptr, MeContext *conte
                                            : list_index == REF_LIST_0 ? pcs_ptr->ref_list0_count
                                                                       : pcs_ptr->ref_list1_count;
 
-        // Limit the global motion search to the first frame types of ref lists
+        /*!< Limit the global motion search to the first frame types of ref lists */
         num_of_ref_pic_to_search = MIN(num_of_ref_pic_to_search, 1);
 
-        // Ref Picture Loop
+        /*!< Ref Picture Loop */
         for (uint32_t ref_pic_index = 0; ref_pic_index < num_of_ref_pic_to_search;
              ++ref_pic_index) {
             EbPaReferenceObject *reference_object;
@@ -70,8 +66,8 @@ void global_motion_estimation(PictureParentControlSet *pcs_ptr, MeContext *conte
                         ->object_ptr;
 
 #if GLOBAL_WARPED_MOTION
-            // Set the source and the reference picture to be used by the global motion search
-            // based on the input search mode
+            /*!< Set the source and the reference picture to be used by the global motion search
+             *   based on the input search mode */
             if (pcs_ptr->gm_level == GM_DOWN) {
                 quarter_ref_pic_ptr =
                     (scs_ptr->down_sampling_method_me_search == ME_FILTERED_DOWNSAMPLED)
@@ -128,11 +124,11 @@ void compute_global_motion(EbPictureBufferDesc *input_pic, EbPictureBufferDesc *
 
     EbWarpedMotionParams global_motion = default_warp_params;
 
-    // TODO: check ref_params
+    /*!< TODO: check ref_params */
     const EbWarpedMotionParams *ref_params = &default_warp_params;
 
     {
-        // compute interest points using FAST features
+        /*!< compute interest points using FAST features */
         int num_frm_corners = av1_fast_corner_detect(frm_buffer,
                                                      input_pic->width,
                                                      input_pic->height,
@@ -146,7 +142,7 @@ void compute_global_motion(EbPictureBufferDesc *input_pic, EbPictureBufferDesc *
         const GlobalMotionEstimationType gm_estimation_type = GLOBAL_MOTION_FEATURE_BASED;
         for (model = ROTZOOM; model <= GLOBAL_TRANS_TYPES_ENC; ++model) {
             int64_t best_warp_error = INT64_MAX;
-            // Initially set all params to identity.
+            /*!< Initially set all params to identity. */
             for (unsigned i = 0; i < RANSAC_NUM_MOTIONS; ++i) {
                 memcpy(params_by_motion[i].params,
                        k_indentity_params,
@@ -191,9 +187,9 @@ void compute_global_motion(EbPictureBufferDesc *input_pic, EbPictureBufferDesc *
                                                                             best_warp_error);
                     if (warp_error < best_warp_error) {
                         best_warp_error = warp_error;
-                        // Save the wm_params modified by
-                        // av1_refine_integerized_param() rather than motion index to
-                        // avoid rerunning refine() below.
+                        /*!< Save the wm_params modified by
+                         *   av1_refine_integerized_param() rather than motion index to
+                         *   avoid rerunning refine() below. */
                         memcpy(&global_motion, &tmp_wm_params, sizeof(EbWarpedMotionParams));
                     }
                 }
@@ -223,12 +219,12 @@ void compute_global_motion(EbPictureBufferDesc *input_pic, EbPictureBufferDesc *
 
             if (ref_frame_error == 0) continue;
 
-            // If the best error advantage found doesn't meet the threshold for
-            // this motion type, revert to IDENTITY.
+            /*!< If the best error advantage found doesn't meet the threshold for
+             *   this motion type, revert to IDENTITY. */
             if (!av1_is_enough_erroradvantage(
                     (double)best_warp_error / ref_frame_error,
                     gm_get_params_cost(&global_motion, ref_params, allow_high_precision_mv),
-                    GM_ERRORADV_TR_0 /* TODO: check error advantage */)) {
+                    GM_ERRORADV_TR_0 /*!< TODO: check error advantage */)) {
                 global_motion = default_warp_params;
             }
             if (global_motion.wmtype != IDENTITY) { break; }

@@ -1,13 +1,11 @@
-/*
- * Copyright (c) 2018, Alliance for Open Media. All rights reserved
+/*!< Copyright (c) 2018, Alliance for Open Media. All rights reserved
  *
  * This source code is subject to the terms of the BSD 2 Clause License and
  * the Alliance for Open Media Patent License 1.0. If the BSD 2 Clause License
  * was not distributed with this source code in the LICENSE file, you can
  * obtain it at www.aomedia.org/license/software. If the Alliance for Open
  * Media Patent License 1.0 was not distributed with this source code in the
- * PATENTS file, you can obtain it at www.aomedia.org/license/patent.
- */
+ * PATENTS file, you can obtain it at www.aomedia.org/license/patent. */
 #ifndef AV1_COMMON_X86_AV1_INV_TXFM_AVX2_H_
 #define AV1_COMMON_X86_AV1_INV_TXFM_AVX2_H_
 
@@ -21,7 +19,7 @@
 extern "C" {
 #endif
 
-// half input is zero
+/*!< half input is zero */
 #define btf_16_w16_0_avx2(w0, w1, in, out0, out1)          \
     {                                                      \
         const __m256i _w0 = _mm256_set1_epi16(w0 * 8);     \

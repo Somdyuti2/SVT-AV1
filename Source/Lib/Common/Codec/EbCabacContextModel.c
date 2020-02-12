@@ -1,26 +1,21 @@
-/*
-* Copyright(c) 2019 Intel Corporation
-* SPDX - License - Identifier: BSD - 2 - Clause - Patent
-*/
+/*!< Copyright(c) 2019 Intel Corporation
+ * SPDX - License - Identifier: BSD - 2 - Clause - Patent */
 
-/*
-* Copyright (c) 2016, Alliance for Open Media. All rights reserved
-*
-* This source code is subject to the terms of the BSD 2 Clause License and
-* the Alliance for Open Media Patent License 1.0. If the BSD 2 Clause License
-* was not distributed with this source code in the LICENSE file, you can
-* obtain it at www.aomedia.org/license/software. If the Alliance for Open
-* Media Patent License 1.0 was not distributed with this source code in the
-* PATENTS file, you can obtain it at www.aomedia.org/license/patent.
-*/
+/*!< Copyright (c) 2016, Alliance for Open Media. All rights reserved
+ *
+ * This source code is subject to the terms of the BSD 2 Clause License and
+ * the Alliance for Open Media Patent License 1.0. If the BSD 2 Clause License
+ * was not distributed with this source code in the LICENSE file, you can
+ * obtain it at www.aomedia.org/license/software. If the Alliance for Open
+ * Media Patent License 1.0 was not distributed with this source code in the
+ * PATENTS file, you can obtain it at www.aomedia.org/license/patent. */
 
 #include "EbCabacContextModel.h"
 
 /**********************************************************************************************************************/
 /**********************************************************************************************************************/
 /**********************************************************************************************************************/
-/********************************************************************************************************************************/
-// entropymode.c
+/*!< entropymode.c */
 
 const AomCdfProb default_kf_y_mode_cdf[KF_MODE_CONTEXTS][KF_MODE_CONTEXTS][CDF_SIZE(
     INTRA_MODES)] = {
@@ -793,17 +788,17 @@ static const AomCdfProb
 };
 
 static const NmvContext default_nmv_context = {
-    {AOM_CDF4(4096, 11264, 19328)}, // joints_cdf
+    {AOM_CDF4(4096, 11264, 19328)}, /*!< joints_cdf */
     {{
-         // Vertical component
+         /*!< Vertical component */
          {AOM_CDF11(28672, 30976, 31858, 32320, 32551, 32656, 32740, 32757, 32762,
-                    32767)}, // class_cdf // fp
-         {{AOM_CDF4(16384, 24576, 26624)}, {AOM_CDF4(12288, 21248, 24128)}}, // class0_fp_cdf
-         {AOM_CDF4(8192, 17408, 21248)}, // fp_cdf
-         {AOM_CDF2(128 * 128)}, // sign_cdf
-         {AOM_CDF2(160 * 128)}, // class0_hp_cdf
-         {AOM_CDF2(128 * 128)}, // hp_cdf
-         {AOM_CDF2(216 * 128)}, // class0_cdf
+                    32767)}, /*!< class_cdf // fp */
+         {{AOM_CDF4(16384, 24576, 26624)}, {AOM_CDF4(12288, 21248, 24128)}}, /*!< class0_fp_cdf */
+         {AOM_CDF4(8192, 17408, 21248)}, /*!< fp_cdf */
+         {AOM_CDF2(128 * 128)}, /*!< sign_cdf */
+         {AOM_CDF2(160 * 128)}, /*!< class0_hp_cdf */
+         {AOM_CDF2(128 * 128)}, /*!< hp_cdf */
+         {AOM_CDF2(216 * 128)}, /*!< class0_cdf */
          {{AOM_CDF2(128 * 136)},
           {AOM_CDF2(128 * 140)},
           {AOM_CDF2(128 * 148)},
@@ -813,18 +808,18 @@ static const NmvContext default_nmv_context = {
           {AOM_CDF2(128 * 224)},
           {AOM_CDF2(128 * 234)},
           {AOM_CDF2(128 * 234)},
-          {AOM_CDF2(128 * 240)}}, // bits_cdf
+          {AOM_CDF2(128 * 240)}}, /*!< bits_cdf */
      },
      {
-         // Horizontal component
+         /*!< Horizontal component */
          {AOM_CDF11(28672, 30976, 31858, 32320, 32551, 32656, 32740, 32757, 32762,
-                    32767)}, // class_cdf // fp
-         {{AOM_CDF4(16384, 24576, 26624)}, {AOM_CDF4(12288, 21248, 24128)}}, // class0_fp_cdf
-         {AOM_CDF4(8192, 17408, 21248)}, // fp_cdf
-         {AOM_CDF2(128 * 128)}, // sign_cdf
-         {AOM_CDF2(160 * 128)}, // class0_hp_cdf
-         {AOM_CDF2(128 * 128)}, // hp_cdf
-         {AOM_CDF2(216 * 128)}, // class0_cdf
+                    32767)}, /*!< class_cdf // fp */
+         {{AOM_CDF4(16384, 24576, 26624)}, {AOM_CDF4(12288, 21248, 24128)}}, /*!< class0_fp_cdf */
+         {AOM_CDF4(8192, 17408, 21248)}, /*!< fp_cdf */
+         {AOM_CDF2(128 * 128)}, /*!< sign_cdf */
+         {AOM_CDF2(160 * 128)}, /*!< class0_hp_cdf */
+         {AOM_CDF2(128 * 128)}, /*!< hp_cdf */
+         {AOM_CDF2(216 * 128)}, /*!< class0_cdf */
          {{AOM_CDF2(128 * 136)},
           {AOM_CDF2(128 * 140)},
           {AOM_CDF2(128 * 148)},
@@ -834,7 +829,7 @@ static const NmvContext default_nmv_context = {
           {AOM_CDF2(128 * 224)},
           {AOM_CDF2(128 * 234)},
           {AOM_CDF2(128 * 234)},
-          {AOM_CDF2(128 * 240)}}, // bits_cdf
+          {AOM_CDF2(128 * 240)}}, /*!< bits_cdf */
      }},
 };
 static const AomCdfProb default_switchable_interp_cdf[SWITCHABLE_FILTER_CONTEXTS][CDF_SIZE(
@@ -916,8 +911,8 @@ void init_mode_probs(FRAME_CONTEXT *fc) {
     fc->nmvc = default_nmv_context;
     fc->ndvc = default_nmv_context;
 }
-/********************************************************************************************************************************/
-// token_cdfs.h
+/**********************************************************************************************************************/
+/*!< token_cdfs.h */
 static const AomCdfProb av1_default_dc_sign_cdfs[TOKEN_CDF_Q_CTXS][PLANE_TYPES][DC_SIGN_CONTEXTS]
                                                 [CDF_SIZE(2)] = {
                                                     {{
@@ -3029,8 +3024,8 @@ static const AomCdfProb av1_default_coeff_base_eob_multi_cdfs[TOKEN_CDF_Q_CTXS][
                                                                     {AOM_CDF3(10923, 21845)},
                                                                     {AOM_CDF3(10923, 21845)}}}}};
 
-/********************************************************************************************************************************/
-// entropy.c
+/**********************************************************************************************************************/
+/*!< entropy.c */
 static int32_t get_q_ctx(int32_t q) {
     if (q <= 20) return 0;
     if (q <= 60) return 1;
@@ -3180,28 +3175,28 @@ void eb_av1_reset_cdf_symbol_counters(FRAME_CONTEXT *fc) {
     RESET_CDF_COUNTER(fc->cfl_alpha_cdf, CFL_ALPHABET_SIZE);
 }
 
-/********************************************************************************************************************************/
+/**********************************************************************************************************************/
 
 #define MAX_COLOR_CONTEXT_HASH 8
-// Negative values are invalid
+/*!< Negative values are invalid */
 int palette_color_index_context_lookup[MAX_COLOR_CONTEXT_HASH + 1] = {
         -1, -1, 0, -1, -1, 4, 3, 2, 1};
 
-#define NUM_PALETTE_NEIGHBORS 3 // left, top-left and top.
+#define NUM_PALETTE_NEIGHBORS 3 /*!< left, top-left and top. */
 int av1_get_palette_color_index_context(const uint8_t *color_map, int stride, int r, int c,
                                         int palette_size, uint8_t *color_order, int *color_idx) {
     assert(palette_size <= PALETTE_MAX_SIZE);
     assert(r > 0 || c > 0);
 
-    // Get color indices of neighbors.
+    /*!< Get color indices of neighbors. */
     int color_neighbors[NUM_PALETTE_NEIGHBORS];
     color_neighbors[0] = (c - 1 >= 0) ? color_map[r * stride + c - 1] : -1;
     color_neighbors[1] = (c - 1 >= 0 && r - 1 >= 0) ? color_map[(r - 1) * stride + c - 1] : -1;
     color_neighbors[2] = (r - 1 >= 0) ? color_map[(r - 1) * stride + c] : -1;
 
-    // The +10 below should not be needed. But we get a warning "array subscript
-    // is above array bounds [-Werror=array-bounds]" without it, possibly due to
-    // this (or similar) bug: https://gcc.gnu.org/bugzilla/show_bug.cgi?id=59124
+    /*!< The +10 below should not be needed. But we get a warning "array subscript
+     *   is above array bounds [-Werror=array-bounds]" without it, possibly due to
+     *   this (or similar) bug: https://gcc.gnu.org/bugzilla/show_bug.cgi?id=59124 */
     int              scores[PALETTE_MAX_SIZE + 10] = {0};
     int              i;
     static const int weights[NUM_PALETTE_NEIGHBORS] = {2, 1, 2};
@@ -3215,7 +3210,7 @@ int av1_get_palette_color_index_context(const uint8_t *color_map, int stride, in
         inverse_color_order[i] = i;
     }
 
-    // Get the top NUM_PALETTE_NEIGHBORS scores (sorted from large to small).
+    /*!< Get the top NUM_PALETTE_NEIGHBORS scores (sorted from large to small). */
     for (i = 0; i < NUM_PALETTE_NEIGHBORS; ++i) {
         int max     = scores[i];
         int max_idx = i;
@@ -3226,8 +3221,8 @@ int av1_get_palette_color_index_context(const uint8_t *color_map, int stride, in
             }
         }
         if (max_idx != i) {
-            // Move the score at index 'max_idx' to index 'i', and shift the scores
-            // from 'i' to 'max_idx - 1' by 1.
+            /*!< Move the score at index 'max_idx' to index 'i', and shift the scores
+             *   from 'i' to 'max_idx - 1' by 1. */
             const int     max_score       = scores[max_idx];
             const uint8_t max_color_order = color_order[max_idx];
             for (int k = max_idx; k > i; --k) {
@@ -3243,7 +3238,7 @@ int av1_get_palette_color_index_context(const uint8_t *color_map, int stride, in
 
     if (color_idx != NULL) *color_idx = inverse_color_order[color_map[r * stride + c]];
 
-    // Get hash value of context.
+    /*!< Get hash value of context. */
     int              color_index_ctx_hash                    = 0;
     static const int hash_multipliers[NUM_PALETTE_NEIGHBORS] = {1, 2, 2};
     for (i = 0; i < NUM_PALETTE_NEIGHBORS; ++i) {
@@ -3252,7 +3247,7 @@ int av1_get_palette_color_index_context(const uint8_t *color_map, int stride, in
     assert(color_index_ctx_hash > 0);
     assert(color_index_ctx_hash <= MAX_COLOR_CONTEXT_HASH);
 
-    // Lookup context from hash.
+    /*!< Lookup context from hash. */
     const int color_index_ctx = palette_color_index_context_lookup[color_index_ctx_hash];
     assert(color_index_ctx >= 0);
     assert(color_index_ctx < PALETTE_COLOR_INDEX_CONTEXTS);

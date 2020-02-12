@@ -1,15 +1,12 @@
-/*
-* Copyright(c) 2019 Intel Corporation
-* SPDX - License - Identifier: BSD - 2 - Clause - Patent
-*/
+/*!< Copyright(c) 2019 Intel Corporation
+ * SPDX - License - Identifier: BSD - 2 - Clause - Patent */
 
 #include "EbComputeSAD_C.h"
 #include "EbUtility.h"
 
-/*******************************************
-* combined_averaging_sad
-*
-*******************************************/
+/*******************************************/
+/*!< combined_averaging_sad */
+/*******************************************/
 uint32_t combined_averaging_sad(uint8_t *src, uint32_t src_stride, uint8_t *ref1,
                                 uint32_t ref1_stride, uint8_t *ref2, uint32_t ref2_stride,
                                 uint32_t height, uint32_t width) {
@@ -30,18 +27,17 @@ uint32_t combined_averaging_sad(uint8_t *src, uint32_t src_stride, uint8_t *ref1
     return sad;
 }
 
-/*******************************************
-*   returns NxM Sum of Absolute Differences
-Note: moved from picture operators.
-keep this function here for profiling
-issues.
-*******************************************/
-uint32_t fast_loop_nxm_sad_kernel(const uint8_t *src, // input parameter, source samples Ptr
-                                  uint32_t       src_stride, // input parameter, source stride
-                                  const uint8_t *ref, // input parameter, reference samples Ptr
-                                  uint32_t       ref_stride, // input parameter, reference stride
-                                  uint32_t       height, // input parameter, block height (M)
-                                  uint32_t       width) // input parameter, block width (N)
+/*!< *********************************************
+ *   *   returns NxM Sum of Absolute Differences
+ *   Note: moved from picture operators.
+ *   keep this function here for profiling issues.
+ *************************************************/
+uint32_t fast_loop_nxm_sad_kernel(const uint8_t *src, /*!< input parameter, source samples Ptr */
+                                  uint32_t       src_stride, /*!< input parameter, source stride */
+                                  const uint8_t *ref, /*!< input parameter, reference samples Ptr */
+                                  uint32_t       ref_stride, /*!< input parameter, reference stride */
+                                  uint32_t       height, /*!< input parameter, block height (M) */
+                                  uint32_t       width) /*!< input parameter, block width (N) */
 {
     uint32_t x, y;
     uint32_t sad = 0;
@@ -55,12 +51,12 @@ uint32_t fast_loop_nxm_sad_kernel(const uint8_t *src, // input parameter, source
     return sad;
 }
 
-uint32_t sad_16b_kernel_c(uint16_t *src, // input parameter, source samples Ptr
-                          uint32_t  src_stride, // input parameter, source stride
-                          uint16_t *ref, // input parameter, reference samples Ptr
-                          uint32_t  ref_stride, // input parameter, reference stride
-                          uint32_t  height, // input parameter, block height (M)
-                          uint32_t  width) // input parameter, block width (N)
+uint32_t sad_16b_kernel_c(uint16_t *src, /*!< input parameter, source samples Ptr */
+                          uint32_t  src_stride, /*!< input parameter, source stride */
+                          uint16_t *ref, /*!< input parameter, reference samples Ptr */
+                          uint32_t  ref_stride, /*!< input parameter, reference stride */
+                          uint32_t  height, /*!< input parameter, block height (M) */
+                          uint32_t  width) /*!< input parameter, block width (N) */
 {
     uint32_t x, y;
     uint32_t sad = 0;
@@ -75,14 +71,14 @@ uint32_t sad_16b_kernel_c(uint16_t *src, // input parameter, source samples Ptr
 }
 
 void sad_loop_kernel_sparse_c(
-    uint8_t * src, // input parameter, source samples Ptr
-    uint32_t  srcStride, // input parameter, source stride
-    uint8_t * ref, // input parameter, reference samples Ptr
-    uint32_t  refStride, // input parameter, reference stride
-    uint32_t  block_height, // input parameter, block height (M)
-    uint32_t  block_width, // input parameter, block width (N)
+    uint8_t * src, /*!< input parameter, source samples Ptr */
+    uint32_t  srcStride, /*!< input parameter, source stride */
+    uint8_t * ref, /*!< input parameter, reference samples Ptr */
+    uint32_t  refStride, /*!< input parameter, reference stride */
+    uint32_t  block_height, /*!< input parameter, block height (M) */
+    uint32_t  block_width, /*!< input parameter, block width (N) */
     uint64_t *bestsad_, int16_t *xSearchCenter, int16_t *ySearchCenter,
-    uint32_t srcStrideRaw, // input parameter, source stride (no line skipping)
+    uint32_t srcStrideRaw, /*!< input parameter, source stride (no line skipping) */
     int16_t searchAreaWidth, int16_t searchAreaHeight) {
     int16_t x_search_index;
     int16_t y_search_index;
@@ -105,7 +101,7 @@ void sad_loop_kernel_sparse_c(
                                            ref[x_search_index + y * refStride + x]);
                 }
 
-                // Update results
+                /*!< Update results */
                 if (sad < *bestsad_) {
                     *bestsad_      = sad;
                     *xSearchCenter = x_search_index;
@@ -120,14 +116,14 @@ void sad_loop_kernel_sparse_c(
     return;
 }
 
-void sad_loop_kernel_c(uint8_t * src, // input parameter, source samples Ptr
-                       uint32_t  src_stride, // input parameter, source stride
-                       uint8_t * ref, // input parameter, reference samples Ptr
-                       uint32_t  ref_stride, // input parameter, reference stride
-                       uint32_t  block_height, // input parameter, block height (M)
-                       uint32_t  block_width, // input parameter, block width (N)
+void sad_loop_kernel_c(uint8_t * src, /*!< input parameter, source samples Ptr */
+                       uint32_t  src_stride, /*!< input parameter, source stride */
+                       uint8_t * ref, /*!< input parameter, reference samples Ptr */
+                       uint32_t  ref_stride, /*!< input parameter, reference stride */
+                       uint32_t  block_height, /*!< input parameter, block height (M) */
+                       uint32_t  block_width, /*!< input parameter, block width (N) */
                        uint64_t *best_sad, int16_t *x_search_center, int16_t *y_search_center,
-                       uint32_t src_stride_raw, // input parameter, source stride (no line skipping)
+                       uint32_t src_stride_raw, /*!< input parameter, source stride (no line skipping) */
                        int16_t search_area_width, int16_t search_area_height) {
     int16_t x_search_index;
     int16_t y_search_index;
@@ -145,7 +141,7 @@ void sad_loop_kernel_c(uint8_t * src, // input parameter, source samples Ptr
                                        ref[x_search_index + y * ref_stride + x]);
             }
 
-            // Update results
+            /*!< Update results */
             if (sad < *best_sad) {
                 *best_sad        = sad;
                 *x_search_center = x_search_index;
@@ -159,7 +155,7 @@ void sad_loop_kernel_c(uint8_t * src, // input parameter, source samples Ptr
     return;
 }
 
-/* Sum the difference between every corresponding element of the buffers. */
+/*!< Sum the difference between every corresponding element of the buffers. */
 static INLINE uint32_t sad_inline_c(const uint8_t *a, int a_stride, const uint8_t *b, int b_stride,
                                     int width, int height) {
     int          y, x;
@@ -179,7 +175,7 @@ static INLINE uint32_t sad_inline_c(const uint8_t *a, int a_stride, const uint8_
         return sad_inline_c(src, src_stride, ref, ref_stride, m, n);              \
     }
 
-// Calculate sad against 4 reference locations and store each in sad_array
+/*!< Calculate sad against 4 reference locations and store each in sad_array */
 #define sadMxNx4D(m, n)                                                                        \
     void eb_aom_sad##m##x##n##x4d_c(const uint8_t *      src,                                  \
                                     int                  src_stride,                           \
@@ -192,67 +188,67 @@ static INLINE uint32_t sad_inline_c(const uint8_t *a, int a_stride, const uint8_
         }                                                                                      \
     }
 
-// 128x128
+/*!< 128x128 */
 sadMxN(128, 128);
 sadMxNx4D(128, 128);
 
-// 128x64
+/*!< 128x64 */
 sadMxN(128, 64);
 sadMxNx4D(128, 64);
 
-// 64x128
+/*!< 64x128 */
 sadMxN(64, 128);
 sadMxNx4D(64, 128);
 
-// 64x64
+/*!< 64x64 */
 sadMxN(64, 64);
 sadMxNx4D(64, 64);
 
-// 64x32
+/*!< 64x32 */
 sadMxN(64, 32);
 sadMxNx4D(64, 32);
 
-// 32x64
+/*!< 32x64 */
 sadMxN(32, 64);
 sadMxNx4D(32, 64);
 
-// 32x32
+/*!< 32x32 */
 sadMxN(32, 32);
 sadMxNx4D(32, 32);
 
-// 32x16
+/*!< 32x16 */
 sadMxN(32, 16);
 sadMxNx4D(32, 16);
 
-// 16x32
+/*!< 16x32 */
 sadMxN(16, 32);
 sadMxNx4D(16, 32);
 
-// 16x16
+/*!< 16x16 */
 sadMxN(16, 16);
 sadMxNx4D(16, 16);
 
-// 16x8
+/*!< 16x8 */
 sadMxN(16, 8);
 sadMxNx4D(16, 8);
 
-// 8x16
+/*!< 8x16 */
 sadMxN(8, 16);
 sadMxNx4D(8, 16);
 
-// 8x8
+/*!< 8x8 */
 sadMxN(8, 8);
 sadMxNx4D(8, 8);
 
-// 8x4
+/*!< 8x4 */
 sadMxN(8, 4);
 sadMxNx4D(8, 4);
 
-// 4x8
+/*!< 4x8 */
 sadMxN(4, 8);
 sadMxNx4D(4, 8);
 
-// 4x4
+/*!< 4x4 */
 sadMxN(4, 4);
 sadMxNx4D(4, 4);
 

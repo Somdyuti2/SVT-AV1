@@ -1,7 +1,5 @@
-/*
-* Copyright(c) 2019 Intel Corporation
-* SPDX - License - Identifier: BSD - 2 - Clause - Patent
-*/
+/*!< Copyright(c) 2019 Intel Corporation
+ * SPDX - License - Identifier: BSD - 2 - Clause - Patent */
 
 #include "EbDefinitions.h"
 
@@ -534,7 +532,7 @@ void convolve_2d_sr_ver_4tap_avx512(const int16_t *const im_block, const int32_t
             s_64[1] = _mm_loadl_epi64((__m128i *)(im + 1 * 4));
             s_64[2] = _mm_loadl_epi64((__m128i *)(im + 2 * 4));
 
-            // Load lines a and b. Line a to lower 128, line b to upper 128
+            /*!< Load lines a and b. Line a to lower 128, line b to upper 128 */
             s_256[0] = _mm256_setr_m128i(s_64[0], s_64[1]);
             s_256[1] = _mm256_setr_m128i(s_64[1], s_64[2]);
 
@@ -685,7 +683,7 @@ static void convolve_2d_sr_ver_6tap_avx512(const int16_t *const im_block, const 
             s_64[3] = _mm_loadl_epi64((__m128i *)(im + 3 * 4));
             s_64[4] = _mm_loadl_epi64((__m128i *)(im + 4 * 4));
 
-            // Load lines a and b. Line a to lower 128, line b to upper 128
+            /*!< Load lines a and b. Line a to lower 128, line b to upper 128 */
             s_256[0] = _mm256_setr_m128i(s_64[0], s_64[1]);
             s_256[1] = _mm256_setr_m128i(s_64[1], s_64[2]);
             s_256[2] = _mm256_setr_m128i(s_64[2], s_64[3]);
@@ -891,7 +889,7 @@ static void convolve_2d_sr_ver_8tap_avx512(const int16_t *const im_block, const 
             s_64[5] = _mm_loadl_epi64((__m128i *)(im + 5 * 4));
             s_64[6] = _mm_loadl_epi64((__m128i *)(im + 6 * 4));
 
-            // Load lines a and b. Line a to lower 128, line b to upper 128
+            /*!< Load lines a and b. Line a to lower 128, line b to upper 128 */
             s_256[0] = _mm256_setr_m128i(s_64[0], s_64[1]);
             s_256[1] = _mm256_setr_m128i(s_64[1], s_64[2]);
             s_256[2] = _mm256_setr_m128i(s_64[2], s_64[3]);
@@ -1073,8 +1071,7 @@ void eb_av1_convolve_2d_sr_avx512(const uint8_t *src, int32_t src_stride, uint8_
     const int32_t  tap_x   = get_convolve_tap(filter_params_x->filter_ptr);
     const int32_t  tap_y   = get_convolve_tap(filter_params_y->filter_ptr);
     const uint8_t *src_ptr = src + ((MAX_FILTER_TAP - tap_y) / 2 - 3) * src_stride;
-    // Note: im_block is 8-pixel interlaced for width 32 and up, to avoid data
-    //       permutation.
+    /*!< Note: im_block is 8-pixel interlaced for width 32 and up, to avoid data permutation. */
     DECLARE_ALIGNED(64, int16_t, im_block[(MAX_SB_SIZE + MAX_FILTER_TAP) * MAX_SB_SIZE]);
 
     (void)conv_params;
@@ -1082,16 +1079,16 @@ void eb_av1_convolve_2d_sr_avx512(const uint8_t *src, int32_t src_stride, uint8_
     assert(conv_params->round_0 == 3);
     assert(conv_params->round_1 == 11);
 
-    // horizontal filter
+    /*!< horizontal filter */
 
-    // Have to calculate 1 more row for small widths, since 2 lines are
-    // calculated in each loop for them.
+    /*!< Have to calculate 1 more row for small widths, since 2 lines
+     *   are calculated in each loop for them. */
     const int32_t hh = h + tap_y - (w >= 64);
 
     convolve_2d_sr_hor_tap_func_table[tap_x](
         src_ptr, src_stride, w, hh, filter_params_x, subpel_x_q4, im_block);
 
-    // vertical filter
+    /*!< vertical filter */
     convolve_2d_sr_ver_tap_func_table[tap_y - (subpel_y_q4 == 8)](
         im_block, w, h, filter_params_y, subpel_y_q4, dst, dst_stride);
 }

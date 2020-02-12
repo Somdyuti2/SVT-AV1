@@ -1,13 +1,11 @@
-/*
- * Copyright (c) 2017, Alliance for Open Media. All rights reserved
+/*!< Copyright (c) 2017, Alliance for Open Media. All rights reserved
  *
  * This source code is subject to the terms of the BSD 2 Clause License and
  * the Alliance for Open Media Patent License 1.0. If the BSD 2 Clause License
  * was not distributed with this source code in the LICENSE file, you can
  * obtain it at www.aomedia.org/license/software. If the Alliance for Open
  * Media Patent License 1.0 was not distributed with this source code in the
- * PATENTS file, you can obtain it at www.aomedia.org/license/patent.
- */
+ * PATENTS file, you can obtain it at www.aomedia.org/license/patent. */
 
 #include <immintrin.h>
 #include <assert.h>
@@ -33,8 +31,8 @@ void eb_av1_highbd_convolve_2d_sr_avx2(const uint16_t *src, int32_t src_stride, 
     const int32_t         fo_horiz = filter_params_x->taps / 2 - 1;
     const uint16_t *const src_ptr  = src - fo_vert * src_stride - fo_horiz;
 
-    // Check that, even with 12-bit input, the intermediate values will fit
-    // into an unsigned 16-bit intermediate array.
+    /*!< Check that, even with 12-bit input, the intermediate values will fit
+     *   into an unsigned 16-bit intermediate array. */
     assert(bd + FILTER_BITS + 2 - conv_params->round_0 <= 16);
 
     __m256i s[8], coeffs_y[4], coeffs_x[4];
@@ -58,7 +56,7 @@ void eb_av1_highbd_convolve_2d_sr_avx2(const uint16_t *src, int32_t src_stride, 
     prepare_coeffs_8tap_avx2(filter_params_y, subpel_y_q4, coeffs_y);
 
     for (j = 0; j < w; j += 8) {
-        /* Horizontal filter */
+        /*!< Horizontal filter */
         {
             for (i = 0; i < im_h; i += 2) {
                 const __m256i row0 = _mm256_loadu_si256((__m256i *)&src_ptr[i * src_stride + j]);
@@ -69,7 +67,7 @@ void eb_av1_highbd_convolve_2d_sr_avx2(const uint16_t *src, int32_t src_stride, 
                 const __m256i r0 = _mm256_permute2x128_si256(row0, row1, 0x20);
                 const __m256i r1 = _mm256_permute2x128_si256(row0, row1, 0x31);
 
-                // even pixels
+                /*!< even pixels */
                 s[0] = _mm256_alignr_epi8(r1, r0, 0);
                 s[1] = _mm256_alignr_epi8(r1, r0, 4);
                 s[2] = _mm256_alignr_epi8(r1, r0, 8);
@@ -79,7 +77,7 @@ void eb_av1_highbd_convolve_2d_sr_avx2(const uint16_t *src, int32_t src_stride, 
                 res_even =
                     _mm256_sra_epi32(_mm256_add_epi32(res_even, round_const_x), round_shift_x);
 
-                // odd pixels
+                /*!< odd pixels */
                 s[0] = _mm256_alignr_epi8(r1, r0, 2);
                 s[1] = _mm256_alignr_epi8(r1, r0, 6);
                 s[2] = _mm256_alignr_epi8(r1, r0, 10);
@@ -96,7 +94,7 @@ void eb_av1_highbd_convolve_2d_sr_avx2(const uint16_t *src, int32_t src_stride, 
             }
         }
 
-        /* Vertical filter */
+        /*!< Vertical filter */
         {
             __m256i s0 = _mm256_loadu_si256((__m256i *)(im_block + 0 * im_stride));
             __m256i s1 = _mm256_loadu_si256((__m256i *)(im_block + 1 * im_stride));

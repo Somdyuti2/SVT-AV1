@@ -1,7 +1,5 @@
-/*
-* Copyright(c) 2019 Intel Corporation
-* SPDX - License - Identifier: BSD - 2 - Clause - Patent
-*/
+/*!< Copyright(c) 2019 Intel Corporation
+ * SPDX - License - Identifier: BSD - 2 - Clause - Patent */
 
 #ifndef EbModeDecision_h
 #define EbModeDecision_h
@@ -26,23 +24,23 @@ extern "C" {
 #define MAX_MPM_CANDIDATES 3
 #define MERGE_PENALTY 10
 
-// Create incomplete struct definition for the following function pointer typedefs
+/*!< Create incomplete struct definition for the following function pointer typedefs */
 struct ModeDecisionCandidateBuffer;
 struct ModeDecisionContext;
 
-/**************************************
-    * Mode Decision Candidate
-    **************************************/
+/**************************************/
+/*!< Mode Decision Candidate */
+/**************************************/
 typedef struct ModeDecisionCandidate {
-    // *Warning - this struct has been organized to be cache efficient when being
-    //    constructured in the function GenerateAmvpMergeInterIntraMdCandidatesCU.
-    //    Changing the ordering could affect performance
+    /*!< *Warning - this struct has been organized to be cache efficient when being
+     *       constructured in the function GenerateAmvpMergeInterIntraMdCandidatesCU.
+     *       Changing the ordering could affect performance */
     union {
         struct {
             unsigned me_distortion : 20;
             unsigned distortion_ready : 1;
             unsigned : 2;
-            unsigned intra_luma_mode : 8; // HEVC mode, use pred_mode for AV1
+            unsigned intra_luma_mode : 8; /*!< HEVC mode, use pred_mode for AV1 */
         };
         uint32_t ois_results;
     };
@@ -50,14 +48,14 @@ typedef struct ModeDecisionCandidate {
         struct {
             union {
                 struct {
-                    int16_t motion_vector_xl0; //Note: Do not change the order of these fields
+                    int16_t motion_vector_xl0; /*!< Note: Do not change the order of these fields */
                     int16_t motion_vector_yl0;
                 };
                 uint32_t mvs_l0;
             };
             union {
                 struct {
-                    int16_t motion_vector_xl1; //Note: Do not change the order of these fields
+                    int16_t motion_vector_xl1; /*!< Note: Do not change the order of these fields */
                     int16_t motion_vector_yl1;
                 };
                 uint32_t mvs_l1;
@@ -71,8 +69,8 @@ typedef struct ModeDecisionCandidate {
     uint16_t    count_non_zero_coeffs;
     uint8_t     type;
     PaletteInfo palette_info;
-    // MD Rate Estimation Ptr
-    MdRateEstimationContext *md_rate_estimation_ptr; // 64 bits
+    /*!< MD Rate Estimation Ptr */
+    MdRateEstimationContext *md_rate_estimation_ptr; /*!< 64 bits */
     uint64_t                 fast_luma_rate;
     uint64_t                 fast_chroma_rate;
     uint64_t                 chroma_distortion;
@@ -82,34 +80,34 @@ typedef struct ModeDecisionCandidate {
     EbPtr                    prediction_context_ptr;
     PictureControlSet *      pcs_ptr;
     EbPredDirection          prediction_direction
-        [MAX_NUM_OF_PU_PER_CU]; // 2 bits // Hsan: does not seem to be used why not removed ?
+        [MAX_NUM_OF_PU_PER_CU]; /*!< 2 bits // Hsan: does not seem to be used why not removed ? */
 
     int16_t motion_vector_pred_x
-        [MAX_NUM_OF_REF_PIC_LIST]; // 16 bits // Hsan: does not seem to be used why not removed ?
+        [MAX_NUM_OF_REF_PIC_LIST]; /*!< 16 bits // Hsan: does not seem to be used why not removed ? */
     int16_t motion_vector_pred_y
-        [MAX_NUM_OF_REF_PIC_LIST]; // 16 bits // Hsan: does not seem to be used why not removed ?
-    uint8_t  motion_vector_pred_idx[MAX_NUM_OF_REF_PIC_LIST]; // 2 bits
-    uint8_t  block_has_coeff; // ?? bit - determine empirically
-    uint8_t  u_has_coeff; // ?? bit
-    uint8_t  v_has_coeff; // ?? bit
-    uint32_t y_has_coeff; // Issue, should be less than 32
+        [MAX_NUM_OF_REF_PIC_LIST]; /*!< 16 bits // Hsan: does not seem to be used why not removed ? */
+    uint8_t  motion_vector_pred_idx[MAX_NUM_OF_REF_PIC_LIST]; /*!< 2 bits */
+    uint8_t  block_has_coeff; /*!< ?? bit - determine empirically */
+    uint8_t  u_has_coeff; /*!< ?? bit */
+    uint8_t  v_has_coeff; /*!< ?? bit */
+    uint32_t y_has_coeff; /*!< Issue, should be less than 32 */
 
-    PredictionMode pred_mode; // AV1 mode, no need to convert
+    PredictionMode pred_mode; /*!< AV1 mode, no need to convert */
     uint8_t        drl_index;
     uint8_t        use_intrabc;
-    // Intra Mode
+    /*!< Intra Mode */
     int32_t  angle_delta[PLANE_TYPES];
     EbBool   is_directional_mode_flag;
     EbBool   is_directional_chroma_mode_flag;
     uint8_t  filter_intra_mode;
-    uint32_t intra_chroma_mode; // AV1 mode, no need to convert
+    uint32_t intra_chroma_mode; /*!< AV1 mode, no need to convert */
 
-    // Index of the alpha Cb and alpha Cr combination
+    /*!< Index of the alpha Cb and alpha Cr combination */
     int32_t cfl_alpha_idx;
-    // Joint sign of alpha Cb and alpha Cr
+    /*!< Joint sign of alpha Cb and alpha Cr */
     int32_t cfl_alpha_signs;
 
-    // Inter Mode
+    /*!< Inter Mode */
     PredictionMode         inter_mode;
     EbBool                 is_compound;
     uint32_t               pred_mv_weight;
@@ -140,13 +138,13 @@ typedef struct ModeDecisionCandidate {
     InterIntraMode         interintra_mode;
     uint8_t                is_interintra_used;
     uint8_t                use_wedge_interintra;
-    int32_t                interintra_wedge_index; //inter_intra wedge index
-    int32_t                ii_wedge_sign; //inter_intra wedge sign=-1
+    int32_t                interintra_wedge_index; /*!< inter_intra wedge index */
+    int32_t                ii_wedge_sign; /*!< inter_intra wedge sign=-1 */
 } ModeDecisionCandidate;
 
-/**************************************
-    * Function Ptrs Definitions
-    **************************************/
+/**************************************/
+/*!< Function Ptrs Definitions */
+/**************************************/
 typedef EbErrorType (*EbPredictionFunc)(uint8_t                             hbd_mode_decision,
                                         struct ModeDecisionContext *        context_ptr,
                                         PictureControlSet *                 pcs_ptr,
@@ -176,9 +174,9 @@ typedef EbErrorType (*EB_FULL_LUMA_COST_FUNC)(
     BlkStruct *blk_ptr, uint32_t cu_size, uint32_t cu_size_log2,
     struct ModeDecisionCandidateBuffer *candidate_buffer_ptr, uint64_t *y_distortion,
     uint64_t lambda, uint64_t *y_coeff_bits, uint32_t transform_size);
-/**************************************
-    * Mode Decision Candidate Buffer
-    **************************************/
+/**************************************/
+/*!< Mode Decision Candidate Buffer */
+/**************************************/
 typedef struct IntraChromacandidate_buffer {
     uint32_t             mode;
     uint64_t             cost;
@@ -187,27 +185,27 @@ typedef struct IntraChromacandidate_buffer {
     EbPictureBufferDesc *residual_ptr;
 } IntraChromacandidate_buffer;
 
-/**************************************
-    * Mode Decision Candidate Buffer
-    **************************************/
+/**************************************/
+/*!< Mode Decision Candidate Buffer */
+/**************************************/
 typedef struct ModeDecisionCandidateBuffer {
     EbDctor dctor;
-    // Candidate Ptr
+    /*!< Candidate Ptr */
     ModeDecisionCandidate *candidate_ptr;
 
-    // Video Buffers
+    /*!< Video Buffers */
     EbPictureBufferDesc *prediction_ptr;
     EbPictureBufferDesc *prediction_ptr_temp;
     EbPictureBufferDesc *cfl_temp_prediction_ptr;
     EbPictureBufferDesc
-        *residual_quant_coeff_ptr; // One buffer for residual and quantized coefficient
+        *residual_quant_coeff_ptr; /*!< One buffer for residual and quantized coefficient */
     EbPictureBufferDesc *recon_coeff_ptr;
     EbPictureBufferDesc *residual_ptr;
 
-    // *Note - We should be able to combine the recon_coeff_ptr & recon_ptr pictures (they aren't needed at the same time)
+    /*!< *Note - We should be able to combine the recon_coeff_ptr & recon_ptr pictures (they aren't needed at the same time) */
     EbPictureBufferDesc *recon_ptr;
 
-    // Costs
+    /*!< Costs */
     uint64_t *fast_cost_ptr;
     uint64_t *full_cost_ptr;
     uint64_t *full_cost_skip_ptr;
@@ -215,9 +213,9 @@ typedef struct ModeDecisionCandidateBuffer {
 
 } ModeDecisionCandidateBuffer;
 
-/**************************************
-    * Extern Function Declarations
-    **************************************/
+/**************************************/
+/* Extern Function Declarations */
+/**************************************/
 extern EbErrorType mode_decision_candidate_buffer_ctor(
     ModeDecisionCandidateBuffer *buffer_ptr, EbBitDepthEnum max_bitdepth, uint64_t *fast_cost_ptr,
     uint64_t *full_cost_ptr, uint64_t *full_cost_skip_ptr, uint64_t *full_cost_merge_ptr);
@@ -248,13 +246,12 @@ typedef EbErrorType (*EB_FULL_NXN_COST_FUNC)(PictureControlSet *          pcs_pt
                                              uint64_t *y_coeff_bits, uint64_t *cb_coeff_bits,
                                              uint64_t *cr_coeff_bits, uint32_t transform_size);
 struct CodingLoopContext_s;
-/*
-      |-------------------------------------------------------------|
-      | ref_idx          0            1           2            3       |
-      | List0            LAST        LAST2        LAST3        GOLD    |
-      | List1            BWD            ALT2            ALT                |
-      |-------------------------------------------------------------|
-    */
+/*!<
+ *     |-------------------------------------------------------------|
+ *     | ref_idx          0            1           2            3       |
+ *     | List0            LAST        LAST2        LAST3        GOLD    |
+ *     | List1            BWD            ALT2            ALT                |
+ *     |-------------------------------------------------------------| */
 #define INVALID_REF 0xF
 uint8_t                 get_ref_frame_idx(uint8_t ref_type);
 extern MvReferenceFrame svt_get_ref_frame_type(uint8_t list, uint8_t ref_idx);

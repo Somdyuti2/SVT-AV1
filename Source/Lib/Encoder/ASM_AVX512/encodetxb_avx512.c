@@ -1,12 +1,10 @@
-/*
-* Copyright(c) 2019 Intel Corporation
-* SPDX - License - Identifier: BSD - 2 - Clause - Patent
-*/
+/*!< Copyright(c) 2019 Intel Corporation
+ * SPDX - License - Identifier: BSD - 2 - Clause - Patent */
 #include "EbDefinitions.h"
 
 #ifndef NON_AVX512_SUPPORT
 
-#include <immintrin.h> /* AVX2 */
+#include <immintrin.h> /*!< AVX2 */
 #include "synonyms.h"
 #include "synonyms_avx2.h"
 

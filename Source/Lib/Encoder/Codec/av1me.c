@@ -1,13 +1,11 @@
-/*
- * Copyright (c) 2016, Alliance for Open Media. All rights reserved
+/*!< Copyright (c) 2016, Alliance for Open Media. All rights reserved
  *
  * This source code is subject to the terms of the BSD 2 Clause License and
  * the Alliance for Open Media Patent License 1.0. If the BSD 2 Clause License
  * was not distributed with this source code in the LICENSE file, you can
  * obtain it at www.aomedia.org/license/software. If the Alliance for Open
  * Media Patent License 1.0 was not distributed with this source code in the
- * PATENTS file, you can obtain it at www.aomedia.org/license/patent.
- */
+ * PATENTS file, you can obtain it at www.aomedia.org/license/patent. */
 
 #include <limits.h>
 #include <math.h>
@@ -118,8 +116,8 @@ void eb_av1_set_mv_search_range(MvLimits *mv_limits, const MV *mv) {
     col_max = AOMMIN(col_max, (MV_UPP >> 3) - 1);
     row_max = AOMMIN(row_max, (MV_UPP >> 3) - 1);
 
-    // Get intersection of UMV window and valid MV window to reduce # of checks
-    // in diamond search.
+    /*!< Get intersection of UMV window and valid MV window to reduce # of checks
+     *   in diamond search. */
     if (mv_limits->col_min < col_min) mv_limits->col_min = col_min;
     if (mv_limits->col_max > col_max) mv_limits->col_max = col_max;
     if (mv_limits->row_min < row_min) mv_limits->row_min = row_min;
@@ -158,7 +156,7 @@ void eb_av1_init3smotion_compensation(SearchSiteConfig *cfg, int stride) {
     cfg->ss[0].offset                     = 0;
 
     for (len = MAX_FIRST_STEP; len > 0; len /= 2) {
-        // Generate offsets for 8 search sites per step.
+        /*!< Generate offsets for 8 search sites per step. */
         const MV ss_mvs[8] = {{-len, 0},
                               {len, 0},
                               {0, -len},
@@ -184,8 +182,8 @@ static INLINE int is_mv_in(const MvLimits *mv_limits, const MV *mv) {
            (mv->row >= mv_limits->row_min) && (mv->row <= mv_limits->row_max);
 }
 #define MAX_PATTERN_SCALES 11
-#define MAX_PATTERN_CANDIDATES 8 // max number of canddiates per scale
-#define PATTERN_CANDIDATES_REF 3 // number of refinement candidates
+#define MAX_PATTERN_CANDIDATES 8 /*!< max number of canddiates per scale */
+#define PATTERN_CANDIDATES_REF 3 /*!< number of refinement candidates */
 
 int eb_av1_get_mvpred_var(const IntraBcContext *x, const MV *best_mv, const MV *center_mv,
                           const AomVarianceFnPtr *vfp, int use_mvcost) {
@@ -204,8 +202,7 @@ int eb_av1_get_mvpred_var(const IntraBcContext *x, const MV *best_mv, const MV *
                 : 0);
 }
 
-// Exhuastive motion search around a given centre position with a given
-// step size.
+/*!< Exhuastive motion search around a given centre position with a given step size. */
 static int exhuastive_mesh_search(IntraBcContext *x, MV *ref_mv, MV *best_mv, int range, int step,
                                   int sad_per_bit, const AomVarianceFnPtr *fn_ptr,
                                   const MV *center_mv) {
@@ -236,7 +233,7 @@ static int exhuastive_mesh_search(IntraBcContext *x, MV *ref_mv, MV *best_mv, in
 
     for (r = start_row; r <= end_row; r += step) {
         for (c = start_col; c <= end_col; c += col_step) {
-            // Step > 1 means we are not checking every location in this pass.
+            /*!< Step > 1 means we are not checking every location in this pass. */
             if (step > 1) {
                 const MV     mv  = {fcenter_mv.row + r, fcenter_mv.col + c};
                 unsigned int sad = fn_ptr->sdf(
@@ -250,7 +247,7 @@ static int exhuastive_mesh_search(IntraBcContext *x, MV *ref_mv, MV *best_mv, in
                     }
                 }
             } else {
-                // 4 sads in a single call if we are checking every location
+                /*!< 4 sads in a single call if we are checking every location */
                 if (c + 3 <= end_col) {
                     unsigned int   sads[4];
                     const uint8_t *addrs[4];
@@ -314,11 +311,11 @@ int eb_av1_diamond_search_sad_c(IntraBcContext *x, const SearchSiteConfig *cfg, 
     int ref_row;
     int ref_col;
 
-    // search_param determines the length of the initial step and hence the number
-    // of iterations.
-    // 0 = initial step (MAX_FIRST_STEP) pel
-    // 1 = (MAX_FIRST_STEP/2) pel,
-    // 2 = (MAX_FIRST_STEP/4) pel...
+    /*!< search_param determines the length of the initial step and hence the number
+     *   of iterations.
+     *   0 = initial step (MAX_FIRST_STEP) pel
+     *   1 = (MAX_FIRST_STEP/2) pel,
+     *   2 = (MAX_FIRST_STEP/4) pel... */
     const SearchSite *ss        = &cfg->ss[search_param * cfg->searches_per_step];
     const int         tot_steps = (cfg->ss_count / cfg->searches_per_step) - search_param;
 
@@ -334,11 +331,11 @@ int eb_av1_diamond_search_sad_c(IntraBcContext *x, const SearchSiteConfig *cfg, 
     best_mv->row = ref_row;
     best_mv->col = ref_col;
 
-    // Work out the start point for the search
+    /*!< Work out the start point for the search*/
     in_what      = x->xdplane[0].pre[0].buf + ref_row * in_what_stride + ref_col;
     best_address = in_what;
 
-    // Check the starting position
+    /*!< Check the starting position */
     bestsad = fn_ptr->sdf(what, what_stride, in_what, in_what_stride) +
               mvsad_err_cost(x, best_mv, &fcenter_mv, sad_per_bit);
 
@@ -347,16 +344,16 @@ int eb_av1_diamond_search_sad_c(IntraBcContext *x, const SearchSiteConfig *cfg, 
     for (step = 0; step < tot_steps; step++) {
         int all_in = 1, t;
 
-        // All_in is true if every one of the points we are checking are within
-        // the bounds of the image.
+        /*!< All_in is true if every one of the points we are checking are within
+         *   the bounds of the image.*/
         all_in &= ((best_mv->row + ss[i].mv.row) > x->mv_limits.row_min);
         all_in &= ((best_mv->row + ss[i + 1].mv.row) < x->mv_limits.row_max);
         all_in &= ((best_mv->col + ss[i + 2].mv.col) > x->mv_limits.col_min);
         all_in &= ((best_mv->col + ss[i + 3].mv.col) < x->mv_limits.col_max);
 
-        // If all the pixels are within the bounds we don't check whether the
-        // search point is valid in this loop,  otherwise we check each point
-        // for validity..
+        /*!< If all the pixels are within the bounds we don't check whether the
+         *   search point is valid in this loop,  otherwise we check each point
+         *   for validity. */
         if (all_in) {
             unsigned int sad_array[4];
 
@@ -381,7 +378,7 @@ int eb_av1_diamond_search_sad_c(IntraBcContext *x, const SearchSiteConfig *cfg, 
             }
         } else {
             for (j = 0; j < cfg->searches_per_step; j++) {
-                // Trap illegal vectors
+                /*!< Trap illegal vectors */
                 const MV this_mv = {best_mv->row + ss[i].mv.row, best_mv->col + ss[i].mv.col};
 
                 if (is_mv_in(&x->mv_limits, &this_mv)) {
@@ -434,9 +431,9 @@ int eb_av1_diamond_search_sad_c(IntraBcContext *x, const SearchSiteConfig *cfg, 
     return bestsad;
 }
 
-/* do_refine: If last step (1-away) of n-step search doesn't pick the center
-              point as the best match, we will do a final 1-away diamond
-              refining search  */
+/*!< do_refine: If last step (1-away) of n-step search doesn't pick the center
+ *              point as the best match, we will do a final 1-away diamond
+ *              refining search  */
 static int full_pixel_diamond(PictureControlSet *pcs, IntraBcContext /*MACROBLOCK*/ *x,
                               MV *mvp_full, int step_param, int sadpb, int further_steps,
                               int do_refine, int *cost_list, const AomVarianceFnPtr *fn_ptr,
@@ -452,8 +449,8 @@ static int full_pixel_diamond(PictureControlSet *pcs, IntraBcContext /*MACROBLOC
     if (bestsme < INT_MAX) bestsme = eb_av1_get_mvpred_var(x, &temp_mv, ref_mv, fn_ptr, 1);
     x->best_mv.as_mv = temp_mv;
 
-    // If there won't be more n-step search, check to see if refining search is
-    // needed.
+    /*!< If there won't be more n-step search, check to see if refining search is
+     *   needed. */
     if (n > further_steps) do_refine = 0;
 
     while (n < further_steps) {
@@ -462,7 +459,7 @@ static int full_pixel_diamond(PictureControlSet *pcs, IntraBcContext /*MACROBLOC
         if (num00) {
             num00--;
         } else {
-            /*thissme = cpi->diamond_search_sad(x, &cpi->ss_cfg, mvp_full, &temp_mv,
+            /* thissme = cpi->diamond_search_sad(x, &cpi->ss_cfg, mvp_full, &temp_mv,
                                         step_param + n, sadpb, &num00, fn_ptr,
                                         ref_mv);*/
             thissme = eb_av1_diamond_search_sad_c(
@@ -470,7 +467,7 @@ static int full_pixel_diamond(PictureControlSet *pcs, IntraBcContext /*MACROBLOC
 
             if (thissme < INT_MAX) thissme = eb_av1_get_mvpred_var(x, &temp_mv, ref_mv, fn_ptr, 1);
 
-            // check to see if refining search is needed.
+            /*!< check to see if refining search is needed. */
             if (num00 > further_steps - n) do_refine = 0;
 
             if (thissme < bestsme) {
@@ -480,7 +477,7 @@ static int full_pixel_diamond(PictureControlSet *pcs, IntraBcContext /*MACROBLOC
         }
     }
 
-    // final 1-away diamond refining search
+    /*!< final 1-away diamond refining search */
     if (do_refine) {
         const int search_range = 8;
         MV        best_mv      = x->best_mv.as_mv;
@@ -492,18 +489,18 @@ static int full_pixel_diamond(PictureControlSet *pcs, IntraBcContext /*MACROBLOC
         }
     }
 
-    // Return cost list.
+    /*!< Return cost list. */
     /* if (cost_list) {
     calc_int_cost_list(x, ref_mv, sadpb, fn_ptr, &x->best_mv.as_mv, cost_list);
-  }*/
+    } */
     return bestsme;
 }
 
 #define MIN_RANGE 7
 #define MAX_RANGE 256
 #define MIN_INTERVAL 1
-// Runs an limited range exhaustive mesh search using a pattern set
-// according to the encode speed profile.
+/*!< Runs an limited range exhaustive mesh search using
+ *   a pattern set according to the encode speed profile. */
 static int full_pixel_exhaustive(PictureControlSet *pcs, IntraBcContext *x,
                                  const MV *centre_mv_full, int sadpb, int *cost_list,
                                  const AomVarianceFnPtr *fn_ptr, const MV *ref_mv,
@@ -518,31 +515,31 @@ static int full_pixel_exhaustive(PictureControlSet *pcs, IntraBcContext *x,
     int                        range    = sf->mesh_patterns[0].range;
     int                        baseline_interval_divisor;
 
-    // Keep track of number of exhaustive calls (this frame in this thread).
+    /*!< Keep track of number of exhaustive calls (this frame in this thread). */
     //CHKN if (x->ex_search_count_ptr != NULL) ++(*x->ex_search_count_ptr);
 
-    // Trap illegal values for interval and range for this function.
+    /*!< Trap illegal values for interval and range for this function. */
     if ((range < MIN_RANGE) || (range > MAX_RANGE) || (interval < MIN_INTERVAL) ||
         (interval > range))
         return INT_MAX;
 
     baseline_interval_divisor = range / interval;
 
-    // Check size of proposed first range against magnitude of the centre
-    // value used as a starting point.
+    /*!< Check size of proposed first range against magnitude of the centre
+     *   value used as a starting point. */
     range    = AOMMAX(range, (5 * AOMMAX(abs(temp_mv.row), abs(temp_mv.col))) / 4);
     range    = AOMMIN(range, MAX_RANGE);
     interval = AOMMAX(interval, range / baseline_interval_divisor);
 
-    // initial search
+    /*!< initial search */
     bestsme =
         exhuastive_mesh_search(x, &f_ref_mv, &temp_mv, range, interval, sadpb, fn_ptr, &temp_mv);
 
     if ((interval > MIN_INTERVAL) && (range > MIN_RANGE)) {
-        // Progressive searches with range and step size decreasing each time
-        // till we reach a step size of 1. Then break out.
+        /*!< Progressive searches with range and step size decreasing each time
+         *   till we reach a step size of 1. Then break out. */
         for (i = 1; i < MAX_MESH_STEP; ++i) {
-            // First pass with coarser step and longer range
+            /*!< First pass with coarser step and longer range */
             bestsme = exhuastive_mesh_search(x,
                                              &f_ref_mv,
                                              &temp_mv,
@@ -559,10 +556,10 @@ static int full_pixel_exhaustive(PictureControlSet *pcs, IntraBcContext *x,
     if (bestsme < INT_MAX) bestsme = eb_av1_get_mvpred_var(x, &temp_mv, ref_mv, fn_ptr, 1);
     *dst_mv = temp_mv;
 
-    // Return cost list.
+    /*!< Return cost list. */
     /* if (cost_list) {
     calc_int_cost_list(x, ref_mv, sadpb, fn_ptr, dst_mv, cost_list);
-  }*/
+    } */
     return bestsme;
 }
 
@@ -696,7 +693,7 @@ static int obmc_refining_search_sad(const IntraBcContext *x, const int32_t *wsrc
 int av1_obmc_full_pixel_search(ModeDecisionContext *context_ptr, IntraBcContext *x, MV *mvp_full,
                                int sadpb, const AomVarianceFnPtr *fn_ptr, const MV *ref_mv,
                                MV *dst_mv, int is_second) {
-    // obmc_full_pixel_diamond does not provide BDR gain on 360p
+    /*!< obmc_full_pixel_diamond does not provide BDR gain on 360p */
     const int32_t *wsrc         = context_ptr->wsrc_buf;
     const int32_t *mask         = context_ptr->mask_buf;
     const int      search_range = 8;
@@ -728,7 +725,7 @@ static INLINE void set_subpel_mv_search_range(const MvLimits *mv_limits, int *co
     *row_max = AOMMIN(MV_UPP - 1, maxr);
 }
 static const MV search_step_table[12] = {
-    // left, right, up, down
+    /*!< left, right, up, down */
     {0, -4},
     {0, 4},
     {-4, 0},
@@ -754,7 +751,7 @@ static unsigned int setup_obmc_center_error(const int32_t *mask, const MV *bestm
     return besterr;
 }
 
-/* checks if (r, c) has better score than previous best */
+/*!< checks if (r, c) has better score than previous best */
 #define MVC(r, c)                                                                            \
     (unsigned int)(mvcost ? ((mvjcost[((r) != rr) * 2 + ((c) != rc)] + mvcost[0][((r)-rr)] + \
                               (int64_t)mvcost[1][((c)-rc)]) *                                \
@@ -763,7 +760,7 @@ static unsigned int setup_obmc_center_error(const int32_t *mask, const MV *bestm
                                 13                                                           \
                           : 0)
 
-/* returns subpixel variance error function */
+/*!< returns subpixel variance error function */
 #define DIST(r, c) vfp->osvf(pre(y, y_stride, r, c), y_stride, sp(c), sp(r), z, mask, &sse)
 #define CHECK_BETTER(v, r, c)                               \
     if (c >= minc && c <= maxc && r >= minr && r <= maxr) { \
@@ -811,9 +808,9 @@ static unsigned int setup_obmc_center_error(const int32_t *mask, const MV *bestm
         v = INT_MAX;                                                                \
     }
 
-// TODO(yunqingwang): SECOND_LEVEL_CHECKS_BEST was a rewrote of
-// SECOND_LEVEL_CHECKS, and SECOND_LEVEL_CHECKS should be rewritten
-// later in the same way.
+/*!< TODO(yunqingwang): SECOND_LEVEL_CHECKS_BEST was a rewrote of
+ *   SECOND_LEVEL_CHECKS, and SECOND_LEVEL_CHECKS should be rewritten
+ *   later in the same way. */
 #define SECOND_LEVEL_CHECKS_BEST(k)                                                  \
     {                                                                                \
         unsigned int second;                                                         \
@@ -919,7 +916,7 @@ static unsigned int upsampled_setup_obmc_center_error(
     return besterr;
 }
 
-// convert motion vector component to offset for sv[a]f calc
+/*!< convert motion vector component to offset for sv[a]f calc */
 static INLINE int   sp(int x) { return x & 7; }
 static INLINE const uint8_t *pre(const uint8_t *buf, int stride, int r, int c) {
     const int offset = (r >> 3) * stride + (c >> 3);
@@ -975,7 +972,7 @@ int av1_find_best_obmc_sub_pixel_tree_up(ModeDecisionContext *context_ptr, Intra
 
     bestmv->row *= 8;
     bestmv->col *= 8;
-    // use_accurate_subpel_search can be 0 or 1 or 2
+    /*!< use_accurate_subpel_search can be 0 or 1 or 2 */
     if (use_accurate_subpel_search)
         besterr = upsampled_setup_obmc_center_error(xd,
                                                     cm,
@@ -1013,7 +1010,7 @@ int av1_find_best_obmc_sub_pixel_tree_up(ModeDecisionContext *context_ptr, Intra
                                           distortion);
 
     for (iter = 0; iter < round; ++iter) {
-        // Check vertical and horizontal sub-pixel positions.
+        /*!< Check vertical and horizontal sub-pixel positions. */
         for (idx = 0; idx < 4; ++idx) {
             tr = br + search_step[idx].row;
             tc = bc + search_step[idx].col;
@@ -1059,7 +1056,7 @@ int av1_find_best_obmc_sub_pixel_tree_up(ModeDecisionContext *context_ptr, Intra
             }
         }
 
-        // Check diagonal sub-pixel position
+        /*!< Check diagonal sub-pixel position */
         kc = (cost_array[0] <= cost_array[1] ? -hstep : hstep);
         kr = (cost_array[2] <= cost_array[3] ? -hstep : hstep);
 
@@ -1126,8 +1123,8 @@ int av1_find_best_obmc_sub_pixel_tree_up(ModeDecisionContext *context_ptr, Intra
         best_idx = -1;
     }
 
-    // These lines insure static analysis doesn't warn that
-    // tr and tc aren't used after the above point.
+    /*!< These lines insure static analysis doesn't warn that
+     *   tr and tc aren't used after the above point. */
     (void)tr;
     (void)tc;
 
@@ -1161,7 +1158,7 @@ int eb_av1_full_pixel_search(PictureControlSet *pcs, IntraBcContext *x, BlockSiz
         cost_list[4] = INT_MAX;
     }
 
-    // Keep track of number of searches (this frame in this thread).
+    /*!< Keep track of number of searches (this frame in this thread). */
     //if (x->m_search_count_ptr != NULL) ++(*x->m_search_count_ptr);
 
     switch (method) {
@@ -1228,8 +1225,8 @@ int eb_av1_full_pixel_search(PictureControlSet *pcs, IntraBcContext *x, BlockSiz
     do {
         //CHKN if (!intra || !av1_use_hash_me(&cpi->common)) break;
 
-        // already single ME
-        // get block size and original buffer of current block
+        /*!< already single ME */
+        /*!< get block size and original buffer of current block */
         const int block_height = block_size_high[bsize];
         const int block_width  = block_size_wide[bsize];
         if (block_height == block_width && x_pos >= 0 && y_pos >= 0) {
@@ -1241,20 +1238,20 @@ int eb_av1_full_pixel_search(PictureControlSet *pcs, IntraBcContext *x, BlockSiz
                 MV        best_hash_mv;
                 int       best_hash_cost = INT_MAX;
 
-                // for the hashMap
+                /*!< for the hashMap */
                 HashTable *ref_frame_hash = &pcs->hash_table;
 
                 av1_get_block_hash_value(
                     what, what_stride, block_width, &hash_value1, &hash_value2, 0, pcs, x);
 
                 const int count = av1_hash_table_count(ref_frame_hash, hash_value1);
-                // for intra, at least one matching can be found, itself.
+                /*!< for intra, at least one matching can be found, itself. */
                 if (count <= (intra ? 1 : 0)) break;
                 Iterator iterator = av1_hash_get_first_iterator(ref_frame_hash, hash_value1);
                 for (int i = 0; i < count; i++, iterator_increment(&iterator)) {
                     BlockHash ref_block_hash = *(BlockHash *)(iterator_get(&iterator));
                     if (hash_value2 == ref_block_hash.hash_value2) {
-                        // For intra, make sure the prediction is from valid area.
+                        /*!< For intra, make sure the prediction is from valid area. */
                         if (intra) {
                             const int mi_col = x_pos / MI_SIZE;
                             const int mi_row = y_pos / MI_SIZE;
@@ -1290,5 +1287,5 @@ int eb_av1_full_pixel_search(PictureControlSet *pcs, IntraBcContext *x, BlockSiz
         }
     } while (0);
 
-    return 0; //CHKN  var;
+    return 0; /*!< CHKN  var; */
 }

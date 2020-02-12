@@ -1,8 +1,6 @@
 // clang-format off
-/*
-* Copyright(c) 2019 Intel Corporation
-* SPDX - License - Identifier: BSD - 2 - Clause - Patent
-*/
+/*!< Copyright(c) 2019 Intel Corporation
+ * SPDX - License - Identifier: BSD - 2 - Clause - Patent */
 
 #include "EbModeDecisionConfiguration.h"
 #include "EbRateDistortionCost.h"
@@ -11,9 +9,9 @@
 #include "EbDefinitions.h"
 
 #include "EbLog.h"
-/********************************************
- * Constants
- ********************************************/
+/********************************************/
+/*!< Constants */
+/********************************************/
 int pa_to_ep_block_index[85] = {
     0    ,
     25   ,
@@ -53,14 +51,14 @@ int pa_to_ep_block_index[85] = {
     1040 ,
     1065 ,    1074 ,    1083 ,    1092
 };
-#define ADD_CU_STOP_SPLIT             0   // Take into account & Stop Splitting
-#define ADD_CU_CONTINUE_SPLIT         1   // Take into account & Continue Splitting
-#define DO_NOT_ADD_CU_CONTINUE_SPLIT  2   // Do not take into account & Continue Splitting
+#define ADD_CU_STOP_SPLIT             0   /*!< Take into account & Stop Splitting */
+#define ADD_CU_CONTINUE_SPLIT         1   /*!< Take into account & Continue Splitting */
+#define DO_NOT_ADD_CU_CONTINUE_SPLIT  2   /*!< Do not take into account & Continue Splitting */
 
-#define DEPTH_64                      0   // Depth corresponding to the CU size
-#define DEPTH_32                      1   // Depth corresponding to the CU size
-#define DEPTH_16                      2   // Depth corresponding to the CU size
-#define DEPTH_8                       3   // Depth corresponding to the CU size
+#define DEPTH_64                      0   /*!< Depth corresponding to the CU size */
+#define DEPTH_32                      1   /*!< Depth corresponding to the CU size */
+#define DEPTH_16                      2   /*!< Depth corresponding to the CU size */
+#define DEPTH_8                       3   /*!< Depth corresponding to the CU size */
 
 static const uint8_t parent_blk_index[85] =
 {
@@ -72,17 +70,17 @@ static const uint8_t parent_blk_index[85] =
 };
 
 const uint8_t incremental_count[85] = {
-    //64x64
+    /*!< 64x64 */
     0,
-    //32x32
+    /*!< 32x32 */
     4, 4,
     4, 4,
-    //16x16
+    /*!< 16x16 */
     0, 0, 0, 0,
     0, 4, 0, 4,
     0, 0, 0, 0,
     0, 4, 0, 4,
-    //8x8
+    /*!< 8x8 */
     0, 0, 0, 0, 0, 0, 0, 0,
     0, 0, 0, 0, 0, 0, 0, 0,
     0, 0, 0, 0, 0, 0, 0, 0,
@@ -94,9 +92,9 @@ const uint8_t incremental_count[85] = {
 };
 
 
-/*******************************************
-mdcSetDepth : set depth to be tested
-*******************************************/
+/*******************************************/
+/*!< mdcSetDepth : set depth to be tested */
+/*******************************************/
 #define REFINEMENT_P        0x01
 #define REFINEMENT_Pp1      0x02
 #define REFINEMENT_Pp2      0x04
@@ -269,7 +267,7 @@ void refinement_prediction_loop(
 
                     if (pcs_ptr->parent_pcs_ptr->pic_depth_mode == PIC_SB_SWITCH_DEPTH_MODE && pcs_ptr->parent_pcs_ptr->sb_depth_mode_array[sb_index] == SB_FAST_OPEN_LOOP_DEPTH_MODE)
                         refinement_level = ndp_level_1[depth];
-                    else  { // SB_OPEN_LOOP_DEPTH_MODE
+                    else  { /*!< SB_OPEN_LOOP_DEPTH_MODE */
                         refinement_level = ndp_level_0[depth];
                     }
 
@@ -291,7 +289,7 @@ void refinement_prediction_loop(
         }
         else
             blk_index++;
-    } // End while 1 CU Loop
+    } /*!< End while 1 CU Loop */
 }
 
 void forward_blk_to_mode_decision(
@@ -309,7 +307,7 @@ void forward_blk_to_mode_decision(
     MdcpLocalBlkStruct  *local_blk_array = context_ptr->local_blk_array;
     EB_SLICE                slice_type = pcs_ptr->slice_type;
 
-    // CU Loop
+    /*!< CU Loop */
     const CodedBlockStats *blk_stats_ptr = get_coded_blk_stats(0);
 
     results_ptr->leaf_count = 0;
@@ -339,19 +337,19 @@ void forward_blk_to_mode_decision(
                     blk_class = local_blk_array[blk_index].stop_split == EB_TRUE ? ADD_CU_STOP_SPLIT : blk_class;
                 }
 
-                // Take into account MAX CU size & MAX intra size (from the API)
+                /*!< Take into account MAX CU size & MAX intra size (from the API) */
                 blk_class = (blk_stats_ptr->size > scs_ptr->max_blk_size || (slice_type == I_SLICE && blk_stats_ptr->size > scs_ptr->max_intra_size)) ?
                     DO_NOT_ADD_CU_CONTINUE_SPLIT :
                     blk_class;
 
-                // Take into account MIN CU size & Min intra size(from the API)
+                /*!< Take into account MIN CU size & Min intra size(from the API) */
                 blk_class = (blk_stats_ptr->size == scs_ptr->min_blk_size || (slice_type == I_SLICE && blk_stats_ptr->size == scs_ptr->min_intra_size)) ?
                     ADD_CU_STOP_SPLIT :
                     blk_class;
 
                 switch (blk_class) {
                 case ADD_CU_STOP_SPLIT:
-                    // Stop
+                    /*!< Stop */
                     results_ptr->leaf_data_array[results_ptr->leaf_count].leaf_index = blk_index;
                     results_ptr->leaf_data_array[results_ptr->leaf_count].mds_idx = pa_to_ep_block_index[blk_index];
                     results_ptr->leaf_data_array[results_ptr->leaf_count].tot_d1_blocks = 1;
@@ -360,7 +358,7 @@ void forward_blk_to_mode_decision(
                     break;
 
                 case ADD_CU_CONTINUE_SPLIT:
-                    // Go Down + consider the current CU as candidate
+                    /*!< Go Down + consider the current CU as candidate */
                     results_ptr->leaf_data_array[results_ptr->leaf_count].leaf_index = blk_index;
                     results_ptr->leaf_data_array[results_ptr->leaf_count].mds_idx = pa_to_ep_block_index[blk_index];
                     results_ptr->leaf_data_array[results_ptr->leaf_count].tot_d1_blocks = 1;
@@ -369,7 +367,7 @@ void forward_blk_to_mode_decision(
                     break;
 
                 case DO_NOT_ADD_CU_CONTINUE_SPLIT:
-                    // Go Down + do not consider the current CU as candidate
+                    /*!< Go Down + do not consider the current CU as candidate */
                     split_flag = EB_TRUE;
 
                     break;
@@ -417,7 +415,7 @@ void forward_blk_to_mode_decision(
         }
 
         blk_index += (split_flag == EB_TRUE) ? 1 : depth_offset[blk_stats_ptr->depth];
-    } // End CU Loop
+    } /*!< End CU Loop */
 }
 
 void mdc_inter_depth_decision(
@@ -438,22 +436,22 @@ void mdc_inter_depth_decision(
     uint64_t               depth_n_cost = 0;
     uint64_t               depth_n_plus_1_cost = 0;
     MdcpLocalBlkStruct *local_blk_array = context_ptr->local_blk_array;
-    /*** Stage 0: Inter depth decision: depth 2 vs depth 3 ***/
-    // Walks to the last coded 8x8 block for merging
+    /*!< ** Stage 0: Inter depth decision: depth 2 vs depth 3 ** */
+    /*!< Walks to the last coded 8x8 block for merging */
     uint8_t  group_of8x8_blocks_count = context_ptr->group_of8x8_blocks_count;
     uint8_t  group_of16x16_blocks_count = context_ptr->group_of16x16_blocks_count;
     if ((GROUP_OF_4_8x8_BLOCKS(origin_x, origin_y))) {
         group_of8x8_blocks_count++;
 
-        // From the last coded cu index, get the indices of the left, top, and top left cus
+        /*!< From the last coded cu index, get the indices of the left, top, and top left cus */
         left_blk_index = blk_index - DEPTH_THREE_STEP;
         top_blk_index = left_blk_index - DEPTH_THREE_STEP;
         top_left_blk_index = top_blk_index - DEPTH_THREE_STEP;
 
-        // From the top left index, get the index of the candidate pu for merging
+        /*!< From the top left index, get the index of the candidate pu for merging */
         depth_2_cand_blk_idx = top_left_blk_index - 1;
 
-        // Compute depth N cost
+        /*!< Compute depth N cost */
         local_blk_array[depth_2_cand_blk_idx].split_context = 0;
         depth_n_cost = (local_blk_array[depth_2_cand_blk_idx]).early_cost + depth_n_rate;
 
@@ -465,33 +463,33 @@ void mdc_inter_depth_decision(
             depth_n_plus_1_cost = (local_blk_array[blk_index]).early_cost + (local_blk_array[left_blk_index]).early_cost + (local_blk_array[top_blk_index]).early_cost + (local_blk_array[top_left_blk_index]).early_cost + depth_n_plus_1_rate;
 
             if (depth_n_cost <= depth_n_plus_1_cost) {
-                // If the cost is low enough to warrant not spliting further:
-                // 1. set the split flag of the candidate pu for merging to false
-                // 2. update the last pu index
+                /*!< If the cost is low enough to warrant not spliting further:
+                 *   1. set the split flag of the candidate pu for merging to false
+                 *   2. update the last pu index */
                 (local_blk_array[depth_2_cand_blk_idx]).early_split_flag = EB_FALSE;
                 (local_blk_array[depth_2_cand_blk_idx]).early_cost = depth_n_cost;
             }
             else {
-                // If the cost is not low enough:
-                // update the cost of the candidate pu for merging
-                // this update is required for the next inter depth decision
+                /*!< If the cost is not low enough:
+                 *   update the cost of the candidate pu for merging
+                 *   this update is required for the next inter depth decision */
                 (&local_blk_array[depth_2_cand_blk_idx])->early_cost = depth_n_plus_1_cost;
             }
         }
     }
 
-    // Walks to the last coded 16x16 block for merging
+    /*!< Walks to the last coded 16x16 block for merging */
     if (GROUP_OF_4_16x16_BLOCKS(get_coded_blk_stats(depth_2_cand_blk_idx)->origin_x, get_coded_blk_stats(depth_2_cand_blk_idx)->origin_y) &&
         (group_of8x8_blocks_count == 4)) {
         group_of8x8_blocks_count = 0;
         group_of16x16_blocks_count++;
 
-        // From the last coded pu index, get the indices of the left, top, and top left pus
+        /*!< From the last coded pu index, get the indices of the left, top, and top left pus */
         left_blk_index = depth_2_cand_blk_idx - DEPTH_TWO_STEP;
         top_blk_index = left_blk_index - DEPTH_TWO_STEP;
         top_left_blk_index = top_blk_index - DEPTH_TWO_STEP;
 
-        // From the top left index, get the index of the candidate pu for merging
+        /*!< From the top left index, get the index of the candidate pu for merging */
         depth_1_cand_blk_idx = top_left_blk_index - 1;
 
         if (get_coded_blk_stats(depth_1_cand_blk_idx)->depth == 1) {
@@ -501,65 +499,65 @@ void mdc_inter_depth_decision(
                 local_blk_array[depth_1_cand_blk_idx].early_cost = depth_n_cost;
             }
             else {
-                // Compute depth N+1 cost
+                /*!< Compute depth N+1 cost */
                 depth_n_plus_1_cost = local_blk_array[depth_2_cand_blk_idx].early_cost +
                     local_blk_array[left_blk_index].early_cost +
                     local_blk_array[top_blk_index].early_cost +
                     local_blk_array[top_left_blk_index].early_cost +
                     depth_n_plus_1_rate;
 
-                // Inter depth comparison: depth 1 vs depth 2
+                /*!< Inter depth comparison: depth 1 vs depth 2 */
                 if (depth_n_cost <= depth_n_plus_1_cost) {
-                    // If the cost is low enough to warrant not spliting further:
-                    // 1. set the split flag of the candidate pu for merging to false
-                    // 2. update the last pu index
+                    /*!< If the cost is low enough to warrant not spliting further:
+                     *   1. set the split flag of the candidate pu for merging to false
+                     *   2. update the last pu index */
                     local_blk_array[depth_1_cand_blk_idx].early_split_flag = EB_FALSE;
                     local_blk_array[depth_1_cand_blk_idx].early_cost = depth_n_cost;
                 }
                 else {
-                    // If the cost is not low enough:
-                    // update the cost of the candidate pu for merging
-                    // this update is required for the next inter depth decision
+                    /*!< If the cost is not low enough:
+                     *   update the cost of the candidate pu for merging
+                     *   this update is required for the next inter depth decision */
                     local_blk_array[depth_1_cand_blk_idx].early_cost = depth_n_plus_1_cost;
                 }
             }
         }
     }
 
-    // Stage 2: Inter depth decision: depth 0 vs depth 1
+    /*!< Stage 2: Inter depth decision: depth 0 vs depth 1 */
 
-    // Walks to the last coded 32x32 block for merging
-    // Stage 2 isn't performed in I slices since the abcense of 64x64 candidates
+    /*!< Walks to the last coded 32x32 block for merging */
+    /*!< Stage 2 isn't performed in I slices since the abcense of 64x64 candidates */
     if (GROUP_OF_4_32x32_BLOCKS(get_coded_blk_stats(depth_1_cand_blk_idx)->origin_x, get_coded_blk_stats(depth_1_cand_blk_idx)->origin_y) &&
         (group_of16x16_blocks_count == 4)) {
         group_of16x16_blocks_count = 0;
 
-        // From the last coded pu index, get the indices of the left, top, and top left pus
+        /*!< From the last coded pu index, get the indices of the left, top, and top left pus */
         left_blk_index = depth_1_cand_blk_idx - DEPTH_ONE_STEP;
         top_blk_index = left_blk_index - DEPTH_ONE_STEP;
         top_left_blk_index = top_blk_index - DEPTH_ONE_STEP;
 
-        // From the top left index, get the index of the candidate pu for merging
+        /*!< From the top left index, get the index of the candidate pu for merging */
         depth_0_cand_blk_idx = top_left_blk_index - 1;
 
         if (get_coded_blk_stats(depth_0_cand_blk_idx)->depth == 0) {
-            // Compute depth N cost
+            /*!< Compute depth N cost */
             depth_n_cost = (&local_blk_array[depth_0_cand_blk_idx])->early_cost + depth_n_rate;
             if (end_depth < 1)
                 (&local_blk_array[depth_0_cand_blk_idx])->early_split_flag = EB_FALSE;
             else {
-                // Compute depth N+1 cost
+                /*!< Compute depth N+1 cost */
                 depth_n_plus_1_cost = local_blk_array[depth_1_cand_blk_idx].early_cost +
                     local_blk_array[left_blk_index].early_cost +
                     local_blk_array[top_blk_index].early_cost +
                     local_blk_array[top_left_blk_index].early_cost +
                     depth_n_plus_1_rate;
 
-                // Inter depth comparison: depth 0 vs depth 1
+                /*!< Inter depth comparison: depth 0 vs depth 1 */
                 if (depth_n_cost <= depth_n_plus_1_cost) {
-                    // If the cost is low enough to warrant not spliting further:
-                    // 1. set the split flag of the candidate pu for merging to false
-                    // 2. update the last pu index
+                    /*!< If the cost is low enough to warrant not spliting further:
+                     *   1. set the split flag of the candidate pu for merging to false
+                     *   2. update the last pu index */
                     (&local_blk_array[depth_0_cand_blk_idx])->early_split_flag = EB_FALSE;
                 }
             }
@@ -611,7 +609,8 @@ void prediction_partition_loop(
             blk_ptr->early_split_flag = (depth < end_depth) ? EB_TRUE : EB_FALSE;
 
             if (depth >= start_depth && depth <= end_depth) {
-                //reset the flags here:   all CU splitFalg=TRUE. default: we always split. interDepthDecision will select where  to stop splitting(ie setting the flag to False)
+                /*!< reset the flags here:   all CU splitFalg=TRUE. default: we always split.
+                 *   interDepthDecision will select where  to stop splitting(ie setting the flag to False) */
 
                 if (pcs_ptr->slice_type != I_SLICE) {
                     const MeSbResults *me_results = pcs_ptr->parent_pcs_ptr->me_results[sb_index];
@@ -636,15 +635,15 @@ void prediction_partition_loop(
 
                     //const MeCandidate_t *me_results = &me_block_results[me_index];
 
-                    // Initialize the mdc candidate (only av1 rate estimation inputs)
-                    // Hsan: mode, direction, .. could be modified toward better early inter depth decision (e.g. NEARESTMV instead of NEWMV)
+                    /*!< Initialize the mdc candidate (only av1 rate estimation inputs) */
+                    /*!< Hsan: mode, direction, .. could be modified toward better early inter depth decision (e.g. NEARESTMV instead of NEWMV) */
                     context_ptr->mdc_candidate_ptr->md_rate_estimation_ptr = context_ptr->md_rate_estimation_ptr;
                     context_ptr->mdc_candidate_ptr->type = INTER_MODE;
                     context_ptr->mdc_candidate_ptr->merge_flag = EB_FALSE;
                     context_ptr->mdc_candidate_ptr->prediction_direction[0] = (pcs_ptr->parent_pcs_ptr->temporal_layer_index == 0) ?
                         UNI_PRED_LIST_0 :
                         me_block_results[me_index].direction;
-                    // Hsan: what's the best mode for rate simulation
+                    /*!< Hsan: what's the best mode for rate simulation */
                     context_ptr->mdc_candidate_ptr->inter_mode = NEARESTMV;
                     context_ptr->mdc_candidate_ptr->pred_mode = NEARESTMV;
                     context_ptr->mdc_candidate_ptr->motion_mode = SIMPLE_TRANSLATION;
@@ -671,18 +670,18 @@ void prediction_partition_loop(
                     }
                     context_ptr->mdc_candidate_ptr->motion_vector_pred_x[REF_LIST_0] = 0;
                     context_ptr->mdc_candidate_ptr->motion_vector_pred_y[REF_LIST_0] = 0;
-                    // Initialize the ref mv
+                    /*!< Initialize the ref mv */
                     memset(context_ptr->mdc_ref_mv_stack,0,sizeof(CandidateMv));
                     context_ptr->blk_geom = get_blk_geom_mds(pa_to_ep_block_index[blk_index]);
-                    // Initialize mdc cu (only av1 rate estimation inputs)
+                    /*!< Initialize mdc cu (only av1 rate estimation inputs) */
                     context_ptr->mdc_blk_ptr->is_inter_ctx = 0;
                     context_ptr->mdc_blk_ptr->skip_flag_context = 0;
                     context_ptr->mdc_blk_ptr->inter_mode_ctx[context_ptr->mdc_candidate_ptr->ref_frame_type] = 0;
                     context_ptr->mdc_blk_ptr->reference_mode_context = 0;
                     context_ptr->mdc_blk_ptr->compoud_reference_type_context = 0;
-                    av1_zero(context_ptr->mdc_blk_ptr->av1xd->neighbors_ref_counts); // Hsan: neighbor not generated @ open loop partitioning => assumes always (0,0)
+                    av1_zero(context_ptr->mdc_blk_ptr->av1xd->neighbors_ref_counts); /*!< Hsan: neighbor not generated @ open loop partitioning => assumes always (0,0) */
 
-                    // Fast Cost Calc
+                    /*!< Fast Cost Calc */
                     blk_ptr->early_cost = av1_inter_fast_cost(
                         context_ptr->mdc_blk_ptr,
                         context_ptr->mdc_candidate_ptr,
@@ -699,8 +698,8 @@ void prediction_partition_loop(
                         0,
                         0,
                         0,
-                        DC_PRED,        // Hsan: neighbor not generated @ open loop partitioning
-                        DC_PRED);       // Hsan: neighbor not generated @ open loop partitioning
+                        DC_PRED,        /*!< Hsan: neighbor not generated @ open loop partitioning */
+                        DC_PRED);       /*!< Hsan: neighbor not generated @ open loop partitioning */
                 }
 
                 if (end_depth == 2)
@@ -717,7 +716,7 @@ void prediction_partition_loop(
             else
                 blk_ptr->early_cost = ~0u;
         }
-    }// End CU Loop
+    }/*!< End CU Loop */
 }
 
 EbErrorType early_mode_decision_sb(

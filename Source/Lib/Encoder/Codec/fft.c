@@ -1,13 +1,11 @@
-/*
- * Copyright (c) 2018, Alliance for Open Media. All rights reserved
+/*!< Copyright (c) 2018, Alliance for Open Media. All rights reserved
  *
  * This source code is subject to the terms of the BSD 2 Clause License and
  * the Alliance for Open Media Patent License 1.0. If the BSD 2 Clause License
  * was not distributed with this source code in the LICENSE file, you can
  * obtain it at www.aomedia.org/license/software. If the Alliance for Open
  * Media Patent License 1.0 was not distributed with this source code in the
- * PATENTS file, you can obtain it at www.aomedia.org/license/patent.
- */
+ * PATENTS file, you can obtain it at www.aomedia.org/license/patent. */
 
 #include "EbDefinitions.h"
 #include "fft_common.h"
@@ -18,16 +16,16 @@ static INLINE void simple_transpose(const float *A, float *b, int32_t n) {
     }
 }
 
-// The 1d transform is real to complex and packs the complex results in
-// a way to take advantage of conjugate symmetry (e.g., the n/2 + 1 real
-// components, followed by the n/2 - 1 imaginary components). After the
-// transform is done on the rows, the first n/2 + 1 columns are real, and
-// the remaining are the imaginary components. After the transform on the
-// columns, the region of [0, n/2]x[0, n/2] contains the real part of
-// fft of the real columns. The real part of the 2d fft also includes the
-// imaginary part of transformed imaginary columns. This function assembles
-// the correct outputs while putting the real and imaginary components
-// next to each other.
+/*!< The 1d transform is real to complex and packs the complex results in
+ *   a way to take advantage of conjugate symmetry (e.g., the n/2 + 1 real
+ *   components, followed by the n/2 - 1 imaginary components). After the
+ *   transform is done on the rows, the first n/2 + 1 columns are real, and
+ *   the remaining are the imaginary components. After the transform on the
+ *   columns, the region of [0, n/2]x[0, n/2] contains the real part of
+ *   fft of the real columns. The real part of the 2d fft also includes the
+ *   imaginary part of transformed imaginary columns. This function assembles
+ *   the correct outputs while putting the real and imaginary components
+ *   next to each other. */
 static INLINE void unpack_2d_output(const float *col_fft, float *output, int32_t n) {
     for (int32_t y = 0; y <= n / 2; ++y) {
         const int32_t y2      = y + n / 2;
@@ -102,8 +100,8 @@ void eb_aom_ifft_2d_gen(const float *input, float *temp, float *output, int32_t 
                         AomFft1dFunc fft_single, AomFft1dFunc fft_multi,
                         AomFft1dFunc ifft_multi, AomFftTransposeFunc transpose,
                         int32_t vec_size) {
-    // Column 0 and n/2 have conjugate symmetry, so we can directly do the ifft
-    // and get real outputs.
+    /*!< Column 0 and n/2 have conjugate symmetry, so we can directly do the ifft
+     *   and get real outputs. */
     for (int32_t y = 0; y <= n / 2; ++y) {
         output[y * n]     = input[2 * y * n];
         output[y * n + 1] = input[2 * (y * n + n / 2)];
@@ -114,25 +112,25 @@ void eb_aom_ifft_2d_gen(const float *input, float *temp, float *output, int32_t 
     }
 
     for (int32_t i = 0; i < 2; i += vec_size) ifft_multi(output + i, temp + i, n);
-    // For the other columns, since we don't have a full ifft for complex inputs
-    // we have to split them into the real and imaginary counterparts.
-    // Pack the real component, then the imaginary components.
+    /*!< For the other columns, since we don't have a full ifft for complex inputs
+     *   we have to split them into the real and imaginary counterparts.
+     *   Pack the real component, then the imaginary components. */
     for (int32_t y = 0; y < n; ++y) {
         for (int32_t x = 1; x < n / 2; ++x) output[y * n + (x + 1)] = input[2 * (y * n + x)];
         for (int32_t x = 1; x < n / 2; ++x)
             output[y * n + (x + n / 2)] = input[2 * (y * n + x) + 1];
     }
     for (int32_t y = 2; y < vec_size; y++) fft_single(output + y, temp + y, n);
-    // This is the part that can be sped up with SIMD
+    /*!< This is the part that can be sped up with SIMD */
     for (int32_t y = AOMMAX(2, vec_size); y < n; y += vec_size) fft_multi(output + y, temp + y, n);
-    // Put the 0 and n/2 th results in the correct place.
+    /*!< Put the 0 and n/2 th results in the correct place. */
     for (int32_t x = 0; x < n; ++x) {
         output[x]               = temp[x * n];
         output[(n / 2) * n + x] = temp[x * n + 1];
     }
-    // This rearranges and transposes.
+    /*!< This rearranges and transposes. */
     for (int32_t y = 1; y < n / 2; ++y) {
-        // Fill in the real columns
+        /*!< Fill in the real columns */
         for (int32_t x = 0; x <= n / 2; ++x) {
             output[x + y * n] = temp[(y + 1) + x * n] +
                                 ((x > 0 && x < n / 2) ? temp[(y + n / 2) + (x + n / 2) * n] : 0);
@@ -141,7 +139,7 @@ void eb_aom_ifft_2d_gen(const float *input, float *temp, float *output, int32_t 
             output[x + y * n] =
                 temp[(y + 1) + (n - x) * n] - temp[(y + n / 2) + ((n - x) + n / 2) * n];
         }
-        // Fill in the imag columns
+        /*!< Fill in the imag columns */
         for (int32_t x = 0; x <= n / 2; ++x) {
             output[x + (y + n / 2) * n] =
                 temp[(y + n / 2) + x * n] -

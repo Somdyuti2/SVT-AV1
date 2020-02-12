@@ -1,7 +1,5 @@
-/*
-* Copyright(c) 2019 Intel Corporation
-* SPDX - License - Identifier: BSD - 2 - Clause - Patent
-*/
+/*!< Copyright(c) 2019 Intel Corporation
+ * SPDX - License - Identifier: BSD - 2 - Clause - Patent */
 
 #ifndef EbUtility_h
 #define EbUtility_h
@@ -11,61 +9,60 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
-/****************************
-     * UTILITY FUNCTIONS
-     ****************************/
+
+/*!< UTILITY FUNCTIONS */
 typedef struct BlockList {
     uint8_t  list_size;
-    uint16_t blk_mds_table[3]; //stores a max of 3 redundant blocks
+    uint16_t blk_mds_table[3]; /*!< stores a max of 3 redundant blocks */
 } BlockList_t;
 
 void build_blk_geom();
 typedef struct BlockGeom {
-    uint8_t depth; // depth of the block
-    Part    shape; // P_N..P_V4 . P_S is not used.
-    uint8_t origin_x; // orgin x from topleft of sb
-    uint8_t origin_y; // orgin x from topleft of sb
+    uint8_t depth; /*!< depth of the block */
+    Part    shape; /*!< P_N..P_V4 . P_S is not used. */
+    uint8_t origin_x; /*!< orgin x from topleft of sb */
+    uint8_t origin_y; /*!< orgin x from topleft of sb */
 
     uint8_t
-             d1i; // index of the block in d1 dimension 0..24  (0 is parent square, 1 top half of H , ...., 24:last quarter of V4)
-    uint16_t sqi_mds; // index of the parent square in md  scan.
+             d1i; /*!< index of the block in d1 dimension 0..24  (0 is parent square, 1 top half of H , ...., 24:last quarter of V4) */
+    uint16_t sqi_mds; /*!< index of the parent square in md  scan. */
     uint8_t
-                totns; // max number of ns blocks within one partition 1..4 (N:1,H:2,V:2,HA:3,HB:3,VA:3,VB:3,H4:4,V4:4)
-    uint8_t     nsi; // non square index within a partition  0..totns-1
-    uint8_t     similar; // 1: means that this block is similar (same shape/location) to another
-    uint8_t     quadi; // parent square is in which quadrant 0..3
-    uint8_t     redund; // 1: means that this block is redundant to another
-    BlockList_t redund_list; // the list where the block is redundant
+                totns; /*!< max number of ns blocks within one partition 1..4 (N:1,H:2,V:2,HA:3,HB:3,VA:3,VB:3,H4:4,V4:4) */
+    uint8_t     nsi; /*!< non square index within a partition  0..totns-1 */
+    uint8_t     similar; /*!< 1: means that this block is similar (same shape/location) to another */
+    uint8_t     quadi; /*!< parent square is in which quadrant 0..3 */
+    uint8_t     redund; /*!< 1: means that this block is redundant to another */
+    BlockList_t redund_list; /*!< the list where the block is redundant */
     BlockList_t similar_list;
 
-    uint8_t   bwidth; // block width
-    uint8_t   bheight; // block height
-    uint8_t   bwidth_uv; // block width for Chroma 4:2:0
-    uint8_t   bheight_uv; // block height for Chroma 4:2:0
-    uint8_t   bwidth_log2; // block width log2
-    uint8_t   bheight_log2; // block height log2
-    BlockSize bsize; // bloc size
-    BlockSize bsize_uv; // bloc size for Chroma 4:2:0
-    uint16_t  txb_count[MAX_VARTX_DEPTH + 1]; //4-2-1
+    uint8_t   bwidth; /*!< block width */
+    uint8_t   bheight; /*!< block height */
+    uint8_t   bwidth_uv; /*!< block width for Chroma 4:2:0 */
+    uint8_t   bheight_uv; /*!< block height for Chroma 4:2:0 */
+    uint8_t   bwidth_log2; /*!< block width log2 */
+    uint8_t   bheight_log2; /*!< block height log2 */
+    BlockSize bsize; /*!< bloc size */
+    BlockSize bsize_uv; /*!< bloc size for Chroma 4:2:0 */
+    uint16_t  txb_count[MAX_VARTX_DEPTH + 1]; /*!<4-2-1 */
     TxSize    txsize[MAX_VARTX_DEPTH + 1][MAX_TXB_COUNT];
     TxSize    txsize_uv[MAX_VARTX_DEPTH + 1][MAX_TXB_COUNT];
-    uint16_t tx_org_x[2][MAX_VARTX_DEPTH + 1][MAX_TXB_COUNT]; //origin is SB - separate tables for INTRA (idx 0) and INTER (idx 1)
-    uint16_t tx_org_y[2][MAX_VARTX_DEPTH + 1][MAX_TXB_COUNT]; //origin is SB - separate tables for INTRA (idx 0) and INTER (idx 1)
-    uint8_t   tx_width[MAX_VARTX_DEPTH + 1][MAX_TXB_COUNT]; //tx_size_wide
-    uint8_t   tx_height[MAX_VARTX_DEPTH + 1][MAX_TXB_COUNT]; //tx_size_wide
-    uint8_t   tx_width_uv[MAX_VARTX_DEPTH + 1][MAX_TXB_COUNT]; //tx_size_wide
-    uint8_t   tx_height_uv[MAX_VARTX_DEPTH + 1][MAX_TXB_COUNT]; //tx_size_wide
+    uint16_t tx_org_x[2][MAX_VARTX_DEPTH + 1][MAX_TXB_COUNT]; /*!< origin is SB - separate tables for INTRA (idx 0) and INTER (idx 1) */
+    uint16_t tx_org_y[2][MAX_VARTX_DEPTH + 1][MAX_TXB_COUNT]; /*!< origin is SB - separate tables for INTRA (idx 0) and INTER (idx 1) */
+    uint8_t   tx_width[MAX_VARTX_DEPTH + 1][MAX_TXB_COUNT]; /*!< tx_size_wide */
+    uint8_t   tx_height[MAX_VARTX_DEPTH + 1][MAX_TXB_COUNT]; /*!< tx_size_wide */
+    uint8_t   tx_width_uv[MAX_VARTX_DEPTH + 1][MAX_TXB_COUNT]; /*!< tx_size_wide */
+    uint8_t   tx_height_uv[MAX_VARTX_DEPTH + 1][MAX_TXB_COUNT]; /*!< tx_size_wide */
 
-    uint16_t blkidx_mds; // block index in md scan
-    uint16_t blkidx_dps; // block index in depth scan
+    uint16_t blkidx_mds; /*!< block index in md scan */
+    uint16_t blkidx_dps; /*!< block index in depth scan */
     int32_t  has_uv;
     int32_t  sq_size;
-    int32_t  is_last_quadrant; // only for square bloks, is this the fourth quadrant block?
+    int32_t  is_last_quadrant; /*!< only for square bloks, is this the fourth quadrant block? */
 } BlockGeom;
 
 static const BlockSize ss_size_lookup[BlockSizeS_ALL][2][2] = {
-    //  ss_x == 0    ss_x == 0        ss_x == 1      ss_x == 1
-    //  ss_y == 0    ss_y == 1        ss_y == 0      ss_y == 1
+    /*!<  ss_x == 0    ss_x == 0        ss_x == 1      ss_x == 1 */
+    /*!<  ss_y == 0    ss_y == 1        ss_y == 0      ss_y == 1 */
     {{BLOCK_4X4, BLOCK_4X4}, {BLOCK_4X4, BLOCK_4X4}},
     {{BLOCK_4X8, BLOCK_4X4}, {BLOCK_INVALID, BLOCK_4X4}},
     {{BLOCK_8X4, BLOCK_INVALID}, {BLOCK_4X4, BLOCK_4X4}},
@@ -104,16 +101,16 @@ static INLINE TxSize av1_get_max_uv_txsize(BlockSize bsize, int32_t subsampling_
 
 #define NOT_USED_VALUE 0
 static const uint32_t parent_depth_offset[2][6] = {
-    /*64x64*/ {NOT_USED_VALUE, 832, 208, 52, 8, NOT_USED_VALUE},
-    /*128x128*/ {NOT_USED_VALUE, 3320, 832, 208, 52, 8}};
-static const uint32_t ns_depth_offset[2][6] = {/*64x64*/ {1101, 269, 61, 9, 1, NOT_USED_VALUE},
-                                               /*128x128*/ {4421, 1101, 269, 61, 9, 1}};
-static const uint32_t d1_depth_offset[2][6] = {/*64x64*/ {25, 25, 25, 5, 1, NOT_USED_VALUE},
-                                               /*128x128*/ {17, 25, 25, 25, 5, 1}};
+    /*!< 64x64 */ {NOT_USED_VALUE, 832, 208, 52, 8, NOT_USED_VALUE},
+    /*!< 128x128 */ {NOT_USED_VALUE, 3320, 832, 208, 52, 8}};
+static const uint32_t ns_depth_offset[2][6] = {/*!< 64x64 */ {1101, 269, 61, 9, 1, NOT_USED_VALUE},
+                                               /*!< 128x128 */ {4421, 1101, 269, 61, 9, 1}};
+static const uint32_t d1_depth_offset[2][6] = {/*!< 64x64 */ {25, 25, 25, 5, 1, NOT_USED_VALUE},
+                                               /*!< 128x128 */ {17, 25, 25, 25, 5, 1}};
 
 const BlockGeom* get_blk_geom_mds(uint32_t bidx_mds);
 
-// CU Stats Helper Functions
+/*!< CU Stats Helper Functions */
 typedef struct CodedBlockStats {
     uint8_t  depth;
     uint8_t  size;
@@ -142,10 +139,7 @@ extern const CodedBlockStats* get_coded_blk_stats(const uint32_t cu_idx);
 extern uint32_t Log2f(uint32_t x);
 extern uint64_t log2f_64(uint64_t x);
 
-/****************************
-     * MACROS
-     ****************************/
-
+/*!< MACROS */
 #ifdef _MSC_VER
 #define MULTI_LINE_MACRO_BEGIN do {
 #define MULTI_LINE_MACRO_END                                  \
@@ -159,9 +153,7 @@ extern uint64_t log2f_64(uint64_t x);
     while (0)
 #endif
 
-//**************************************************
-// MACROS
-//**************************************************
+/*!< MACROS */
 #define MAX(x, y) ((x) > (y) ? (x) : (y))
 #define MIN(x, y) ((x) < (y) ? (x) : (y))
 #define MEDIAN(a, b, c)                   ((a)>(b)?(a)>?(b)>?(b)::(a):(b)>?(a)>?(a)::(b))
@@ -192,7 +184,7 @@ extern uint64_t log2f_64(uint64_t x);
 #define ROUND_UP_MUL_8(x) ((x) + ((8 - ((x)&0x7)) & 0x7))
 #define ROUND_UP_MULT(x, mult) ((x) + (((mult) - ((x) & ((mult)-1))) & ((mult)-1)))
 
-// rounds down to the next power of two
+/*!< rounds down to the next power of two */
 #define FLOOR_POW2(x)                        \
     MULTI_LINE_MACRO_BEGIN(x) |= ((x) >> 1); \
     (x) |= ((x) >> 2);                       \
@@ -202,7 +194,7 @@ extern uint64_t log2f_64(uint64_t x);
     (x) -= ((x) >> 1);                       \
     MULTI_LINE_MACRO_END
 
-// rounds up to the next power of two
+/*!< rounds up to the next power of two */
 #define CEIL_POW2(x)                \
     MULTI_LINE_MACRO_BEGIN(x) -= 1; \
     (x) |= ((x) >> 1);              \
@@ -213,8 +205,8 @@ extern uint64_t log2f_64(uint64_t x);
     (x) += 1;                       \
     MULTI_LINE_MACRO_END
 
-// Calculates the Log2 floor of the integer 'x'
-//   Intended to only be used for macro definitions
+/*!< Calculates the Log2 floor of the integer 'x' */
+/*!<   Intended to only be used for macro definitions */
 #define LOG2F Log2f_SSE2
 
 #define LOG2F_8(x)               \
@@ -228,36 +220,34 @@ extern uint64_t log2f_64(uint64_t x);
 
 #define TWO_D_INDEX(x, y, stride) (((y) * (stride)) + (x))
 
-// MAX_CU_COUNT is used to find the total number of partitions for the max partition depth and for
-// each parent partition up to the root partition level (i.e. SB level).
+/*!< MAX_CU_COUNT is used to find the total number of partitions for the max partition depth and for
+ *   each parent partition up to the root partition level (i.e. SB level). */
 
-// MAX_CU_COUNT is given by SUM from k=1 to n (4^(k-1)), reduces by using the following finite sum
-// SUM from k=1 to n (q^(k-1)) = (q^n - 1)/(q-1) => (4^n - 1) / 3
+/*!< MAX_CU_COUNT is given by SUM from k=1 to n (4^(k-1)), reduces by using the following finite sum
+ *   SUM from k=1 to n (q^(k-1)) = (q^n - 1)/(q-1) => (4^n - 1) / 3 */
 #define MAX_CU_COUNT(max_depth_count) \
     ((((1 << (max_depth_count)) * (1 << (max_depth_count))) - 1) / 3)
 
-//**************************************************
-// CONSTANTS
-//**************************************************
+/*!< CONSTANTS */
 #define MIN_UNSIGNED_VALUE 0
 #define MAX_UNSIGNED_VALUE ~0u
 #define MIN_SIGNED_VALUE ~0 - ((signed)(~0u >> 1))
 #define MAX_SIGNED_VALUE ((signed)(~0u >> 1))
 
-// Helper functions for EbLinkedListNode.
+/*!< Helper functions for EbLinkedListNode. */
 
-// concatenate two linked list, and return the pointer to the new concatenated list
+/*!< concatenate two linked list, and return the pointer to the new concatenated list */
 EbLinkedListNode* concat_eb_linked_list(EbLinkedListNode* a, EbLinkedListNode* b);
 
-// split a linked list into two. return the pointer to a linked list whose nodes meets the condition
-// predicate_func(node) == TRUE, the rest of the nodes will be collected into another linked list to which (*restLL) is
-// set. Does not gaurantee the original order of the nodes.
+/*!< split a linked list into two. return the pointer to a linked list whose nodes meets the condition
+ *   predicate_func(node) == TRUE, the rest of the nodes will be collected into another linked list to which (*restLL) is
+ *   set. Does not gaurantee the original order of the nodes. */
 
 EbLinkedListNode* split_eb_linked_list(EbLinkedListNode* input, EbLinkedListNode** restLL,
                                        EbBool (*predicate_func)(EbLinkedListNode*));
 
 #define MINI_GOP_MAX_COUNT 15
-#define MINI_GOP_WINDOW_MAX_COUNT 8 // widow subdivision: 8 x 3L
+#define MINI_GOP_WINDOW_MAX_COUNT 8 /*!< widow subdivision: 8 x 3L */
 
 #define MIN_HIERARCHICAL_LEVEL 2
 static const uint32_t mini_gop_offset[4] = {1, 3, 7, 31};

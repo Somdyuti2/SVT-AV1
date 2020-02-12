@@ -1,14 +1,11 @@
-/*
-* Copyright(c) 2019 Netflix, Inc.
-* SPDX - License - Identifier: BSD - 2 - Clause - Patent
-*/
+/*!< Copyright(c) 2019 Netflix, Inc.
+ * SPDX - License - Identifier: BSD - 2 - Clause - Patent */
 
-// SUMMARY
-//   Contains the Parse related functions
+/*!< SUMMARY: Contains the Parse related functions */
 
-/**************************************
- * Includes
- **************************************/
+/**************************************/
+/*!< Includes */
+/**************************************/
 
 #include "EbDefinitions.h"
 #include "EbPictureBufferDesc.h"
@@ -22,12 +19,12 @@
 #include "EbDecParseFrame.h"
 #include "EbDecParseHelper.h"
 
-/* Inititalizes prms for current tile from Master TilesInfo ! */
+/*!< Inititalizes prms for current tile from Master TilesInfo ! */
 void svt_tile_init(TileInfo *cur_tile_info, FrameHeader *frame_header, int32_t tile_row,
                    int32_t tile_col) {
     TilesInfo *tiles_info = &frame_header->tiles_info;
 
-    /* tile_set_row */
+    /*!< tile_set_row */
     assert(tile_row < tiles_info->tile_rows);
     cur_tile_info->tile_row     = tile_row;
     cur_tile_info->mi_row_start = tiles_info->tile_row_start_mi[tile_row];
@@ -36,7 +33,7 @@ void svt_tile_init(TileInfo *cur_tile_info, FrameHeader *frame_header, int32_t t
 
     assert(cur_tile_info->mi_row_end > cur_tile_info->mi_row_start);
 
-    /* tile_set_col */
+    /*!< tile_set_col */
     assert(tile_col < tiles_info->tile_cols);
 
     cur_tile_info->tile_col     = tile_col;
@@ -69,7 +66,7 @@ void clear_above_context(ParseCtxt *parse_ctxt, int mi_col_start, int mi_col_end
     SeqHeader *seq_params = parse_ctxt->seq_header;
     int        num_planes = av1_num_planes(&seq_params->color_config);
     int        width      = mi_col_end - mi_col_start;
-    /* ToDo: Bhavna : Can be optimized for ST */
+    /*!< ToDo: Bhavna : Can be optimized for ST */
     if (num_threads == 1) {
         int32_t num_mi_sb        = seq_params->sb_mi_size;
         int32_t sb_size_log2     = seq_params->sb_size_log2;
@@ -100,12 +97,12 @@ void clear_above_context(ParseCtxt *parse_ctxt, int mi_col_start, int mi_col_end
 void clear_left_context(ParseCtxt *parse_ctxt) {
     SeqHeader *seq_params = parse_ctxt->seq_header;
 
-    /* Maintained only for 1 left SB! */
+    /*!< Maintained only for 1 left SB! */
     int     blk_cnt          = seq_params->sb_mi_size;
     int     num_planes       = av1_num_planes(&seq_params->color_config);
     int32_t num_4x4_neigh_sb = seq_params->sb_mi_size;
 
-    /* TODO :  after Optimizing the allocation for Chroma fix here also */
+    /*!< TODO :  after Optimizing the allocation for Chroma fix here also */
     for (int i = 0; i < num_planes; i++)
         ZERO_ARRAY(parse_ctxt->parse_left_nbr4x4_ctxt->left_ctx[i], blk_cnt);
 
@@ -154,11 +151,11 @@ EbErrorType start_parse_tile(EbDecHandle *dec_handle_ptr, ParseCtxt *parse_ctxt,
 
     parse_ctxt->cur_tile_ctx = master_parse_ctxt->init_frm_ctx;
 
-    /* Parse Tile */
+    /*!< Parse Tile */
     status =
         parse_tile(dec_handle_ptr, parse_ctxt, tiles_info, tile_num, tile_row, tile_col, is_mt);
 
-    /* Save CDF */
+    /*!< Save CDF */
     if (!frame_header->disable_frame_end_update_cdf &&
         (tile_num == tiles_info->context_update_tile_id)) {
         dec_handle_ptr->cur_pic_buf[0]->final_frm_ctx = parse_ctxt->cur_tile_ctx;
@@ -180,10 +177,10 @@ EbErrorType parse_tile(EbDecHandle *dec_handle_ptr, ParseCtxt *parse_ctx, TilesI
                         dec_handle_ptr->dec_config.threads);
     clear_loop_filter_delta(parse_ctx);
 
-    /* Init ParseCtxt */
+    /*!< Init ParseCtxt */
     RestorationUnitInfo *lr_unit[MAX_MB_PLANE];
 
-    // Default initialization of Wiener and SGR Filter
+    /*!< Default initialization of Wiener and SGR Filter */
     for (int p = 0; p < num_planes; ++p) {
         lr_unit[p] = &parse_ctx->ref_lr_unit[p];
 
@@ -191,7 +188,7 @@ EbErrorType parse_tile(EbDecHandle *dec_handle_ptr, ParseCtxt *parse_ctx, TilesI
         set_default_sgrproj(&lr_unit[p]->sgrproj_info);
     }
 
-    // to-do access to wiener info that is currently part of PartitionInfo
+    /*!< to-do access to wiener info that is currently part of PartitionInfo */
     int32_t sb_row_tile_start = 0;
     if (is_mt) {
         DecMtParseReconTileInfo *parse_recon_tile_info =
@@ -208,8 +205,8 @@ EbErrorType parse_tile(EbDecHandle *dec_handle_ptr, ParseCtxt *parse_ctx, TilesI
 
         clear_left_context(parse_ctx);
 
-        /*TODO: Move CFL to thread ctxt! We need to access DecModCtxt
-          from parse_tile function . Add tile level cfl init. */
+        /*!< TODO: Move CFL to thread ctxt! We need to access DecModCtxt
+         *   from parse_tile function . Add tile level cfl init. */
         if (!is_mt) {
             cfl_init(&((DecModCtxt *)dec_handle_ptr->pv_dec_mod_ctxt)->cfl_ctx, color_config);
         }
@@ -245,24 +242,24 @@ EbErrorType parse_tile(EbDecHandle *dec_handle_ptr, ParseCtxt *parse_ctx, TilesI
                  (sb_col * num_mis_in_sb >> sx)) *
                     2;
             if (dec_handle_ptr->dec_config.threads == 1) {
-                /*TODO : Change to macro */
+                /*!< TODO : Change to macro */
                 sb_info->sb_coeff[AOM_PLANE_Y] = frame_buf->coeff[AOM_PLANE_Y];
                 sb_info->sb_coeff[AOM_PLANE_U] = frame_buf->coeff[AOM_PLANE_U];
                 sb_info->sb_coeff[AOM_PLANE_V] = frame_buf->coeff[AOM_PLANE_V];
             }
             else {
-                /*TODO : Change to macro */
+                /*!< TODO : Change to macro */
                 sb_info->sb_coeff[AOM_PLANE_Y] =
                     frame_buf->coeff[AOM_PLANE_Y] +
                     (sb_row * num_mis_in_sb * master_frame_buf->sb_cols * (16 + 1))
                         + sb_col * num_mis_in_sb* (16 + 1);
-                /*TODO : Change to macro */
-                sb_info->sb_coeff[AOM_PLANE_U] =
-                    frame_buf->coeff[AOM_PLANE_U] +
+            /*!< TODO : Change to macro */
+            sb_info->sb_coeff[AOM_PLANE_U] =
+                frame_buf->coeff[AOM_PLANE_U] +
                     (sb_row * num_mis_in_sb * master_frame_buf->sb_cols * (16 + 1) >> (sy + sx))
                         + (sb_col * num_mis_in_sb * (16 + 1) >> (sy + sx));
-                sb_info->sb_coeff[AOM_PLANE_V] =
-                    frame_buf->coeff[AOM_PLANE_V] +
+            sb_info->sb_coeff[AOM_PLANE_V] =
+                frame_buf->coeff[AOM_PLANE_V] +
                     (sb_row * num_mis_in_sb * master_frame_buf->sb_cols * (16 + 1) >> (sy + sx))
                         + (sb_col * num_mis_in_sb * (16 + 1) >> (sy + sx));
             }
@@ -289,14 +286,13 @@ EbErrorType parse_tile(EbDecHandle *dec_handle_ptr, ParseCtxt *parse_ctx, TilesI
             parse_ctx->cur_coeff_buf[AOM_PLANE_Y]    = sb_info->sb_coeff[AOM_PLANE_Y];
             parse_ctx->cur_coeff_buf[AOM_PLANE_U]    = sb_info->sb_coeff[AOM_PLANE_U];
             parse_ctx->cur_coeff_buf[AOM_PLANE_V]    = sb_info->sb_coeff[AOM_PLANE_V];
-            parse_ctx->prev_blk_has_chroma           = 1; //default at start of frame / tile
+            parse_ctx->prev_blk_has_chroma           = 1; /*!< default at start of frame / tile */
 
-            sb_info->num_block = 0;
-            // Bit-stream parsing of the superblock
+            /*!< Bit-stream parsing of the superblock */
             parse_super_block(dec_handle_ptr, parse_ctx, mi_row, mi_col, sb_info);
 
             if (!is_mt) {
-                /* Init DecModCtxt */
+                /*!< Init DecModCtxt */
                 DecModCtxt *dec_mod_ctxt = (DecModCtxt *)dec_handle_ptr->pv_dec_mod_ctxt;
                 dec_mod_ctxt->cur_coeff[AOM_PLANE_Y] = sb_info->sb_coeff[AOM_PLANE_Y];
                 dec_mod_ctxt->cur_coeff[AOM_PLANE_U] = sb_info->sb_coeff[AOM_PLANE_U];
@@ -304,15 +300,15 @@ EbErrorType parse_tile(EbDecHandle *dec_handle_ptr, ParseCtxt *parse_ctx, TilesI
 
                 dec_mod_ctxt->cur_tile_info = parse_ctx->cur_tile_info;
 
-                /* TO DO : Will move later */
-                // decoding of the superblock
+                /*!< TO DO : Will move later */
+                /*!< decoding of the superblock */
                 decode_super_block(dec_mod_ctxt, mi_row, mi_col, sb_info);
             }
         }
         if (is_mt) {
             DecMtFrameData *dec_mt_frame_data =
                 &dec_handle_ptr->master_frame_buf.cur_frame_bufs[0]
-                     .dec_mt_frame_data; //multi frame Parallel 0 -> idx
+                     .dec_mt_frame_data; /*!< multi frame Parallel 0 -> idx */
             assert(sb_row >= sb_row_tile_start);
             dec_mt_frame_data->parse_recon_tile_info_array[tile_num]
                 .sb_recon_row_parsed[sb_row - sb_row_tile_start] = 1;

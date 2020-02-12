@@ -1,7 +1,5 @@
-/*
-* Copyright(c) 2019 Intel Corporation
-* SPDX - License - Identifier: BSD - 2 - Clause - Patent
-*/
+/*!< Copyright(c) 2019 Intel Corporation
+ * SPDX - License - Identifier: BSD - 2 - Clause - Patent */
 
 #ifndef EbEncDecSegments_h
 #define EbEncDecSegments_h
@@ -12,18 +10,18 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
-/**************************************
-     * Defines
-     **************************************/
+/**************************************/
+/*!< Defines */
+/**************************************/
 #define ENCDEC_SEGMENTS_MAX_COL_COUNT 60
 #define ENCDEC_SEGMENTS_MAX_ROW_COUNT 37
 #define ENCDEC_SEGMENTS_MAX_BAND_COUNT ENCDEC_SEGMENTS_MAX_COL_COUNT + ENCDEC_SEGMENTS_MAX_ROW_COUNT
 #define ENCDEC_SEGMENTS_MAX_COUNT ENCDEC_SEGMENTS_MAX_BAND_COUNT *ENCDEC_SEGMENTS_MAX_ROW_COUNT
 #define ENCDEC_SEGMENT_INVALID 0xFFFF
 
-/**************************************
-      * Macros
-      **************************************/
+/**************************************/
+/* Macros */
+/**************************************/
 #define BAND_TOTAL_COUNT(sb_row_total_count, sb_col_total_count) \
     ((sb_row_total_count) + (sb_col_total_count)-1)
 #define ROW_INDEX(y_sb_index, segment_row_count, sb_row_total_count) \
@@ -33,9 +31,9 @@ extern "C" {
 #define SEGMENT_INDEX(row_index, band_index, segment_band_count) \
     (((row_index) * (segment_band_count)) + (band_index))
 
-/**************************************
-       * Member definitions
-       **************************************/
+/**************************************/
+/*!< Member definitions */
+/**************************************/
 typedef struct EncDecSegDependencyMap {
     uint8_t *dependency_map;
     EbHandle update_mutex;
@@ -48,9 +46,9 @@ typedef struct EncDecSegSegmentRow {
     EbHandle assignment_mutex;
 } EncDecSegSegmentRow;
 
-/**************************************
-     * ENCDEC Segments
-     **************************************/
+/**************************************/
+/*!< ENCDEC Segments */
+/**************************************/
 typedef struct EncDecSegments {
     EbDctor                dctor;
     EncDecSegDependencyMap dep_map;
@@ -71,10 +69,10 @@ typedef struct EncDecSegments {
     uint32_t segment_max_total_count;
 } EncDecSegments;
 
-/**************************************
-     * Extern Function Declarations
-     **************************************/
-extern EbErrorType enc_dec_segments_ctor(EncDecSegments *segments_ptr,
+/**************************************/
+/*!< Extern Function Declarations */
+/**************************************/
+extern EbErrorType enc_dec_segments_ctor(EncDecSegments *segments_dbl_ptr,
                                          uint32_t segment_col_count, uint32_t segment_row_count);
 
 extern void enc_dec_segments_init(EncDecSegments *segments_ptr, uint32_t col_count,

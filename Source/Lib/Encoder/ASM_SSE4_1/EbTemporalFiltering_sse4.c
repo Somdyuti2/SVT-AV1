@@ -1,13 +1,11 @@
-/*
- * Copyright (c) 2019, Alliance for Open Media. All rights reserved
+/*!< Copyright (c) 2019, Alliance for Open Media. All rights reserved
  *
  * This source code is subject to the terms of the BSD 2 Clause License and
  * the Alliance for Open Media Patent License 1.0. If the BSD 2 Clause License
  * was not distributed with this source code in the LICENSE file, you can
  * obtain it at www.aomedia.org/license/software. If the Alliance for Open
  * Media Patent License 1.0 was not distributed with this source code in the
- * PATENTS file, you can obtain it at www.aomedia.org/license/patent.
- */
+ * PATENTS file, you can obtain it at www.aomedia.org/license/patent. */
 
 #include <assert.h>
 #include <smmintrin.h>
@@ -16,8 +14,8 @@
 #include "EbTemporalFiltering_constants.h"
 #include "EbTemporalFiltering_sse4.h"
 
-// Read in 8 pixels from a and b as 8-bit unsigned integers, compute the
-// difference squared, and store as unsigned 16-bit integer to dst.
+/*!< Read in 8 pixels from a and b as 8-bit unsigned integers, compute the
+ *   difference squared, and store as unsigned 16-bit integer to dst. */
 static INLINE void store_dist_8(const uint8_t *a, const uint8_t *b, uint16_t *dst) {
     const __m128i a_reg = _mm_loadl_epi64((const __m128i *)a);
     const __m128i b_reg = _mm_loadl_epi64((const __m128i *)b);
@@ -63,28 +61,28 @@ static INLINE void read_dist_16(const uint16_t *dist, __m128i *reg_first, __m128
     read_dist_8(dist + 8, reg_second);
 }
 
-// Average the value based on the number of values summed (9 for pixels away
-// from the border, 4 for pixels in corners, and 6 for other edge values).
-//
-// Add in the rounding factor and shift, clamp to 16, invert and shift. Multiply
-// by weight.
+/*!< Average the value based on the number of values summed (9 for pixels away
+ *   from the border, 4 for pixels in corners, and 6 for other edge values).
+ *
+ *   Add in the rounding factor and shift, clamp to 16, invert and shift. Multiply
+ *   by weight. */
 static __m128i average_8(__m128i sum, const __m128i *mul_constants, const int strength,
                          const int rounding, const int weight) {
-    // _mm_srl_epi16 uses the lower 64 bit value for the shift.
+    /*!< _mm_srl_epi16 uses the lower 64 bit value for the shift. */
     const __m128i strength_u128 = _mm_set_epi32(0, 0, 0, strength);
     const __m128i rounding_u16  = _mm_set1_epi16(rounding);
     const __m128i weight_u16    = _mm_set1_epi16(weight);
     const __m128i sixteen       = _mm_set1_epi16(16);
 
-    // modifier * 3 / index;
+    /*!< modifier * 3 / index; */
     sum = _mm_mulhi_epu16(sum, *mul_constants);
 
     sum = _mm_adds_epu16(sum, rounding_u16);
     sum = _mm_srl_epi16(sum, strength_u128);
 
-    // The maximum input to this comparison is UINT16_MAX * NEIGHBOR_CONSTANT_4
-    // >> 16 (also NEIGHBOR_CONSTANT_4 -1) which is 49151 / 0xbfff / -16385
-    // So this needs to use the epu16 version which did not come until SSE4.
+    /*!< The maximum input to this comparison is UINT16_MAX * NEIGHBOR_CONSTANT_4
+     *   >> 16 (also NEIGHBOR_CONSTANT_4 -1) which is 49151 / 0xbfff / -16385
+     *   So this needs to use the epu16 version which did not come until SSE4. */
     sum = _mm_min_epu16(sum, sixteen);
 
     sum = _mm_sub_epi16(sixteen, sum);
@@ -94,22 +92,22 @@ static __m128i average_8(__m128i sum, const __m128i *mul_constants, const int st
 
 static __m128i average_4_4(__m128i sum, const __m128i *mul_constants, const int strength,
                            const int rounding, const int weight_0, const int weight_1) {
-    // _mm_srl_epi16 uses the lower 64 bit value for the shift.
+    /*!< _mm_srl_epi16 uses the lower 64 bit value for the shift. */
     const __m128i strength_u128 = _mm_set_epi32(0, 0, 0, strength);
     const __m128i rounding_u16  = _mm_set1_epi16(rounding);
     const __m128i weight_u16    = _mm_setr_epi16(
         weight_0, weight_0, weight_0, weight_0, weight_1, weight_1, weight_1, weight_1);
     const __m128i sixteen = _mm_set1_epi16(16);
 
-    // modifier * 3 / index;
+    /*!< modifier * 3 / index; */
     sum = _mm_mulhi_epu16(sum, *mul_constants);
 
     sum = _mm_adds_epu16(sum, rounding_u16);
     sum = _mm_srl_epi16(sum, strength_u128);
 
-    // The maximum input to this comparison is UINT16_MAX * NEIGHBOR_CONSTANT_4
-    // >> 16 (also NEIGHBOR_CONSTANT_4 -1) which is 49151 / 0xbfff / -16385
-    // So this needs to use the epu16 version which did not come until SSE4.
+    /*!< The maximum input to this comparison is UINT16_MAX * NEIGHBOR_CONSTANT_4
+     *   >> 16 (also NEIGHBOR_CONSTANT_4 -1) which is 49151 / 0xbfff / -16385
+     *   So this needs to use the epu16 version which did not come until SSE4. */
     sum = _mm_min_epu16(sum, sixteen);
 
     sum = _mm_sub_epi16(sixteen, sum);
@@ -144,7 +142,7 @@ static INLINE void average_16(__m128i *sum_0_u16, __m128i *sum_1_u16,
     *sum_1_u16 = _mm_mullo_epi16(input_1, weight_u16);
 }
 
-// Add 'sum_u16' to 'count'. Multiply by 'pred' and add to 'accumulator.'
+/*!< Add 'sum_u16' to 'count'. Multiply by 'pred' and add to 'accumulator.' */
 static void accumulate_and_store_8(const __m128i sum_u16, const uint8_t *pred, uint16_t *count,
                                    uint32_t *accumulator) {
     const __m128i pred_u8   = _mm_loadl_epi64((const __m128i *)pred);
@@ -213,8 +211,8 @@ static INLINE void accumulate_and_store_16(const __m128i sum_0_u16, const __m128
     _mm_storeu_si128((__m128i *)(accumulator + 12), accum_3_u32);
 }
 
-// Read in 8 pixels from y_dist. For each index i, compute y_dist[i-1] +
-// y_dist[i] + y_dist[i+1] and store in sum as 16-bit unsigned int.
+/*!< Read in 8 pixels from y_dist. For each index i, compute y_dist[i-1] +
+ *   y_dist[i] + y_dist[i+1] and store in sum as 16-bit unsigned int. */
 static INLINE void get_sum_8(const uint16_t *y_dist, __m128i *sum) {
     __m128i dist_reg, dist_left, dist_right;
 
@@ -226,25 +224,25 @@ static INLINE void get_sum_8(const uint16_t *y_dist, __m128i *sum) {
     *sum = _mm_adds_epu16(*sum, dist_right);
 }
 
-// Read in 16 pixels from y_dist. For each index i, compute y_dist[i-1] +
-// y_dist[i] + y_dist[i+1]. Store the result for first 8 pixels in sum_first and
-// the rest in sum_second.
+/*!< Read in 16 pixels from y_dist. For each index i, compute y_dist[i-1] +
+ *   y_dist[i] + y_dist[i+1]. Store the result for first 8 pixels in sum_first and
+ *   the rest in sum_second. */
 static INLINE void get_sum_16(const uint16_t *y_dist, __m128i *sum_first, __m128i *sum_second) {
     get_sum_8(y_dist, sum_first);
     get_sum_8(y_dist + 8, sum_second);
 }
 
-// Read in a row of chroma values corresponds to a row of 16 luma values.
+/*!< Read in a row of chroma values corresponds to a row of 16 luma values. */
 static INLINE void read_chroma_dist_row_16(int ss_x, const uint16_t *u_dist, const uint16_t *v_dist,
                                            __m128i *u_first, __m128i *u_second, __m128i *v_first,
                                            __m128i *v_second) {
     if (!ss_x) {
-        // If there is no chroma subsampling in the horizontal direction, then we
-        // need to load 16 entries from chroma.
+        /*!< If there is no chroma subsampling in the horizontal direction, then we
+         *   need to load 16 entries from chroma. */
         read_dist_16(u_dist, u_first, u_second);
         read_dist_16(v_dist, v_first, v_second);
-    } else { // ss_x == 1
-        // Otherwise, we only need to load 8 entries
+    } else { /*!< ss_x == 1 */
+        /*!< Otherwise, we only need to load 8 entries */
         __m128i u_reg, v_reg;
 
         read_dist_8(u_dist, &u_reg);
@@ -259,8 +257,7 @@ static INLINE void read_chroma_dist_row_16(int ss_x, const uint16_t *u_dist, con
     }
 }
 
-// Horizontal add unsigned 16-bit ints in src and store them as signed 32-bit
-// int in dst.
+/*!< Horizontal add unsigned 16-bit ints in src and store them as signed 32-bit int in dst. */
 static INLINE void hadd_epu16(__m128i *src, __m128i *dst) {
     const __m128i zero        = _mm_setzero_si128();
     const __m128i shift_right = _mm_srli_si128(*src, 2);
@@ -271,7 +268,7 @@ static INLINE void hadd_epu16(__m128i *src, __m128i *dst) {
     *dst = _mm_add_epi32(even, odd);
 }
 
-// Add a row of luma distortion to 8 corresponding chroma mods.
+/*!< Add a row of luma distortion to 8 corresponding chroma mods. */
 static INLINE void add_luma_dist_to_8_chroma_mod(const uint16_t *y_dist, int ss_x, int ss_y,
                                                  __m128i *u_mod, __m128i *v_mod) {
     __m128i y_reg;
@@ -304,10 +301,10 @@ static INLINE void add_luma_dist_to_8_chroma_mod(const uint16_t *y_dist, int ss_
     *v_mod = _mm_adds_epu16(*v_mod, y_reg);
 }
 
-// Apply temporal filter to the luma components. This performs temporal
-// filtering on a luma block of 16 X block_height. Use blk_fw as an array of
-// size 4 for the weights for each of the 4 subblocks if blk_fw is not NULL,
-// else use top_weight for top half, and bottom weight for bottom half.
+/*!< Apply temporal filter to the luma components. This performs temporal
+ *   filtering on a luma block of 16 X block_height. Use blk_fw as an array of
+ *   size 4 for the weights for each of the 4 subblocks if blk_fw is not NULL,
+ *   else use top_weight for top half, and bottom weight for bottom half. */
 static void av1_apply_temporal_filter_luma_16(
     const uint8_t *y_src, int y_src_stride, const uint8_t *y_pre, int y_pre_stride,
     const uint8_t *u_src, const uint8_t *v_src, int uv_src_stride, const uint8_t *u_pre,
@@ -331,7 +328,7 @@ static void av1_apply_temporal_filter_luma_16(
     __m128i sum_row_first;
     __m128i sum_row_second;
 
-    // Loop variables
+    /*!< Loop variables */
     unsigned int h;
 
     assert(strength >= 0);
@@ -341,18 +338,18 @@ static void av1_apply_temporal_filter_luma_16(
 
     (void)block_width;
 
-    // First row
+    /*!< First row */
     mul_first  = _mm_loadu_si128((const __m128i *)neighbors_first[0]);
     mul_second = _mm_loadu_si128((const __m128i *)neighbors_second[0]);
 
-    // Add luma values
+    /*!< Add luma values */
     get_sum_16(y_dist, &sum_row_2_first, &sum_row_2_second);
     get_sum_16(y_dist + DIST_STRIDE, &sum_row_3_first, &sum_row_3_second);
 
     sum_row_first  = _mm_adds_epu16(sum_row_2_first, sum_row_3_first);
     sum_row_second = _mm_adds_epu16(sum_row_2_second, sum_row_3_second);
 
-    // Add chroma values
+    /*!< Add chroma values */
     read_chroma_dist_row_16(ss_x, u_dist, v_dist, &u_first, &u_second, &v_first, &v_second);
 
     sum_row_first  = _mm_adds_epu16(sum_row_first, u_first);
@@ -361,7 +358,7 @@ static void av1_apply_temporal_filter_luma_16(
     sum_row_first  = _mm_adds_epu16(sum_row_first, v_first);
     sum_row_second = _mm_adds_epu16(sum_row_second, v_second);
 
-    // Get modifier and store result
+    /*!< Get modifier and store result */
     if (blk_fw) {
         sum_row_first  = average_8(sum_row_first, &mul_first, strength, rounding, blk_fw[0]);
         sum_row_second = average_8(sum_row_second, &mul_second, strength, rounding, blk_fw[1]);
@@ -384,25 +381,25 @@ static void av1_apply_temporal_filter_luma_16(
     v_pre += uv_pre_stride;
     v_dist += DIST_STRIDE;
 
-    // Then all the rows except the last one
+    /*!< Then all the rows except the last one */
     mul_first  = _mm_loadu_si128((const __m128i *)neighbors_first[1]);
     mul_second = _mm_loadu_si128((const __m128i *)neighbors_second[1]);
 
     for (h = 1; h < block_height - 1; ++h) {
-        // Move the weight to bottom half
+        /*!< Move the weight to bottom half */
         if (!use_whole_blk && h == block_height / 2) {
             if (blk_fw) {
                 blk_fw += 2;
             } else
                 weight = bottom_weight;
         }
-        // Shift the rows up
+        /*!< Shift the rows up */
         sum_row_1_first  = sum_row_2_first;
         sum_row_1_second = sum_row_2_second;
         sum_row_2_first  = sum_row_3_first;
         sum_row_2_second = sum_row_3_second;
 
-        // Add luma values to the modifier
+        /*!< Add luma values to the modifier */
         sum_row_first  = _mm_adds_epu16(sum_row_1_first, sum_row_2_first);
         sum_row_second = _mm_adds_epu16(sum_row_1_second, sum_row_2_second);
 
@@ -411,10 +408,10 @@ static void av1_apply_temporal_filter_luma_16(
         sum_row_first  = _mm_adds_epu16(sum_row_first, sum_row_3_first);
         sum_row_second = _mm_adds_epu16(sum_row_second, sum_row_3_second);
 
-        // Add chroma values to the modifier
+        /*!< Add chroma values to the modifier */
         if (ss_y == 0 || h % 2 == 0) {
-            // Only calculate the new chroma distortion if we are at a pixel that
-            // corresponds to a new chroma row
+            /*!< Only calculate the new chroma distortion if we are at a pixel that
+             *   corresponds to a new chroma row */
             read_chroma_dist_row_16(ss_x, u_dist, v_dist, &u_first, &u_second, &v_first, &v_second);
 
             u_src += uv_src_stride;
@@ -430,7 +427,7 @@ static void av1_apply_temporal_filter_luma_16(
         sum_row_first  = _mm_adds_epu16(sum_row_first, v_first);
         sum_row_second = _mm_adds_epu16(sum_row_second, v_second);
 
-        // Get modifier and store result
+        /*!< Get modifier and store result */
         if (blk_fw) {
             sum_row_first  = average_8(sum_row_first, &mul_first, strength, rounding, blk_fw[0]);
             sum_row_second = average_8(sum_row_second, &mul_second, strength, rounding, blk_fw[1]);
@@ -452,24 +449,24 @@ static void av1_apply_temporal_filter_luma_16(
         y_dist += DIST_STRIDE;
     }
 
-    // The last row
+    /*!< The last row */
     mul_first  = _mm_loadu_si128((const __m128i *)neighbors_first[0]);
     mul_second = _mm_loadu_si128((const __m128i *)neighbors_second[0]);
 
-    // Shift the rows up
+    /*!< Shift the rows up */
     sum_row_1_first  = sum_row_2_first;
     sum_row_1_second = sum_row_2_second;
     sum_row_2_first  = sum_row_3_first;
     sum_row_2_second = sum_row_3_second;
 
-    // Add luma values to the modifier
+    /*!< Add luma values to the modifier */
     sum_row_first  = _mm_adds_epu16(sum_row_1_first, sum_row_2_first);
     sum_row_second = _mm_adds_epu16(sum_row_1_second, sum_row_2_second);
 
-    // Add chroma values to the modifier
+    /*!< Add chroma values to the modifier */
     if (ss_y == 0) {
-        // Only calculate the new chroma distortion if we are at a pixel that
-        // corresponds to a new chroma row
+        /*!< Only calculate the new chroma distortion if we are at a pixel that
+         *   corresponds to a new chroma row */
         read_chroma_dist_row_16(ss_x, u_dist, v_dist, &u_first, &u_second, &v_first, &v_second);
     }
 
@@ -478,7 +475,7 @@ static void av1_apply_temporal_filter_luma_16(
     sum_row_first  = _mm_adds_epu16(sum_row_first, v_first);
     sum_row_second = _mm_adds_epu16(sum_row_second, v_second);
 
-    // Get modifier and store result
+    /*!< Get modifier and store result */
     if (blk_fw) {
         sum_row_first  = average_8(sum_row_first, &mul_first, strength, rounding, blk_fw[0]);
         sum_row_second = average_8(sum_row_second, &mul_second, strength, rounding, blk_fw[1]);
@@ -489,7 +486,7 @@ static void av1_apply_temporal_filter_luma_16(
     accumulate_and_store_16(sum_row_first, sum_row_second, y_pre, y_count, y_accum);
 }
 
-// Perform temporal filter for the luma component.
+/*!< Perform temporal filter for the luma component. */
 static void av1_apply_temporal_filter_luma(
     const uint8_t *y_src, int y_src_stride, const uint8_t *y_pre, int y_pre_stride,
     const uint8_t *u_src, const uint8_t *v_src, int uv_src_stride, const uint8_t *u_pre,
@@ -504,9 +501,9 @@ static void av1_apply_temporal_filter_luma(
     const int16_t *const *neighbors_second;
 
     if (block_width == 16) {
-        // Special Case: The blockwidth is 16 and we are operating on a row of 16
-        // chroma pixels. In this case, we can't use the usualy left-midle-right
-        // pattern. We also don't support splitting now.
+        /*!< Special Case: The blockwidth is 16 and we are operating on a row of 16
+         *   chroma pixels. In this case, we can't use the usualy left-midle-right
+         *   pattern. We also don't support splitting now. */
         neighbors_first  = luma_left_column_neighbors;
         neighbors_second = luma_right_column_neighbors;
         if (use_whole_blk) {
@@ -568,7 +565,7 @@ static void av1_apply_temporal_filter_luma(
         return;
     }
 
-    // Left
+    /*!< Left */
     neighbors_first  = luma_left_column_neighbors;
     neighbors_second = luma_middle_column_neighbors;
     av1_apply_temporal_filter_luma_16(y_src + blk_col,
@@ -601,7 +598,7 @@ static void av1_apply_temporal_filter_luma(
     blk_col += blk_col_step;
     uv_blk_col += uv_blk_col_step;
 
-    // Middle First
+    /*!< Middle First */
     neighbors_first = luma_middle_column_neighbors;
     for (; blk_col < mid_width; blk_col += blk_col_step, uv_blk_col += uv_blk_col_step) {
         av1_apply_temporal_filter_luma_16(y_src + blk_col,
@@ -637,7 +634,7 @@ static void av1_apply_temporal_filter_luma(
         bottom_weight = blk_fw[3];
     }
 
-    // Middle Second
+    /*!< Middle Second */
     for (; blk_col < last_width; blk_col += blk_col_step, uv_blk_col += uv_blk_col_step) {
         av1_apply_temporal_filter_luma_16(y_src + blk_col,
                                           y_src_stride,
@@ -667,7 +664,7 @@ static void av1_apply_temporal_filter_luma(
                                           NULL);
     }
 
-    // Right
+    /*!< Right */
     neighbors_second = luma_right_column_neighbors;
     av1_apply_temporal_filter_luma_16(y_src + blk_col,
                                       y_src_stride,
@@ -697,10 +694,10 @@ static void av1_apply_temporal_filter_luma(
                                       NULL);
 }
 
-// Apply temporal filter to the chroma components. This performs temporal
-// filtering on a chroma block of 8 X uv_height. If blk_fw is not NULL, use
-// blk_fw as an array of size 4 for the weights for each of the 4 subblocks,
-// else use top_weight for top half, and bottom weight for bottom half.
+/*!< Apply temporal filter to the chroma components. This performs temporal
+ *   filtering on a chroma block of 8 X uv_height. If blk_fw is not NULL, use
+ *   blk_fw as an array of size 4 for the weights for each of the 4 subblocks,
+ *   else use top_weight for top half, and bottom weight for bottom half. */
 static void av1_apply_temporal_filter_chroma_8(
     const uint8_t *y_src, int y_src_stride, const uint8_t *y_pre, int y_pre_stride,
     const uint8_t *u_src, const uint8_t *v_src, int uv_src_stride, const uint8_t *u_pre,
@@ -719,15 +716,15 @@ static void av1_apply_temporal_filter_chroma_8(
 
     __m128i u_sum_row, v_sum_row;
 
-    // Loop variable
+    /*!< Loop variable */
     unsigned int h;
 
     (void)uv_block_width;
 
-    // First row
+    /*!< First row */
     mul = _mm_loadu_si128((const __m128i *)neighbors[0]);
 
-    // Add chroma values
+    /*!< Add chroma values */
     get_sum_8(u_dist, &u_sum_row_2);
     get_sum_8(u_dist + DIST_STRIDE, &u_sum_row_3);
 
@@ -738,10 +735,10 @@ static void av1_apply_temporal_filter_chroma_8(
 
     v_sum_row = _mm_adds_epu16(v_sum_row_2, v_sum_row_3);
 
-    // Add luma values
+    /*!< Add luma values */
     add_luma_dist_to_8_chroma_mod(y_dist, ss_x, ss_y, &u_sum_row, &v_sum_row);
 
-    // Get modifier and store result
+    /*!< Get modifier and store result */
     if (blk_fw) {
         u_sum_row = average_4_4(u_sum_row, &mul, strength, rounding, blk_fw[0], blk_fw[1]);
         v_sum_row = average_4_4(v_sum_row, &mul, strength, rounding, blk_fw[0], blk_fw[1]);
@@ -767,11 +764,11 @@ static void av1_apply_temporal_filter_chroma_8(
     y_pre += y_pre_stride * (1 + ss_y);
     y_dist += DIST_STRIDE * (1 + ss_y);
 
-    // Then all the rows except the last one
+    /*!< Then all the rows except the last one */
     mul = _mm_loadu_si128((const __m128i *)neighbors[1]);
 
     for (h = 1; h < uv_block_height - 1; ++h) {
-        // Move the weight pointer to the bottom half of the blocks
+        /*!< Move the weight pointer to the bottom half of the blocks */
         if (h == uv_block_height / 2) {
             if (blk_fw) {
                 blk_fw += 2;
@@ -779,14 +776,14 @@ static void av1_apply_temporal_filter_chroma_8(
                 weight = bottom_weight;
         }
 
-        // Shift the rows up
+        /*!< Shift the rows up */
         u_sum_row_1 = u_sum_row_2;
         u_sum_row_2 = u_sum_row_3;
 
         v_sum_row_1 = v_sum_row_2;
         v_sum_row_2 = v_sum_row_3;
 
-        // Add chroma values
+        /*!< Add chroma values */
         u_sum_row = _mm_adds_epu16(u_sum_row_1, u_sum_row_2);
         get_sum_8(u_dist + DIST_STRIDE, &u_sum_row_3);
         u_sum_row = _mm_adds_epu16(u_sum_row, u_sum_row_3);
@@ -795,10 +792,10 @@ static void av1_apply_temporal_filter_chroma_8(
         get_sum_8(v_dist + DIST_STRIDE, &v_sum_row_3);
         v_sum_row = _mm_adds_epu16(v_sum_row, v_sum_row_3);
 
-        // Add luma values
+        /*!< Add luma values */
         add_luma_dist_to_8_chroma_mod(y_dist, ss_x, ss_y, &u_sum_row, &v_sum_row);
 
-        // Get modifier and store result
+        /*!< Get modifier and store result */
         if (blk_fw) {
             u_sum_row = average_4_4(u_sum_row, &mul, strength, rounding, blk_fw[0], blk_fw[1]);
             v_sum_row = average_4_4(v_sum_row, &mul, strength, rounding, blk_fw[0], blk_fw[1]);
@@ -826,24 +823,24 @@ static void av1_apply_temporal_filter_chroma_8(
         y_dist += DIST_STRIDE * (1 + ss_y);
     }
 
-    // The last row
+    /*!< The last row */
     mul = _mm_loadu_si128((const __m128i *)neighbors[0]);
 
-    // Shift the rows up
+    /*!< Shift the rows up */
     u_sum_row_1 = u_sum_row_2;
     u_sum_row_2 = u_sum_row_3;
 
     v_sum_row_1 = v_sum_row_2;
     v_sum_row_2 = v_sum_row_3;
 
-    // Add chroma values
+    /*!< Add chroma values */
     u_sum_row = _mm_adds_epu16(u_sum_row_1, u_sum_row_2);
     v_sum_row = _mm_adds_epu16(v_sum_row_1, v_sum_row_2);
 
-    // Add luma values
+    /*!< Add luma values */
     add_luma_dist_to_8_chroma_mod(y_dist, ss_x, ss_y, &u_sum_row, &v_sum_row);
 
-    // Get modifier and store result
+    /*!< Get modifier and store result */
     if (blk_fw) {
         u_sum_row = average_4_4(u_sum_row, &mul, strength, rounding, blk_fw[0], blk_fw[1]);
         v_sum_row = average_4_4(v_sum_row, &mul, strength, rounding, blk_fw[0], blk_fw[1]);
@@ -856,7 +853,7 @@ static void av1_apply_temporal_filter_chroma_8(
     accumulate_and_store_8(v_sum_row, v_pre, v_count, v_accum);
 }
 
-// Perform temporal filter for the chroma components.
+/*!< Perform temporal filter for the chroma components. */
 static void av1_apply_temporal_filter_chroma(
     const uint8_t *y_src, int y_src_stride, const uint8_t *y_pre, int y_pre_stride,
     const uint8_t *u_src, const uint8_t *v_src, int uv_src_stride, const uint8_t *u_pre,
@@ -873,9 +870,9 @@ static void av1_apply_temporal_filter_chroma(
     const int16_t *const *neighbors;
 
     if (uv_width == 8) {
-        // Special Case: We are subsampling in x direction on a 16x16 block. Since
-        // we are operating on a row of 8 chroma pixels, we can't use the usual
-        // left-middle-right pattern.
+        /*!< Special Case: We are subsampling in x direction on a 16x16 block. Since
+         *   we are operating on a row of 8 chroma pixels, we can't use the usual
+         *   left-middle-right pattern. */
         assert(ss_x);
 
         if (ss_y) {
@@ -941,7 +938,7 @@ static void av1_apply_temporal_filter_chroma(
         return;
     }
 
-    // Left
+    /*!< Left */
     if (ss_x && ss_y) {
         neighbors = chroma_double_ss_left_column_neighbors;
     } else if (ss_x || ss_y) {
@@ -978,7 +975,7 @@ static void av1_apply_temporal_filter_chroma(
     blk_col += blk_col_step;
     uv_blk_col += uv_blk_col_step;
 
-    // Middle First
+    /*!< Middle First */
     if (ss_x && ss_y) {
         neighbors = chroma_double_ss_middle_column_neighbors;
     } else if (ss_x || ss_y) {
@@ -1019,7 +1016,7 @@ static void av1_apply_temporal_filter_chroma(
         bottom_weight = blk_fw[3];
     }
 
-    // Middle Second
+    /*!< Middle Second */
     for (; uv_blk_col < uv_last_width; blk_col += blk_col_step, uv_blk_col += uv_blk_col_step) {
         av1_apply_temporal_filter_chroma_8(y_src + blk_col,
                                            y_src_stride,
@@ -1049,7 +1046,7 @@ static void av1_apply_temporal_filter_chroma(
                                            NULL);
     }
 
-    // Right
+    /*!< Right */
     if (ss_x && ss_y) {
         neighbors = chroma_double_ss_right_column_neighbors;
     } else if (ss_x || ss_y) {
@@ -1101,7 +1098,7 @@ void svt_av1_apply_temporal_filter_sse4_1(
     const uint8_t *y_src_ptr = y_src, *u_src_ptr = u_src, *v_src_ptr = v_src;
     const uint8_t *y_pre_ptr = y_pre, *u_pre_ptr = u_pre, *v_pre_ptr = v_pre;
 
-    // Loop variables
+    /*!< Loop variables */
     unsigned int row, blk_col;
 
     assert(block_width <= BW && "block width too large");
@@ -1117,7 +1114,7 @@ void svt_av1_apply_temporal_filter_sse4_1(
     assert((use_whole_blk || (blk_fw[1] <= 2 && blk_fw[2] <= 2 && blk_fw[3] <= 2)) &&
            "subblock filter weight must be less than 2");
 
-    // Precompute the difference sqaured
+    /*!< Precompute the difference sqaured */
     for (row = 0; row < block_height; row++) {
         for (blk_col = 0; blk_col < block_width; blk_col += 16) {
             store_dist_16(y_src_ptr + blk_col, y_pre_ptr + blk_col, y_dist_ptr + blk_col);

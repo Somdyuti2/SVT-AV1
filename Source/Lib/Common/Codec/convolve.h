@@ -1,13 +1,11 @@
-/*
- * Copyright (c) 2016, Alliance for Open Media. All rights reserved
+/*!< Copyright (c) 2016, Alliance for Open Media. All rights reserved
  *
  * This source code is subject to the terms of the BSD 2 Clause License and
  * the Alliance for Open Media Patent License 1.0. If the BSD 2 Clause License
  * was not distributed with this source code in the LICENSE file, you can
  * obtain it at www.aomedia.org/license/software. If the Alliance for Open
  * Media Patent License 1.0 was not distributed with this source code in the
- * PATENTS file, you can obtain it at www.aomedia.org/license/patent.
- */
+ * PATENTS file, you can obtain it at www.aomedia.org/license/patent. */
 
 #ifndef AV1_COMMON_AV1_CONVOLVE_H_
 #define AV1_COMMON_AV1_CONVOLVE_H_
@@ -61,7 +59,7 @@ static INLINE ConvolveParams get_conv_params_no_round(int32_t ref, int32_t do_av
         conv_params.round_0 += intbufrange - 16;
         if (!is_compound) conv_params.round_1 -= intbufrange - 16;
     }
-    // TODO(yunqing): The following dst should only be valid while
+    /*!< TODO(yunqing): The following dst should only be valid while */
     // is_compound = 1;
     conv_params.dst        = dst;
     conv_params.dst_stride = dst_stride;

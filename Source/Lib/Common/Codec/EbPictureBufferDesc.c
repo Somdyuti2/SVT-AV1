@@ -1,18 +1,14 @@
-/*
-* Copyright(c) 2019 Intel Corporation
-* SPDX - License - Identifier: BSD - 2 - Clause - Patent
-*/
+/*!< Copyright(c) 2019 Intel Corporation
+ * SPDX - License - Identifier: BSD - 2 - Clause - Patent */
 
-/*
-* Copyright (c) 2016, Alliance for Open Media. All rights reserved
-*
-* This source code is subject to the terms of the BSD 2 Clause License and
-* the Alliance for Open Media Patent License 1.0. If the BSD 2 Clause License
-* was not distributed with this source code in the LICENSE file, you can
-* obtain it at www.aomedia.org/license/software. If the Alliance for Open
-* Media Patent License 1.0 was not distributed with this source code in the
-* PATENTS file, you can obtain it at www.aomedia.org/license/patent.
-*/
+/*!< Copyright (c) 2016, Alliance for Open Media. All rights reserved
+ *
+ * This source code is subject to the terms of the BSD 2 Clause License and
+ * the Alliance for Open Media Patent License 1.0. If the BSD 2 Clause License
+ * was not distributed with this source code in the LICENSE file, you can
+ * obtain it at www.aomedia.org/license/software. If the Alliance for Open
+ * Media Patent License 1.0 was not distributed with this source code in the
+ * PATENTS file, you can obtain it at www.aomedia.org/license/patent. */
 
 #include <stdlib.h>
 
@@ -34,12 +30,10 @@ static void eb_picture_buffer_desc_dctor(EbPtr p) {
     }
 }
 
-/*****************************************
- * eb_picture_buffer_desc_ctor
- *  Initializes the Buffer Descriptor's
- *  values that are fixed for the life of
- *  the descriptor.
- *****************************************/
+/*!< eb_picture_buffer_desc_ctor
+ *   Initializes the Buffer Descriptor's
+ *   values that are fixed for the life of
+ *   the descriptor. */
 EbErrorType eb_picture_buffer_desc_ctor(EbPictureBufferDesc *pictureBufferDescPtr,
                                         EbPtr                object_init_data_ptr) {
     EbPictureBufferDescInitData *picture_buffer_desc_init_data_ptr =
@@ -59,7 +53,7 @@ EbErrorType eb_picture_buffer_desc_ctor(EbPictureBufferDesc *pictureBufferDescPt
         picture_buffer_desc_init_data_ptr->split_mode == EB_TRUE)
         bytes_per_pixel = 1;
 
-    // Set the Picture Buffer Static variables
+    /*!< Set the Picture Buffer Static variables */
     pictureBufferDescPtr->max_width    = picture_buffer_desc_init_data_ptr->max_width;
     pictureBufferDescPtr->max_height   = picture_buffer_desc_init_data_ptr->max_height;
     pictureBufferDescPtr->width        = picture_buffer_desc_init_data_ptr->max_width;
@@ -93,7 +87,7 @@ EbErrorType eb_picture_buffer_desc_ctor(EbPictureBufferDesc *pictureBufferDescPt
     pictureBufferDescPtr->buffer_enable_mask =
         picture_buffer_desc_init_data_ptr->buffer_enable_mask;
 
-    // Allocate the Picture Buffers (luma & chroma)
+    /*!< Allocate the Picture Buffers (luma & chroma) */
     if (picture_buffer_desc_init_data_ptr->buffer_enable_mask & PICTURE_BUFFER_DESC_Y_FLAG) {
         EB_CALLOC_ALIGNED_ARRAY(pictureBufferDescPtr->buffer_y,
                                 pictureBufferDescPtr->luma_size * bytes_per_pixel);
@@ -135,12 +129,10 @@ static void eb_recon_picture_buffer_desc_dctor(EbPtr p) {
     if (obj->buffer_enable_mask & PICTURE_BUFFER_DESC_Cb_FLAG)
         EB_FREE_ALIGNED_ARRAY(obj->buffer_cr);
 }
-/*****************************************
- * eb_recon_picture_buffer_desc_ctor
- *  Initializes the Buffer Descriptor's
- *  values that are fixed for the life of
- *  the descriptor.
- *****************************************/
+/*!< eb_recon_picture_buffer_desc_ctor
+ *   Initializes the Buffer Descriptor's
+ *   values that are fixed for the life of
+ *   the descriptor. */
 EbErrorType eb_recon_picture_buffer_desc_ctor(EbPictureBufferDesc *pictureBufferDescPtr,
                                               EbPtr                object_init_data_ptr) {
     EbPictureBufferDescInitData *picture_buffer_desc_init_data_ptr =
@@ -151,7 +143,7 @@ EbErrorType eb_recon_picture_buffer_desc_ctor(EbPictureBufferDesc *pictureBuffer
     uint32_t bytes_per_pixel = (picture_buffer_desc_init_data_ptr->bit_depth == EB_8BIT) ? 1 : 2;
 
     pictureBufferDescPtr->dctor = eb_recon_picture_buffer_desc_dctor;
-    // Set the Picture Buffer Static variables
+    /*!< Set the Picture Buffer Static variables */
     pictureBufferDescPtr->max_width    = picture_buffer_desc_init_data_ptr->max_width;
     pictureBufferDescPtr->max_height   = picture_buffer_desc_init_data_ptr->max_height;
     pictureBufferDescPtr->width        = picture_buffer_desc_init_data_ptr->max_width;
@@ -179,7 +171,7 @@ EbErrorType eb_recon_picture_buffer_desc_ctor(EbPictureBufferDesc *pictureBuffer
     pictureBufferDescPtr->buffer_enable_mask =
         picture_buffer_desc_init_data_ptr->buffer_enable_mask;
 
-    // Allocate the Picture Buffers (luma & chroma)
+    /*!< Allocate the Picture Buffers (luma & chroma) */
     if (picture_buffer_desc_init_data_ptr->buffer_enable_mask & PICTURE_BUFFER_DESC_Y_FLAG) {
         EB_CALLOC_ALIGNED_ARRAY(pictureBufferDescPtr->buffer_y,
                                 pictureBufferDescPtr->luma_size * bytes_per_pixel);
@@ -196,8 +188,8 @@ EbErrorType eb_recon_picture_buffer_desc_ctor(EbPictureBufferDesc *pictureBuffer
 }
 void link_eb_to_aom_buffer_desc_8bit(EbPictureBufferDesc *picBuffDsc,
                                      Yv12BufferConfig *   aomBuffDsc) {
-    //forces an 8 bit version
-    //NOTe:  Not all fileds are connected. add more connections as needed.
+    /*!< forces an 8 bit version */
+    /*!< NOTE:  Not all fileds are connected. add more connections as needed. */
     {
         aomBuffDsc->y_buffer = picBuffDsc->buffer_y + picBuffDsc->origin_x +
                                (picBuffDsc->origin_y * picBuffDsc->stride_y);
@@ -230,7 +222,7 @@ void link_eb_to_aom_buffer_desc_8bit(EbPictureBufferDesc *picBuffDsc,
 }
 
 void link_eb_to_aom_buffer_desc(EbPictureBufferDesc *picBuffDsc, Yv12BufferConfig *aomBuffDsc) {
-    //NOTe:  Not all fileds are connected. add more connections as needed.
+    /*!< NOTE:  Not all fileds are connected. add more connections as needed. */
     if (picBuffDsc->bit_depth == EB_8BIT) {
         aomBuffDsc->y_buffer = picBuffDsc->buffer_y + picBuffDsc->origin_x +
                                (picBuffDsc->origin_y * picBuffDsc->stride_y);
@@ -260,31 +252,29 @@ void link_eb_to_aom_buffer_desc(EbPictureBufferDesc *picBuffDsc, Yv12BufferConfi
 
         aomBuffDsc->flags = 0;
     } else {
-        /*
-        Moving within a 16bit memory area: 2 possible mecanisms:
-
-        1. to move from one location to another by an offset x, using 16bit pointers
-           int32_t x;
-           U16* Base16b;
-           U16* NewAdd16b = Base16b + x
-           int32_t data = NewAdd16b[0];
-
-         2. to move from one location to another by an offset x, using 8bit pointers
-
-            int32_t x;
-            U16* Base16b;
-
-            U16* baseAd8b = Base16b/2; //convert the base address into 8bit
-            U16* newAd8b  = baseAd8b + x;
-
-            then before reading the data, we need to convert the pointer back to 16b
-            U16* NewAdd16b = newAd8b*2 ;
-            int32_t data = NewAdd16b[0];
-
-            NewAdd16b = Base16b + off
-                      = Base16b_asInt + 2*off
-                      =(Base16b_asInt/2 +off)*2
-        */
+        /*!< Moving within a 16bit memory area: 2 possible mecanisms:
+         *
+         * 1. to move from one location to another by an offset x, using 16bit pointers
+         *    int32_t x;
+         *    U16* Base16b;
+         *    U16* NewAdd16b = Base16b + x
+         *    int32_t data = NewAdd16b[0];
+         *
+         * 2. to move from one location to another by an offset x, using 8bit pointers
+         *
+         *    int32_t x;
+         *    U16* Base16b;
+         *
+         *    U16* baseAd8b = Base16b/2; //convert the base address into 8bit
+         *    U16* newAd8b  = baseAd8b + x;
+         *
+         *    then before reading the data, we need to convert the pointer back to 16b
+         *    U16* NewAdd16b = newAd8b*2 ;
+         *    int32_t data = NewAdd16b[0];
+         *
+         *    NewAdd16b = Base16b + off
+         *              = Base16b_asInt + 2*off
+         *              =(Base16b_asInt/2 +off)*2 */
 
         aomBuffDsc->y_buffer = CONVERT_TO_BYTEPTR(picBuffDsc->buffer_y);
         aomBuffDsc->u_buffer = CONVERT_TO_BYTEPTR(picBuffDsc->buffer_cb);
@@ -355,7 +345,7 @@ int32_t eb_aom_realloc_frame_buffer(Yv12BufferConfig *ybf, int32_t width, int32_
 
             if (external_frame_size != (size_t)external_frame_size) return -1;
 
-            // Allocation to hold larger frame, or first allocation.
+            /*!< Allocation to hold larger frame, or first allocation. */
             if (cb(cb_priv, (size_t)external_frame_size, fb) < 0) return -1;
 
             if (fb->data == NULL || fb->size < external_frame_size) return -1;
@@ -364,14 +354,14 @@ int32_t eb_aom_realloc_frame_buffer(Yv12BufferConfig *ybf, int32_t width, int32_
 
 #if defined(__has_feature)
 #if __has_feature(memory_sanitizer)
-            // This memset is needed for fixing the issue of using uninitialized
-            // value in msan test. It will cause a perf loss, so only do this for
-            // msan test.
+            /*!< This memset is needed for fixing the issue of using uninitialized
+             *   value in msan test. It will cause a perf loss, so only do this for
+             *   msan test. */
             memset(ybf->buffer_alloc, 0, (int32_t)frame_size);
 #endif
 #endif
         } else if (frame_size > (size_t)ybf->buffer_alloc_sz) {
-            // Allocation to hold larger frame, or first allocation.
+            /*!< Allocation to hold larger frame, or first allocation. */
             if (ybf->buffer_alloc_sz > 0) EB_FREE_ARRAY(ybf->buffer_alloc);
             if (frame_size != (size_t)frame_size) return -1;
             EB_MALLOC_ARRAY(ybf->buffer_alloc, frame_size);
@@ -380,17 +370,17 @@ int32_t eb_aom_realloc_frame_buffer(Yv12BufferConfig *ybf, int32_t width, int32_
 
             ybf->buffer_alloc_sz = (size_t)frame_size;
 
-            // This memset is needed for fixing valgrind error from C loop filter
-            // due to access uninitialized memory in frame border. It could be
-            // removed if border is totally removed.
+            /*!< This memset is needed for fixing valgrind error from C loop filter
+             *   due to access uninitialized memory in frame border. It could be
+             *   removed if border is totally removed. */
             memset(ybf->buffer_alloc, 0, ybf->buffer_alloc_sz);
         }
 
-        /* Only support allocating buffers that have a border that's a multiple
-        * of 32. The border restriction is required to get 16-byte alignment of
-        * the start of the chroma rows without introducing an arbitrary gap
-        * between planes, which would break the semantics of things like
-        * aom_img_set_rect(). */
+        /*!< Only support allocating buffers that have a border that's a multiple
+         *   of 32. The border restriction is required to get 16-byte alignment of
+         *   the start of the chroma rows without introducing an arbitrary gap
+         *   between planes, which would break the semantics of things like
+         *   aom_img_set_rect(). */
         if (border & 0x1f) return -3;
 
         ybf->y_crop_width  = width;
@@ -412,7 +402,7 @@ int32_t eb_aom_realloc_frame_buffer(Yv12BufferConfig *ybf, int32_t width, int32_
 
         buf = ybf->buffer_alloc;
         if (use_highbitdepth) {
-            // Store uint16 addresses when using 16bit framebuffers
+            /*!< Store uint16 addresses when using 16bit framebuffers */
             buf        = CONVERT_TO_BYTEPTR(ybf->buffer_alloc);
             ybf->flags = YV12_FLAG_HIGHBITDEPTH;
         } else
@@ -436,7 +426,7 @@ int32_t eb_aom_realloc_frame_buffer(Yv12BufferConfig *ybf, int32_t width, int32_
         //    assert(!ybf->y_buffer_8bit);
         //}
 
-        ybf->corrupted = 0; /* assume not corrupted by errors */
+        ybf->corrupted = 0; /*!< assume not corrupted by errors */
         return 0;
     }
     return -2;

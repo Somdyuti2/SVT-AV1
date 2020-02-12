@@ -1,21 +1,17 @@
-/*
-* Copyright(c) 2019 Intel Corporation
-* SPDX - License - Identifier: BSD - 2 - Clause - Patent
-*/
+/*!< Copyright(c) 2019 Intel Corporation
+ * SPDX - License - Identifier: BSD - 2 - Clause - Patent */
 
-/*
-* Copyright (c) 2016, Alliance for Open Media. All rights reserved
-*
-* This source code is subject to the terms of the BSD 2 Clause License and
-* the Alliance for Open Media Patent License 1.0. If the BSD 2 Clause License
-* was not distributed with this source code in the LICENSE file, you can
-* obtain it at www.aomedia.org/license/software. If the Alliance for Open
-* Media Patent License 1.0 was not distributed with this source code in the
-* PATENTS file, you can obtain it at www.aomedia.org/license/patent.
-*/
+/*!< Copyright (c) 2016, Alliance for Open Media. All rights reserved
+ *
+ * This source code is subject to the terms of the BSD 2 Clause License and
+ * the Alliance for Open Media Patent License 1.0. If the BSD 2 Clause License
+ * was not distributed with this source code in the LICENSE file, you can
+ * obtain it at www.aomedia.org/license/software. If the Alliance for Open
+ * Media Patent License 1.0 was not distributed with this source code in the
+ * PATENTS file, you can obtain it at www.aomedia.org/license/patent. */
 
 #include <assert.h>
-#include <smmintrin.h> /* SSE4.1 */
+#include <smmintrin.h> /*!< SSE4.1 */
 
 #include "EbDefinitions.h"
 #include "aom_dsp_rtcd.h"
@@ -74,7 +70,7 @@ static void fidtx4x4_sse4_1(__m128i *in, __m128i *out, int32_t bit, int32_t col_
         out[i] = _mm_srai_epi32(a_low, new_sqrt2_bits);
     }
 
-    // Transpose for 4x4
+    /*!< Transpose for 4x4 */
     v[0] = _mm_unpacklo_epi32(out[0], out[1]);
     v[1] = _mm_unpackhi_epi32(out[0], out[1]);
     v[2] = _mm_unpacklo_epi32(out[2], out[3]);
@@ -86,10 +82,10 @@ static void fidtx4x4_sse4_1(__m128i *in, __m128i *out, int32_t bit, int32_t col_
     out[3] = _mm_unpackhi_epi64(v[1], v[3]);
 }
 
-// We only use stage-2 bit;
-// shift[0] is used in load_buffer_4x4()
-// shift[1] is used in txfm_func_col()
-// shift[2] is used in txfm_func_row()
+/*!< We only use stage-2 bit;
+ *   shift[0] is used in load_buffer_4x4()
+ *   shift[1] is used in txfm_func_col()
+ *   shift[2] is used in txfm_func_row() */
 static void fdct4x4_sse4_1(__m128i *in, __m128i *out, int32_t bit, const int32_t num_col) {
     const int32_t *cospi   = cospi_arr(bit);
     const __m128i  cospi32 = _mm_set1_epi32(cospi[32]);
@@ -134,9 +130,9 @@ static void fdct4x4_sse4_1(__m128i *in, __m128i *out, int32_t bit, const int32_t
     v3 = _mm_add_epi32(v2, rnding);
     u3 = _mm_srai_epi32(v3, bit);
 
-    // Note: shift[1] and shift[2] are zeros
+    /*!< Note: shift[1] and shift[2] are zeros */
 
-    // Transpose 4x4 32-bit
+    /*!< Transpose 4x4 32-bit */
     v0 = _mm_unpacklo_epi32(u0, u1);
     v1 = _mm_unpackhi_epi32(u0, u1);
     v2 = _mm_unpacklo_epi32(u2, u3);

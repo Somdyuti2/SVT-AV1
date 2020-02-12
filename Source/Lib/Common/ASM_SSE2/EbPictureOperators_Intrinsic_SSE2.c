@@ -1,15 +1,13 @@
-/*
-* Copyright(c) 2019 Intel Corporation
-* SPDX - License - Identifier: BSD - 2 - Clause - Patent
-*/
+/*!< Copyright(c) 2019 Intel Corporation
+* SPDX - License - Identifier: BSD - 2 - Clause - Patent */
 
 #include "EbPictureOperators_SSE2.h"
 #include <emmintrin.h>
 #include "EbDefinitions.h"
 
-/******************************************************************************************************
-                                       residual_kernel16bit_sse2_intrin
-******************************************************************************************************/
+/******************************************************************************************************/
+/*!< residual_kernel16bit_sse2_intrin */
+/******************************************************************************************************/
 void residual_kernel16bit_sse2_intrin(uint16_t *input, uint32_t input_stride, uint16_t *pred,
                                       uint32_t pred_stride, int16_t *residual,
                                       uint32_t residual_stride, uint32_t area_width,
@@ -101,7 +99,7 @@ void residual_kernel16bit_sse2_intrin(uint16_t *input, uint32_t input_stride, ui
             residual += residual_stride << 1;
         }
     } else if (area_width ==
-               64) { // Branch was not tested because the encoder had max txb_size of 32
+               64) { /*!< Branch was not tested because the encoder had max txb_size of 32 */
 
         for (y = 0; y < area_height; y += 2) {
             //residual[column_index] = ((int16_t)input[column_index]) - ((int16_t)pred[column_index]) 8 indices per _mm_sub_epi16

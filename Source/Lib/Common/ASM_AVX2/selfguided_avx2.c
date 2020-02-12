@@ -1,13 +1,11 @@
-/*
- * Copyright (c) 2018, Alliance for Open Media. All rights reserved
+/*!< Copyright (c) 2018, Alliance for Open Media. All rights reserved
  *
  * This source code is subject to the terms of the BSD 2 Clause License and
  * the Alliance for Open Media Patent License 1.0. If the BSD 2 Clause License
  * was not distributed with this source code in the LICENSE file, you can
  * obtain it at www.aomedia.org/license/software. If the Alliance for Open
  * Media Patent License 1.0 was not distributed with this source code in the
- * PATENTS file, you can obtain it at www.aomedia.org/license/patent.
- */
+ * PATENTS file, you can obtain it at www.aomedia.org/license/patent. */
 
 #include "EbDefinitions.h"
 #include <immintrin.h>
@@ -68,7 +66,7 @@ static AOM_FORCE_INLINE void integral_images(const uint8_t *src, int32_t src_str
         __m256i c_left = _mm256_setzero_si256();
         __m256i d_left = _mm256_setzero_si256();
 
-        // zero the left column.
+        /*!< zero the left column. */
         ct[0 * buf_stride - 1] = dt[0 * buf_stride - 1] = 0;
         ct[1 * buf_stride - 1] = dt[1 * buf_stride - 1] = 0;
         ct[2 * buf_stride - 1] = dt[2 * buf_stride - 1] = 0;
@@ -163,7 +161,7 @@ static AOM_FORCE_INLINE void integral_images_highbd(const uint16_t *src, int32_t
         __m256i c_left = _mm256_setzero_si256();
         __m256i d_left = _mm256_setzero_si256();
 
-        // zero the left column.
+        /*!< zero the left column. */
         ct[0 * buf_stride - 1] = dt[0 * buf_stride - 1] = 0;
         ct[1 * buf_stride - 1] = dt[1 * buf_stride - 1] = 0;
         ct[2 * buf_stride - 1] = dt[2 * buf_stride - 1] = 0;
@@ -233,8 +231,8 @@ static AOM_FORCE_INLINE void integral_images_highbd(const uint16_t *src, int32_t
     } while (y < height);
 }
 
-// Compute 8 values of boxsum from the given integral image. ii should point
-// at the middle of the box (for the first value). r is the box radius.
+/*!< Compute 8 values of boxsum from the given integral image. ii should point
+ *   at the middle of the box (for the first value). r is the box radius. */
 static INLINE __m256i boxsum_from_ii(const int32_t *ii, int32_t stride, int32_t r) {
     const __m256i tl = yy_loadu_256(ii - (r + 1) - (r + 1) * stride);
     const __m256i tr = yy_loadu_256(ii + (r + 0) - (r + 1) * stride);
@@ -262,16 +260,16 @@ static INLINE __m256i compute_p_highbd(__m256i sum1, __m256i sum2, int32_t bit_d
     const __m128i shift_b    = _mm_cvtsi32_si128(bit_depth - 8);
     const __m256i a          = _mm256_srl_epi32(_mm256_add_epi32(sum2, rounding_a), shift_a);
     const __m256i b          = _mm256_srl_epi32(_mm256_add_epi32(sum1, rounding_b), shift_b);
-    // b < 2^14, so we can use a 16-bit madd rather than a 32-bit
-    // mullo to square it
+    /*!< b < 2^14, so we can use a 16-bit madd rather than a 32-bit
+     *   mullo to square it */
     const __m256i bb = _mm256_madd_epi16(b, b);
     const __m256i an = _mm256_max_epi32(_mm256_mullo_epi32(a, _mm256_set1_epi32(n)), bb);
     return _mm256_sub_epi32(an, bb);
 }
 
-// Assumes that C, D are integral images for the original buffer which has been
-// extended to have a padding of SGRPROJ_BORDER_VERT/SGRPROJ_BORDER_HORZ pixels
-// on the sides. A, b, C, D point at logical position (0, 0).
+/*!< Assumes that C, D are integral images for the original buffer which has been
+ *   extended to have a padding of SGRPROJ_BORDER_VERT/SGRPROJ_BORDER_HORZ pixels
+ *   on the sides. A, b, C, D point at logical position (0, 0). */
 static AOM_FORCE_INLINE void calc_ab(int32_t *A, int32_t *b, const int32_t *C, const int32_t *D,
                                      int32_t width, int32_t height, int32_t buf_stride,
                                      int32_t bit_depth, int32_t sgr_params_idx,
@@ -280,7 +278,7 @@ static AOM_FORCE_INLINE void calc_ab(int32_t *A, int32_t *b, const int32_t *C, c
     const int32_t              r      = params->r[radius_idx];
     const int32_t              n      = (2 * r + 1) * (2 * r + 1);
     const __m256i              s      = _mm256_set1_epi32(params->s[radius_idx]);
-    // one_over_n[n-1] is 2^12/n, so easily fits in an int16
+    /*!< one_over_n[n-1] is 2^12/n, so easily fits in an int16 */
     const __m256i one_over_n = _mm256_set1_epi32(eb_one_by_x[n - 1]);
     const __m256i rnd_z      = round_for_shift(SGRPROJ_MTABLE_BITS);
     const __m256i rnd_res    = round_for_shift(SGRPROJ_RECIP_BITS);
@@ -309,9 +307,9 @@ static AOM_FORCE_INLINE void calc_ab(int32_t *A, int32_t *b, const int32_t *C, c
                 const __m256i a_complement =
                     _mm256_sub_epi32(_mm256_set1_epi32(SGRPROJ_SGR), a_res);
 
-                // sum1 might have lanes greater than 2^15, so we can't use madd to do
-                // multiplication involving sum1. However, a_complement and one_over_n
-                // are both less than 256, so we can multiply them first.
+                /*!< sum1 might have lanes greater than 2^15, so we can't use madd to do
+                 *   multiplication involving sum1. However, a_complement and one_over_n
+                 *   are both less than 256, so we can multiply them first. */
                 const __m256i a_comp_over_n = _mm256_madd_epi16(a_complement, one_over_n);
                 const __m256i b_int         = _mm256_mullo_epi32(a_comp_over_n, sum1);
                 const __m256i b_res =
@@ -342,9 +340,9 @@ static AOM_FORCE_INLINE void calc_ab(int32_t *A, int32_t *b, const int32_t *C, c
                 const __m256i a_complement =
                     _mm256_sub_epi32(_mm256_set1_epi32(SGRPROJ_SGR), a_res);
 
-                // sum1 might have lanes greater than 2^15, so we can't use madd to do
-                // multiplication involving sum1. However, a_complement and one_over_n
-                // are both less than 256, so we can multiply them first.
+                /*!< sum1 might have lanes greater than 2^15, so we can't use madd to do
+                 *   multiplication involving sum1. However, a_complement and one_over_n
+                 *   are both less than 256, so we can multiply them first. */
                 const __m256i a_comp_over_n = _mm256_madd_epi16(a_complement, one_over_n);
                 const __m256i b_int         = _mm256_mullo_epi32(a_comp_over_n, sum1);
                 const __m256i b_res =
@@ -361,22 +359,22 @@ static AOM_FORCE_INLINE void calc_ab(int32_t *A, int32_t *b, const int32_t *C, c
     }
 }
 
-// Calculate 8 values of the "cross sum" starting at buf. This is a 3x3 filter
-// where the outer four corners have weight 3 and all other pixels have weight
-// 4.
-//
-// Pixels are indexed as follows:
-// xtl  xt   xtr
-// xl    x   xr
-// xbl  xb   xbr
-//
-// buf points to x
-//
-// fours = xl + xt + xr + xb + x
-// threes = xtl + xtr + xbr + xbl
-// cross_sum = 4 * fours + 3 * threes
-//           = 4 * (fours + threes) - threes
-//           = (fours + threes) << 2 - threes
+/*!< Calculate 8 values of the "cross sum" starting at buf. This is a 3x3 filter
+ *   where the outer four corners have weight 3 and all other pixels have weight
+ *   4.
+ *
+ *   Pixels are indexed as follows:
+ *   xtl  xt   xtr
+ *   xl    x   xr
+ *   xbl  xb   xbr
+ *
+ *   buf points to x
+ *
+ *   fours = xl + xt + xr + xb + x
+ *   threes = xtl + xtr + xbr + xbl
+ *   cross_sum = 4 * fours + 3 * threes
+ *             = 4 * (fours + threes) - threes
+ *             = (fours + threes) << 2 - threes */
 static INLINE __m256i cross_sum(const int32_t *buf, int32_t stride) {
     const __m256i xtl = yy_loadu_256(buf - 1 - stride);
     const __m256i xt  = yy_loadu_256(buf - stride);
@@ -395,8 +393,8 @@ static INLINE __m256i cross_sum(const int32_t *buf, int32_t stride) {
     return _mm256_sub_epi32(_mm256_slli_epi32(_mm256_add_epi32(fours, threes), 2), threes);
 }
 
-// The final filter for self-guided restoration. Computes a weighted average
-// across A, b with "cross sums" (see cross_sum implementation above).
+/*!< The final filter for self-guided restoration. Computes a weighted average
+ *   across A, b with "cross sums" (see cross_sum implementation above). */
 static AOM_FORCE_INLINE void final_filter(int32_t *dst, int32_t dst_stride, const int32_t *A,
                                           const int32_t *B, int32_t buf_stride, const uint8_t *dgd8,
                                           int32_t dgd_stride, int32_t width, int32_t height,
@@ -450,9 +448,9 @@ static AOM_FORCE_INLINE void final_filter(int32_t *dst, int32_t dst_stride, cons
     }
 }
 
-// Assumes that C, D are integral images for the original buffer which has been
-// extended to have a padding of SGRPROJ_BORDER_VERT/SGRPROJ_BORDER_HORZ pixels
-// on the sides. A, b, C, D point at logical position (0, 0).
+/*!< Assumes that C, D are integral images for the original buffer which has been
+ *   extended to have a padding of SGRPROJ_BORDER_VERT/SGRPROJ_BORDER_HORZ pixels
+ *   on the sides. A, b, C, D point at logical position (0, 0). */
 static AOM_FORCE_INLINE void calc_ab_fast(int32_t *A, int32_t *b, const int32_t *C,
                                           const int32_t *D, int32_t width, int32_t height,
                                           int32_t buf_stride, int32_t bit_depth,
@@ -461,7 +459,7 @@ static AOM_FORCE_INLINE void calc_ab_fast(int32_t *A, int32_t *b, const int32_t 
     const int32_t              r      = params->r[radius_idx];
     const int32_t              n      = (2 * r + 1) * (2 * r + 1);
     const __m256i              s      = _mm256_set1_epi32(params->s[radius_idx]);
-    // one_over_n[n-1] is 2^12/n, so easily fits in an int16
+    /*!< one_over_n[n-1] is 2^12/n, so easily fits in an int16 */
     const __m256i one_over_n = _mm256_set1_epi32(eb_one_by_x[n - 1]);
     const __m256i rnd_z      = round_for_shift(SGRPROJ_MTABLE_BITS);
     const __m256i rnd_res    = round_for_shift(SGRPROJ_RECIP_BITS);
@@ -489,9 +487,9 @@ static AOM_FORCE_INLINE void calc_ab_fast(int32_t *A, int32_t *b, const int32_t 
                 const __m256i a_complement =
                     _mm256_sub_epi32(_mm256_set1_epi32(SGRPROJ_SGR), a_res);
 
-                // sum1 might have lanes greater than 2^15, so we can't use madd to do
-                // multiplication involving sum1. However, a_complement and one_over_n
-                // are both less than 256, so we can multiply them first.
+                /*!< sum1 might have lanes greater than 2^15, so we can't use madd to do
+                 *   multiplication involving sum1. However, a_complement and one_over_n
+                 *   are both less than 256, so we can multiply them first. */
                 const __m256i a_comp_over_n = _mm256_madd_epi16(a_complement, one_over_n);
                 const __m256i b_int         = _mm256_mullo_epi32(a_comp_over_n, sum1);
                 const __m256i b_res =
@@ -523,9 +521,9 @@ static AOM_FORCE_INLINE void calc_ab_fast(int32_t *A, int32_t *b, const int32_t 
                 const __m256i a_complement =
                     _mm256_sub_epi32(_mm256_set1_epi32(SGRPROJ_SGR), a_res);
 
-                // sum1 might have lanes greater than 2^15, so we can't use madd to do
-                // multiplication involving sum1. However, a_complement and one_over_n
-                // are both less than 256, so we can multiply them first.
+                /*!< sum1 might have lanes greater than 2^15, so we can't use madd to do
+                 *   multiplication involving sum1. However, a_complement and one_over_n
+                 *   are both less than 256, so we can multiply them first. */
                 const __m256i a_comp_over_n = _mm256_madd_epi16(a_complement, one_over_n);
                 const __m256i b_int         = _mm256_mullo_epi32(a_comp_over_n, sum1);
                 const __m256i b_res =
@@ -543,23 +541,23 @@ static AOM_FORCE_INLINE void calc_ab_fast(int32_t *A, int32_t *b, const int32_t 
     }
 }
 
-// Calculate 8 values of the "cross sum" starting at buf.
-//
-// Pixels are indexed like this:
-// xtl  xt   xtr
-//  -   buf   -
-// xbl  xb   xbr
-//
-// Pixels are weighted like this:
-//  5    6    5
-//  0    0    0
-//  5    6    5
-//
-// fives = xtl + xtr + xbl + xbr
-// sixes = xt + xb
-// cross_sum = 6 * sixes + 5 * fives
-//           = 5 * (fives + sixes) - sixes
-//           = (fives + sixes) << 2 + (fives + sixes) + sixes
+/*!< Calculate 8 values of the "cross sum" starting at buf.
+ *
+ *   Pixels are indexed like this:
+ *   xtl  xt   xtr
+ *    -   buf   -
+ *   xbl  xb   xbr
+ *
+ *   Pixels are weighted like this:
+ *    5    6    5
+ *    0    0    0
+ *    5    6    5
+ *
+ *   fives = xtl + xtr + xbl + xbr
+ *   sixes = xt + xb
+ *   cross_sum = 6 * sixes + 5 * fives
+ *             = 5 * (fives + sixes) - sixes
+ *             = (fives + sixes) << 2 + (fives + sixes) + sixes */
 static INLINE __m256i cross_sum_fast_even_row(const int32_t *buf, int32_t stride) {
     const __m256i xtl = yy_loadu_256(buf - 1 - stride);
     const __m256i xt  = yy_loadu_256(buf - stride);
@@ -576,21 +574,21 @@ static INLINE __m256i cross_sum_fast_even_row(const int32_t *buf, int32_t stride
         _mm256_add_epi32(_mm256_slli_epi32(fives_plus_sixes, 2), fives_plus_sixes), sixes);
 }
 
-// Calculate 8 values of the "cross sum" starting at buf.
-//
-// Pixels are indexed like this:
-// xl    x   xr
-//
-// Pixels are weighted like this:
-//  5    6    5
-//
-// buf points to x
-//
-// fives = xl + xr
-// sixes = x
-// cross_sum = 5 * fives + 6 * sixes
-//           = 4 * (fives + sixes) + (fives + sixes) + sixes
-//           = (fives + sixes) << 2 + (fives + sixes) + sixes
+/*!< Calculate 8 values of the "cross sum" starting at buf.
+ *
+ *   Pixels are indexed like this:
+ *   xl    x   xr
+ *
+ *   Pixels are weighted like this:
+ *    5    6    5
+ *
+ *   buf points to x
+ *
+ *   fives = xl + xr
+ *   sixes = x
+ *   cross_sum = 5 * fives + 6 * sixes
+ *             = 4 * (fives + sixes) + (fives + sixes) + sixes
+ *             = (fives + sixes) << 2 + (fives + sixes) + sixes */
 static INLINE __m256i cross_sum_fast_odd_row(const int32_t *buf) {
     const __m256i xl = yy_loadu_256(buf - 1);
     const __m256i x  = yy_loadu_256(buf);
@@ -605,9 +603,9 @@ static INLINE __m256i cross_sum_fast_odd_row(const int32_t *buf) {
         _mm256_add_epi32(_mm256_slli_epi32(fives_plus_sixes, 2), fives_plus_sixes), sixes);
 }
 
-// The final filter for the self-guided restoration. Computes a
-// weighted average across A, b with "cross sums" (see cross_sum_...
-// implementations above).
+/*!< The final filter for the self-guided restoration. Computes a
+ *   weighted average across A, b with "cross sums" (see cross_sum_...
+ *   implementations above). */
 static AOM_FORCE_INLINE void final_filter_fast(int32_t *dst, int32_t dst_stride, const int32_t *A,
                                                const int32_t *B, int32_t buf_stride,
                                                const uint8_t *dgd8, int32_t dgd_stride,
@@ -620,7 +618,7 @@ static AOM_FORCE_INLINE void final_filter_fast(int32_t *dst, int32_t dst_stride,
 
     if (!highbd) {
         do {
-            if (!(i & 1)) { // even row
+            if (!(i & 1)) { /*!< even row */
                 int32_t j = 0;
                 do {
                     const __m256i a   = cross_sum_fast_even_row(A + j, buf_stride);
@@ -633,7 +631,7 @@ static AOM_FORCE_INLINE void final_filter_fast(int32_t *dst, int32_t dst_stride,
                     yy_storeu_256(dst + j, w);
                     j += 8;
                 } while (j < width);
-            } else { // odd row
+            } else { /*!< odd row */
                 int32_t j = 0;
                 do {
                     const __m256i a   = cross_sum_fast_odd_row(A + j);
@@ -657,7 +655,7 @@ static AOM_FORCE_INLINE void final_filter_fast(int32_t *dst, int32_t dst_stride,
         const uint16_t *dgd_real = CONVERT_TO_SHORTPTR(dgd8);
 
         do {
-            if (!(i & 1)) { // even row
+            if (!(i & 1)) { /*!< even row */
                 int32_t j = 0;
                 do {
                     const __m256i a   = cross_sum_fast_even_row(A + j, buf_stride);
@@ -670,7 +668,7 @@ static AOM_FORCE_INLINE void final_filter_fast(int32_t *dst, int32_t dst_stride,
                     yy_storeu_256(dst + j, w);
                     j += 8;
                 } while (j < width);
-            } else { // odd row
+            } else { /*!< odd row */
                 int32_t j = 0;
                 do {
                     const __m256i a   = cross_sum_fast_odd_row(A + j);
@@ -697,8 +695,8 @@ void eb_av1_selfguided_restoration_avx2(const uint8_t *dgd8, int32_t width, int3
                                         int32_t dgd_stride, int32_t *flt0, int32_t *flt1,
                                         int32_t flt_stride, int32_t sgr_params_idx,
                                         int32_t bit_depth, int32_t highbd) {
-    // The ALIGN_POWER_OF_TWO macro here ensures that column 1 of atl, btl,
-    // ctl and dtl is 32-byte aligned.
+    /*!< The ALIGN_POWER_OF_TWO macro here ensures that column 1 of atl, btl,
+     *   ctl and dtl is 32-byte aligned. */
     const int32_t buf_elts = ALIGN_POWER_OF_TWO(RESTORATION_PROC_UNIT_PELS, 3);
 
     DECLARE_ALIGNED(32, int32_t, buf[4 * ALIGN_POWER_OF_TWO(RESTORATION_PROC_UNIT_PELS, 3)]);
@@ -706,21 +704,20 @@ void eb_av1_selfguided_restoration_avx2(const uint8_t *dgd8, int32_t width, int3
     const int32_t width_ext  = width + 2 * SGRPROJ_BORDER_HORZ;
     const int32_t height_ext = height + 2 * SGRPROJ_BORDER_VERT;
 
-    // Adjusting the stride of A and b here appears to avoid bad cache effects,
-    // leading to a significant speed improvement.
-    // We also align the stride to a multiple of 32 bytes for efficiency.
+    /*!< Adjusting the stride of A and b here appears to avoid bad cache effects,
+     *   leading to a significant speed improvement.
+     *   We also align the stride to a multiple of 32 bytes for efficiency. */
     int32_t buf_stride = ALIGN_POWER_OF_TWO(width_ext + 16, 3);
 
-    // The "tl" pointers point at the top-left of the initialised data for the
-    // array.
+    /*!< The "tl" pointers point at the top-left of the initialised data for the array. */
     int32_t *atl = buf + 0 * buf_elts + 7;
     int32_t *btl = buf + 1 * buf_elts + 7;
     int32_t *ctl = buf + 2 * buf_elts + 7;
     int32_t *dtl = buf + 3 * buf_elts + 7;
 
-    // The "0" pointers are (- SGRPROJ_BORDER_VERT, -SGRPROJ_BORDER_HORZ). Note
-    // there's a zero row and column in A, b (integral images), so we move down
-    // and right one for them.
+    /*!< The "0" pointers are (- SGRPROJ_BORDER_VERT, -SGRPROJ_BORDER_HORZ). Note
+     *   there's a zero row and column in A, b (integral images), so we move down
+     *   and right one for them. */
     const int32_t buf_diag_border = SGRPROJ_BORDER_HORZ + buf_stride * SGRPROJ_BORDER_VERT;
 
     int32_t *a0 = atl + 1 + buf_stride;
@@ -728,7 +725,7 @@ void eb_av1_selfguided_restoration_avx2(const uint8_t *dgd8, int32_t width, int3
     int32_t *c0 = ctl + 1 + buf_stride;
     int32_t *d0 = dtl + 1 + buf_stride;
 
-    // Finally, A, b, C, D point at position (0, 0).
+    /*!< Finally, A, b, C, D point at position (0, 0). */
     int32_t *A = a0 + buf_diag_border;
     int32_t *b = b0 + buf_diag_border;
     int32_t *C = c0 + buf_diag_border;
@@ -737,8 +734,8 @@ void eb_av1_selfguided_restoration_avx2(const uint8_t *dgd8, int32_t width, int3
     const int32_t  dgd_diag_border = SGRPROJ_BORDER_HORZ + dgd_stride * SGRPROJ_BORDER_VERT;
     const uint8_t *dgd0            = dgd8 - dgd_diag_border;
 
-    // Generate integral images from the input. C will contain sums of squares; D
-    // will contain just sums
+    /*!< Generate integral images from the input. C will contain sums of squares; D
+     *   will contain just sums */
     if (highbd)
         integral_images_highbd(
             CONVERT_TO_SHORTPTR(dgd0), dgd_stride, width_ext, height_ext, ctl, dtl, buf_stride);
@@ -746,10 +743,10 @@ void eb_av1_selfguided_restoration_avx2(const uint8_t *dgd8, int32_t width, int3
         integral_images(dgd0, dgd_stride, width_ext, height_ext, ctl, dtl, buf_stride);
 
     const SgrParamsType *const params = &eb_sgr_params[sgr_params_idx];
-    // Write to flt0 and flt1
-    // If params->r == 0 we skip the corresponding filter. We only allow one of
-    // the radii to be 0, as having both equal to 0 would be equivalent to
-    // skipping SGR entirely.
+    /*!< Write to flt0 and flt1
+     *   If params->r == 0 we skip the corresponding filter. We only allow one of
+     *   the radii to be 0, as having both equal to 0 would be equivalent to
+     *   skipping SGR entirely. */
     assert(!(params->r[0] == 0 && params->r[1] == 0));
     assert(params->r[0] < AOMMIN(SGRPROJ_BORDER_VERT, SGRPROJ_BORDER_HORZ));
     assert(params->r[1] < AOMMIN(SGRPROJ_BORDER_VERT, SGRPROJ_BORDER_HORZ));
@@ -789,7 +786,7 @@ void eb_apply_selfguided_restoration_avx2(const uint8_t *dat8, int32_t width, in
         const __m256i idx = _mm256_setr_epi32(0, 4, 1, 5, 0, 0, 0, 0);
 
         do {
-            // Calculate output in batches of 16 pixels
+            /*!< Calculate output in batches of 16 pixels */
             int32_t j = 0;
             do {
                 const __m128i src  = xx_loadu_128(dat8 + j);
@@ -819,14 +816,14 @@ void eb_apply_selfguided_restoration_avx2(const uint8_t *dat8, int32_t width, in
                 const __m256i w_1 = _mm256_srai_epi32(_mm256_add_epi32(v_1, rounding),
                                                       SGRPROJ_PRJ_BITS + SGRPROJ_RST_BITS);
 
-                // Pack into 8 bits and clamp to [0, 256)
-                // Note that each pack messes up the order of the bits,
-                // so we use a permute function to correct this
-                // 0, 1, 4, 5, 2, 3, 6, 7
+                /*!< Pack into 8 bits and clamp to [0, 256)
+                 *   Note that each pack messes up the order of the bits,
+                 *   so we use a permute function to correct this
+                 *   0, 1, 4, 5, 2, 3, 6, 7 */
                 const __m256i tmp = _mm256_packus_epi32(w_0, w_1);
-                // 0, 1, 4, 5, 2, 3, 6, 7, 0, 1, 4, 5, 2, 3, 6, 7
+                /*!< 0, 1, 4, 5, 2, 3, 6, 7, 0, 1, 4, 5, 2, 3, 6, 7 */
                 const __m256i tmp2 = _mm256_packus_epi16(tmp, tmp);
-                // 0, 1, 2, 3, 4, 5, 6, 7, ...
+                /*!< 0, 1, 2, 3, 4, 5, 6, 7, ... */
                 const __m256i tmp3 = _mm256_permutevar8x32_epi32(tmp2, idx);
                 const __m128i res  = _mm256_castsi256_si128(tmp3);
                 xx_storeu_128(dst8 + j, res);
@@ -844,7 +841,7 @@ void eb_apply_selfguided_restoration_avx2(const uint8_t *dat8, int32_t width, in
         uint16_t *      dst16 = CONVERT_TO_SHORTPTR(dst8);
 
         do {
-            // Calculate output in batches of 16 pixels
+            /*!< Calculate output in batches of 16 pixels */
             int32_t j = 0;
             do {
                 const __m128i src_0 = xx_loadu_128(dat16 + j + 0);
@@ -875,9 +872,9 @@ void eb_apply_selfguided_restoration_avx2(const uint8_t *dat8, int32_t width, in
                 const __m256i w_1 = _mm256_srai_epi32(_mm256_add_epi32(v_1, rounding),
                                                       SGRPROJ_PRJ_BITS + SGRPROJ_RST_BITS);
 
-                // Pack into 16 bits and clamp to [0, 2^bit_depth)
-                // Note that packing into 16 bits messes up the order of the bits,
-                // so we use a permute function to correct this
+                /*!< Pack into 16 bits and clamp to [0, 2^bit_depth)
+                 *   Note that packing into 16 bits messes up the order of the bits,
+                 *   so we use a permute function to correct this */
                 const __m256i tmp  = _mm256_packus_epi32(w_0, w_1);
                 const __m256i tmp2 = _mm256_permute4x64_epi64(tmp, 0xd8);
                 const __m256i res  = _mm256_min_epi16(tmp2, max);

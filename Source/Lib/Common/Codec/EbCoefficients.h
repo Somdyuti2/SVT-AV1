@@ -1,18 +1,14 @@
-/*
-* Copyright(c) 2019 Intel Corporation
-* SPDX - License - Identifier: BSD - 2 - Clause - Patent
-*/
+/*!< Copyright(c) 2019 Intel Corporation
+ * SPDX - License - Identifier: BSD - 2 - Clause - Patent */
 
-/*
-* Copyright (c) 2016, Alliance for Open Media. All rights reserved
-*
-* This source code is subject to the terms of the BSD 2 Clause License and
-* the Alliance for Open Media Patent License 1.0. If the BSD 2 Clause License
-* was not distributed with this source code in the LICENSE file, you can
-* obtain it at www.aomedia.org/license/software. If the Alliance for Open
-* Media Patent License 1.0 was not distributed with this source code in the
-* PATENTS file, you can obtain it at www.aomedia.org/license/patent.
-*/
+/*!< Copyright (c) 2016, Alliance for Open Media. All rights reserved
+ *
+ * This source code is subject to the terms of the BSD 2 Clause License and
+ * the Alliance for Open Media Patent License 1.0. If the BSD 2 Clause License
+ * was not distributed with this source code in the LICENSE file, you can
+ * obtain it at www.aomedia.org/license/software. If the Alliance for Open
+ * Media Patent License 1.0 was not distributed with this source code in the
+ * PATENTS file, you can obtain it at www.aomedia.org/license/patent. */
 
 #ifndef EbCoefficients_h
 #define EbCoefficients_h
@@ -729,8 +725,8 @@ DECLARE_ALIGNED(16, static const int16_t, default_scan_32x32[1024]) = {
         952,  983,  1014, 1015, 984,  953,  922,  891,  860,  829,  798,  767,  799,  830,  861,  892,
         923,  954,  985,  1016, 1017, 986,  955,  924,  893,  862,  831,  863,  894,  925,  956,  987,
         1018, 1019, 988,  957,  926,  895,  927,  958,  989,  1020, 1021, 990,  959,  991,  1022, 1023};
-// Neighborhood 2-tuples for various scans and blocksizes,
-// in {top, left} order for each position in corresponding scan order.
+/*!< Neighborhood 2-tuples for various scans and blocksizes,
+ *   in {top, left} order for each position in corresponding scan order. */
 DECLARE_ALIGNED(16, static const int16_t, default_scan_4x4_neighbors[17 * MAX_NEIGHBORS]) = {
         0, 0, 0, 0, 0,  0, 4, 4, 1, 4, 1,  1,  2,  2,  2,  5, 5,
         8, 8, 8, 9, 12, 6, 9, 3, 6, 7, 10, 10, 13, 11, 14, 0, 0};
@@ -2568,7 +2564,7 @@ DECLARE_ALIGNED(16, static const int16_t, av1_default_iscan_32x32[1024]) = {
 
 static const ScanOrder av1_scan_orders[TX_SIZES_ALL][TX_TYPES] = {
         {
-                // TX_4X4
+                /*!< TX_4X4 */
                 {default_scan_4x4, av1_default_iscan_4x4, default_scan_4x4_neighbors},
                 {default_scan_4x4, av1_default_iscan_4x4, default_scan_4x4_neighbors},
                 {default_scan_4x4, av1_default_iscan_4x4, default_scan_4x4_neighbors},
@@ -2587,7 +2583,7 @@ static const ScanOrder av1_scan_orders[TX_SIZES_ALL][TX_TYPES] = {
                 {mcol_scan_4x4, av1_mcol_iscan_4x4, mcol_scan_4x4_neighbors},
         },
         {
-                // TX_8X8
+                /*!< TX_8X8 */
                 {default_scan_8x8, av1_default_iscan_8x8, default_scan_8x8_neighbors},
                 {default_scan_8x8, av1_default_iscan_8x8, default_scan_8x8_neighbors},
                 {default_scan_8x8, av1_default_iscan_8x8, default_scan_8x8_neighbors},
@@ -2606,7 +2602,7 @@ static const ScanOrder av1_scan_orders[TX_SIZES_ALL][TX_TYPES] = {
                 {mcol_scan_8x8, av1_mcol_iscan_8x8, mcol_scan_8x8_neighbors},
         },
         {
-                // TX_16X16
+                /*!< TX_16X16 */
                 {default_scan_16x16, av1_default_iscan_16x16, default_scan_16x16_neighbors},
                 {default_scan_16x16, av1_default_iscan_16x16, default_scan_16x16_neighbors},
                 {default_scan_16x16, av1_default_iscan_16x16, default_scan_16x16_neighbors},
@@ -2625,7 +2621,7 @@ static const ScanOrder av1_scan_orders[TX_SIZES_ALL][TX_TYPES] = {
                 {mcol_scan_16x16, av1_mcol_iscan_16x16, mcol_scan_16x16_neighbors},
         },
         {
-                // TX_32X32
+                /*!< TX_32X32 */
                 {default_scan_32x32, av1_default_iscan_32x32, default_scan_32x32_neighbors},
                 {default_scan_32x32, av1_default_iscan_32x32, default_scan_32x32_neighbors},
                 {default_scan_32x32, av1_default_iscan_32x32, default_scan_32x32_neighbors},
@@ -2644,9 +2640,9 @@ static const ScanOrder av1_scan_orders[TX_SIZES_ALL][TX_TYPES] = {
                 {mcol_scan_32x32, av1_mcol_iscan_32x32, mcol_scan_32x32_neighbors},
         },
         {
-                // TX_64X64
-                // Half of the coefficients of tx64 at higher frequencies are set to
-                // zeros. So tx32's scan order is used.
+                /*!< TX_64X64 */
+                /*!< Half of the coefficients of tx64 at higher frequencies are set to
+                 *   zeros. So tx32's scan order is used. */
                 {default_scan_32x32, av1_default_iscan_32x32, default_scan_32x32_neighbors},
                 {default_scan_32x32, av1_default_iscan_32x32, default_scan_32x32_neighbors},
                 {default_scan_32x32, av1_default_iscan_32x32, default_scan_32x32_neighbors},
@@ -2665,7 +2661,7 @@ static const ScanOrder av1_scan_orders[TX_SIZES_ALL][TX_TYPES] = {
                 {mcol_scan_32x32, av1_mcol_iscan_32x32, mcol_scan_32x32_neighbors},
         },
         {
-                // TX_4X8
+                /*!< TX_4X8 */
                 {default_scan_4x8, av1_default_iscan_4x8, default_scan_4x8_neighbors},
                 {default_scan_4x8, av1_default_iscan_4x8, default_scan_4x8_neighbors},
                 {default_scan_4x8, av1_default_iscan_4x8, default_scan_4x8_neighbors},
@@ -2684,7 +2680,7 @@ static const ScanOrder av1_scan_orders[TX_SIZES_ALL][TX_TYPES] = {
                 {mcol_scan_4x8, av1_mcol_iscan_4x8, mcol_scan_4x8_neighbors},
         },
         {
-                // TX_8X4
+                /*!< TX_8X4 */
                 {default_scan_8x4, av1_default_iscan_8x4, default_scan_8x4_neighbors},
                 {default_scan_8x4, av1_default_iscan_8x4, default_scan_8x4_neighbors},
                 {default_scan_8x4, av1_default_iscan_8x4, default_scan_8x4_neighbors},
@@ -2703,7 +2699,7 @@ static const ScanOrder av1_scan_orders[TX_SIZES_ALL][TX_TYPES] = {
                 {mcol_scan_8x4, av1_mcol_iscan_8x4, mcol_scan_8x4_neighbors},
         },
         {
-                // TX_8X16
+                /*!< TX_8X16 */
                 {default_scan_8x16, av1_default_iscan_8x16, default_scan_8x16_neighbors},
                 {default_scan_8x16, av1_default_iscan_8x16, default_scan_8x16_neighbors},
                 {default_scan_8x16, av1_default_iscan_8x16, default_scan_8x16_neighbors},
@@ -2722,7 +2718,7 @@ static const ScanOrder av1_scan_orders[TX_SIZES_ALL][TX_TYPES] = {
                 {mcol_scan_8x16, av1_mcol_iscan_8x16, mcol_scan_8x16_neighbors},
         },
         {
-                // TX_16X8
+                /*!< TX_16X8 */
                 {default_scan_16x8, av1_default_iscan_16x8, default_scan_16x8_neighbors},
                 {default_scan_16x8, av1_default_iscan_16x8, default_scan_16x8_neighbors},
                 {default_scan_16x8, av1_default_iscan_16x8, default_scan_16x8_neighbors},
@@ -2741,7 +2737,7 @@ static const ScanOrder av1_scan_orders[TX_SIZES_ALL][TX_TYPES] = {
                 {mcol_scan_16x8, av1_mcol_iscan_16x8, mcol_scan_16x8_neighbors},
         },
         {
-                // TX_16X32
+                /*!< TX_16X32 */
                 {default_scan_16x32, av1_default_iscan_16x32, default_scan_16x32_neighbors},
                 {default_scan_16x32, av1_default_iscan_16x32, default_scan_16x32_neighbors},
                 {default_scan_16x32, av1_default_iscan_16x32, default_scan_16x32_neighbors},
@@ -2760,7 +2756,7 @@ static const ScanOrder av1_scan_orders[TX_SIZES_ALL][TX_TYPES] = {
                 {mcol_scan_16x32, av1_mcol_iscan_16x32, mcol_scan_16x32_neighbors},
         },
         {
-                // TX_32X16
+                /*!< TX_32X16 */
                 {default_scan_32x16, av1_default_iscan_32x16, default_scan_32x16_neighbors},
                 {default_scan_32x16, av1_default_iscan_32x16, default_scan_32x16_neighbors},
                 {default_scan_32x16, av1_default_iscan_32x16, default_scan_32x16_neighbors},
@@ -2779,9 +2775,9 @@ static const ScanOrder av1_scan_orders[TX_SIZES_ALL][TX_TYPES] = {
                 {mcol_scan_32x16, av1_mcol_iscan_32x16, mcol_scan_32x16_neighbors},
         },
         {
-                // TX_32X64
-                // Half of the coefficients of tx64 at higher frequencies are set to
-                // zeros. So tx32's scan order is used.
+                /*!< TX_32X64 */
+                /*!< Half of the coefficients of tx64 at higher frequencies are set to
+                 *   zeros. So tx32's scan order is used. */
                 {default_scan_32x32, av1_default_iscan_32x32, default_scan_32x32_neighbors},
                 {default_scan_32x32, av1_default_iscan_32x32, default_scan_32x32_neighbors},
                 {default_scan_32x32, av1_default_iscan_32x32, default_scan_32x32_neighbors},
@@ -2800,9 +2796,9 @@ static const ScanOrder av1_scan_orders[TX_SIZES_ALL][TX_TYPES] = {
                 {mcol_scan_32x32, av1_mcol_iscan_32x32, mcol_scan_32x32_neighbors},
         },
         {
-                // TX_64X32
-                // Half of the coefficients of tx64 at higher frequencies are set to
-                // zeros. So tx32's scan order is used.
+                /*!< TX_64X32 */
+                /*!< Half of the coefficients of tx64 at higher frequencies are set to
+                 *   zeros. So tx32's scan order is used. */
                 {default_scan_32x32, av1_default_iscan_32x32, default_scan_32x32_neighbors},
                 {default_scan_32x32, av1_default_iscan_32x32, default_scan_32x32_neighbors},
                 {default_scan_32x32, av1_default_iscan_32x32, default_scan_32x32_neighbors},
@@ -2821,7 +2817,7 @@ static const ScanOrder av1_scan_orders[TX_SIZES_ALL][TX_TYPES] = {
                 {mcol_scan_32x32, av1_mcol_iscan_32x32, mcol_scan_32x32_neighbors},
         },
         {
-                // TX_4X16
+                /*!< TX_4X16 */
                 {default_scan_4x16, av1_default_iscan_4x16, default_scan_4x16_neighbors},
                 {default_scan_4x16, av1_default_iscan_4x16, default_scan_4x16_neighbors},
                 {default_scan_4x16, av1_default_iscan_4x16, default_scan_4x16_neighbors},
@@ -2840,7 +2836,7 @@ static const ScanOrder av1_scan_orders[TX_SIZES_ALL][TX_TYPES] = {
                 {mcol_scan_4x16, av1_mcol_iscan_4x16, mcol_scan_4x16_neighbors},
         },
         {
-                // TX_16X4
+                /*!< TX_16X4 */
                 {default_scan_16x4, av1_default_iscan_16x4, default_scan_16x4_neighbors},
                 {default_scan_16x4, av1_default_iscan_16x4, default_scan_16x4_neighbors},
                 {default_scan_16x4, av1_default_iscan_16x4, default_scan_16x4_neighbors},
@@ -2859,7 +2855,7 @@ static const ScanOrder av1_scan_orders[TX_SIZES_ALL][TX_TYPES] = {
                 {mcol_scan_16x4, av1_mcol_iscan_16x4, mcol_scan_16x4_neighbors},
         },
         {
-                // TX_8X32
+                /*!< TX_8X32 */
                 {default_scan_8x32, av1_default_iscan_8x32, default_scan_8x32_neighbors},
                 {default_scan_8x32, av1_default_iscan_8x32, default_scan_8x32_neighbors},
                 {default_scan_8x32, av1_default_iscan_8x32, default_scan_8x32_neighbors},
@@ -2878,7 +2874,7 @@ static const ScanOrder av1_scan_orders[TX_SIZES_ALL][TX_TYPES] = {
                 {mcol_scan_8x32, av1_mcol_iscan_8x32, mcol_scan_8x32_neighbors},
         },
         {
-                // TX_32X8
+                /*!< TX_32X8 */
                 {default_scan_32x8, av1_default_iscan_32x8, default_scan_32x8_neighbors},
                 {default_scan_32x8, av1_default_iscan_32x8, default_scan_32x8_neighbors},
                 {default_scan_32x8, av1_default_iscan_32x8, default_scan_32x8_neighbors},
@@ -2897,9 +2893,9 @@ static const ScanOrder av1_scan_orders[TX_SIZES_ALL][TX_TYPES] = {
                 {mcol_scan_32x8, av1_mcol_iscan_32x8, mcol_scan_32x8_neighbors},
         },
         {
-                // TX_16X64
-                // Half of the coefficients of tx64 at higher frequencies are set to
-                // zeros. So tx32's scan order is used.
+                /*!< TX_16X64 */
+                /*!< Half of the coefficients of tx64 at higher frequencies are set to
+                 *   zeros. So tx32's scan order is used. */
                 {default_scan_16x32, av1_default_iscan_16x32, default_scan_16x32_neighbors},
                 {default_scan_16x32, av1_default_iscan_16x32, default_scan_16x32_neighbors},
                 {default_scan_16x32, av1_default_iscan_16x32, default_scan_16x32_neighbors},
@@ -2918,9 +2914,9 @@ static const ScanOrder av1_scan_orders[TX_SIZES_ALL][TX_TYPES] = {
                 {mcol_scan_16x32, av1_mcol_iscan_16x32, mcol_scan_16x32_neighbors},
         },
         {
-                // TX_64X16
-                // Half of the coefficients of tx64 at higher frequencies are set to
-                // zeros. So tx32's scan order is used.
+                /*!< TX_64X16 */
+                /*!< Half of the coefficients of tx64 at higher frequencies are set to
+                 *   zeros. So tx32's scan order is used. */
                 {default_scan_32x16, av1_default_iscan_32x16, default_scan_32x16_neighbors},
                 {default_scan_32x16, av1_default_iscan_32x16, default_scan_32x16_neighbors},
                 {default_scan_32x16, av1_default_iscan_32x16, default_scan_32x16_neighbors},
@@ -2947,12 +2943,12 @@ static const int32_t tx_size_2d[TX_SIZES_ALL + 1] = {
 
 static inline int32_t av1_get_tx_scale(const TxSize tx_size) {
     const int32_t pels = tx_size_2d[tx_size];
-    // Largest possible pels is 4096 (64x64).
+    /*!< Largest possible pels is 4096 (64x64). */
     return (pels > 256) + (pels > 1024);
 }
 
-// The ctx offset table when TX is TX_CLASS_2D.
-// TX col and row indices are clamped to 4
+/*!< The ctx offset table when TX is TX_CLASS_2D.
+ *   TX col and row indices are clamped to 4 */
 
 static const int8_t eb_av1_nz_map_ctx_offset_4x4[16] = {
         0,
@@ -3236,25 +3232,25 @@ static const int8_t eb_av1_nz_map_ctx_offset_32x8[256] = {
 };
 
 static const int8_t *eb_av1_nz_map_ctx_offset[19] = {
-        eb_av1_nz_map_ctx_offset_4x4, // TX_4x4
-        eb_av1_nz_map_ctx_offset_8x8, // TX_8x8
-        eb_av1_nz_map_ctx_offset_16x16, // TX_16x16
-        eb_av1_nz_map_ctx_offset_32x32, // TX_32x32
-        eb_av1_nz_map_ctx_offset_32x32, // TX_32x32
-        eb_av1_nz_map_ctx_offset_4x16, // TX_4x8
-        eb_av1_nz_map_ctx_offset_8x4, // TX_8x4
-        eb_av1_nz_map_ctx_offset_8x32, // TX_8x16
-        eb_av1_nz_map_ctx_offset_16x8, // TX_16x8
-        eb_av1_nz_map_ctx_offset_16x32, // TX_16x32
-        eb_av1_nz_map_ctx_offset_32x16, // TX_32x16
-        eb_av1_nz_map_ctx_offset_32x64, // TX_32x64
-        eb_av1_nz_map_ctx_offset_64x32, // TX_64x32
-        eb_av1_nz_map_ctx_offset_4x16, // TX_4x16
-        eb_av1_nz_map_ctx_offset_16x4, // TX_16x4
-        eb_av1_nz_map_ctx_offset_8x32, // TX_8x32
-        eb_av1_nz_map_ctx_offset_32x8, // TX_32x8
-        eb_av1_nz_map_ctx_offset_16x32, // TX_16x64
-        eb_av1_nz_map_ctx_offset_64x32, // TX_64x16
+        eb_av1_nz_map_ctx_offset_4x4, /*!< TX_4x4 */
+        eb_av1_nz_map_ctx_offset_8x8, /*!< TX_8x8 */
+        eb_av1_nz_map_ctx_offset_16x16, /*!< TX_16x16 */
+        eb_av1_nz_map_ctx_offset_32x32, /*!< TX_32x32 */
+        eb_av1_nz_map_ctx_offset_32x32, /*!< TX_32x32 */
+        eb_av1_nz_map_ctx_offset_4x16, /*!< TX_4x8 */
+        eb_av1_nz_map_ctx_offset_8x4, /*!< TX_8x4 */
+        eb_av1_nz_map_ctx_offset_8x32, /*!< TX_8x16 */
+        eb_av1_nz_map_ctx_offset_16x8, /*!< TX_16x8 */
+        eb_av1_nz_map_ctx_offset_16x32, /*!< TX_16x32 */
+        eb_av1_nz_map_ctx_offset_32x16, /*!< TX_32x16 */
+        eb_av1_nz_map_ctx_offset_32x64, /*!< TX_32x64 */
+        eb_av1_nz_map_ctx_offset_64x32, /*!< TX_64x32 */
+        eb_av1_nz_map_ctx_offset_4x16, /*!< TX_4x16 */
+        eb_av1_nz_map_ctx_offset_16x4, /*!< TX_16x4 */
+        eb_av1_nz_map_ctx_offset_8x32, /*!< TX_8x32 */
+        eb_av1_nz_map_ctx_offset_32x8, /*!< TX_32x8 */
+        eb_av1_nz_map_ctx_offset_16x32, /*!< TX_16x64 */
+        eb_av1_nz_map_ctx_offset_64x32, /*!< TX_64x16 */
 };
 
 static INLINE int get_lower_levels_ctx_eob(int bwl, int height, int scan_idx) {
@@ -3264,7 +3260,7 @@ static INLINE int get_lower_levels_ctx_eob(int bwl, int height, int scan_idx) {
     return 3;
 }
 
-static AOM_FORCE_INLINE int get_br_ctx_eob(const int c, // raster order
+static AOM_FORCE_INLINE int get_br_ctx_eob(const int c, /*!< raster order */
                                            const int bwl, const TxClass tx_class) {
     const int row = c >> bwl;
     const int col = c - (row << bwl);
@@ -3294,38 +3290,38 @@ static AOM_FORCE_INLINE int get_nz_mag(const uint8_t *const levels, const int bw
                                        const TxClass tx_class) {
     int mag;
 
-    // Note: AOMMIN(level, 3) is useless for decoder since level < 3.
-    mag = clip_max3[levels[1]]; // { 0, 1 }
-    mag += clip_max3[levels[(1 << bwl) + TX_PAD_HOR]]; // { 1, 0 }
+    /*!< Note: AOMMIN(level, 3) is useless for decoder since level < 3. */
+    mag = clip_max3[levels[1]]; /*!< { 0, 1 } */
+    mag += clip_max3[levels[(1 << bwl) + TX_PAD_HOR]]; /*!< { 1, 0 } */
 
     if (tx_class == TX_CLASS_2D) {
-        mag += clip_max3[levels[(1 << bwl) + TX_PAD_HOR + 1]]; // { 1, 1 }
-        mag += clip_max3[levels[2]]; // { 0, 2 }
-        mag += clip_max3[levels[(2 << bwl) + (2 << TX_PAD_HOR_LOG2)]]; // { 2, 0 }
+        mag += clip_max3[levels[(1 << bwl) + TX_PAD_HOR + 1]]; /*!< { 1, 1 } */
+        mag += clip_max3[levels[2]]; /*!< { 0, 2 } */
+        mag += clip_max3[levels[(2 << bwl) + (2 << TX_PAD_HOR_LOG2)]]; /*!< { 2, 0 } */
     } else if (tx_class == TX_CLASS_VERT) {
-        mag += clip_max3[levels[(2 << bwl) + (2 << TX_PAD_HOR_LOG2)]]; // { 2, 0 }
-        mag += clip_max3[levels[(3 << bwl) + (3 << TX_PAD_HOR_LOG2)]]; // { 3, 0 }
-        mag += clip_max3[levels[(4 << bwl) + (4 << TX_PAD_HOR_LOG2)]]; // { 4, 0 }
+        mag += clip_max3[levels[(2 << bwl) + (2 << TX_PAD_HOR_LOG2)]]; /*!< { 2, 0 } */
+        mag += clip_max3[levels[(3 << bwl) + (3 << TX_PAD_HOR_LOG2)]]; /*!< { 3, 0 } */
+        mag += clip_max3[levels[(4 << bwl) + (4 << TX_PAD_HOR_LOG2)]]; /*!< { 4, 0 } */
     } else {
-        mag += clip_max3[levels[2]]; // { 0, 2 }
-        mag += clip_max3[levels[3]]; // { 0, 3 }
-        mag += clip_max3[levels[4]]; // { 0, 4 }
+        mag += clip_max3[levels[2]]; /*!< { 0, 2 } */
+        mag += clip_max3[levels[3]]; /*!< { 0, 3 } */
+        mag += clip_max3[levels[4]]; /*!< { 0, 4 } */
     }
 
     return mag;
 }
 
 static AOM_FORCE_INLINE int get_nz_map_ctx_from_stats(const int stats,
-                                                      const int coeff_idx, // raster order
+                                                      const int coeff_idx, /*!< raster order */
                                                       const int bwl, const TxSize tx_size,
                                                       const TxClass tx_class) {
-    // tx_class == 0(TX_CLASS_2D)
+    /*!< tx_class == 0(TX_CLASS_2D) */
     if ((tx_class | coeff_idx) == 0) return 0;
     int ctx = (stats + 1) >> 1;
     ctx     = AOMMIN(ctx, 4);
     switch (tx_class) {
         case TX_CLASS_2D: {
-            // This is the algorithm to generate eb_av1_nz_map_ctx_offset[][]
+            /*!< This is the algorithm to generate eb_av1_nz_map_ctx_offset[][] */
             //   const int width = tx_size_wide[tx_size];
             //   const int height = tx_size_high[tx_size];
             //   if (width < height) {

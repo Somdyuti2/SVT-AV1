@@ -1,13 +1,11 @@
-/*
- * Copyright (c) 2016, Alliance for Open Media. All rights reserved
+/*!< Copyright (c) 2016, Alliance for Open Media. All rights reserved
  *
  * This source code is subject to the terms of the BSD 2 Clause License and
  * the Alliance for Open Media Patent License 1.0. If the BSD 2 Clause License
  * was not distributed with this source code in the LICENSE file, you can
  * obtain it at www.aomedia.org/license/software. If the Alliance for Open
  * Media Patent License 1.0 was not distributed with this source code in the
- * PATENTS file, you can obtain it at www.aomedia.org/license/patent.
- */
+ * PATENTS file, you can obtain it at www.aomedia.org/license/patent. */
 #include <assert.h>
 #include <immintrin.h>
 #include "EbDefinitions.h"
@@ -536,14 +534,14 @@ static INLINE void write_buffer_4x4(__m256i *in, uint16_t *output_r, int32_t str
                                *(uint64_t *)(output_r + 1 * stride_r),
                                *(uint64_t *)(output_r + 3 * stride_r));
     } else {
-        // Load 64bits in order ACBD
+        /*!< Load 64bits in order ACBD */
         u0 = _mm256_set_epi64x(*(uint64_t *)(output_r + 3 * stride_r),
                                *(uint64_t *)(output_r + 1 * stride_r),
                                *(uint64_t *)(output_r + 2 * stride_r),
                                *(uint64_t *)(output_r + 0 * stride_r));
     }
 
-    // Unpack and Swap 128bits from ACBD to ABCD
+    /*!< Unpack and Swap 128bits from ACBD to ABCD */
     x0 = _mm256_unpacklo_epi16(u0, zero);
     x1 = _mm256_unpackhi_epi16(u0, zero);
 
@@ -553,21 +551,21 @@ static INLINE void write_buffer_4x4(__m256i *in, uint16_t *output_r, int32_t str
     highbd_clamp_epi32(&v0, bd);
     highbd_clamp_epi32(&v1, bd);
 
-    // Pack and Swap 128bits from ABCD to ACBD
+    /*!< Pack and Swap 128bits from ABCD to ACBD */
     v0 = _mm256_packus_epi32(v0, v1);
 
     if (flipud) {
         _mm_storel_epi64((__m128i *)(output_w + 3 * stride_w), _mm256_castsi256_si128(v0));
         _mm_storel_epi64((__m128i *)(output_w + 2 * stride_w), _mm256_extractf128_si256(v0, 0x1));
-        //Move up  memory 64bites
+        /*!< Move up  memory 64bites */
         v0 = _mm256_permute4x64_epi64(v0, 1 + (3 << 4));
         _mm_storel_epi64((__m128i *)(output_w + 1 * stride_w), _mm256_castsi256_si128(v0));
         _mm_storel_epi64((__m128i *)(output_w + 0 * stride_w), _mm256_extractf128_si256(v0, 0x1));
     } else {
-        // Store in order from ACBD to ABCD
+        /*!< Store in order from ACBD to ABCD */
         _mm_storel_epi64((__m128i *)(output_w + 0 * stride_w), _mm256_castsi256_si128(v0));
         _mm_storel_epi64((__m128i *)(output_w + 1 * stride_w), _mm256_extractf128_si256(v0, 0x1));
-        //Move up  memory 64bites
+        /*!< Move up  memory 64bites */
         v0 = _mm256_permute4x64_epi64(v0, 1 + (3 << 4));
         _mm_storel_epi64((__m128i *)(output_w + 2 * stride_w), _mm256_castsi256_si128(v0));
         _mm_storel_epi64((__m128i *)(output_w + 3 * stride_w), _mm256_extractf128_si256(v0, 0x1));
@@ -584,8 +582,8 @@ static INLINE void round_shift_4x4(__m256i *in, int32_t shift) {
 }
 
 static INLINE void iidentity4_and_round_shift_avx2(__m256i *input, int32_t shift) {
-    // Input takes 18 bits, can be multiplied with new_sqrt2 in 32 bits space.
-    // round_shift(new_sqrt2_bits) and next round_shift(shift) in one pass.
+    /*!< Input takes 18 bits, can be multiplied with new_sqrt2 in 32 bits space.
+     *   round_shift(new_sqrt2_bits) and next round_shift(shift) in one pass. */
     const __m256i scalar = _mm256_set1_epi32(new_sqrt2);
     const __m256i rnding =
         _mm256_set1_epi32((1 << (new_sqrt2_bits - 1)) + (!!(shift) << (shift + new_sqrt2_bits - 1)));
@@ -946,10 +944,10 @@ static INLINE void write_buffer_8x8(__m256i *in, uint16_t *output_r, int32_t str
                                      _mm_loadu_si128((__m128i *)(output_r + stride_r)),
                                      1);
 
-        // Swap 64bits from ABCD to ACBD
+        /*!< Swap 64bits from ABCD to ACBD */
         u0 = _mm256_permute4x64_epi64(u0, 0xD8);
 
-        // Unpack and Swap 128bits from ACBD to ABCD
+        /*!< Unpack and Swap 128bits from ACBD to ABCD */
         x0 = _mm256_unpacklo_epi16(u0, zero);
         x1 = _mm256_unpackhi_epi16(u0, zero);
 
@@ -972,9 +970,9 @@ static INLINE void write_buffer_8x8(__m256i *in, uint16_t *output_r, int32_t str
         highbd_clamp_epi32(&v0, bd);
         highbd_clamp_epi32(&v1, bd);
 
-        // Pack and Swap 128bits from ABCD to ACBD
+        /*!< Pack and Swap 128bits from ABCD to ACBD */
         v0 = _mm256_packus_epi32(v0, v1);
-        // Swap 64bits from ACBD to ABCD
+        /*!< Swap 64bits from ACBD to ABCD */
         v0 = _mm256_permute4x64_epi64(v0, 0xD8);
 
         _mm_storeu_si128((__m128i *)output_w, _mm256_castsi256_si128(v0));
@@ -1023,15 +1021,15 @@ static INLINE void idct8_col_avx2(__m256i *in, __m256i *out, int32_t bit) {
     const __m256i  rounding = _mm256_set1_epi32(1 << (bit - 1));
     __m256i        tmp[8], tmp2[8];
 
-    //stage 1
+    /*!< stage 1 */
 
-    //stage 2
+    /*!< stage 2 */
     tmp[4] = half_btf_avx2(&cospi56, &in[1], &cospim8, &in[7], &rounding, bit);
     tmp[5] = half_btf_avx2(&cospi24, &in[5], &cospim40, &in[3], &rounding, bit);
     tmp[6] = half_btf_avx2(&cospi40, &in[5], &cospi24, &in[3], &rounding, bit);
     tmp[7] = half_btf_avx2(&cospi8, &in[1], &cospi56, &in[7], &rounding, bit);
 
-    //stage 3
+    /*!< stage 3 */
     tmp2[0] = half_btf_avx2(&cospi32, &in[0], &cospi32, &in[4], &rounding, bit);
     tmp2[1] = half_btf_avx2(&cospi32, &in[0], &cospim32, &in[4], &rounding, bit);
     tmp2[2] = half_btf_avx2(&cospi48, &in[2], &cospim16, &in[6], &rounding, bit);
@@ -1041,7 +1039,7 @@ static INLINE void idct8_col_avx2(__m256i *in, __m256i *out, int32_t bit) {
     tmp2[6] = _mm256_sub_epi32(tmp[7], tmp[6]);
     tmp2[7] = _mm256_add_epi32(tmp[6], tmp[7]);
 
-    //stage 4
+    /*!< stage 4 */
     tmp[0] = _mm256_add_epi32(tmp2[0], tmp2[3]);
     tmp[1] = _mm256_add_epi32(tmp2[1], tmp2[2]);
     tmp[2] = _mm256_sub_epi32(tmp2[1], tmp2[2]);
@@ -1049,7 +1047,7 @@ static INLINE void idct8_col_avx2(__m256i *in, __m256i *out, int32_t bit) {
     tmp[5] = half_btf_avx2(&cospim32, &tmp2[5], &cospi32, &tmp2[6], &rounding, bit);
     tmp[6] = half_btf_avx2(&cospi32, &tmp2[5], &cospi32, &tmp2[6], &rounding, bit);
 
-    //stage 5
+    /*!< stage 5 */
     out[0] = _mm256_add_epi32(tmp[0], tmp2[7]);
     out[1] = _mm256_add_epi32(tmp[1], tmp[6]);
     out[2] = _mm256_add_epi32(tmp[2], tmp[5]);
@@ -1084,8 +1082,8 @@ static INLINE void iadst8_col_avx2(__m256i *in, __m256i *out, int8_t cos_bit) {
     const __m256i  rounding = _mm256_set1_epi32(1 << (cos_bit - 1));
     __m256i        tmp[8], tmp2[4];
 
-    //stage 1
-    //stage 2
+    /*!< stage 1 */
+    /*!< stage 2 */
     tmp[0] = half_btf_avx2(&cospi4, &in[7], &cospi60, &in[0], &rounding, cos_bit);
     tmp[1] = half_btf_avx2(&cospi60, &in[7], &cospim4, &in[0], &rounding, cos_bit);
     tmp[2] = half_btf_avx2(&cospi20, &in[5], &cospi44, &in[2], &rounding, cos_bit);
@@ -1095,7 +1093,7 @@ static INLINE void iadst8_col_avx2(__m256i *in, __m256i *out, int8_t cos_bit) {
     tmp[6] = half_btf_avx2(&cospi52, &in[1], &cospi12, &in[6], &rounding, cos_bit);
     tmp[7] = half_btf_avx2(&cospi12, &in[1], &cospim52, &in[6], &rounding, cos_bit);
 
-    //stage 3
+    /*!< stage 3 */
     out[7]  = _mm256_add_epi32(tmp[0], tmp[4]);
     out[1]  = _mm256_add_epi32(tmp[1], tmp[5]);
     out[2]  = _mm256_add_epi32(tmp[2], tmp[6]);
@@ -1105,13 +1103,13 @@ static INLINE void iadst8_col_avx2(__m256i *in, __m256i *out, int8_t cos_bit) {
     tmp2[2] = _mm256_sub_epi32(tmp[2], tmp[6]);
     tmp2[3] = _mm256_sub_epi32(tmp[3], tmp[7]);
 
-    //stage 4
+    /*!< stage 4 */
     tmp[4] = half_btf_avx2(&cospi16, &tmp2[0], &cospi48, &tmp2[1], &rounding, cos_bit);
     tmp[5] = half_btf_avx2(&cospi48, &tmp2[0], &cospim16, &tmp2[1], &rounding, cos_bit);
     tmp[6] = half_btf_avx2(&cospim48, &tmp2[2], &cospi16, &tmp2[3], &rounding, cos_bit);
     tmp[7] = half_btf_avx2(&cospi16, &tmp2[2], &cospi48, &tmp2[3], &rounding, cos_bit);
 
-    //stage 5
+    /*!< stage 5 */
     out[0]  = _mm256_add_epi32(out[7], out[2]);
     tmp[1]  = _mm256_add_epi32(out[1], out[3]);
     tmp2[0] = _mm256_sub_epi32(out[7], out[2]);
@@ -1121,13 +1119,13 @@ static INLINE void iadst8_col_avx2(__m256i *in, __m256i *out, int8_t cos_bit) {
     tmp2[2] = _mm256_sub_epi32(tmp[4], tmp[6]);
     tmp2[3] = _mm256_sub_epi32(tmp[5], tmp[7]);
 
-    //stage 6
+    /*!< stage 6 */
     tmp[2] = half_btf_avx2(&cospi32, &tmp2[0], &cospi32, &tmp2[1], &rounding, cos_bit);
     out[4] = half_btf_avx2(&cospi32, &tmp2[0], &cospim32, &tmp2[1], &rounding, cos_bit);
     out[2] = half_btf_avx2(&cospi32, &tmp2[2], &cospi32, &tmp2[3], &rounding, cos_bit);
     tmp[7] = half_btf_avx2(&cospi32, &tmp2[2], &cospim32, &tmp2[3], &rounding, cos_bit);
 
-    //stage 7
+    /*!< stage 7 */
     out[1] = _mm256_sign_epi32(out[1], negative);
     out[3] = _mm256_sign_epi32(tmp[2], negative);
     out[5] = _mm256_sign_epi32(tmp[7], negative);
@@ -1145,18 +1143,18 @@ void eb_av1_inv_txfm2d_add_8x8_avx2(const int32_t *input, uint16_t *output_r, in
     switch (tx_type) {
     case IDTX:
         load_buffer_8x8(input, in);
-        // Operations can be joined together without losing precision
-        // eb_av1_iidentity8_c() shift left 1 bits
-        // round_shift_8x8(, -shift[0]) shift right 1 bits
-        // eb_av1_iidentity8_c() shift left 1 bits
-        // round_shift_8x8(, -shift[1]) shift right 4 bits with complement
+        /*!< Operations can be joined together without losing precision
+         *   eb_av1_iidentity8_c() shift left 1 bits
+         *   round_shift_8x8(, -shift[0]) shift right 1 bits
+         *   eb_av1_iidentity8_c() shift left 1 bits
+         *   round_shift_8x8(, -shift[1]) shift right 4 bits with complement */
         round_shift_8x8(in, -shift[0] - shift[1] - 2);
         write_buffer_8x8(in, output_r, stride_r, output_w, stride_w, 0, 0, bd);
         break;
     case V_DCT:
         load_buffer_8x8(input, in);
-        // eb_av1_iidentity8_c() shift left 1 bits
-        // round_shift_8x8(, -shift[0]) shift right 1 bits
+        /*!< eb_av1_iidentity8_c() shift left 1 bits
+         *   round_shift_8x8(, -shift[0]) shift right 1 bits */
         idct8_col_avx2(in, out, inv_cos_bit_col[txw_idx][txh_idx]);
         round_shift_8x8(out, -shift[1]);
         write_buffer_8x8(out, output_r, stride_r, output_w, stride_w, 0, 0, bd);
@@ -1166,15 +1164,15 @@ void eb_av1_inv_txfm2d_add_8x8_avx2(const int32_t *input, uint16_t *output_r, in
         transpose_8x8_avx2(in, out);
         idct8_col_avx2(out, in, inv_cos_bit_row[txw_idx][txh_idx]);
         transpose_8x8_avx2(in, out);
-        // eb_av1_iidentity8_c() shift left 1 bits
-        // round_shift_8x8(, -shift[1]) shift right 4 bits with complement
+        /*!< eb_av1_iidentity8_c() shift left 1 bits
+         *   round_shift_8x8(, -shift[1]) shift right 4 bits with complement */
         round_shift_8x8_double(out, -shift[0], -shift[1] - 1);
         write_buffer_8x8(out, output_r, stride_r, output_w, stride_w, 0, 0, bd);
         break;
     case V_ADST:
         load_buffer_8x8(input, in);
-        // eb_av1_iidentity8_c() shift left 1 bits
-        // round_shift_8x8(, -shift[0]) shift right 1 bits
+        /*!< eb_av1_iidentity8_c() shift left 1 bits
+         *   round_shift_8x8(, -shift[0]) shift right 1 bits */
         iadst8_col_avx2(in, out, inv_cos_bit_col[txw_idx][txh_idx]);
         round_shift_8x8(out, -shift[1]);
         write_buffer_8x8(out, output_r, stride_r, output_w, stride_w, 0, 0, bd);
@@ -1184,15 +1182,15 @@ void eb_av1_inv_txfm2d_add_8x8_avx2(const int32_t *input, uint16_t *output_r, in
         transpose_8x8_avx2(in, out);
         iadst8_col_avx2(out, in, inv_cos_bit_row[txw_idx][txh_idx]);
         transpose_8x8_avx2(in, out);
-        // eb_av1_iidentity8_c() shift left 1 bits
-        // round_shift_8x8(, -shift[1]) shift right 4 bits with complement
+        /*!< eb_av1_iidentity8_c() shift left 1 bits
+         *   round_shift_8x8(, -shift[1]) shift right 4 bits with complement */
         round_shift_8x8_double(out, -shift[0], -shift[1] - 1);
         write_buffer_8x8(out, output_r, stride_r, output_w, stride_w, 0, 0, bd);
         break;
     case V_FLIPADST:
         load_buffer_8x8(input, in);
-        // eb_av1_iidentity8_c() shift left 1 bits
-        // round_shift_8x8(, -shift[0]) shift right 1 bits
+        /*!< eb_av1_iidentity8_c() shift left 1 bits
+         *   round_shift_8x8(, -shift[0]) shift right 1 bits */
         iadst8_col_avx2(in, out, inv_cos_bit_col[txw_idx][txh_idx]);
         round_shift_8x8(out, -shift[1]);
         write_buffer_8x8(out, output_r, stride_r, output_w, stride_w, 0, 1, bd);
@@ -1202,8 +1200,8 @@ void eb_av1_inv_txfm2d_add_8x8_avx2(const int32_t *input, uint16_t *output_r, in
         transpose_8x8_avx2(in, out);
         iadst8_col_avx2(out, in, inv_cos_bit_row[txw_idx][txh_idx]);
         transpose_8x8_avx2(in, out);
-        // eb_av1_iidentity8_c() shift left 1 bits
-        // round_shift_8x8(, -shift[1]) shift right 4 bits with complement
+        /*!< eb_av1_iidentity8_c() shift left 1 bits
+         *   round_shift_8x8(, -shift[1]) shift right 4 bits with complement */
         round_shift_8x8_double(out, -shift[0], -shift[1] - 1);
         write_buffer_8x8(out, output_r, stride_r, output_w, stride_w, 1, 0, bd);
         break;
@@ -1279,10 +1277,10 @@ static INLINE void round_shift_16x16(__m256i *in, int32_t shift) {
 }
 
 static INLINE void iidentity16_and_round_shift_avx2(__m256i *input, int32_t shift) {
-    // Input takes 18 bits, can be multiplied with new_sqrt2 in 32 bits space.
-    // Multiplied by half value new_sqrt2, instead (2*new_sqrt2),
-    // and round_shift() by one bit less (new_sqrt2_bits-1).
-    // round_shift(new_sqrt2_bits-1) and next round_shift(shift) in one pass.
+    /*!< Input takes 18 bits, can be multiplied with new_sqrt2 in 32 bits space.
+     *   Multiplied by half value new_sqrt2, instead (2*new_sqrt2),
+     *   and round_shift() by one bit less (new_sqrt2_bits-1).
+     *   round_shift(new_sqrt2_bits-1) and next round_shift(shift) in one pass. */
     const __m256i scalar = _mm256_set1_epi32(new_sqrt2);
     const __m256i rnding =
         _mm256_set1_epi32((1 << (new_sqrt2_bits - 2)) + (!!(shift) << (shift + new_sqrt2_bits - 2)));
@@ -1326,9 +1324,9 @@ static INLINE void idct16_col_avx2(__m256i *in, __m256i *out, int32_t bit, const
     int32_t        col = 0;
 
     for (col = 0; col < 2; ++col) {
-        //stage 1
+        /*!< stage 1 */
 
-        //stage 2
+        /*!< stage 2 */
         tmp[8] =
             half_btf_avx2(&cospi60, &in[1 * 2 + col], &cospim4, &in[15 * 2 + col], &rounding, bit);
         tmp[9] =
@@ -1346,7 +1344,7 @@ static INLINE void idct16_col_avx2(__m256i *in, __m256i *out, int32_t bit, const
         tmp[15] =
             half_btf_avx2(&cospi4, &in[1 * 2 + col], &cospi60, &in[15 * 2 + col], &rounding, bit);
 
-        //stage 3
+        /*!< stage 3 */
         tmp2[0] =
             half_btf_avx2(&cospi56, &in[2 * 2 + col], &cospim8, &in[14 * 2 + col], &rounding, bit);
         tmp2[1] =
@@ -1364,7 +1362,7 @@ static INLINE void idct16_col_avx2(__m256i *in, __m256i *out, int32_t bit, const
         tmp2[10] = _mm256_sub_epi32(tmp[15], tmp[14]);
         tmp2[11] = _mm256_add_epi32(tmp[14], tmp[15]);
 
-        //stage 4
+        /*!< stage 4 */
         tmp[0] =
             half_btf_avx2(&cospi32, &in[0 * 2 + col], &cospi32, &in[8 * 2 + col], &rounding, bit);
         tmp[1] =
@@ -1382,7 +1380,7 @@ static INLINE void idct16_col_avx2(__m256i *in, __m256i *out, int32_t bit, const
         tmp[13] = half_btf_avx2(&cospim16, &tmp2[6], &cospi48, &tmp2[9], &rounding, bit);
         tmp[14] = half_btf_avx2(&cospi48, &tmp2[5], &cospi16, &tmp2[10], &rounding, bit);
 
-        //stage 5
+        /*!< stage 5 */
         tmp2[12] = _mm256_sub_epi32(tmp2[11], tmp2[8]);
         tmp2[15] = _mm256_add_epi32(tmp2[8], tmp2[11]);
         tmp2[8]  = _mm256_add_epi32(tmp2[4], tmp2[7]);
@@ -1398,7 +1396,7 @@ static INLINE void idct16_col_avx2(__m256i *in, __m256i *out, int32_t bit, const
         tmp2[13] = _mm256_sub_epi32(tmp[14], tmp[13]);
         tmp2[14] = _mm256_add_epi32(tmp[13], tmp[14]);
 
-        //stage 6
+        /*!< stage 6 */
         tmp[0]  = _mm256_add_epi32(tmp2[0], tmp[7]);
         tmp[1]  = _mm256_add_epi32(tmp2[1], tmp2[6]);
         tmp[2]  = _mm256_add_epi32(tmp2[2], tmp2[5]);
@@ -1412,7 +1410,7 @@ static INLINE void idct16_col_avx2(__m256i *in, __m256i *out, int32_t bit, const
         tmp[12] = half_btf_avx2(&cospi32, &tmp2[11], &cospi32, &tmp2[12], &rounding, bit);
         tmp[13] = half_btf_avx2(&cospi32, &tmp2[10], &cospi32, &tmp2[13], &rounding, bit);
 
-        //stage 7
+        /*!< stage 7 */
         out[0 * 2 + col]  = _mm256_add_epi32(tmp[0], tmp2[15]);
         out[1 * 2 + col]  = _mm256_add_epi32(tmp[1], tmp2[14]);
         out[2 * 2 + col]  = _mm256_add_epi32(tmp[2], tmp[13]);
@@ -1484,9 +1482,9 @@ static INLINE void iadst16_col_avx2(__m256i *in, __m256i *out, int8_t cos_bit) {
     int32_t col = 0;
 
     for (col = 0; col < 2; ++col) {
-        //stage 1
+        /*!< stage 1 */
 
-        //stage 2
+        /*!< stage 2 */
         tmp[0] = half_btf_avx2(
             &cospi2, &in[15 * 2 + col], &cospi62, &in[0 * 2 + col], &rounding, cos_bit);
         tmp[1] = half_btf_avx2(
@@ -1520,7 +1518,7 @@ static INLINE void iadst16_col_avx2(__m256i *in, __m256i *out, int8_t cos_bit) {
         tmp[15] = half_btf_avx2(
             &cospi6, &in[1 * 2 + col], &cospim58, &in[14 * 2 + col], &rounding, cos_bit);
 
-        //stage 3
+        /*!< stage 3 */
         tmp3[0]  = _mm256_add_epi32(tmp[0], tmp[8]);
         tmp3[1]  = _mm256_add_epi32(tmp[1], tmp[9]);
         tmp3[2]  = _mm256_add_epi32(tmp[2], tmp[10]);
@@ -1538,7 +1536,7 @@ static INLINE void iadst16_col_avx2(__m256i *in, __m256i *out, int8_t cos_bit) {
         tmp2[14] = _mm256_sub_epi32(tmp[6], tmp[14]);
         tmp2[15] = _mm256_sub_epi32(tmp[7], tmp[15]);
 
-        //stage 4
+        /*!< stage 4 */
         tmp[8]  = half_btf_avx2(&cospi8, &tmp2[8], &cospi56, &tmp2[9], &rounding, cos_bit);
         tmp[9]  = half_btf_avx2(&cospi56, &tmp2[8], &cospim8, &tmp2[9], &rounding, cos_bit);
         tmp[10] = half_btf_avx2(&cospi40, &tmp2[10], &cospi24, &tmp2[11], &rounding, cos_bit);
@@ -1548,7 +1546,7 @@ static INLINE void iadst16_col_avx2(__m256i *in, __m256i *out, int8_t cos_bit) {
         tmp[14] = half_btf_avx2(&cospim24, &tmp2[14], &cospi40, &tmp2[15], &rounding, cos_bit);
         tmp[15] = half_btf_avx2(&cospi40, &tmp2[14], &cospi24, &tmp2[15], &rounding, cos_bit);
 
-        //stage 5
+        /*!< stage 5 */
         tmp3[8]  = _mm256_add_epi32(tmp3[0], tmp3[4]);
         tmp3[9]  = _mm256_add_epi32(tmp3[1], tmp3[5]);
         tmp3[10] = _mm256_add_epi32(tmp3[2], tmp3[6]);
@@ -1566,7 +1564,7 @@ static INLINE void iadst16_col_avx2(__m256i *in, __m256i *out, int8_t cos_bit) {
         tmp2[14] = _mm256_sub_epi32(tmp[10], tmp[14]);
         tmp2[15] = _mm256_sub_epi32(tmp[11], tmp[15]);
 
-        //stage 6
+        /*!< stage 6 */
         tmp[4]  = half_btf_avx2(&cospi16, &tmp2[4], &cospi48, &tmp2[5], &rounding, cos_bit);
         tmp[5]  = half_btf_avx2(&cospi48, &tmp2[4], &cospim16, &tmp2[5], &rounding, cos_bit);
         tmp[6]  = half_btf_avx2(&cospim48, &tmp2[6], &cospi16, &tmp2[7], &rounding, cos_bit);
@@ -1576,7 +1574,7 @@ static INLINE void iadst16_col_avx2(__m256i *in, __m256i *out, int8_t cos_bit) {
         tmp[14] = half_btf_avx2(&cospim48, &tmp2[14], &cospi16, &tmp2[15], &rounding, cos_bit);
         tmp[15] = half_btf_avx2(&cospi16, &tmp2[14], &cospi48, &tmp2[15], &rounding, cos_bit);
 
-        //stage 7
+        /*!< stage 7 */
         out[0 * 2 + col]  = _mm256_add_epi32(tmp3[8], tmp3[10]);
         out[2 * 2 + col]  = _mm256_add_epi32(tmp[12], tmp[14]);
         out[12 * 2 + col] = _mm256_add_epi32(tmp[5], tmp[7]);
@@ -1594,7 +1592,7 @@ static INLINE void iadst16_col_avx2(__m256i *in, __m256i *out, int8_t cos_bit) {
         tmp2[14]          = _mm256_sub_epi32(tmp[12], tmp[14]);
         tmp2[15]          = _mm256_sub_epi32(tmp[13], tmp[15]);
 
-        //stage 8
+        /*!< stage 8 */
         out[4 * 2 + col] =
             half_btf_avx2(&cospi32, &tmp2[6], &cospi32, &tmp2[7], &rounding, cos_bit);
         out[6 * 2 + col] =
@@ -1607,9 +1605,9 @@ static INLINE void iadst16_col_avx2(__m256i *in, __m256i *out, int8_t cos_bit) {
         tmp[7]  = half_btf_avx2(&cospi32, &tmp2[6], &cospim32, &tmp2[7], &rounding, cos_bit);
         tmp[11] = half_btf_avx2(&cospi32, &tmp2[10], &cospim32, &tmp2[11], &rounding, cos_bit);
         tmp[14] = half_btf_avx2(&cospi32, &tmp2[14], &cospi32, &tmp2[15], &rounding, cos_bit);
-        //range_check_buf(stage, input, bf1, size, stage_range[stage]);
+        /*!<range_check_buf(stage, input, bf1, size, stage_range[stage]);
 
-        //stage 9
+        /*!< stage 9 */
         out[1 * 2 + col]  = _mm256_sign_epi32(tmp2[8], negative);
         out[3 * 2 + col]  = _mm256_sign_epi32(tmp2[4], negative);
         out[5 * 2 + col]  = _mm256_sign_epi32(tmp[14], negative);
@@ -1691,16 +1689,16 @@ void eb_av1_inv_txfm2d_add_16x16_avx2(const int32_t *input, uint16_t *output_r, 
     }
 }
 
-// Note:
-//  Total 32x4 registers to represent 32x32 block coefficients.
-//  For high bit depth, each coefficient is 4-byte.
-//  Each __m256i register holds 8 coefficients.
-//  So each "row" we needs 4 register. Totally 32 rows
-//  Register layout:
-//   v0,   v1,   v2,   v3,
-//   v4,   v5,   v6,   v7,
-//   ... ...
-//   v124, v125, v126, v127
+/*!< Note:
+ *    Total 32x4 registers to represent 32x32 block coefficients.
+ *    For high bit depth, each coefficient is 4-byte.
+ *    Each __m256i register holds 8 coefficients.
+ *    So each "row" we needs 4 register. Totally 32 rows
+ *    Register layout:
+ *     v0,   v1,   v2,   v3,
+ *     v4,   v5,   v6,   v7,
+ *     ... ...
+ *     v124, v125, v126, v127 */
 
 static void transpose_32x32_8x8(const __m256i *in, __m256i *out) {
     __m256i u0, u1, u2, u3, u4, u5, u6, u7;
@@ -1889,8 +1887,8 @@ static void idct32_avx2(__m256i *in, __m256i *out, int32_t bit) {
     int32_t        col;
 
     for (col = 0; col < 4; ++col) {
-        // stage 0
-        // stage 1
+        /*!< stage 0 */
+        /*!< stage 1 */
         bf1[0]  = in[0 * 4 + col];
         bf1[1]  = in[16 * 4 + col];
         bf1[2]  = in[8 * 4 + col];
@@ -1924,7 +1922,7 @@ static void idct32_avx2(__m256i *in, __m256i *out, int32_t bit) {
         bf1[30] = in[15 * 4 + col];
         bf1[31] = in[31 * 4 + col];
 
-        // stage 2
+        /*!< stage 2 */
         bf0[0]  = bf1[0];
         bf0[1]  = bf1[1];
         bf0[2]  = bf1[2];
@@ -1958,7 +1956,7 @@ static void idct32_avx2(__m256i *in, __m256i *out, int32_t bit) {
         bf0[30] = half_btf_avx2(&cospi34, &bf1[17], &cospi30, &bf1[30], &rounding, bit);
         bf0[31] = half_btf_avx2(&cospi2, &bf1[16], &cospi62, &bf1[31], &rounding, bit);
 
-        // stage 3
+        /*!< stage 3 */
         bf1[0]  = bf0[0];
         bf1[1]  = bf0[1];
         bf1[2]  = bf0[2];
@@ -1992,7 +1990,7 @@ static void idct32_avx2(__m256i *in, __m256i *out, int32_t bit) {
         bf1[30] = _mm256_sub_epi32(bf0[31], bf0[30]);
         bf1[31] = _mm256_add_epi32(bf0[30], bf0[31]);
 
-        // stage 4
+        /*!< stage 4 */
         bf0[0]  = bf1[0];
         bf0[1]  = bf1[1];
         bf0[2]  = bf1[2];
@@ -2026,7 +2024,7 @@ static void idct32_avx2(__m256i *in, __m256i *out, int32_t bit) {
         bf0[30] = half_btf_avx2(&cospi56, &bf1[17], &cospi8, &bf1[30], &rounding, bit);
         bf0[31] = bf1[31];
 
-        // stage 5
+        /*!< stage 5 */
         bf1[0]  = half_btf_avx2(&cospi32, &bf0[0], &cospi32, &bf0[1], &rounding, bit);
         bf1[1]  = half_btf_avx2(&cospi32, &bf0[0], &cospim32, &bf0[1], &rounding, bit);
         bf1[2]  = half_btf_avx2(&cospi48, &bf0[2], &cospim16, &bf0[3], &rounding, bit);
@@ -2060,7 +2058,7 @@ static void idct32_avx2(__m256i *in, __m256i *out, int32_t bit) {
         bf1[30] = _mm256_add_epi32(bf0[29], bf0[30]);
         bf1[31] = _mm256_add_epi32(bf0[28], bf0[31]);
 
-        // stage 6
+        /*!< stage 6 */
         bf0[0]  = _mm256_add_epi32(bf1[0], bf1[3]);
         bf0[1]  = _mm256_add_epi32(bf1[1], bf1[2]);
         bf0[2]  = _mm256_sub_epi32(bf1[1], bf1[2]);
@@ -2094,7 +2092,7 @@ static void idct32_avx2(__m256i *in, __m256i *out, int32_t bit) {
         bf0[30] = bf1[30];
         bf0[31] = bf1[31];
 
-        // stage 7
+        /*!< stage 7 */
         bf1[0]  = _mm256_add_epi32(bf0[0], bf0[7]);
         bf1[1]  = _mm256_add_epi32(bf0[1], bf0[6]);
         bf1[2]  = _mm256_add_epi32(bf0[2], bf0[5]);
@@ -2128,7 +2126,7 @@ static void idct32_avx2(__m256i *in, __m256i *out, int32_t bit) {
         bf1[30] = _mm256_add_epi32(bf0[25], bf0[30]);
         bf1[31] = _mm256_add_epi32(bf0[24], bf0[31]);
 
-        // stage 8
+        /*!< stage 8 */
         bf0[0]  = _mm256_add_epi32(bf1[0], bf1[15]);
         bf0[1]  = _mm256_add_epi32(bf1[1], bf1[14]);
         bf0[2]  = _mm256_add_epi32(bf1[2], bf1[13]);
@@ -2162,7 +2160,7 @@ static void idct32_avx2(__m256i *in, __m256i *out, int32_t bit) {
         bf0[30] = bf1[30];
         bf0[31] = bf1[31];
 
-        // stage 9
+        /*!< stage 9 */
         out[0 * 4 + col]  = _mm256_add_epi32(bf0[0], bf0[31]);
         out[1 * 4 + col]  = _mm256_add_epi32(bf0[1], bf0[30]);
         out[2 * 4 + col]  = _mm256_add_epi32(bf0[2], bf0[29]);
@@ -2219,11 +2217,11 @@ void eb_av1_inv_txfm2d_add_32x32_avx2(const int32_t *coeff, uint16_t *output_r, 
         break;
     case IDTX:
         load_buffer_32x32(coeff, in);
-        // Operations can be joined together without losing precision
-        // eb_av1_iidentity32_c() shift left 2 bits
-        // round_shift_32x32(, -shift[0]) shift right 2 bits
-        // eb_av1_iidentity32_c() shift left 2 bits
-        // round_shift_32x32(, -shift[1]) shift right 4 bits with complement
+        /*!< Operations can be joined together without losing precision
+         *   eb_av1_iidentity32_c() shift left 2 bits
+         *   round_shift_32x32(, -shift[0]) shift right 2 bits
+         *   eb_av1_iidentity32_c() shift left 2 bits
+         *   round_shift_32x32(, -shift[1]) shift right 4 bits with complement */
         round_shift_32x32(in, -shift[0] - shift[1] - 4);
         write_buffer_32x32(in, output_r, stride_r, output_w, stride_w, 0, 0, bd);
         break;
@@ -2239,16 +2237,16 @@ static void idct8x8_low1_avx2(__m256i *in, __m256i *out, int32_t bit, int32_t do
     const int32_t  log_range = AOMMAX(16, bd + (do_cols ? 6 : 8));
     __m256i        x;
 
-    // stage 0
-    // stage 1
-    // stage 2
-    // stage 3
+    /*!< stage 0 */
+    /*!< stage 1 */
+    /*!< stage 2 */
+    /*!< stage 3 */
     x = _mm256_mullo_epi32(in[0], cospi32);
     x = _mm256_add_epi32(x, rnding);
     x = _mm256_srai_epi32(x, bit);
 
-    // stage 4
-    // stage 5
+    /*!< stage 4 */
+    /*!< stage 5 */
     if (!do_cols) {
         const int32_t log_range_out = AOMMAX(16, bd + 6);
         const __m256i clamp_lo_out  = _mm256_set1_epi32(
@@ -2294,9 +2292,9 @@ static void idct8x8_avx2(__m256i *in, __m256i *out, int32_t bit, int32_t do_cols
     __m256i        v0, v1, v2, v3, v4, v5, v6, v7;
     __m256i        x, y;
 
-    // stage 0
-    // stage 1
-    // stage 2
+    /*!< stage 0 */
+    /*!< stage 1 */
+    /*!< stage 2 */
     u0 = in[0];
     u1 = in[4];
     u2 = in[2];
@@ -2326,7 +2324,7 @@ static void idct8x8_avx2(__m256i *in, __m256i *out, int32_t bit, int32_t do_cols
     u6 = _mm256_add_epi32(u6, rnding);
     u6 = _mm256_srai_epi32(u6, bit);
 
-    // stage 3
+    /*!< stage 3 */
     x  = _mm256_mullo_epi32(u0, cospi32);
     y  = _mm256_mullo_epi32(u1, cospi32);
     v0 = _mm256_add_epi32(x, y);
@@ -2352,7 +2350,7 @@ static void idct8x8_avx2(__m256i *in, __m256i *out, int32_t bit, int32_t do_cols
     addsub_avx2(u4, u5, &v4, &v5, &clamp_lo, &clamp_hi);
     addsub_avx2(u7, u6, &v7, &v6, &clamp_lo, &clamp_hi);
 
-    // stage 4
+    /*!< stage 4 */
     addsub_avx2(v0, v3, &u0, &u3, &clamp_lo, &clamp_hi);
     addsub_avx2(v1, v2, &u1, &u2, &clamp_lo, &clamp_hi);
     u4 = v4;
@@ -2368,7 +2366,7 @@ static void idct8x8_avx2(__m256i *in, __m256i *out, int32_t bit, int32_t do_cols
     u5 = _mm256_add_epi32(u5, rnding);
     u5 = _mm256_srai_epi32(u5, bit);
 
-    // stage 5
+    /*!< stage 5 */
     if (do_cols) {
         addsub_no_clamp_avx2(u0, u7, out + 0, out + 7);
         addsub_no_clamp_avx2(u1, u6, out + 1, out + 6);
@@ -2399,9 +2397,9 @@ static void iadst8x8_low1_avx2(__m256i *in, __m256i *out, int32_t bit, int32_t d
     const __m256i  k_zero  = _mm256_setzero_si256();
     __m256i        u[8], x;
 
-    // stage 0
-    // stage 1
-    // stage 2
+    /*!< stage 0 */
+    /*!< stage 1 */
+    /*!< stage 2 */
 
     x    = _mm256_mullo_epi32(in[0], cospi60);
     u[0] = _mm256_add_epi32(x, rnding);
@@ -2412,8 +2410,8 @@ static void iadst8x8_low1_avx2(__m256i *in, __m256i *out, int32_t bit, int32_t d
     u[1] = _mm256_add_epi32(u[1], rnding);
     u[1] = _mm256_srai_epi32(u[1], bit);
 
-    // stage 3
-    // stage 4
+    /*!< stage 3 */
+    /*!< stage 4 */
     __m256i temp1, temp2;
     temp1 = _mm256_mullo_epi32(u[0], cospi16);
     x     = _mm256_mullo_epi32(u[1], cospi48);
@@ -2428,8 +2426,8 @@ static void iadst8x8_low1_avx2(__m256i *in, __m256i *out, int32_t bit, int32_t d
     u[5]  = _mm256_add_epi32(u[5], rnding);
     u[5]  = _mm256_srai_epi32(u[5], bit);
 
-    // stage 5
-    // stage 6
+    /*!< stage 5 */
+    /*!< stage 6 */
     temp1 = _mm256_mullo_epi32(u[0], cospi32);
     x     = _mm256_mullo_epi32(u[1], cospi32);
     u[2]  = _mm256_add_epi32(temp1, x);
@@ -2450,7 +2448,7 @@ static void iadst8x8_low1_avx2(__m256i *in, __m256i *out, int32_t bit, int32_t d
     u[7] = _mm256_add_epi32(u[7], rnding);
     u[7] = _mm256_srai_epi32(u[7], bit);
 
-    // stage 7
+    /*!< stage 7 */
     if (do_cols) {
         out[0] = u[0];
         out[1] = _mm256_sub_epi32(k_zero, u[4]);
@@ -2494,9 +2492,9 @@ static void iadst8x8_avx2(__m256i *in, __m256i *out, int32_t bit, int32_t do_col
     const __m256i  clamp_hi  = _mm256_set1_epi32((1 << (log_range - 1)) - 1);
     __m256i        u[8], v[8], x;
 
-    // stage 0
-    // stage 1
-    // stage 2
+    /*!< stage 0 */
+    /*!< stage 1 */
+    /*!< stage 2 */
 
     u[0] = _mm256_mullo_epi32(in[7], cospi4);
     x    = _mm256_mullo_epi32(in[0], cospi60);
@@ -2546,13 +2544,13 @@ static void iadst8x8_avx2(__m256i *in, __m256i *out, int32_t bit, int32_t do_col
     u[7] = _mm256_add_epi32(u[7], rnding);
     u[7] = _mm256_srai_epi32(u[7], bit);
 
-    // stage 3
+    /*!< stage 3 */
     addsub_avx2(u[0], u[4], &v[0], &v[4], &clamp_lo, &clamp_hi);
     addsub_avx2(u[1], u[5], &v[1], &v[5], &clamp_lo, &clamp_hi);
     addsub_avx2(u[2], u[6], &v[2], &v[6], &clamp_lo, &clamp_hi);
     addsub_avx2(u[3], u[7], &v[3], &v[7], &clamp_lo, &clamp_hi);
 
-    // stage 4
+    /*!< stage 4 */
     u[0] = v[0];
     u[1] = v[1];
     u[2] = v[2];
@@ -2582,13 +2580,13 @@ static void iadst8x8_avx2(__m256i *in, __m256i *out, int32_t bit, int32_t do_col
     u[7] = _mm256_add_epi32(u[7], rnding);
     u[7] = _mm256_srai_epi32(u[7], bit);
 
-    // stage 5
+    /*!< stage 5 */
     addsub_avx2(u[0], u[2], &v[0], &v[2], &clamp_lo, &clamp_hi);
     addsub_avx2(u[1], u[3], &v[1], &v[3], &clamp_lo, &clamp_hi);
     addsub_avx2(u[4], u[6], &v[4], &v[6], &clamp_lo, &clamp_hi);
     addsub_avx2(u[5], u[7], &v[5], &v[7], &clamp_lo, &clamp_hi);
 
-    // stage 6
+    /*!< stage 6 */
     u[0] = v[0];
     u[1] = v[1];
     u[4] = v[4];
@@ -2614,7 +2612,7 @@ static void iadst8x8_avx2(__m256i *in, __m256i *out, int32_t bit, int32_t do_col
     u[7] = _mm256_add_epi32(u[7], rnding);
     u[7] = _mm256_srai_epi32(u[7], bit);
 
-    // stage 7
+    /*!< stage 7 */
     if (do_cols) {
         out[0] = u[0];
         out[1] = _mm256_sub_epi32(k_zero, u[4]);
@@ -2714,18 +2712,18 @@ static void idct16_low1_avx2(__m256i *in, __m256i *out, int32_t bit, int32_t do_
     const __m256i  clamp_hi  = _mm256_set1_epi32((1 << (log_range - 1)) - 1);
 
     {
-        // stage 0
-        // stage 1
-        // stage 2
-        // stage 3
-        // stage 4
+        /*!< stage 0 */
+        /*!< stage 1 */
+        /*!< stage 2 */
+        /*!< stage 3 */
+        /*!< stage 4 */
         in[0] = _mm256_mullo_epi32(in[0], cospi32);
         in[0] = _mm256_add_epi32(in[0], rnding);
         in[0] = _mm256_srai_epi32(in[0], bit);
 
-        // stage 5
-        // stage 6
-        // stage 7
+        /*!< stage 5 */
+        /*!< stage 6 */
+        /*!< stage 7 */
         if (do_cols) {
             in[0] = _mm256_max_epi32(in[0], clamp_lo);
             in[0] = _mm256_min_epi32(in[0], clamp_hi);
@@ -2788,8 +2786,8 @@ static void idct16_low8_avx2(__m256i *in, __m256i *out, int32_t bit, int32_t do_
     __m256i        u[16], x, y;
 
     {
-        // stage 0
-        // stage 1
+        /*!< stage 0 */
+        /*!< stage 1 */
         u[0]  = in[0];
         u[2]  = in[4];
         u[4]  = in[2];
@@ -2799,7 +2797,7 @@ static void idct16_low8_avx2(__m256i *in, __m256i *out, int32_t bit, int32_t do_
         u[12] = in[3];
         u[14] = in[7];
 
-        // stage 2
+        /*!< stage 2 */
         u[15] = half_btf_0_avx2(&cospi4, &u[8], &rnding, bit);
         u[8]  = half_btf_0_avx2(&cospi60, &u[8], &rnding, bit);
 
@@ -2812,7 +2810,7 @@ static void idct16_low8_avx2(__m256i *in, __m256i *out, int32_t bit, int32_t do_
         u[11] = half_btf_0_avx2(&cospim52, &u[12], &rnding, bit);
         u[12] = half_btf_0_avx2(&cospi12, &u[12], &rnding, bit);
 
-        // stage 3
+        /*!< stage 3 */
         u[7] = half_btf_0_avx2(&cospi8, &u[4], &rnding, bit);
         u[4] = half_btf_0_avx2(&cospi56, &u[4], &rnding, bit);
         u[5] = half_btf_0_avx2(&cospim40, &u[6], &rnding, bit);
@@ -2823,7 +2821,7 @@ static void idct16_low8_avx2(__m256i *in, __m256i *out, int32_t bit, int32_t do_
         addsub_avx2(u[12], u[13], &u[12], &u[13], &clamp_lo, &clamp_hi);
         addsub_avx2(u[15], u[14], &u[15], &u[14], &clamp_lo, &clamp_hi);
 
-        // stage 4
+        /*!< stage 4 */
         x    = _mm256_mullo_epi32(u[0], cospi32);
         u[0] = _mm256_add_epi32(x, rnding);
         u[0] = _mm256_srai_epi32(u[0], bit);
@@ -2842,7 +2840,7 @@ static void idct16_low8_avx2(__m256i *in, __m256i *out, int32_t bit, int32_t do_
         u[13] = half_btf_avx2(&cospim16, &u[10], &cospi48, &u[13], &rnding, bit);
         u[10] = y;
 
-        // stage 5
+        /*!< stage 5 */
         addsub_avx2(u[0], u[3], &u[0], &u[3], &clamp_lo, &clamp_hi);
         addsub_avx2(u[1], u[2], &u[1], &u[2], &clamp_lo, &clamp_hi);
 
@@ -2861,7 +2859,7 @@ static void idct16_low8_avx2(__m256i *in, __m256i *out, int32_t bit, int32_t do_
         addsub_avx2(u[15], u[12], &u[15], &u[12], &clamp_lo, &clamp_hi);
         addsub_avx2(u[14], u[13], &u[14], &u[13], &clamp_lo, &clamp_hi);
 
-        // stage 6
+        /*!< stage 6 */
         addsub_avx2(u[0], u[7], &u[0], &u[7], &clamp_lo, &clamp_hi);
         addsub_avx2(u[1], u[6], &u[1], &u[6], &clamp_lo, &clamp_hi);
         addsub_avx2(u[2], u[5], &u[2], &u[5], &clamp_lo, &clamp_hi);
@@ -2886,7 +2884,7 @@ static void idct16_low8_avx2(__m256i *in, __m256i *out, int32_t bit, int32_t do_
         u[12] = _mm256_add_epi32(x, y);
         u[12] = _mm256_add_epi32(u[12], rnding);
         u[12] = _mm256_srai_epi32(u[12], bit);
-        // stage 7
+        /*!< stage 7 */
         if (do_cols) {
             addsub_no_clamp_avx2(u[0], u[15], out + 0, out + 15);
             addsub_no_clamp_avx2(u[1], u[14], out + 1, out + 14);
@@ -2956,8 +2954,8 @@ static void idct16_avx2(__m256i *in, __m256i *out, int32_t bit, int32_t do_cols,
     __m256i        u[16], v[16], x, y;
 
     {
-        // stage 0
-        // stage 1
+        /*!< stage 0 */
+        /*!< stage 1 */
         u[0]  = in[0];
         u[1]  = in[8];
         u[2]  = in[4];
@@ -2975,7 +2973,7 @@ static void idct16_avx2(__m256i *in, __m256i *out, int32_t bit, int32_t do_cols,
         u[14] = in[7];
         u[15] = in[15];
 
-        // stage 2
+        /*!< stage 2 */
         v[0] = u[0];
         v[1] = u[1];
         v[2] = u[2];
@@ -2994,7 +2992,7 @@ static void idct16_avx2(__m256i *in, __m256i *out, int32_t bit, int32_t do_cols,
         v[14] = half_btf_avx2(&cospi36, &u[9], &cospi28, &u[14], &rnding, bit);
         v[15] = half_btf_avx2(&cospi4, &u[8], &cospi60, &u[15], &rnding, bit);
 
-        // stage 3
+        /*!< stage 3 */
         u[0] = v[0];
         u[1] = v[1];
         u[2] = v[2];
@@ -3008,7 +3006,7 @@ static void idct16_avx2(__m256i *in, __m256i *out, int32_t bit, int32_t do_cols,
         addsub_avx2(v[12], v[13], &u[12], &u[13], &clamp_lo, &clamp_hi);
         addsub_avx2(v[15], v[14], &u[15], &u[14], &clamp_lo, &clamp_hi);
 
-        // stage 4
+        /*!< stage 4 */
         x    = _mm256_mullo_epi32(u[0], cospi32);
         y    = _mm256_mullo_epi32(u[1], cospi32);
         v[0] = _mm256_add_epi32(x, y);
@@ -3032,7 +3030,7 @@ static void idct16_avx2(__m256i *in, __m256i *out, int32_t bit, int32_t do_cols,
         v[14] = half_btf_avx2(&cospi48, &u[9], &cospi16, &u[14], &rnding, bit);
         v[15] = u[15];
 
-        // stage 5
+        /*!< stage 5 */
         addsub_avx2(v[0], v[3], &u[0], &u[3], &clamp_lo, &clamp_hi);
         addsub_avx2(v[1], v[2], &u[1], &u[2], &clamp_lo, &clamp_hi);
         u[4] = v[4];
@@ -3053,7 +3051,7 @@ static void idct16_avx2(__m256i *in, __m256i *out, int32_t bit, int32_t do_cols,
         addsub_avx2(v[15], v[12], &u[15], &u[12], &clamp_lo, &clamp_hi);
         addsub_avx2(v[14], v[13], &u[14], &u[13], &clamp_lo, &clamp_hi);
 
-        // stage 6
+        /*!< stage 6 */
         addsub_avx2(u[0], u[7], &v[0], &v[7], &clamp_lo, &clamp_hi);
         addsub_avx2(u[1], u[6], &v[1], &v[6], &clamp_lo, &clamp_hi);
         addsub_avx2(u[2], u[5], &v[2], &v[5], &clamp_lo, &clamp_hi);
@@ -3084,7 +3082,7 @@ static void idct16_avx2(__m256i *in, __m256i *out, int32_t bit, int32_t do_cols,
         v[14] = u[14];
         v[15] = u[15];
 
-        // stage 7
+        /*!< stage 7 */
         if (do_cols) {
             addsub_no_clamp_avx2(v[0], v[15], out + 0, out + 15);
             addsub_no_clamp_avx2(v[1], v[14], out + 1, out + 14);
@@ -3135,11 +3133,11 @@ static void iadst16_low1_avx2(__m256i *in, __m256i *out, int32_t bit, int32_t do
     const __m256i  zero    = _mm256_setzero_si256();
     __m256i        v[16], x, y, temp1, temp2;
 
-    // Calculate the column 0, 1, 2, 3
+    /*!< Calculate the column 0, 1, 2, 3 */
     {
-        // stage 0
-        // stage 1
-        // stage 2
+        /*!< stage 0 */
+        /*!< stage 1 */
+        /*!< stage 2 */
         x    = _mm256_mullo_epi32(in[0], cospi62);
         v[0] = _mm256_add_epi32(x, rnding);
         v[0] = _mm256_srai_epi32(v[0], bit);
@@ -3149,11 +3147,11 @@ static void iadst16_low1_avx2(__m256i *in, __m256i *out, int32_t bit, int32_t do
         v[1] = _mm256_add_epi32(v[1], rnding);
         v[1] = _mm256_srai_epi32(v[1], bit);
 
-        // stage 3
+        /*!< stage 3 */
         v[8] = v[0];
         v[9] = v[1];
 
-        // stage 4
+        /*!< stage 4 */
         temp1 = _mm256_mullo_epi32(v[8], cospi8);
         x     = _mm256_mullo_epi32(v[9], cospi56);
         temp1 = _mm256_add_epi32(temp1, x);
@@ -3168,13 +3166,13 @@ static void iadst16_low1_avx2(__m256i *in, __m256i *out, int32_t bit, int32_t do
         v[8]  = temp1;
         v[9]  = temp2;
 
-        // stage 5
+        /*!< stage 5 */
         v[4]  = v[0];
         v[5]  = v[1];
         v[12] = v[8];
         v[13] = v[9];
 
-        // stage 6
+        /*!< stage 6 */
         temp1 = _mm256_mullo_epi32(v[4], cospi16);
         x     = _mm256_mullo_epi32(v[5], cospi48);
         temp1 = _mm256_add_epi32(temp1, x);
@@ -3203,7 +3201,7 @@ static void iadst16_low1_avx2(__m256i *in, __m256i *out, int32_t bit, int32_t do
         v[12] = temp1;
         v[13] = temp2;
 
-        // stage 7
+        /*!< stage 7 */
         v[2]  = v[0];
         v[3]  = v[1];
         v[6]  = v[4];
@@ -3213,7 +3211,7 @@ static void iadst16_low1_avx2(__m256i *in, __m256i *out, int32_t bit, int32_t do
         v[14] = v[12];
         v[15] = v[13];
 
-        // stage 8
+        /*!< stage 8 */
         y    = _mm256_mullo_epi32(v[2], cospi32);
         x    = _mm256_mullo_epi32(v[3], cospi32);
         v[2] = _mm256_add_epi32(y, x);
@@ -3254,7 +3252,7 @@ static void iadst16_low1_avx2(__m256i *in, __m256i *out, int32_t bit, int32_t do
         v[15] = _mm256_add_epi32(v[15], rnding);
         v[15] = _mm256_srai_epi32(v[15], bit);
 
-        // stage 9
+        /*!< stage 9 */
         if (do_cols) {
             out[0]  = v[0];
             out[1]  = _mm256_sub_epi32(_mm256_setzero_si256(), v[8]);
@@ -3327,9 +3325,9 @@ static void iadst16_low8_avx2(__m256i *in, __m256i *out, int32_t bit, int32_t do
     __m256i        u[16], x, y;
 
     {
-        // stage 0
-        // stage 1
-        // stage 2
+        /*!< stage 0 */
+        /*!< stage 1 */
+        /*!< stage 2 */
         __m256i zero = _mm256_setzero_si256();
         x            = _mm256_mullo_epi32(in[0], cospi62);
         u[0]         = _mm256_add_epi32(x, rnding);
@@ -3399,7 +3397,7 @@ static void iadst16_low8_avx2(__m256i *in, __m256i *out, int32_t bit, int32_t do
         u[15] = _mm256_add_epi32(u[15], rnding);
         u[15] = _mm256_srai_epi32(u[15], bit);
 
-        // stage 3
+        /*!< stage 3 */
         addsub_avx2(u[0], u[8], &u[0], &u[8], &clamp_lo, &clamp_hi);
         addsub_avx2(u[1], u[9], &u[1], &u[9], &clamp_lo, &clamp_hi);
         addsub_avx2(u[2], u[10], &u[2], &u[10], &clamp_lo, &clamp_hi);
@@ -3409,7 +3407,7 @@ static void iadst16_low8_avx2(__m256i *in, __m256i *out, int32_t bit, int32_t do
         addsub_avx2(u[6], u[14], &u[6], &u[14], &clamp_lo, &clamp_hi);
         addsub_avx2(u[7], u[15], &u[7], &u[15], &clamp_lo, &clamp_hi);
 
-        // stage 4
+        /*!< stage 4 */
         y    = _mm256_mullo_epi32(u[8], cospi56);
         x    = _mm256_mullo_epi32(u[9], cospi56);
         u[8] = _mm256_mullo_epi32(u[8], cospi8);
@@ -3458,7 +3456,7 @@ static void iadst16_low8_avx2(__m256i *in, __m256i *out, int32_t bit, int32_t do
         u[15] = _mm256_add_epi32(u[15], rnding);
         u[15] = _mm256_srai_epi32(u[15], bit);
 
-        // stage 5
+        /*!< stage 5 */
         addsub_avx2(u[0], u[4], &u[0], &u[4], &clamp_lo, &clamp_hi);
         addsub_avx2(u[1], u[5], &u[1], &u[5], &clamp_lo, &clamp_hi);
         addsub_avx2(u[2], u[6], &u[2], &u[6], &clamp_lo, &clamp_hi);
@@ -3468,7 +3466,7 @@ static void iadst16_low8_avx2(__m256i *in, __m256i *out, int32_t bit, int32_t do
         addsub_avx2(u[10], u[14], &u[10], &u[14], &clamp_lo, &clamp_hi);
         addsub_avx2(u[11], u[15], &u[11], &u[15], &clamp_lo, &clamp_hi);
 
-        // stage 6
+        /*!< stage 6 */
         x    = _mm256_mullo_epi32(u[5], cospi48);
         y    = _mm256_mullo_epi32(u[4], cospi48);
         u[4] = _mm256_mullo_epi32(u[4], cospi16);
@@ -3517,7 +3515,7 @@ static void iadst16_low8_avx2(__m256i *in, __m256i *out, int32_t bit, int32_t do
         u[15] = _mm256_add_epi32(u[15], rnding);
         u[15] = _mm256_srai_epi32(u[15], bit);
 
-        // stage 7
+        /*!< stage 7 */
         addsub_avx2(u[0], u[2], &u[0], &u[2], &clamp_lo, &clamp_hi);
         addsub_avx2(u[1], u[3], &u[1], &u[3], &clamp_lo, &clamp_hi);
         addsub_avx2(u[4], u[6], &u[4], &u[6], &clamp_lo, &clamp_hi);
@@ -3527,7 +3525,7 @@ static void iadst16_low8_avx2(__m256i *in, __m256i *out, int32_t bit, int32_t do
         addsub_avx2(u[12], u[14], &u[12], &u[14], &clamp_lo, &clamp_hi);
         addsub_avx2(u[13], u[15], &u[13], &u[15], &clamp_lo, &clamp_hi);
 
-        // stage 8
+        /*!< stage 8 */
         y    = _mm256_mullo_epi32(u[2], cospi32);
         x    = _mm256_mullo_epi32(u[3], cospi32);
         u[2] = _mm256_add_epi32(y, x);
@@ -3567,7 +3565,7 @@ static void iadst16_low8_avx2(__m256i *in, __m256i *out, int32_t bit, int32_t do
         u[15] = _mm256_add_epi32(u[15], rnding);
         u[15] = _mm256_srai_epi32(u[15], bit);
 
-        // stage 9
+        /*!< stage 9 */
         if (do_cols) {
             out[0]  = u[0];
             out[1]  = _mm256_sub_epi32(_mm256_setzero_si256(), u[8]);
@@ -3640,9 +3638,9 @@ static void iadst16_avx2(__m256i *in, __m256i *out, int32_t bit, int32_t do_cols
     __m256i        u[16], v[16], x, y;
 
     {
-        // stage 0
-        // stage 1
-        // stage 2
+        /*!< stage 0 */
+        /*!< stage 1 */
+        /*!< stage 2 */
         v[0] = _mm256_mullo_epi32(in[15], cospi2);
         x    = _mm256_mullo_epi32(in[0], cospi62);
         v[0] = _mm256_add_epi32(v[0], x);
@@ -3739,7 +3737,7 @@ static void iadst16_avx2(__m256i *in, __m256i *out, int32_t bit, int32_t do_cols
         v[15] = _mm256_add_epi32(v[15], rnding);
         v[15] = _mm256_srai_epi32(v[15], bit);
 
-        // stage 3
+        /*!< stage 3 */
         addsub_avx2(v[0], v[8], &u[0], &u[8], &clamp_lo, &clamp_hi);
         addsub_avx2(v[1], v[9], &u[1], &u[9], &clamp_lo, &clamp_hi);
         addsub_avx2(v[2], v[10], &u[2], &u[10], &clamp_lo, &clamp_hi);
@@ -3749,7 +3747,7 @@ static void iadst16_avx2(__m256i *in, __m256i *out, int32_t bit, int32_t do_cols
         addsub_avx2(v[6], v[14], &u[6], &u[14], &clamp_lo, &clamp_hi);
         addsub_avx2(v[7], v[15], &u[7], &u[15], &clamp_lo, &clamp_hi);
 
-        // stage 4
+        /*!< stage 4 */
         v[0] = u[0];
         v[1] = u[1];
         v[2] = u[2];
@@ -3807,7 +3805,7 @@ static void iadst16_avx2(__m256i *in, __m256i *out, int32_t bit, int32_t do_cols
         v[15] = _mm256_add_epi32(v[15], rnding);
         v[15] = _mm256_srai_epi32(v[15], bit);
 
-        // stage 5
+        /*!< stage 5 */
         addsub_avx2(v[0], v[4], &u[0], &u[4], &clamp_lo, &clamp_hi);
         addsub_avx2(v[1], v[5], &u[1], &u[5], &clamp_lo, &clamp_hi);
         addsub_avx2(v[2], v[6], &u[2], &u[6], &clamp_lo, &clamp_hi);
@@ -3817,7 +3815,7 @@ static void iadst16_avx2(__m256i *in, __m256i *out, int32_t bit, int32_t do_cols
         addsub_avx2(v[10], v[14], &u[10], &u[14], &clamp_lo, &clamp_hi);
         addsub_avx2(v[11], v[15], &u[11], &u[15], &clamp_lo, &clamp_hi);
 
-        // stage 6
+        /*!< stage 6 */
         v[0] = u[0];
         v[1] = u[1];
         v[2] = u[2];
@@ -3876,7 +3874,7 @@ static void iadst16_avx2(__m256i *in, __m256i *out, int32_t bit, int32_t do_cols
         v[15] = _mm256_add_epi32(v[15], rnding);
         v[15] = _mm256_srai_epi32(v[15], bit);
 
-        // stage 7
+        /*!< stage 7 */
         addsub_avx2(v[0], v[2], &u[0], &u[2], &clamp_lo, &clamp_hi);
         addsub_avx2(v[1], v[3], &u[1], &u[3], &clamp_lo, &clamp_hi);
         addsub_avx2(v[4], v[6], &u[4], &u[6], &clamp_lo, &clamp_hi);
@@ -3886,7 +3884,7 @@ static void iadst16_avx2(__m256i *in, __m256i *out, int32_t bit, int32_t do_cols
         addsub_avx2(v[12], v[14], &u[12], &u[14], &clamp_lo, &clamp_hi);
         addsub_avx2(v[13], v[15], &u[13], &u[15], &clamp_lo, &clamp_hi);
 
-        // stage 8
+        /*!< stage 8 */
         v[0] = u[0];
         v[1] = u[1];
 
@@ -3939,7 +3937,7 @@ static void iadst16_avx2(__m256i *in, __m256i *out, int32_t bit, int32_t do_cols
         v[15] = _mm256_add_epi32(v[15], rnding);
         v[15] = _mm256_srai_epi32(v[15], bit);
 
-        // stage 9
+        /*!< stage 9 */
         if (do_cols) {
             out[0]  = v[0];
             out[1]  = _mm256_sub_epi32(_mm256_setzero_si256(), v[8]);
@@ -4036,20 +4034,20 @@ static void idct32_low1_avx2(__m256i *in, __m256i *out, int32_t bit, int32_t do_
     const __m256i  clamp_lo  = _mm256_set1_epi32(-(1 << (log_range - 1)));
     const __m256i  clamp_hi  = _mm256_set1_epi32((1 << (log_range - 1)) - 1);
     __m256i        x;
-    // stage 0
-    // stage 1
-    // stage 2
-    // stage 3
-    // stage 4
-    // stage 5
+    /*!< stage 0 */
+    /*!< stage 1 */
+    /*!< stage 2 */
+    /*!< stage 3 */
+    /*!< stage 4 */
+    /*!< stage 5 */
     x = _mm256_mullo_epi32(in[0], cospi32);
     x = _mm256_add_epi32(x, rounding);
     x = _mm256_srai_epi32(x, bit);
 
-    // stage 6
-    // stage 7
-    // stage 8
-    // stage 9
+    /*!< stage 6 */
+    /*!< stage 7 */
+    /*!< stage 8 */
+    /*!< stage 9 */
     if (do_cols) {
         x = _mm256_max_epi32(x, clamp_lo);
         x = _mm256_min_epi32(x, clamp_hi);
@@ -4136,8 +4134,8 @@ static void idct32_low8_avx2(__m256i *in, __m256i *out, int32_t bit, int32_t do_
     __m256i        bf1[32];
 
     {
-        // stage 0
-        // stage 1
+        /*!< stage 0 */
+        /*!< stage 1 */
         bf1[0]  = in[0];
         bf1[4]  = in[4];
         bf1[8]  = in[2];
@@ -4147,7 +4145,7 @@ static void idct32_low8_avx2(__m256i *in, __m256i *out, int32_t bit, int32_t do_
         bf1[24] = in[3];
         bf1[28] = in[7];
 
-        // stage 2
+        /*!< stage 2 */
         bf1[31] = half_btf_0_avx2(&cospi2, &bf1[16], &rounding, bit);
         bf1[16] = half_btf_0_avx2(&cospi62, &bf1[16], &rounding, bit);
         bf1[19] = half_btf_0_avx2(&cospim50, &bf1[28], &rounding, bit);
@@ -4157,7 +4155,7 @@ static void idct32_low8_avx2(__m256i *in, __m256i *out, int32_t bit, int32_t do_
         bf1[23] = half_btf_0_avx2(&cospim58, &bf1[24], &rounding, bit);
         bf1[24] = half_btf_0_avx2(&cospi6, &bf1[24], &rounding, bit);
 
-        // stage 3
+        /*!< stage 3 */
         bf1[15] = half_btf_0_avx2(&cospi4, &bf1[8], &rounding, bit);
         bf1[8]  = half_btf_0_avx2(&cospi60, &bf1[8], &rounding, bit);
 
@@ -4172,7 +4170,7 @@ static void idct32_low8_avx2(__m256i *in, __m256i *out, int32_t bit, int32_t do_
         bf1[29] = bf1[28];
         bf1[30] = bf1[31];
 
-        // stage 4
+        /*!< stage 4 */
         bf1[7] = half_btf_0_avx2(&cospi8, &bf1[4], &rounding, bit);
         bf1[4] = half_btf_0_avx2(&cospi56, &bf1[4], &rounding, bit);
 
@@ -4193,7 +4191,7 @@ static void idct32_low8_avx2(__m256i *in, __m256i *out, int32_t bit, int32_t do_
                            &rounding,
                            bit);
 
-        // stage 5
+        /*!< stage 5 */
         bf1[0] = half_btf_0_avx2(&cospi32, &bf1[0], &rounding, bit);
         bf1[1] = bf1[0];
         bf1[5] = bf1[4];
@@ -4202,7 +4200,7 @@ static void idct32_low8_avx2(__m256i *in, __m256i *out, int32_t bit, int32_t do_
         idct32_stage5_avx2(
             bf1, &cospim16, &cospi48, &cospi16, &cospim48, &clamp_lo, &clamp_hi, &rounding, bit);
 
-        // stage 6
+        /*!< stage 6 */
         bf1[3] = bf1[0];
         bf1[2] = bf1[1];
 
@@ -4218,13 +4216,13 @@ static void idct32_low8_avx2(__m256i *in, __m256i *out, int32_t bit, int32_t do_
                            &rounding,
                            bit);
 
-        // stage 7
+        /*!< stage 7 */
         idct32_stage7_avx2(bf1, &cospim32, &cospi32, &clamp_lo, &clamp_hi, &rounding, bit);
 
-        // stage 8
+        /*!< stage 8 */
         idct32_stage8_avx2(bf1, &cospim32, &cospi32, &clamp_lo, &clamp_hi, &rounding, bit);
 
-        // stage 9
+        /*!< stage 9 */
         idct32_stage9_avx2(bf1, out, do_cols, bd, out_shift, log_range);
     }
 }
@@ -4277,8 +4275,8 @@ static void idct32_low16_avx2(__m256i *in, __m256i *out, int32_t bit, int32_t do
     __m256i        bf1[32];
 
     {
-        // stage 0
-        // stage 1
+        /*!< stage 0 */
+        /*!< stage 1 */
         bf1[0]  = in[0];
         bf1[2]  = in[8];
         bf1[4]  = in[4];
@@ -4296,7 +4294,7 @@ static void idct32_low16_avx2(__m256i *in, __m256i *out, int32_t bit, int32_t do
         bf1[28] = in[7];
         bf1[30] = in[15];
 
-        // stage 2
+        /*!< stage 2 */
         bf1[31] = half_btf_0_avx2(&cospi2, &bf1[16], &rounding, bit);
         bf1[16] = half_btf_0_avx2(&cospi62, &bf1[16], &rounding, bit);
         bf1[17] = half_btf_0_avx2(&cospim34, &bf1[30], &rounding, bit);
@@ -4314,7 +4312,7 @@ static void idct32_low16_avx2(__m256i *in, __m256i *out, int32_t bit, int32_t do
         bf1[23] = half_btf_0_avx2(&cospim58, &bf1[24], &rounding, bit);
         bf1[24] = half_btf_0_avx2(&cospi6, &bf1[24], &rounding, bit);
 
-        // stage 3
+        /*!< stage 3 */
         bf1[15] = half_btf_0_avx2(&cospi4, &bf1[8], &rounding, bit);
         bf1[8]  = half_btf_0_avx2(&cospi60, &bf1[8], &rounding, bit);
         bf1[9]  = half_btf_0_avx2(&cospim36, &bf1[14], &rounding, bit);
@@ -4333,7 +4331,7 @@ static void idct32_low16_avx2(__m256i *in, __m256i *out, int32_t bit, int32_t do
         addsub_avx2(bf1[28], bf1[29], bf1 + 28, bf1 + 29, &clamp_lo, &clamp_hi);
         addsub_avx2(bf1[31], bf1[30], bf1 + 31, bf1 + 30, &clamp_lo, &clamp_hi);
 
-        // stage 4
+        /*!< stage 4 */
         bf1[7] = half_btf_0_avx2(&cospi8, &bf1[4], &rounding, bit);
         bf1[4] = half_btf_0_avx2(&cospi56, &bf1[4], &rounding, bit);
         bf1[5] = half_btf_0_avx2(&cospim40, &bf1[6], &rounding, bit);
@@ -4356,7 +4354,7 @@ static void idct32_low16_avx2(__m256i *in, __m256i *out, int32_t bit, int32_t do
                            &rounding,
                            bit);
 
-        // stage 5
+        /*!< stage 5 */
         bf1[0] = half_btf_0_avx2(&cospi32, &bf1[0], &rounding, bit);
         bf1[1] = bf1[0];
         bf1[3] = half_btf_0_avx2(&cospi16, &bf1[2], &rounding, bit);
@@ -4368,7 +4366,7 @@ static void idct32_low16_avx2(__m256i *in, __m256i *out, int32_t bit, int32_t do
         idct32_stage5_avx2(
             bf1, &cospim16, &cospi48, &cospi16, &cospim48, &clamp_lo, &clamp_hi, &rounding, bit);
 
-        // stage 6
+        /*!< stage 6 */
         addsub_avx2(bf1[0], bf1[3], bf1 + 0, bf1 + 3, &clamp_lo, &clamp_hi);
         addsub_avx2(bf1[1], bf1[2], bf1 + 1, bf1 + 2, &clamp_lo, &clamp_hi);
 
@@ -4384,13 +4382,13 @@ static void idct32_low16_avx2(__m256i *in, __m256i *out, int32_t bit, int32_t do
                            &rounding,
                            bit);
 
-        // stage 7
+        /*!< stage 7 */
         idct32_stage7_avx2(bf1, &cospim32, &cospi32, &clamp_lo, &clamp_hi, &rounding, bit);
 
-        // stage 8
+        /*!< stage 8 */
         idct32_stage8_avx2(bf1, &cospim32, &cospi32, &clamp_lo, &clamp_hi, &rounding, bit);
 
-        // stage 9
+        /*!< stage 9 */
         idct32_stage9_avx2(bf1, out, do_cols, bd, out_shift, log_range);
     }
 }
@@ -4455,8 +4453,8 @@ static void idct32_avx2_new(__m256i *in, __m256i *out, int32_t bit, int32_t do_c
     __m256i        bf1[32], bf0[32];
 
     {
-        // stage 0
-        // stage 1
+        /*!< stage 0 */
+        /*!< stage 1 */
         bf1[0]  = in[0];
         bf1[1]  = in[16];
         bf1[2]  = in[8];
@@ -4490,7 +4488,7 @@ static void idct32_avx2_new(__m256i *in, __m256i *out, int32_t bit, int32_t do_c
         bf1[30] = in[15];
         bf1[31] = in[31];
 
-        // stage 2
+        /*!< stage 2 */
         bf0[0]  = bf1[0];
         bf0[1]  = bf1[1];
         bf0[2]  = bf1[2];
@@ -4524,7 +4522,7 @@ static void idct32_avx2_new(__m256i *in, __m256i *out, int32_t bit, int32_t do_c
         bf0[30] = half_btf_avx2(&cospi34, &bf1[17], &cospi30, &bf1[30], &rounding, bit);
         bf0[31] = half_btf_avx2(&cospi2, &bf1[16], &cospi62, &bf1[31], &rounding, bit);
 
-        // stage 3
+        /*!< stage 3 */
         bf1[0]  = bf0[0];
         bf1[1]  = bf0[1];
         bf1[2]  = bf0[2];
@@ -4551,7 +4549,7 @@ static void idct32_avx2_new(__m256i *in, __m256i *out, int32_t bit, int32_t do_c
         addsub_avx2(bf0[28], bf0[29], bf1 + 28, bf1 + 29, &clamp_lo, &clamp_hi);
         addsub_avx2(bf0[31], bf0[30], bf1 + 31, bf1 + 30, &clamp_lo, &clamp_hi);
 
-        // stage 4
+        /*!< stage 4 */
         bf0[0] = bf1[0];
         bf0[1] = bf1[1];
         bf0[2] = bf1[2];
@@ -4583,7 +4581,7 @@ static void idct32_avx2_new(__m256i *in, __m256i *out, int32_t bit, int32_t do_c
         bf0[30] = half_btf_avx2(&cospi56, &bf1[17], &cospi8, &bf1[30], &rounding, bit);
         bf0[31] = bf1[31];
 
-        // stage 5
+        /*!< stage 5 */
         bf1[0] = half_btf_avx2(&cospi32, &bf0[0], &cospi32, &bf0[1], &rounding, bit);
         bf1[1] = half_btf_avx2(&cospi32, &bf0[0], &cospim32, &bf0[1], &rounding, bit);
         bf1[2] = half_btf_avx2(&cospi48, &bf0[2], &cospim16, &bf0[3], &rounding, bit);
@@ -4607,7 +4605,7 @@ static void idct32_avx2_new(__m256i *in, __m256i *out, int32_t bit, int32_t do_c
         addsub_avx2(bf0[31], bf0[28], bf1 + 31, bf1 + 28, &clamp_lo, &clamp_hi);
         addsub_avx2(bf0[30], bf0[29], bf1 + 30, bf1 + 29, &clamp_lo, &clamp_hi);
 
-        // stage 6
+        /*!< stage 6 */
         addsub_avx2(bf1[0], bf1[3], bf0 + 0, bf0 + 3, &clamp_lo, &clamp_hi);
         addsub_avx2(bf1[1], bf1[2], bf0 + 1, bf0 + 2, &clamp_lo, &clamp_hi);
         bf0[4] = bf1[4];
@@ -4635,7 +4633,7 @@ static void idct32_avx2_new(__m256i *in, __m256i *out, int32_t bit, int32_t do_c
         bf0[30] = bf1[30];
         bf0[31] = bf1[31];
 
-        // stage 7
+        /*!< stage 7 */
         addsub_avx2(bf0[0], bf0[7], bf1 + 0, bf1 + 7, &clamp_lo, &clamp_hi);
         addsub_avx2(bf0[1], bf0[6], bf1 + 1, bf1 + 6, &clamp_lo, &clamp_hi);
         addsub_avx2(bf0[2], bf0[5], bf1 + 2, bf1 + 5, &clamp_lo, &clamp_hi);
@@ -4657,7 +4655,7 @@ static void idct32_avx2_new(__m256i *in, __m256i *out, int32_t bit, int32_t do_c
         addsub_avx2(bf0[29], bf0[26], bf1 + 29, bf1 + 26, &clamp_lo, &clamp_hi);
         addsub_avx2(bf0[28], bf0[27], bf1 + 28, bf1 + 27, &clamp_lo, &clamp_hi);
 
-        // stage 8
+        /*!< stage 8 */
         addsub_avx2(bf1[0], bf1[15], bf0 + 0, bf0 + 15, &clamp_lo, &clamp_hi);
         addsub_avx2(bf1[1], bf1[14], bf0 + 1, bf0 + 14, &clamp_lo, &clamp_hi);
         addsub_avx2(bf1[2], bf1[13], bf0 + 2, bf0 + 13, &clamp_lo, &clamp_hi);
@@ -4683,7 +4681,7 @@ static void idct32_avx2_new(__m256i *in, __m256i *out, int32_t bit, int32_t do_c
         bf0[30] = bf1[30];
         bf0[31] = bf1[31];
 
-        // stage 9
+        /*!< stage 9 */
         if (do_cols) {
             addsub_no_clamp_avx2(bf0[0], bf0[31], out + 0, out + 31);
             addsub_no_clamp_avx2(bf0[1], bf0[30], out + 1, out + 30);
@@ -4792,18 +4790,18 @@ static void idct64_low1_avx2(__m256i *in, __m256i *out, int32_t bit, int32_t do_
     {
         __m256i x;
 
-        // stage 1
-        // stage 2
-        // stage 3
-        // stage 4
-        // stage 5
-        // stage 6
+        /*!< stage 1 */
+        /*!< stage 2 */
+        /*!< stage 3 */
+        /*!< stage 4 */
+        /*!< stage 5 */
+        /*!< stage 6 */
         x = half_btf_0_avx2(&cospi32, &in[0], &rnding, bit);
 
-        // stage 8
-        // stage 9
-        // stage 10
-        // stage 11
+        /*!< stage 8 */
+        /*!< stage 9 */
+        /*!< stage 10 */
+        /*!< stage 11 */
         if (do_cols) {
             x = _mm256_max_epi32(x, clamp_lo);
             x = _mm256_min_epi32(x, clamp_hi);
@@ -4940,7 +4938,7 @@ static void idct64_low8_avx2(__m256i *in, __m256i *out, int32_t bit, int32_t do_
     {
         __m256i u[64];
 
-        // stage 1
+        /*!< stage 1 */
         u[0]  = in[0];
         u[8]  = in[4];
         u[16] = in[2];
@@ -4950,7 +4948,7 @@ static void idct64_low8_avx2(__m256i *in, __m256i *out, int32_t bit, int32_t do_
         u[48] = in[3];
         u[56] = in[7];
 
-        // stage 2
+        /*!< stage 2 */
         u[63] = half_btf_0_avx2(&cospi1, &u[32], &rnding, bit);
         u[32] = half_btf_0_avx2(&cospi63, &u[32], &rnding, bit);
         u[39] = half_btf_0_avx2(&cospim57, &u[56], &rnding, bit);
@@ -4960,7 +4958,7 @@ static void idct64_low8_avx2(__m256i *in, __m256i *out, int32_t bit, int32_t do_
         u[47] = half_btf_0_avx2(&cospim61, &u[48], &rnding, bit);
         u[48] = half_btf_0_avx2(&cospi3, &u[48], &rnding, bit);
 
-        // stage 3
+        /*!< stage 3 */
         u[31] = half_btf_0_avx2(&cospi2, &u[16], &rnding, bit);
         u[16] = half_btf_0_avx2(&cospi62, &u[16], &rnding, bit);
         u[23] = half_btf_0_avx2(&cospim58, &u[24], &rnding, bit);
@@ -4974,7 +4972,7 @@ static void idct64_low8_avx2(__m256i *in, __m256i *out, int32_t bit, int32_t do_
         u[57] = u[56];
         u[62] = u[63];
 
-        // stage 4
+        /*!< stage 4 */
         __m256i temp1, temp2;
         u[15] = half_btf_0_avx2(&cospi4, &u[8], &rnding, bit);
         u[8]  = half_btf_0_avx2(&cospi60, &u[8], &rnding, bit);
@@ -4999,7 +4997,7 @@ static void idct64_low8_avx2(__m256i *in, __m256i *out, int32_t bit, int32_t do_
         u[49] = half_btf_avx2(&cospim52, &u[46], &cospi12, &u[49], &rnding, bit);
         u[46] = temp2;
 
-        // stage 5
+        /*!< stage 5 */
         u[9]  = u[8];
         u[14] = u[15];
 
@@ -5028,7 +5026,7 @@ static void idct64_low8_avx2(__m256i *in, __m256i *out, int32_t bit, int32_t do_
         u[60] = u[63];
         u[61] = u[62];
 
-        // stage 6
+        /*!< stage 6 */
         temp1 = half_btf_0_avx2(&cospi32, &u[0], &rnding, bit);
         u[1]  = half_btf_0_avx2(&cospi32, &u[0], &rnding, bit);
         u[0]  = temp1;
@@ -5070,7 +5068,7 @@ static void idct64_low8_avx2(__m256i *in, __m256i *out, int32_t bit, int32_t do_
         u[50] = half_btf_avx2(&cospim40, &u[45], &cospi24, &u[50], &rnding, bit);
         u[45] = temp2;
 
-        // stage 7
+        /*!< stage 7 */
         u[3]  = u[0];
         u[2]  = u[1];
         u[11] = u[8];
@@ -5097,7 +5095,7 @@ static void idct64_low8_avx2(__m256i *in, __m256i *out, int32_t bit, int32_t do_
             }
         }
 
-        // stage 8
+        /*!< stage 8 */
         u[7] = u[0];
         u[6] = u[1];
         u[5] = u[2];
@@ -5116,13 +5114,13 @@ static void idct64_low8_avx2(__m256i *in, __m256i *out, int32_t bit, int32_t do_
                            &rnding,
                            bit);
 
-        // stage 9
+        /*!< stage 9 */
         idct64_stage9_avx2(u, &cospim32, &cospi32, &clamp_lo, &clamp_hi, &rnding, bit);
 
-        // stage 10
+        /*!< stage 10 */
         idct64_stage10_avx2(u, &cospim32, &cospi32, &clamp_lo, &clamp_hi, &rnding, bit);
 
-        // stage 11
+        /*!< stage 11 */
         idct64_stage11_avx2(u, out, do_cols, bd, out_shift, log_range);
     }
 }
@@ -5195,7 +5193,7 @@ static void idct64_low16_avx2(__m256i *in, __m256i *out, int32_t bit, int32_t do
     {
         __m256i u[64];
         __m256i tmp1, tmp2, tmp3, tmp4;
-        // stage 1
+        /*!< stage 1 */
         u[0]  = in[0];
         u[32] = in[1];
         u[36] = in[9];
@@ -5213,7 +5211,7 @@ static void idct64_low16_avx2(__m256i *in, __m256i *out, int32_t bit, int32_t do
         u[8]  = in[4];
         u[12] = in[12];
 
-        // stage 2
+        /*!< stage 2 */
         u[63] = half_btf_0_avx2(&cospi1, &u[32], &rnding, bit);
         u[32] = half_btf_0_avx2(&cospi63, &u[32], &rnding, bit);
         u[35] = half_btf_0_avx2(&cospim49, &u[60], &rnding, bit);
@@ -5231,7 +5229,7 @@ static void idct64_low16_avx2(__m256i *in, __m256i *out, int32_t bit, int32_t do
         u[51] = half_btf_0_avx2(&cospi13, &u[44], &rnding, bit);
         u[44] = half_btf_0_avx2(&cospi51, &u[44], &rnding, bit);
 
-        // stage 3
+        /*!< stage 3 */
         u[31] = half_btf_0_avx2(&cospi2, &u[16], &rnding, bit);
         u[16] = half_btf_0_avx2(&cospi62, &u[16], &rnding, bit);
         u[19] = half_btf_0_avx2(&cospim50, &u[28], &rnding, bit);
@@ -5257,7 +5255,7 @@ static void idct64_low16_avx2(__m256i *in, __m256i *out, int32_t bit, int32_t do
         u[61] = u[60];
         u[62] = u[63];
 
-        // stage 4
+        /*!< stage 4 */
         u[15] = half_btf_0_avx2(&cospi4, &u[8], &rnding, bit);
         u[8]  = half_btf_0_avx2(&cospi60, &u[8], &rnding, bit);
         u[11] = half_btf_0_avx2(&cospim52, &u[12], &rnding, bit);
@@ -5298,7 +5296,7 @@ static void idct64_low16_avx2(__m256i *in, __m256i *out, int32_t bit, int32_t do
         u[45] = tmp3;
         u[46] = tmp4;
 
-        // stage 5
+        /*!< stage 5 */
         u[7] = half_btf_0_avx2(&cospi8, &u[4], &rnding, bit);
         u[4] = half_btf_0_avx2(&cospi56, &u[4], &rnding, bit);
 
@@ -5328,7 +5326,7 @@ static void idct64_low16_avx2(__m256i *in, __m256i *out, int32_t bit, int32_t do
             addsub_avx2(u[i + 6], u[i + 5], &u[i + 6], &u[i + 5], &clamp_lo, &clamp_hi);
         }
 
-        // stage 6
+        /*!< stage 6 */
         tmp1 = half_btf_0_avx2(&cospi32, &u[0], &rnding, bit);
         u[1] = half_btf_0_avx2(&cospi32, &u[0], &rnding, bit);
         u[0] = tmp1;
@@ -5376,7 +5374,7 @@ static void idct64_low16_avx2(__m256i *in, __m256i *out, int32_t bit, int32_t do
         u[44] = tmp3;
         u[45] = tmp4;
 
-        // stage 7
+        /*!< stage 7 */
         u[3] = u[0];
         u[2] = u[1];
         tmp1 = half_btf_avx2(&cospim32, &u[5], &cospi32, &u[6], &rnding, bit);
@@ -5407,7 +5405,7 @@ static void idct64_low16_avx2(__m256i *in, __m256i *out, int32_t bit, int32_t do
             }
         }
 
-        // stage 8
+        /*!< stage 8 */
         for (i = 0; i < 4; ++i) addsub_avx2(u[i], u[7 - i], &u[i], &u[7 - i], &clamp_lo, &clamp_hi);
         idct64_stage8_avx2(u,
                            &cospim32,
@@ -5421,13 +5419,13 @@ static void idct64_low16_avx2(__m256i *in, __m256i *out, int32_t bit, int32_t do
                            &rnding,
                            bit);
 
-        // stage 9
+        /*!< stage 9 */
         idct64_stage9_avx2(u, &cospim32, &cospi32, &clamp_lo, &clamp_hi, &rnding, bit);
 
-        // stage 10
+        /*!< stage 10 */
         idct64_stage10_avx2(u, &cospim32, &cospi32, &clamp_lo, &clamp_hi, &rnding, bit);
 
-        // stage 11
+        /*!< stage 11 */
         idct64_stage11_avx2(u, out, do_cols, bd, out_shift, log_range);
     }
 }
@@ -5524,7 +5522,7 @@ static void idct64_avx2(__m256i *in, __m256i *out, int32_t bit, int32_t do_cols,
     {
         __m256i u[64], v[64];
 
-        // stage 1
+        /*!< stage 1 */
         u[32] = in[1];
         u[34] = in[17];
         u[36] = in[9];
@@ -5562,7 +5560,7 @@ static void idct64_avx2(__m256i *in, __m256i *out, int32_t bit, int32_t do_cols,
         u[0] = in[0];
         u[2] = in[16];
 
-        // stage 2
+        /*!< stage 2 */
         v[32] = half_btf_0_avx2(&cospi63, &u[32], &rnding, bit);
         v[33] = half_btf_0_avx2(&cospim33, &u[62], &rnding, bit);
         v[34] = half_btf_0_avx2(&cospi47, &u[34], &rnding, bit);
@@ -5596,7 +5594,7 @@ static void idct64_avx2(__m256i *in, __m256i *out, int32_t bit, int32_t do_cols,
         v[62] = half_btf_0_avx2(&cospi31, &u[62], &rnding, bit);
         v[63] = half_btf_0_avx2(&cospi1, &u[32], &rnding, bit);
 
-        // stage 3
+        /*!< stage 3 */
         u[16] = half_btf_0_avx2(&cospi62, &v[16], &rnding, bit);
         u[17] = half_btf_0_avx2(&cospim34, &v[30], &rnding, bit);
         u[18] = half_btf_0_avx2(&cospi46, &v[18], &rnding, bit);
@@ -5619,7 +5617,7 @@ static void idct64_avx2(__m256i *in, __m256i *out, int32_t bit, int32_t do_cols,
             addsub_avx2(v[i + 3], v[i + 2], &u[i + 3], &u[i + 2], &clamp_lo, &clamp_hi);
         }
 
-        // stage 4
+        /*!< stage 4 */
         v[8]  = half_btf_0_avx2(&cospi60, &u[8], &rnding, bit);
         v[9]  = half_btf_0_avx2(&cospim36, &u[14], &rnding, bit);
         v[10] = half_btf_0_avx2(&cospi44, &u[10], &rnding, bit);
@@ -5656,7 +5654,7 @@ static void idct64_avx2(__m256i *in, __m256i *out, int32_t bit, int32_t do_cols,
         v[61] = half_btf_avx2(&cospim4, &u[34], &cospi60, &u[61], &rnding, bit);
         v[62] = half_btf_avx2(&cospi60, &u[33], &cospi4, &u[62], &rnding, bit);
 
-        // stage 5
+        /*!< stage 5 */
         u[4] = half_btf_0_avx2(&cospi56, &v[4], &rnding, bit);
         u[5] = half_btf_0_avx2(&cospim40, &v[6], &rnding, bit);
         u[6] = half_btf_0_avx2(&cospi24, &v[6], &rnding, bit);
@@ -5689,7 +5687,7 @@ static void idct64_avx2(__m256i *in, __m256i *out, int32_t bit, int32_t do_cols,
             addsub_avx2(v[i + 6], v[i + 5], &u[i + 6], &u[i + 5], &clamp_lo, &clamp_hi);
         }
 
-        // stage 6
+        /*!< stage 6 */
         v[0] = half_btf_0_avx2(&cospi32, &u[0], &rnding, bit);
         v[1] = half_btf_0_avx2(&cospi32, &u[0], &rnding, bit);
         v[2] = half_btf_0_avx2(&cospi48, &u[2], &rnding, bit);
@@ -5740,7 +5738,7 @@ static void idct64_avx2(__m256i *in, __m256i *out, int32_t bit, int32_t do_cols,
         v[60] = half_btf_avx2(&cospi56, &u[35], &cospi8, &u[60], &rnding, bit);
         v[61] = half_btf_avx2(&cospi56, &u[34], &cospi8, &u[61], &rnding, bit);
 
-        // stage 7
+        /*!< stage 7 */
         addsub_avx2(v[0], v[3], &u[0], &u[3], &clamp_lo, &clamp_hi);
         addsub_avx2(v[1], v[2], &u[1], &u[2], &clamp_lo, &clamp_hi);
 
@@ -5777,7 +5775,7 @@ static void idct64_avx2(__m256i *in, __m256i *out, int32_t bit, int32_t do_cols,
             }
         }
 
-        // stage 8
+        /*!< stage 8 */
         for (i = 0; i < 4; ++i) addsub_avx2(u[i], u[7 - i], &v[i], &v[7 - i], &clamp_lo, &clamp_hi);
         v[8]  = u[8];
         v[9]  = u[9];
@@ -5818,7 +5816,7 @@ static void idct64_avx2(__m256i *in, __m256i *out, int32_t bit, int32_t do_cols,
         v[58] = half_btf_avx2(&cospi48, &u[37], &cospi16, &u[58], &rnding, bit);
         v[59] = half_btf_avx2(&cospi48, &u[36], &cospi16, &u[59], &rnding, bit);
 
-        // stage 9
+        /*!< stage 9 */
         for (i = 0; i < 8; ++i)
             addsub_avx2(v[i], v[15 - i], &u[i], &u[15 - i], &clamp_lo, &clamp_hi);
         for (i = 16; i < 20; ++i) {
@@ -5839,7 +5837,7 @@ static void idct64_avx2(__m256i *in, __m256i *out, int32_t bit, int32_t do_cols,
             addsub_avx2(v[i], v[i ^ 15], &u[i], &u[i ^ 15], &clamp_lo, &clamp_hi);
         for (i = 48; i < 56; i++)
             addsub_avx2(v[i ^ 15], v[i], &u[i ^ 15], &u[i], &clamp_lo, &clamp_hi);
-        // stage 10
+        /*!< stage 10 */
         for (i = 0; i < 16; i++)
             addsub_avx2(u[i], u[31 - i], &v[i], &v[31 - i], &clamp_lo, &clamp_hi);
         for (i = 32; i < 40; i++) v[i] = u[i];
@@ -5863,7 +5861,7 @@ static void idct64_avx2(__m256i *in, __m256i *out, int32_t bit, int32_t do_cols,
 
         for (i = 56; i < 64; i++) v[i] = u[i];
 
-        // stage 11
+        /*!< stage 11 */
         if (do_cols) {
             for (i = 0; i < 32; i++)
                 addsub_no_clamp_avx2(v[i], v[63 - i], &out[(i)], &out[(63 - i)]);
@@ -5944,7 +5942,7 @@ static void highbd_inv_txfm2d_add_no_identity_avx2(const int32_t *input, uint16_
     int32_t ud_flip, lr_flip;
     get_flip_cfg(tx_type, &ud_flip, &lr_flip);
 
-    // 1st stage: column transform
+    /*!< 1st stage: column transform */
     for (int32_t i = 0; i < buf_size_nonzero_h_div8; i++) {
         __m256i        buf0[64];
         const int32_t *input_row = input + i * input_stride * 8;
@@ -5971,7 +5969,7 @@ static void highbd_inv_txfm2d_add_no_identity_avx2(const int32_t *input, uint16_
                 transpose_8x8_avx2(&buf0[j * 8], &_buf1[j * txfm_size_row]);
         }
     }
-    // 2nd stage: column transform
+    /*!< 2nd stage: column transform */
     for (int32_t i = 0; i < buf_size_w_div8; i++) {
         col_txfm(buf1 + i * txfm_size_row,
                  buf1 + i * txfm_size_row,
@@ -5984,7 +5982,7 @@ static void highbd_inv_txfm2d_add_no_identity_avx2(const int32_t *input, uint16_
             buf1 + i * txfm_size_row, buf1 + i * txfm_size_row, txfm_size_row, -shift[1]);
     }
 
-    // write to buffer
+    /*!< write to buffer */
     if (txfm_size_col >= 16) {
         for (int32_t i = 0; i < (txfm_size_col >> 4); i++) {
             highbd_write_buffer_16xn_avx2(buf1 + i * txfm_size_row * 2,
@@ -6027,7 +6025,7 @@ static void highbd_inv_txfm2d_add_idtx_avx2(const int32_t *input, uint16_t *outp
     int32_t ud_flip, lr_flip, j;
     get_flip_cfg(tx_type, &ud_flip, &lr_flip);
 
-    // 1st stage: row transform
+    /*!< 1st stage: row transform */
     for (int32_t i = 0; i < (row_max >> 3); ++i) {
         __m256i        buf0[32];
         const int32_t *input_row = input + i * input_stride * 8;
@@ -6053,7 +6051,7 @@ static void highbd_inv_txfm2d_add_idtx_avx2(const int32_t *input, uint16_t *outp
             _buf1[j * txfm_size_row + 7] = buf0[j * 8 + 7];
         }
     }
-    // 2nd stage: column transform
+    /*!< 2nd stage: column transform */
     for (int32_t i = 0; i < (input_stride >> 3); i++) {
         col_txfm(buf1 + i * txfm_size_row,
                  buf1 + i * txfm_size_row,
@@ -6066,7 +6064,7 @@ static void highbd_inv_txfm2d_add_idtx_avx2(const int32_t *input, uint16_t *outp
             buf1 + i * txfm_size_row, buf1 + i * txfm_size_row, txfm_size_row, -shift[1]);
     }
 
-    // write to buffer
+    /*!< write to buffer */
     if (txfm_size_col >= 16) {
         for (int32_t i = 0; i < (txfm_size_col >> 4); i++) {
             highbd_write_buffer_16xn_avx2(buf1 + i * txfm_size_row * 2,
@@ -6107,7 +6105,7 @@ static void highbd_inv_txfm2d_add_v_identity_avx2(const int32_t *input, uint16_t
     int32_t ud_flip, lr_flip;
     get_flip_cfg(tx_type, &ud_flip, &lr_flip);
 
-    for (int32_t i = 0; i < (buf_size_h_div8 /*<< 1*/); ++i) {
+    for (int32_t i = 0; i < (buf_size_h_div8 /*!< << 1 */); ++i) {
         __m256i        buf0[16];
         const int32_t *input_row = input + i * input_stride * 8;
         for (int32_t j = 0; j < buf_size_w_div4; ++j) {
@@ -6144,7 +6142,7 @@ static void highbd_inv_txfm2d_add_v_identity_avx2(const int32_t *input, uint16_t
             buf1 + i * txfm_size_row, buf1 + i * txfm_size_row, txfm_size_row, -shift[1]);
     }
 
-    // write to buffer
+    /*!< write to buffer */
     if (txfm_size_col >= 16) {
         for (int32_t i = 0; i < (txfm_size_col >> 4); i++) {
             highbd_write_buffer_16xn_avx2(buf1 + i * txfm_size_row * 2,
@@ -6224,7 +6222,7 @@ static void highbd_inv_txfm2d_add_h_identity_avx2(const int32_t *input, uint16_t
             buf1 + i * txfm_size_row, buf1 + i * txfm_size_row, txfm_size_row, -shift[1]);
     }
 
-    // write to buffer
+    /*!< write to buffer */
     if (txfm_size_col >= 16) {
         for (int32_t i = 0; i < (txfm_size_col >> 4); i++) {
             highbd_write_buffer_16xn_avx2(buf1 + i * txfm_size_row * 2,

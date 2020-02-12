@@ -1,13 +1,11 @@
-/*
- * Copyright (c) 2016, Alliance for Open Media. All rights reserved
+/*!< Copyright (c) 2016, Alliance for Open Media. All rights reserved
  *
  * This source code is subject to the terms of the BSD 2 Clause License and
  * the Alliance for Open Media Patent License 1.0. If the BSD 2 Clause License
  * was not distributed with this source code in the LICENSE file, you can
  * obtain it at www.aomedia.org/license/software. If the Alliance for Open
  * Media Patent License 1.0 was not distributed with this source code in the
- * PATENTS file, you can obtain it at www.aomedia.org/license/patent.
- */
+ * PATENTS file, you can obtain it at www.aomedia.org/license/patent. */
 
 #ifndef EbWarpedMotion_h
 #define EbWarpedMotion_h
@@ -19,7 +17,7 @@ extern "C" {
 #endif
 
 
-// Bits of precision used for the model
+/*!< Bits of precision used for the model */
 #define WARPEDMODEL_PREC_BITS 16
 #define WARPEDMODEL_ROW3HOMO_PREC_BITS 16
 
@@ -27,7 +25,7 @@ extern "C" {
 #define WARPEDMODEL_NONDIAGAFFINE_CLAMP (1 << (WARPEDMODEL_PREC_BITS - 3))
 #define WARPEDMODEL_ROW3HOMO_CLAMP (1 << (WARPEDMODEL_PREC_BITS - 2))
 
-// Bits of subpel precision for warped interpolation
+/*!< Bits of subpel precision for warped interpolation */
 #define WARPEDPIXEL_PREC_BITS 6
 #define WARPEDPIXEL_PREC_SHIFTS (1 << WARPEDPIXEL_PREC_BITS)
 

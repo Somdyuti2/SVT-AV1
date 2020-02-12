@@ -1,7 +1,5 @@
-/*
-* Copyright(c) 2019 Intel Corporation
-* SPDX - License - Identifier: BSD - 2 - Clause - Patent
-*/
+/*!< Copyright(c) 2019 Intel Corporation
+ * SPDX - License - Identifier: BSD - 2 - Clause - Patent */
 
 #ifndef EbReferenceObject_h
 #define EbReferenceObject_h
@@ -18,16 +16,16 @@ typedef struct EbReferenceObject {
     uint64_t             ref_poc;
     uint16_t             qp;
     EB_SLICE             slice_type;
-    uint8_t              intra_coded_area; //percentage of intra coded area 0-100%
+    uint8_t              intra_coded_area; /*!< percentage of intra coded area 0-100% */
     uint8_t              intra_coded_area_sb
-        [MAX_NUMBER_OF_TREEBLOCKS_PER_PICTURE]; //percentage of intra coded area 0-100%
+        [MAX_NUMBER_OF_TREEBLOCKS_PER_PICTURE]; /*!< percentage of intra coded area 0-100% */
     uint32_t non_moving_index_array
-        [MAX_NUMBER_OF_TREEBLOCKS_PER_PICTURE]; //array to hold non-moving blocks in reference frames
+        [MAX_NUMBER_OF_TREEBLOCKS_PER_PICTURE]; /*!< array to hold non-moving blocks in reference frames */
     uint8_t              tmp_layer_idx;
     EbBool               is_scene_change;
     uint16_t             pic_avg_variance;
     uint8_t              average_intensity;
-    AomFilmGrain         film_grain_params; //Film grain parameters for a reference frame
+    AomFilmGrain         film_grain_params; /*!< Film grain parameters for a reference frame */
     uint32_t             cdef_frame_strength;
     int8_t               sg_frame_ep;
     FRAME_CONTEXT        frame_context;
@@ -55,7 +53,7 @@ typedef struct EbPaReferenceObject {
     uint16_t             variance[MAX_NUMBER_OF_TREEBLOCKS_PER_PICTURE];
     uint8_t              y_mean[MAX_NUMBER_OF_TREEBLOCKS_PER_PICTURE];
     EB_SLICE             slice_type;
-    uint32_t             dependent_pictures_count; //number of pic using this reference frame
+    uint32_t             dependent_pictures_count; /*!< number of pic using this reference frame */
 
 } EbPaReferenceObject;
 
@@ -65,9 +63,9 @@ typedef struct EbPaReferenceObjectDescInitData {
     EbPictureBufferDescInitData sixteenth_picture_desc_init_data;
 } EbPaReferenceObjectDescInitData;
 
-/**************************************
- * Extern Function Declarations
- **************************************/
+/**************************************/
+/*!< Extern Function Declarations */
+/**************************************/
 extern EbErrorType eb_reference_object_creator(EbPtr *object_dbl_ptr, EbPtr object_init_data_ptr);
 
 extern EbErrorType eb_pa_reference_object_creator(EbPtr *object_dbl_ptr,

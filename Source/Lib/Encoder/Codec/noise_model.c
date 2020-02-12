@@ -1,13 +1,11 @@
-/*
- * Copyright (c) 2017, Alliance for Open Media. All rights reserved
+/*!< Copyright (c) 2017, Alliance for Open Media. All rights reserved
  *
  * This source code is subject to the terms of the BSD 2 Clause License and
  * the Alliance for Open Media Patent License 1.0. If the BSD 2 Clause License
  * was not distributed with this source code in the LICENSE file, you can
  * obtain it at www.aomedia.org/license/software. If the Alliance for Open
  * Media Patent License 1.0 was not distributed with this source code in the
- * PATENTS file, you can obtain it at www.aomedia.org/license/patent.
- */
+ * PATENTS file, you can obtain it at www.aomedia.org/license/patent. */
 
 #include <math.h>
 #include <stdio.h>
@@ -32,8 +30,8 @@ void pack2d_src(uint8_t *in8_bit_buffer, uint32_t in8_stride, uint8_t *inn_bit_b
                 uint32_t inn_stride, uint16_t *out16_bit_buffer, uint32_t out_stride,
                 uint32_t width, uint32_t height);
 
-// Defines a function that can be used to obtain the mean of a block for the
-// provided data type (uint8_t, or uint16_t)
+/*!< Defines a function that can be used to obtain the mean of a block for the
+ *   provided data type (uint8_t, or uint16_t) */
 #define GET_BLOCK_MEAN(INT_TYPE, suffix)                          \
     static double get_block_mean_##suffix(const INT_TYPE *data,   \
                                           int32_t         w,      \
@@ -68,8 +66,8 @@ static INLINE double fclamp(double value, double low, double high) {
     return value < low ? low : (value > high ? high : value);
 }
 
-// Defines a function that can be used to obtain the variance of a block
-// for the provided data type (uint8_t, or uint16_t)
+/*!< Defines a function that can be used to obtain the variance of a block
+ *   for the provided data type (uint8_t, or uint16_t) */
 #define GET_NOISE_VAR(INT_TYPE, suffix)                                     \
     static double get_noise_var_##suffix(const INT_TYPE *data,              \
                                          const INT_TYPE *denoised,          \
@@ -207,7 +205,7 @@ static void noise_strength_solver_copy(AomNoiseStrengthSolver *dest, AomNoiseStr
     dest->total         = src->total;
 }
 
-// Return the number of coefficients required for the given parameters
+/*!< Return the number of coefficients required for the given parameters */
 static int32_t num_coeffs(const AomNoiseModelParams params) {
     const int32_t n = 2 * params.lag + 1;
     switch (params.shape) {
@@ -231,8 +229,8 @@ static int32_t noise_state_init(AomNoiseState *state, int32_t n, int32_t bit_dep
 static void set_chroma_coefficient_fallback_soln(AomEquationSystem *eqns) {
     const double  k_tolerance = 1e-6;
     const int32_t last        = eqns->n - 1;
-    // Set all of the AR coefficients to zero, but try to solve for correlation
-    // with the luma channel
+    /*!< Set all of the AR coefficients to zero, but try to solve for correlation
+     *   with the luma channel */
     memset(eqns->x, 0, sizeof(*eqns->x) * eqns->n);
     if (fabs(eqns->A[last * eqns->n + last]) > k_tolerance)
         eqns->x[last] = eqns->b[last] / eqns->A[last * eqns->n + last];
@@ -286,13 +284,13 @@ void eb_aom_noise_strength_solver_add_measurement(AomNoiseStrengthSolver *solver
 }
 
 int32_t eb_aom_noise_strength_solver_solve(AomNoiseStrengthSolver *solver) {
-    // Add regularization proportional to the number of constraints
+    /*!< Add regularization proportional to the number of constraints */
     const int32_t n       = solver->num_bins;
     const double  k_alpha = 2.0 * (double)(solver->num_equations) / n;
     int32_t       result  = 0;
     double        mean    = 0;
 
-    // Do this in a non-destructive manner so it is not confusing to the caller
+    /*!< Do this in a non-destructive manner so it is not confusing to the caller */
     double *old_a = solver->eqns.A;
     double *A     = (double *)malloc(sizeof(*A) * n * n);
     if (!A) {
@@ -309,7 +307,7 @@ int32_t eb_aom_noise_strength_solver_solve(AomNoiseStrengthSolver *solver) {
         A[i * n + i_hi] -= k_alpha;
     }
 
-    // Small regularization to give average noise strength
+    /*!< Small regularization to give average noise strength */
     mean = solver->total / solver->num_equations;
     for (int32_t i = 0; i < n; ++i) {
         A[i * n + i] += 1.0 / 8192.;
@@ -341,9 +339,9 @@ double eb_aom_noise_strength_solver_get_center(const AomNoiseStrengthSolver *sol
     return ((double)i) / (n - 1) * range + solver->min_intensity;
 }
 
-// Computes the residual if a point were to be removed from the lut. This is
-// calculated as the area between the output of the solver and the line segment
-// that would be formed between [x_{i - 1}, x_{i + 1}).
+/*!< Computes the residual if a point were to be removed from the lut. This is
+ *   calculated as the area between the output of the solver and the line segment
+ *   that would be formed between [x_{i - 1}, x_{i + 1}). */
 static void update_piecewise_linear_residual(const AomNoiseStrengthSolver *  solver,
                                              const AomNoiseStrengthLut *lut, double *residual,
                                              int32_t start, int32_t end) {
@@ -372,8 +370,7 @@ static void update_piecewise_linear_residual(const AomNoiseStrengthSolver *  sol
 int32_t eb_aom_noise_strength_solver_fit_piecewise(const AomNoiseStrengthSolver *solver,
                                                    int32_t                       max_output_points,
                                                    AomNoiseStrengthLut *    lut) {
-    // The tolerance is normalized to be give consistent results between
-    // different bit-depths.
+    /*!< The tolerance is normalized to be give consistent results between different bit-depths. */
     const double k_tolerance = solver->max_intensity * 0.00625 / 255.0;
     if (!eb_aom_noise_strength_lut_init(lut, solver->num_bins)) {
         SVT_ERROR("Failed to init lut\n");
@@ -390,8 +387,8 @@ int32_t eb_aom_noise_strength_solver_fit_piecewise(const AomNoiseStrengthSolver 
 
     update_piecewise_linear_residual(solver, lut, residual, 0, solver->num_bins);
 
-    // Greedily remove points if there are too many or if it doesn't hurt local
-    // approximation (never remove the end points)
+    /*!< Greedily remove points if there are too many or if it doesn't hurt local
+     *   approximation (never remove the end points) */
     while (lut->num_points > 2) {
         int32_t min_index = 1;
         for (int32_t j = 1; j < lut->num_points - 1; ++j) {
@@ -457,7 +454,7 @@ int32_t eb_aom_flat_block_finder_init(AomFlatBlockFinder *block_finder, int32_t 
         }
     }
 
-    // Lazy inverse using existing equation solver.
+    /*!< Lazy inverse using existing equation solver. */
     for (i = 0; i < kLowPolyNumParams; ++i) {
         memset(eqns.b, 0, sizeof(*eqns.b) * kLowPolyNumParams);
         eqns.b[i] = 1;
@@ -532,11 +529,11 @@ static int32_t compare_scores(const void *a, const void *b) {
 int32_t eb_aom_flat_block_finder_run(const AomFlatBlockFinder *block_finder,
                                      const uint8_t *const data, int32_t w, int32_t h,
                                      int32_t stride, uint8_t *flat_blocks) {
-    // The gradient-based features used in this code are based on:
-    //  A. Kokaram, D. Kelly, H. Denman and A. Crawford, "Measuring noise
-    //  correlation for improved video denoising," 2012 19th, ICIP.
-    // The thresholds are more lenient to allow for correct grain modeling
-    // if extreme cases.
+    /*!< The gradient-based features used in this code are based on:
+     *    A. Kokaram, D. Kelly, H. Denman and A. Crawford, "Measuring noise
+     *    correlation for improved video denoising," 2012 19th, ICIP.
+     *   The thresholds are more lenient to allow for correct grain modeling
+     *   if extreme cases. */
     const int32_t  block_size        = block_finder->block_size;
     const int32_t  n                 = block_size * block_size;
     const double   k_trace_threshold = 0.15 / (32 * 32);
@@ -563,7 +560,7 @@ int32_t eb_aom_flat_block_finder_run(const AomFlatBlockFinder *block_finder,
 #endif
     for (by = 0; by < num_blocks_h; ++by) {
         for (bx = 0; bx < num_blocks_w; ++bx) {
-            // Compute gradient covariance matrix.
+            /*!< Compute gradient covariance matrix. */
             double  g_xx = 0, g_xy = 0, g_yy = 0;
             double  var  = 0;
             double  mean = 0;
@@ -588,7 +585,7 @@ int32_t eb_aom_flat_block_finder_run(const AomFlatBlockFinder *block_finder,
             }
             mean /= (block_size - 2) * (block_size - 2);
 
-            // Normalize gradients by BlockSize.
+            /*!< Normalize gradients by BlockSize. */
             g_xx /= ((block_size - 2) * (block_size - 2));
             g_xy /= ((block_size - 2) * (block_size - 2));
             g_yy /= ((block_size - 2) * (block_size - 2));
@@ -599,18 +596,18 @@ int32_t eb_aom_flat_block_finder_run(const AomFlatBlockFinder *block_finder,
                 const double  det     = g_xx * g_yy - g_xy * g_xy;
                 const double  e1      = (trace + sqrt(trace * trace - 4 * det)) / 2.;
                 const double  e2      = (trace - sqrt(trace * trace - 4 * det)) / 2.;
-                const double  norm    = e1; // Spectral norm
+                const double  norm    = e1; /*!< Spectral norm */
                 const double  ratio   = (e1 / AOMMAX(e2, 1e-6));
                 const int32_t is_flat = (trace < k_trace_threshold) &&
                                         (ratio < k_ratio_threshold) && (norm < k_norm_threshold) &&
                                         (var > k_var_threshold);
-                // The following weights are used to combine the above features to give
-                // a sigmoid score for flatness. If the input was normalized to [0,100]
-                // the magnitude of these values would be close to 1 (e.g., weights
-                // corresponding to variance would be a factor of 10000x smaller).
-                // The weights are given in the following order:
-                //    [{var}, {ratio}, {trace}, {norm}, offset]
-                // with one of the most discriminative being simply the variance.
+                /*!< The following weights are used to combine the above features to give
+                 *   a sigmoid score for flatness. If the input was normalized to [0,100]
+                 *   the magnitude of these values would be close to 1 (e.g., weights
+                 *   corresponding to variance would be a factor of 10000x smaller).
+                 *   The weights are given in the following order:
+                 *      [{var}, {ratio}, {trace}, {norm}, offset]
+                 *   with one of the most discriminative being simply the variance. */
                 const double weights[5] = {-6682, -0.2056, 13087, -12434, 2.5694};
                 const float  score =
                     (float)(1.0 /
@@ -632,9 +629,9 @@ int32_t eb_aom_flat_block_finder_run(const AomFlatBlockFinder *block_finder,
 #ifdef NOISE_MODEL_LOG_SCORE
     SVT_ERROR("];\n");
 #endif
-    // Find the top-scored blocks (most likely to be flat) and set the flat blocks
-    // be the union of the thresholded results and the top 10th percentile of the
-    // scored results.
+    /*!< Find the top-scored blocks (most likely to be flat) and set the flat blocks
+     *   be the union of the thresholded results and the top 10th percentile of the
+     *   scored results. */
     qsort(scores, num_blocks_w * num_blocks_h, sizeof(*scores), &compare_scores);
     const int32_t top_nth_percentile = num_blocks_w * num_blocks_h * 90 / 100;
     const float   score_threshold    = scores[top_nth_percentile].score;
@@ -724,9 +721,9 @@ void eb_aom_noise_model_free(AomNoiseModel *model) {
     memset(model, 0, sizeof(*model));
 }
 
-// Extracts the neighborhood defined by coords around point (x, y) from
-// the difference between the data and denoised images. Also extracts the
-// entry (possibly downsampled) for (x, y) in the alt_data (e.g., luma).
+/*!< Extracts the neighborhood defined by coords around point (x, y) from
+ *   the difference between the data and denoised images. Also extracts the
+ *   entry (possibly downsampled) for (x, y) in the alt_data (e.g., luma). */
 #define EXTRACT_AR_ROW(INT_TYPE, suffix)                                                 \
     static double extract_ar_row_##suffix(int32_t(*coords)[2],                           \
                                           int32_t               num_coords,              \
@@ -865,8 +862,7 @@ static void add_noise_std_observations(AomNoiseModel *noise_model, int32_t c, co
                 (h >> sub_log2[1]) - by * (block_size >> sub_log2[1]), block_size >> sub_log2[1]);
             const int32_t num_samples_w = AOMMIN(
                 (w >> sub_log2[0]) - bx * (block_size >> sub_log2[0]), (block_size >> sub_log2[0]));
-            // Make sure that we have a reasonable amount of samples to consider the
-            // block
+            /*!< Make sure that we have a reasonable amount of samples to consider the block */
             if (num_samples_w * num_samples_h > block_size) {
                 const double block_mean = get_block_mean(alt_data ? alt_data : data,
                                                          w,
@@ -886,24 +882,24 @@ static void add_noise_std_observations(AomNoiseModel *noise_model, int32_t c, co
                                                        block_size >> sub_log2[0],
                                                        block_size >> sub_log2[1],
                                                        noise_model->params.use_highbd);
-                // We want to remove the part of the noise that came from being
-                // correlated with luma. Note that the noise solver for luma must
-                // have already been run.
+                /*!< We want to remove the part of the noise that came from being
+                 *   correlated with luma. Note that the noise solver for luma must
+                 *   have already been run. */
                 const double luma_strength = c > 0
                                                  ? luma_gain * noise_strength_solver_get_value(
                                                                    noise_strength_luma, block_mean)
                                                  : 0;
                 const double corr = c > 0 ? coeffs[num_coords] : 0;
-                // Chroma noise:
-                //    N(0, noise_var) = N(0, uncorr_var) + corr * N(0, luma_strength^2)
-                // The uncorrelated component:
-                //   uncorr_var = noise_var - (corr * luma_strength)^2
-                // But don't allow fully correlated noise (hence the max), since the
-                // synthesis cannot model it.
+                /*!< Chroma noise:
+                 *      N(0, noise_var) = N(0, uncorr_var) + corr * N(0, luma_strength^2)
+                 *   The uncorrelated component:
+                 *     uncorr_var = noise_var - (corr * luma_strength)^2
+                 *   But don't allow fully correlated noise (hence the max), since the
+                 *   synthesis cannot model it. */
                 const double uncorr_std =
                     sqrt(AOMMAX(noise_var / 16, noise_var - pow(corr * luma_strength, 2)));
-                // After we've removed correlation with luma, undo the gain that will
-                // come from running the IIR filter.
+                /*!< After we've removed correlation with luma, undo the gain that will
+                 *   come from running the IIR filter. */
                 const double adjusted_strength = uncorr_std / noise_gain;
                 eb_aom_noise_strength_solver_add_measurement(
                     noise_strength_solver, block_mean, adjusted_strength);
@@ -917,31 +913,31 @@ static int32_t ar_equation_system_solve(AomNoiseState *state, int32_t is_chroma)
     state->ar_gain    = 1.0;
     if (!ret) return ret;
 
-    // Update the AR gain from the equation system as it will be used to fit
-    // the noise strength as a function of intensity.  In the Yule-Walker
-    // equations, the diagonal should be the variance of the correlated noise.
-    // In the case of the least squares estimate, there will be some variability
-    // in the diagonal. So use the mean of the diagonal as the estimate of
-    // overall variance (this works for least squares or Yule-Walker formulation).
+    /*!< Update the AR gain from the equation system as it will be used to fit
+     *   the noise strength as a function of intensity.  In the Yule-Walker
+     *   equations, the diagonal should be the variance of the correlated noise.
+     *   In the case of the least squares estimate, there will be some variability
+     *   in the diagonal. So use the mean of the diagonal as the estimate of
+     *   overall variance (this works for least squares or Yule-Walker formulation). */
     double        var = 0;
     const int32_t n   = state->eqns.n;
     for (int32_t i = 0; i < (state->eqns.n - is_chroma); ++i)
         var += state->eqns.A[i * n + i] / state->num_observations;
     var /= (n - is_chroma);
 
-    // Keep track of E(Y^2) = <b, x> + E(X^2)
-    // In the case that we are using chroma and have an estimate of correlation
-    // with luma we adjust that estimate slightly to remove the correlated bits by
-    // subtracting out the last column of a scaled by our correlation estimate
-    // from b. E(y^2) = <b - A(:, end)*x(end), x>
+    /*!< Keep track of E(Y^2) = <b, x> + E(X^2)
+     *   In the case that we are using chroma and have an estimate of correlation
+     *   with luma we adjust that estimate slightly to remove the correlated bits by
+     *   subtracting out the last column of a scaled by our correlation estimate
+     *   from b. E(y^2) = <b - A(:, end)*x(end), x> */
     double sum_covar = 0;
     for (int32_t i = 0; i < state->eqns.n - is_chroma; ++i) {
         double bi = state->eqns.b[i];
         if (is_chroma) bi -= state->eqns.A[i * n + (n - 1)] * state->eqns.x[n - 1];
         sum_covar += (bi * state->eqns.x[i]) / state->num_observations;
     }
-    // Now, get an estimate of the variance of uncorrelated noise signal and use
-    // it to determine the gain of the AR filter.
+    /*!< Now, get an estimate of the variance of uncorrelated noise signal and use
+     *   it to determine the gain of the AR filter. */
     const double noise_var = AOMMAX(var - sum_covar, 1e-6);
     state->ar_gain         = AOMMAX(1, sqrt(AOMMAX(var / noise_var, 1e-6)));
     return ret;
@@ -968,14 +964,14 @@ AomNoiseStatus eb_aom_noise_model_update(AomNoiseModel *const noise_model,
         return AOM_NOISE_STATUS_INVALID_ARGUMENT;
     }
 
-    // Clear the latest equation system
+    /*!< Clear the latest equation system */
     for (i = 0; i < 3; ++i) {
         equation_system_clear(&noise_model->latest_state[i].eqns);
         noise_model->latest_state[i].num_observations = 0;
         noise_strength_solver_clear(&noise_model->latest_state[i].strength_solver);
     }
 
-    // Check that we have enough flat blocks
+    /*!< Check that we have enough flat blocks */
     for (i = 0; i < num_blocks_h * num_blocks_w; ++i) {
         if (flat_blocks[i]) num_blocks++;
     }
@@ -1042,7 +1038,7 @@ AomNoiseStatus eb_aom_noise_model_update(AomNoiseModel *const noise_model,
             return AOM_NOISE_STATUS_INTERNAL_ERROR;
         }
 
-        // Check noise characteristics and return if error.
+        /*!< Check noise characteristics and return if error. */
         //    if (channel == 0 &&
         //        noise_model->combined_state[channel].strength_solver.num_equations >
         //            0 &&
@@ -1105,7 +1101,7 @@ int32_t eb_aom_noise_model_get_grain_parameters(AomNoiseModel *const noise_model
 
     film_grain->ar_coeff_lag = noise_model->params.lag;
 
-    // Convert the scaling functions to 8 bit values
+    /*!< Convert the scaling functions to 8 bit values */
     AomNoiseStrengthLut scaling_points[3];
     eb_aom_noise_strength_solver_fit_piecewise(
         &noise_model->combined_state[0].strength_solver, 14, scaling_points + 0);
@@ -1114,9 +1110,9 @@ int32_t eb_aom_noise_model_get_grain_parameters(AomNoiseModel *const noise_model
     eb_aom_noise_strength_solver_fit_piecewise(
         &noise_model->combined_state[2].strength_solver, 10, scaling_points + 2);
 
-    // Both the domain and the range of the scaling functions in the film_grain
-    // are normalized to 8-bit (e.g., they are implicitly scaled during grain
-    // synthesis).
+    /*!< Both the domain and the range of the scaling functions in the film_grain
+     *   are normalized to 8-bit (e.g., they are implicitly scaled during grain
+     *   synthesis). */
     const double strength_divisor  = 1 << (noise_model->params.bit_depth - 8);
     double       max_scaling_value = 1e-4;
     for (int32_t c = 0; c < 3; ++c) {
@@ -1129,7 +1125,7 @@ int32_t eb_aom_noise_model_get_grain_parameters(AomNoiseModel *const noise_model
         }
     }
 
-    // Scaling_shift values are in the range [8,11]
+    /*!< Scaling_shift values are in the range [8,11] */
     const int32_t max_scaling_value_log2 = clamp((int32_t)floor(log2(max_scaling_value) + 1), 2, 5);
     film_grain->scaling_shift            = 5 + (8 - max_scaling_value_log2);
 
@@ -1154,7 +1150,7 @@ int32_t eb_aom_noise_model_get_grain_parameters(AomNoiseModel *const noise_model
     eb_aom_noise_strength_lut_free(scaling_points + 1);
     eb_aom_noise_strength_lut_free(scaling_points + 2);
 
-    // Convert the ar_coeffs into 8-bit values
+    /*!< Convert the ar_coeffs into 8-bit values */
     const int32_t n_coeff   = noise_model->combined_state[0].eqns.n;
     double        max_coeff = 1e-4, min_coeff = -1e-4;
     double        y_corr[2]         = {0, 0};
@@ -1165,10 +1161,10 @@ int32_t eb_aom_noise_model_get_grain_parameters(AomNoiseModel *const noise_model
             max_coeff = AOMMAX(max_coeff, eqns->x[i]);
             min_coeff = AOMMIN(min_coeff, eqns->x[i]);
         }
-        // Since the correlation between luma/chroma was computed in an already
-        // scaled space, we adjust it in the un-scaled space.
+        /*!< Since the correlation between luma/chroma was computed in an already
+         *   scaled space, we adjust it in the un-scaled space. */
         AomNoiseStrengthSolver *solver = &noise_model->combined_state[c].strength_solver;
-        // Compute a weighted average of the strength for the channel.
+        /*!< Compute a weighted average of the strength for the channel. */
         double average_strength = 0, total_weight = 0;
         for (int32_t i = 0; i < solver->eqns.n; ++i) {
             double w = 0;
@@ -1190,8 +1186,8 @@ int32_t eb_aom_noise_model_get_grain_parameters(AomNoiseModel *const noise_model
             min_coeff     = AOMMIN(min_coeff, y_corr[c - 1]);
         }
     }
-    // Shift value: AR coeffs range (values 6-9)
-    // 6: [-2, 2),  7: [-1, 1), 8: [-0.5, 0.5), 9: [-0.25, 0.25)
+    /*!< Shift value: AR coeffs range (values 6-9)
+     *   6: [-2, 2),  7: [-1, 1), 8: [-0.5, 0.5), 9: [-0.25, 0.25) */
     film_grain->ar_coeff_shift =
         clamp(7 - (int32_t)AOMMAX(1 + floor(log2(max_coeff)), ceil(log2(-min_coeff))), 6, 9);
     double   scale_ar_coeff = 1 << film_grain->ar_coeff_shift;
@@ -1211,15 +1207,15 @@ int32_t eb_aom_noise_model_get_grain_parameters(AomNoiseModel *const noise_model
         }
     }
 
-    // At the moment, the noise modeling code assumes that the chroma scaling
-    // functions are a function of luma.
-    film_grain->cb_mult      = 128; // 8 bits
-    film_grain->cb_luma_mult = 192; // 8 bits
-    film_grain->cb_offset    = 256; // 9 bits
+    /*!< At the moment, the noise modeling code assumes that the chroma scaling
+     *   functions are a function of luma. */
+    film_grain->cb_mult      = 128; /*!< 8 bits */
+    film_grain->cb_luma_mult = 192; /*!< 8 bits */
+    film_grain->cb_offset    = 256; /*!< 9 bits */
 
-    film_grain->cr_mult      = 128; // 8 bits
-    film_grain->cr_luma_mult = 192; // 8 bits
-    film_grain->cr_offset    = 256; // 9 bits
+    film_grain->cr_mult      = 128; /*!< 8 bits */
+    film_grain->cr_luma_mult = 192; /*!< 8 bits */
+    film_grain->cr_offset    = 256; /*!< 9 bits */
 
     film_grain->chroma_scaling_from_luma = 0;
     film_grain->grain_scale_shift        = 0;
@@ -1336,13 +1332,13 @@ int32_t eb_aom_wiener_denoise_2d(const uint8_t *const data[3], uint8_t *denoised
         if (!data[c] || !denoised[c]) continue;
         if (c > 0 && chroma_sub[0] != 0) block_finder = &block_finder_chroma;
         memset(result, 0, sizeof(*result) * result_stride * result_height);
-        // Do overlapped block processing (half overlapped). The block rows can
-        // easily be done in parallel
+        /*!< Do overlapped block processing (half overlapped). The block rows can
+         *   easily be done in parallel */
         for (int32_t offsy = 0; offsy < (block_size >> chroma_sub_h);
              offsy += (block_size >> chroma_sub_h) / 2) {
             for (int32_t offsx = 0; offsx < (block_size >> chroma_sub_w);
                  offsx += (block_size >> chroma_sub_w) / 2) {
-                // Pad the boundary when processing each block-set.
+                /*!< Pad the boundary when processing each block-set. */
                 for (int32_t by = -1; by < num_blocks_h; ++by) {
                     for (int32_t bx = -1; bx < num_blocks_w; ++bx) {
                         const int32_t pixels_per_block =
@@ -1366,8 +1362,8 @@ int32_t eb_aom_wiener_denoise_2d(const uint8_t *const data[3], uint8_t *denoised
                         eb_aom_noise_tx_filter(tx, noise_psd[c]);
                         eb_aom_noise_tx_inverse(tx, block);
 
-                        // Apply window function to the plane approximation (we will apply
-                        // it to the sum of plane + block when composing the results).
+                        /*!< Apply window function to the plane approximation (we will apply
+                         *   it to the sum of plane + block when composing the results). */
                         pointwise_multiply(window_function, plane, pixels_per_block);
 
                         for (int32_t y = 0; y < (block_size >> chroma_sub_h); ++y) {
@@ -1458,7 +1454,7 @@ EbErrorType denoise_and_model_ctor(AomDenoiseAndModel *object_ptr, EbPtr object_
     EbErrorType              return_error  = EB_ErrorNone;
     uint32_t                 use_highbd    = init_data_ptr->encoder_bit_depth > EB_8BIT ? 10 : 8;
 
-    int32_t chroma_sub_log2[2] = {1, 1}; //todo: send chroma subsampling
+    int32_t chroma_sub_log2[2] = {1, 1}; /*!< todo: send chroma subsampling */
     chroma_sub_log2[0]         = (init_data_ptr->encoder_color_format == EB_YUV444 ? 1 : 2) - 1;
     chroma_sub_log2[1]         = (init_data_ptr->encoder_color_format >= EB_YUV422 ? 1 : 2) - 1;
 
@@ -1475,7 +1471,7 @@ EbErrorType denoise_and_model_ctor(AomDenoiseAndModel *object_ptr, EbPtr object_
     object_ptr->y_stride  = init_data_ptr->stride_y;
     object_ptr->uv_stride = init_data_ptr->stride_cb;
 
-    //todo: consider replacing with EbPictureBuffersDesc
+    /*!< todo: consider replacing with EbPictureBuffersDesc */
 
     EB_MALLOC_ARRAY(object_ptr->denoised[0],
                     (object_ptr->y_stride * object_ptr->height) << use_highbd);
@@ -1499,7 +1495,7 @@ EbErrorType denoise_and_model_ctor(AomDenoiseAndModel *object_ptr, EbPtr object_
 
 static int32_t denoise_and_model_realloc_if_necessary(struct AomDenoiseAndModel *ctx,
                                                       EbPictureBufferDesc *sd, int32_t use_highbd) {
-    int32_t chroma_sub_log2[2] = {1, 1}; //todo: send chroma subsampling
+    int32_t chroma_sub_log2[2] = {1, 1}; /*!< todo: send chroma subsampling */
 
     const int32_t block_size = ctx->block_size;
 
@@ -1524,8 +1520,8 @@ static int32_t denoise_and_model_realloc_if_necessary(struct AomDenoiseAndModel 
         return 0;
     }
 
-    // Simply use a flat PSD (although we could use the flat blocks to estimate
-    // PSD) those to estimate an actual noise PSD)
+    /*!< Simply use a flat PSD (although we could use the flat blocks to estimate
+     *   PSD) those to estimate an actual noise PSD) */
     const float y_noise_level =
         eb_aom_noise_psd_get_default_value(ctx->block_size, ctx->noise_level);
     const float uv_noise_level =
@@ -1624,7 +1620,7 @@ int32_t eb_aom_denoise_and_model_run(struct AomDenoiseAndModel *ctx, EbPictureBu
                                      AomFilmGrain *film_grain, int32_t use_highbd) {
     const int32_t block_size = ctx->block_size;
     uint8_t *     raw_data[3];
-    int32_t       chroma_sub_log2[2] = {1, 1}; //todo: send chroma subsampling
+    int32_t       chroma_sub_log2[2] = {1, 1}; /*!< todo: send chroma subsampling */
     int32_t       strides[3]         = {sd->stride_y, sd->stride_cb, sd->stride_cr};
 
     if (!denoise_and_model_realloc_if_necessary(ctx, sd, use_highbd)) {
@@ -1632,13 +1628,13 @@ int32_t eb_aom_denoise_and_model_run(struct AomDenoiseAndModel *ctx, EbPictureBu
         return 0;
     }
 
-    if (!use_highbd) { // 8 bits input
+    if (!use_highbd) { /*!< 8 bits input */
         raw_data[0] = sd->buffer_y + sd->origin_y * sd->stride_y + sd->origin_x;
         raw_data[1] = sd->buffer_cb + sd->stride_cb * (sd->origin_y >> chroma_sub_log2[0]) +
                       (sd->origin_x >> chroma_sub_log2[1]);
         raw_data[2] = sd->buffer_cr + sd->stride_cr * (sd->origin_y >> chroma_sub_log2[0]) +
                       (sd->origin_x >> chroma_sub_log2[1]);
-    } else { // 10 bits input
+    } else { /*!< 10 bits input */
         pack_2d_pic(sd, ctx->packed);
 
         raw_data[0] = (uint8_t *)(ctx->packed[0]);

@@ -1,18 +1,14 @@
-/*
-* Copyright(c) 2019 Intel Corporation
-* SPDX - License - Identifier: BSD - 2 - Clause - Patent
-*/
+/*!< Copyright(c) 2019 Intel Corporation
+ * SPDX - License - Identifier: BSD - 2 - Clause - Patent */
 
-/*
-* Copyright (c) 2016, Alliance for Open Media. All rights reserved
-*
-* This source code is subject to the terms of the BSD 2 Clause License and
-* the Alliance for Open Media Patent License 1.0. If the BSD 2 Clause License
-* was not distributed with this source code in the LICENSE file, you can
-* obtain it at www.aomedia.org/license/software. If the Alliance for Open
-* Media Patent License 1.0 was not distributed with this source code in the
-* PATENTS file, you can obtain it at www.aomedia.org/license/patent.
-*/
+/*!< Copyright (c) 2016, Alliance for Open Media. All rights reserved
+ *
+ * This source code is subject to the terms of the BSD 2 Clause License and
+ * the Alliance for Open Media Patent License 1.0. If the BSD 2 Clause License
+ * was not distributed with this source code in the LICENSE file, you can
+ * obtain it at www.aomedia.org/license/software. If the Alliance for Open
+ * Media Patent License 1.0 was not distributed with this source code in the
+ * PATENTS file, you can obtain it at www.aomedia.org/license/patent. */
 
 #include <string.h>
 
@@ -25,12 +21,12 @@
 #include "EbCommonUtils.h"
 #include "EbIntraPrediction.h"
 
-/* Avoid 12-bit output mismatch by intra pred intrinsic kernel */
+/*!< Avoid 12-bit output mismatch by intra pred intrinsic kernel */
 void dec_init_intra_predictors_12b_internal(void) {
     eb_av1_highbd_dr_prediction_z2 = eb_av1_highbd_dr_prediction_z2_c;
 }
 
-/*TODO: Remove replication and harmonize with encoder after data str. harmonization */
+/*!< TODO: Remove replication and harmonize with encoder after data str. harmonization */
 int32_t dec_get_filt_type(const PartitionInfo *part_info, int32_t plane) {
     int ab_sm, le_sm;
 
@@ -59,9 +55,9 @@ void cfl_init(CflCtx *cfl, EbColorConfig *cc) {
     cfl->are_parameters_computed = 0;
 }
 
-// Due to frame boundary issues, it is possible that the total area covered by
-// chroma exceeds that of luma. When this happens, we fill the missing pixels by
-// repeating the last columns and/or rows.
+/*!< Due to frame boundary issues, it is possible that the total area covered by
+ *   chroma exceeds that of luma. When this happens, we fill the missing pixels by
+ *   repeating the last columns and/or rows. */
 
 static INLINE void cfl_pad(CflCtx *cfl, int32_t width, int32_t height) {
     const int32_t diff_width  = width - cfl->buf_width;
@@ -182,20 +178,20 @@ static INLINE CflAllowedType is_cfl_allowed_with_frame_header(const PartitionInf
     const BlockSize      bsize = mbmi->sb_type;
     assert(bsize < BlockSizeS_ALL);
     if (fh->lossless_array[mbmi->segment_id]) {
-        // In lossless, CfL is available when the partition size is equal to the
-        // transform size.
+        /*!< In lossless, CfL is available when the partition size is equal to the
+         *   transform size. */
         const int ssx         = cc->subsampling_x;
         const int ssy         = cc->subsampling_y;
         const int plane_bsize = get_plane_block_size(bsize, ssx, ssy);
         return (CflAllowedType)(plane_bsize == BLOCK_4X4);
     }
-    // Spec: CfL is available to luma partitions lesser than or equal to 32x32
+    /*!< Spec: CfL is available to luma partitions lesser than or equal to 32x32 */
     return (CflAllowedType)(block_size_wide[bsize] <= 32 && block_size_high[bsize] <= 32);
 }
 
 void cfl_compute_parameters(CflCtx *cfl_ctx, TxSize tx_size) {
     //CFL_CTX *const cfl = &xd->cfl;
-    // Do not call cfl_compute_parameters multiple time on the same values.
+    /*!< Do not call cfl_compute_parameters multiple time on the same values. */
     assert(cfl_ctx->are_parameters_computed == 0);
     cfl_pad(cfl_ctx, tx_size_wide[tx_size], tx_size_high[tx_size]);
     get_subtract_average_fn(tx_size)(cfl_ctx->recon_buf_q3);
@@ -251,12 +247,12 @@ static void cfl_store(CflCtx *cfl_ctx, const uint8_t *input, int input_stride, i
     const int store_height = height >> sub_y;
     const int store_width  = width >> sub_x;
 
-    // Invalidate current parameters
+    /*!< Invalidate current parameters */
     cfl_ctx->are_parameters_computed = 0;
 
-    // Store the surface of the pixel buffer that was written to, this way we
-    // can manage chroma overrun (e.g. when the chroma surfaces goes beyond the
-    // frame boundary)
+    /*!< Store the surface of the pixel buffer that was written to, this way we
+     *   can manage chroma overrun (e.g. when the chroma surfaces goes beyond the
+     *   frame boundary) */
     if (col == 0 && row == 0) {
         cfl_ctx->buf_width  = store_width;
         cfl_ctx->buf_height = store_height;
@@ -265,11 +261,11 @@ static void cfl_store(CflCtx *cfl_ctx, const uint8_t *input, int input_stride, i
         cfl_ctx->buf_height = AOMMAX(store_row + store_height, cfl_ctx->buf_height);
     }
 
-    // Check that we will remain inside the pixel buffer.
+    /*!< Check that we will remain inside the pixel buffer. */
     assert(store_row + store_height <= CFL_BUF_LINE);
     assert(store_col + store_width <= CFL_BUF_LINE);
 
-    // Store the input into the CfL pixel buffer
+    /*!< Store the input into the CfL pixel buffer */
     int16_t *recon_buf_q3 = cfl_ctx->recon_buf_q3 + (store_row * CFL_BUF_LINE + store_col);
 
     if (use_hbd) {
@@ -281,17 +277,17 @@ static void cfl_store(CflCtx *cfl_ctx, const uint8_t *input, int input_stride, i
     }
 }
 
-// Adjust the row and column of blocks smaller than 8X8, as chroma-referenced
-// and non-chroma-referenced blocks are stored together in the CfL buffer.
+/*!< Adjust the row and column of blocks smaller than 8X8, as chroma-referenced
+ *   and non-chroma-referenced blocks are stored together in the CfL buffer. */
 static INLINE void sub8x8_adjust_offset(PartitionInfo *xd, const CflCtx *cfl_ctx, int *row_out,
                                         int *col_out) {
-    // Increment row index for bottom: 8x4, 16x4 or both bottom 4x4s.
+    /*!< Increment row index for bottom: 8x4, 16x4 or both bottom 4x4s. */
     if ((xd->mi_row & 0x01) && cfl_ctx->subsampling_y) {
         assert(*row_out == 0);
         (*row_out)++;
     }
 
-    // Increment col index for right: 4x8, 4x16 or both right 4x4s.
+    /*!< Increment col index for right: 4x8, 4x16 or both right 4x4s. */
     if ((xd->mi_col & 0x01) && cfl_ctx->subsampling_x) {
         assert(*col_out == 0);
         (*col_out)++;
@@ -301,7 +297,7 @@ static INLINE void sub8x8_adjust_offset(PartitionInfo *xd, const CflCtx *cfl_ctx
 void cfl_store_tx(PartitionInfo *xd, CflCtx *cfl_ctx, int row, int col, TxSize tx_size,
                   BlockSize bsize, EbColorConfig *cc, uint8_t *dst_buff, uint32_t dst_stride) {
     if (block_size_high[bsize] == 4 || block_size_wide[bsize] == 4) {
-        // Only dimensions of size 4 can have an odd offset.
+        /*!< Only dimensions of size 4 can have an odd offset. */
         assert(!((col & 1) && tx_size_wide[tx_size] != 4));
         assert(!((row & 1) && tx_size_high[tx_size] != 4));
         sub8x8_adjust_offset(xd, cfl_ctx, &row, &col);
@@ -311,7 +307,7 @@ void cfl_store_tx(PartitionInfo *xd, CflCtx *cfl_ctx, int row, int col, TxSize t
 }
 //#####.....................Ending for wrapper of CFL...............................####//
 
-/* TODO : Harmonize with Encoder! */
+/*!< TODO : Harmonize with Encoder! */
 static void decode_build_intra_predictors(PartitionInfo *part_info, uint8_t *top_neigh_array,
                                           uint8_t *left_neigh_array, int32_t ref_stride,
                                           uint8_t *dst, int32_t dst_stride, PredictionMode mode,
@@ -322,8 +318,8 @@ static void decode_build_intra_predictors(PartitionInfo *part_info, uint8_t *top
                                           int32_t plane) {
     int32_t i;
 
-    const uint8_t *above_ref = top_neigh_array; //CHKN ref - ref_stride;
-    const uint8_t *left_ref  = left_neigh_array; //CHKN ref - 1;
+    const uint8_t *above_ref = top_neigh_array; /*!< CHKN ref - ref_stride; */
+    const uint8_t *left_ref  = left_neigh_array; /*!< CHKN ref - 1; */
 
     DECLARE_ALIGNED(16, uint8_t, left_data[MAX_TX_SIZE * 2 + 32]);
     DECLARE_ALIGNED(16, uint8_t, above_data[MAX_TX_SIZE * 2 + 32]);
@@ -367,7 +363,7 @@ static void decode_build_intra_predictors(PartitionInfo *part_info, uint8_t *top
         }
         return;
     }
-    // NEED_LEFT
+    /*!< NEED_LEFT */
     if (need_left) {
         int32_t need_bottom = !!(extend_modes[mode] & NEED_BOTTOMLEFT);
         if (use_filter_intra) need_bottom = 0;
@@ -390,7 +386,7 @@ static void decode_build_intra_predictors(PartitionInfo *part_info, uint8_t *top
         }
     }
 
-    // NEED_ABOVE
+    /*!< NEED_ABOVE */
     if (need_above) {
         int32_t need_right = !!(extend_modes[mode] & NEED_ABOVERIGHT);
         if (use_filter_intra) need_right = 0;
@@ -476,14 +472,14 @@ static void decode_build_intra_predictors(PartitionInfo *part_info, uint8_t *top
         return;
     }
 
-    // predict
+    /*!< predict */
     if (mode == DC_PRED) {
         dc_pred[n_left_px > 0][n_top_px > 0][tx_size](dst, dst_stride, above_row, left_col);
     } else
         pred[mode][tx_size](dst, dst_stride, above_row, left_col);
 }
 
-/* TODO : Harmonize with Encoder! */
+/*!< TODO : Harmonize with Encoder! */
 static void decode_build_intra_predictors_high(PartitionInfo *part_info, uint16_t *top_neigh_array,
                                                uint16_t *left_neigh_array, int32_t ref_stride,
                                                uint16_t *dst, int32_t dst_stride,
@@ -512,12 +508,12 @@ static void decode_build_intra_predictors_high(PartitionInfo *part_info, uint16_
     const int32_t use_filter_intra = filter_intra_mode != FILTER_INTRA_MODES;
     int32_t       base             = 128 << (bd - 8);
 
-    // The default values if ref pixels are not available:
-    // base-1 base-1 base-1 .. base-1 base-1 base-1 base-1 base-1 base-1
-    // base+1   A      b  ..     Y      Z
-    // base+1   C      D  ..     W      X
-    // base+1   E      F  ..     U      V
-    // base+1   G      H  ..     S      T      T      T      T      T
+    /*!< The default values if ref pixels are not available:
+     *   base-1 base-1 base-1 .. base-1 base-1 base-1 base-1 base-1 base-1
+     *   base+1   A      b  ..     Y      Z
+     *   base+1   C      D  ..     W      X
+     *   base+1   E      F  ..     U      V
+     *   base+1   G      H  ..     S      T      T      T      T      T  */
 
     if (is_dr_mode) {
         p_angle = mode_to_angle_map[mode] + angle_delta * ANGLE_STEP;
@@ -548,7 +544,7 @@ static void decode_build_intra_predictors_high(PartitionInfo *part_info, uint16_
         return;
     }
 
-    // NEED_LEFT
+    /*!< NEED_LEFT */
     if (need_left) {
         int32_t need_bottom = !!(extend_modes[mode] & NEED_BOTTOMLEFT);
         if (use_filter_intra) need_bottom = 0;
@@ -571,7 +567,7 @@ static void decode_build_intra_predictors_high(PartitionInfo *part_info, uint16_
         }
     }
 
-    // NEED_ABOVE
+    /*!< NEED_ABOVE */
     if (need_above) {
         int32_t need_right = !!(extend_modes[mode] & NEED_ABOVERIGHT);
         if (use_filter_intra) need_right = 0;
@@ -641,13 +637,13 @@ static void decode_build_intra_predictors_high(PartitionInfo *part_info, uint16_
             upsample_above = use_intra_edge_upsample(txwpx, txhpx, p_angle - 90, filt_type);
             if (need_above && upsample_above) {
                 const int32_t n_px = txwpx + (need_right ? txhpx : 0);
-                //av1_upsample_intra_edge_high(above_row, n_px, bd);// AMIR : to be replaced by optimized code
+                //av1_upsample_intra_edge_high(above_row, n_px, bd); /*!< AMIR : to be replaced by optimized code */
                 eb_av1_upsample_intra_edge_high_c(above_row, n_px, bd);
             }
             upsample_left = use_intra_edge_upsample(txhpx, txwpx, p_angle - 180, filt_type);
             if (need_left && upsample_left) {
                 const int32_t n_px = txhpx + (need_bottom ? txwpx : 0);
-                //av1_upsample_intra_edge_high(left_col, n_px, bd);// AMIR: to be replaced by optimized code
+                //av1_upsample_intra_edge_high(left_col, n_px, bd); /*!< AMIR: to be replaced by optimized code */
                 eb_av1_upsample_intra_edge_high_c(left_col, n_px, bd);
             }
         }
@@ -663,7 +659,7 @@ static void decode_build_intra_predictors_high(PartitionInfo *part_info, uint16_
         return;
     }
 
-    // predict
+    /*!< predict */
     if (mode == DC_PRED) {
         dc_pred_high[n_left_px > 0][n_top_px > 0][tx_size](
             dst, dst_stride, above_row, left_col, bd);
@@ -676,8 +672,8 @@ void svtav1_predict_intra_block(PartitionInfo *xd, int32_t plane, TxSize tx_size
                                 void *left_neigh_array, int32_t ref_stride, SeqHeader *seq_header,
                                 const PredictionMode mode, int32_t blk_mi_col_off,
                                 int32_t blk_mi_row_off, EbBitDepthEnum bit_depth) {
-    //ToDo:are_parameters_computed variable for CFL so that cal part for V plane we can skip,
-    //once we compute for U plane, this parameter is block level parameter.
+    /*!< ToDo:are_parameters_computed variable for CFL so that cal part for V plane we can skip,
+     *   once we compute for U plane, this parameter is block level parameter. */
     const EbColorConfig *cc    = &seq_header->color_config;
     int32_t              sub_x = plane ? cc->subsampling_x : 0;
     int32_t              sub_y = plane ? cc->subsampling_y : 0;
@@ -710,10 +706,10 @@ void svtav1_predict_intra_block(PartitionInfo *xd, int32_t plane, TxSize tx_size
     const int xr_chr_offset = 0;
     const int yd_chr_offset = 0;
 
-    // Distance between right edge of this pred block to frame right edge
+    /*!< Distance between right edge of this pred block to frame right edge */
     const int xr = (xd->mb_to_right_edge >> (3 + sub_x)) +
                    (xd->wpx[plane] - (blk_mi_col_off << MI_SIZE_LOG2) - txwpx) - xr_chr_offset;
-    // Distance between bottom edge of this pred block to frame bottom edge
+    /*!< Distance between bottom edge of this pred block to frame bottom edge */
     const int yd = (xd->mb_to_bottom_edge >> (3 + sub_y)) +
                    (xd->hpx[plane] - (blk_mi_row_off << MI_SIZE_LOG2) - txhpx) - yd_chr_offset;
     const int right_available = mi_col + ((blk_mi_col_off + txw) << sub_x) < td->mi_col_end;
@@ -722,7 +718,7 @@ void svtav1_predict_intra_block(PartitionInfo *xd, int32_t plane, TxSize tx_size
 
     const PartitionType partition = mbmi->partition;
 
-    // force 4x4 chroma component block size.
+    /*!< force 4x4 chroma component block size. */
     bsize = scale_chroma_bsize(bsize, sub_x, sub_y);
 
     const int have_top_right   = intra_has_top_right(seq_header->sb_size,
@@ -755,9 +751,9 @@ void svtav1_predict_intra_block(PartitionInfo *xd, int32_t plane, TxSize tx_size
     //###..Calling all other intra predictors except CFL & pallate...//
     if (bit_depth == EB_8BIT) {
         decode_build_intra_predictors(xd,
-                                      (uint8_t *)top_neigh_array, /*As per SVT Enc*/
+                                      (uint8_t *)top_neigh_array, /*!< As per SVT Enc */
                                       (uint8_t *)left_neigh_array,
-                                      /*As per SVT Enc*/ ref_stride,
+                                      /*!< As per SVT Enc */ ref_stride,
                                       (uint8_t *)pv_pred_buf,
                                       pred_stride,
                                       mode,
@@ -772,9 +768,9 @@ void svtav1_predict_intra_block(PartitionInfo *xd, int32_t plane, TxSize tx_size
                                       plane);
     } else { //16bit
         decode_build_intra_predictors_high(xd,
-                                           (uint16_t *)top_neigh_array, /*As per SVT Enc*/
+                                           (uint16_t *)top_neigh_array, /*!< As per SVT Enc */
                                            (uint16_t *)left_neigh_array,
-                                           /*As per SVT Enc*/ ref_stride,
+                                           /*!< As per SVT Enc */ ref_stride,
                                            (uint16_t *)pv_pred_buf,
                                            pred_stride,
                                            mode,
@@ -804,7 +800,7 @@ void svt_av1_predict_intra(DecModCtxt *dec_mod_ctxt, PartitionInfo *part_info, i
         EbByte buf             = (EbByte)pv_blk_recon_buf;
         pv_top_neighbor_array  = (void *)(buf - recon_stride);
         pv_left_neighbor_array = (void *)(buf - 1);
-    } else { //16bit
+    } else { /*!< 16bit */
         uint16_t *buf          = (uint16_t *)pv_blk_recon_buf;
         pv_top_neighbor_array  = (void *)(buf - recon_stride);
         pv_left_neighbor_array = (void *)(buf - 1);

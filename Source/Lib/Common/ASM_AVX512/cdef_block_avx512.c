@@ -1,7 +1,5 @@
-/*
-* Copyright(c) 2019 Intel Corporation
-* SPDX - License - Identifier: BSD - 2 - Clause - Patent
-*/
+/*!< Copyright(c) 2019 Intel Corporation
+ * SPDX - License - Identifier: BSD - 2 - Clause - Patent */
 
 #include "EbDefinitions.h"
 
@@ -18,7 +16,7 @@ static INLINE __m512i loadu_u16_8x4_avx512(const uint16_t *const src, const uint
     return _mm512_inserti64x4(_mm512_castsi256_si512(s0), s1, 1);
 }
 
-// sign(a-b) * min(abs(a-b), max(0, threshold - (abs(a-b) >> adjdamp)))
+/*!< sign(a-b) * min(abs(a-b), max(0, threshold - (abs(a-b) >> adjdamp))) */
 static INLINE __m512i constrain16_avx512(const __m512i in0, const __m512i in1,
                                          const __m512i threshold, const __m128i damping) {
     const __m512i diff = _mm512_sub_epi16(in0, in1);
@@ -48,7 +46,7 @@ static INLINE void cdef_filter_block_8x8_16_pri_avx512(const uint16_t *const in,
     const __m512i q0 = constrain16_avx512(p0, row, strength, damping);
     const __m512i q1 = constrain16_avx512(p1, row, strength, damping);
 
-    // sum += pri_taps * (p0 + p1)
+    /*!< sum += pri_taps * (p0 + p1) */
     *sum = _mm512_add_epi16(*sum, _mm512_mullo_epi16(pri_taps, _mm512_add_epi16(q0, q1)));
 }
 
@@ -78,7 +76,7 @@ static INLINE void cdef_filter_block_8x8_16_sec_avx512(const uint16_t *const in,
     const __m512i q2 = constrain16_avx512(p2, row, strength, damping);
     const __m512i q3 = constrain16_avx512(p3, row, strength, damping);
 
-    // sum += sec_taps * (p0 + p1 + p2 + p3)
+    /*!< sum += sec_taps * (p0 + p1 + p2 + p3) */
     *sum = _mm512_add_epi16(
         *sum,
         _mm512_mullo_epi16(sec_taps,
@@ -120,23 +118,23 @@ void eb_cdef_filter_block_8x8_16_avx512(const uint16_t *const in, const int32_t 
         min = max = row;
         sum       = zero;
 
-        // Primary near taps
+        /*!< Primary near taps */
         cdef_filter_block_8x8_16_pri_avx512(
             in, pri_d, po1, row, pri_strength_256, pri_taps_0, &max, &min, &sum);
 
-        // Primary far taps
+        /*!< Primary far taps */
         cdef_filter_block_8x8_16_pri_avx512(
             in, pri_d, po2, row, pri_strength_256, pri_taps_1, &max, &min, &sum);
 
-        // Secondary near taps
+        /*!< Secondary near taps */
         cdef_filter_block_8x8_16_sec_avx512(
             in, sec_d, s1o1, s2o1, row, sec_strength_256, sec_taps_0, &max, &min, &sum);
 
-        // Secondary far taps
+        /*!< Secondary far taps */
         cdef_filter_block_8x8_16_sec_avx512(
             in, sec_d, s1o2, s2o2, row, sec_strength_256, sec_taps_1, &max, &min, &sum);
 
-        // res = row + ((sum - (sum < 0) + 8) >> 4)
+        /*!< res = row + ((sum - (sum < 0) + 8) >> 4) */
         const __mmask32 mask = _mm512_cmpgt_epi16_mask(zero, sum);
         sum                  = _mm512_mask_add_epi16(sum, mask, sum, _mm512_set1_epi16(-1));
         res                  = _mm512_add_epi16(sum, duplicate_8);
@@ -158,15 +156,15 @@ void eb_cdef_filter_block_8x8_16_avx512(const uint16_t *const in, const int32_t 
         min = max = row;
         sum       = zero;
 
-        // Primary near taps
+        /*!< Primary near taps */
         cdef_filter_block_8x8_16_pri_avx512(
             in + 4 * CDEF_BSTRIDE, pri_d, po1, row, pri_strength_256, pri_taps_0, &max, &min, &sum);
 
-        // Primary far taps
+        /*!< Primary far taps */
         cdef_filter_block_8x8_16_pri_avx512(
             in + 4 * CDEF_BSTRIDE, pri_d, po2, row, pri_strength_256, pri_taps_1, &max, &min, &sum);
 
-        // Secondary near taps
+        /*!< Secondary near taps */
         cdef_filter_block_8x8_16_sec_avx512(in + 4 * CDEF_BSTRIDE,
                                             sec_d,
                                             s1o1,
@@ -178,7 +176,7 @@ void eb_cdef_filter_block_8x8_16_avx512(const uint16_t *const in, const int32_t 
                                             &min,
                                             &sum);
 
-        // Secondary far taps
+        /*!< Secondary far taps */
         cdef_filter_block_8x8_16_sec_avx512(in + 4 * CDEF_BSTRIDE,
                                             sec_d,
                                             s1o2,
@@ -190,7 +188,7 @@ void eb_cdef_filter_block_8x8_16_avx512(const uint16_t *const in, const int32_t 
                                             &min,
                                             &sum);
 
-        // res = row + ((sum - (sum < 0) + 8) >> 4)
+        /*!< res = row + ((sum - (sum < 0) + 8) >> 4) */
         const __mmask32 mask = _mm512_cmpgt_epi16_mask(zero, sum);
         sum                  = _mm512_mask_add_epi16(sum, mask, sum, _mm512_set1_epi16(-1));
         res                  = _mm512_add_epi16(sum, duplicate_8);

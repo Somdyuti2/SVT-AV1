@@ -1,16 +1,14 @@
-/*
- * Copyright (c) 2017, Alliance for Open Media. All rights reserved
+/*!< Copyright (c) 2017, Alliance for Open Media. All rights reserved
  *
  * This source code is subject to the terms of the BSD 2 Clause License and
  * the Alliance for Open Media Patent License 1.0. If the BSD 2 Clause License
  * was not distributed with this source code in the LICENSE file, you can
  * obtain it at www.aomedia.org/license/software. If the Alliance for Open
  * Media Patent License 1.0 was not distributed with this source code in the
- * PATENTS file, you can obtain it at www.aomedia.org/license/patent.
- */
+ * PATENTS file, you can obtain it at www.aomedia.org/license/patent. */
 
 #include <assert.h>
-#include <emmintrin.h> // SSE2
+#include <emmintrin.h> /*!< SSE2 */
 #include <stdint.h>
 #include "EbDefinitions.h"
 #include "EbCabacContextModel.h"
@@ -187,7 +185,7 @@ static INLINE void get_16n_coeff_contexts_2d(const uint8_t *levels, const int32_
         pos_to_offset[2] = pos_to_offset[3] = pos_to_offset[4] =
             _mm_setr_epi8(16, 16, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21);
         pos_to_offset_large[0] = pos_to_offset_large[1] = pos_to_offset_large[2];
-    } else { // real_width < real_height
+    } else { /*!< real_width < real_height */
         pos_to_offset[0] = pos_to_offset[1] =
             _mm_setr_epi8(11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11);
         pos_to_offset[2] =
@@ -518,7 +516,7 @@ void eb_av1_get_nz_map_contexts_sse2(const uint8_t *const levels, const int16_t 
         else {
             get_16n_coeff_contexts_hor(levels, width, height, offsets, coeff_contexts);
         }
-    } else { // TX_CLASS_VERT
+    } else { /*!< TX_CLASS_VERT */
         offsets[0] = 2 * stride;
         offsets[1] = 3 * stride;
         offsets[2] = 4 * stride;

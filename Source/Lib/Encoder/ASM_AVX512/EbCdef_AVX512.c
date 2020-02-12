@@ -1,7 +1,5 @@
-/*
-* Copyright(c) 2019 Intel Corporation
-* SPDX - License - Identifier: BSD - 2 - Clause - Patent
-*/
+/*!< Copyright(c) 2019 Intel Corporation
+ * SPDX - License - Identifier: BSD - 2 - Clause - Patent */
 #include "EbDefinitions.h"
 
 #ifndef NON_AVX512_SUPPORT
@@ -31,7 +29,7 @@ uint64_t search_one_dual_avx512(int *lev0, int *lev1, int nb_strengths,
     for (i = 0; i < sb_count; i++) {
         int32_t  gi;
         uint64_t best_mse = (uint64_t)1 << 63;
-        /* Find best mse among already selected options. */
+        /*!< Find best mse among already selected options. */
         for (gi = 0; gi < nb_strengths; gi++) {
             uint64_t curr = mse[0][i][lev0[gi]];
             curr += mse[1][i][lev1[gi]];
@@ -40,7 +38,7 @@ uint64_t search_one_dual_avx512(int *lev0, int *lev1, int nb_strengths,
 
         const __m512i best_mse_ = _mm512_set1_epi64(best_mse);
 
-        /* Find best mse when adding each possible new option. */
+        /*!< Find best mse when adding each possible new option. */
         for (j = start_gi; j < end_gi; ++j) {
             int32_t       k;
             const __m512i mse0 = _mm512_set1_epi64(mse[0][i][j]);

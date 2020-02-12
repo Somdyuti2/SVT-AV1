@@ -1,7 +1,5 @@
-/*
-* Copyright(c) 2019 Intel Corporation
-* SPDX - License - Identifier: BSD - 2 - Clause - Patent
-*/
+/*!< Copyright(c) 2019 Intel Corporation
+ * SPDX - License - Identifier: BSD - 2 - Clause - Patent */
 
 #ifndef EbNoiseExtractAVX2_h
 #define EbNoiseExtractAVX2_h
@@ -13,10 +11,10 @@
 extern "C" {
 #endif
 
-/*******************************************
-    * noise_extract_luma_weak
-    *  weak filter Luma and store noise.
-    *******************************************/
+/*!< ******************************************
+ * noise_extract_luma_weak
+ *  weak filter Luma and store noise.
+ ****************************************** */
 void noise_extract_luma_weak_avx2_intrin(EbPictureBufferDesc *input_picture_ptr,
                                          EbPictureBufferDesc *denoised_picture_ptr,
                                          EbPictureBufferDesc *noise_picture_ptr,

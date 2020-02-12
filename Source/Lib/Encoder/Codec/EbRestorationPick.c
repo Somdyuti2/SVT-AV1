@@ -1,13 +1,11 @@
-/*
- * Copyright (c) 2016, Alliance for Open Media. All rights reserved
+/*!< Copyright (c) 2016, Alliance for Open Media. All rights reserved
  *
  * This source code is subject to the terms of the BSD 2 Clause License and
  * the Alliance for Open Media Patent License 1.0. If the BSD 2 Clause License
  * was not distributed with this source code in the LICENSE file, you can
  * obtain it at www.aomedia.org/license/software. If the Alliance for Open
  * Media Patent License 1.0 was not distributed with this source code in the
- * PATENTS file, you can obtain it at www.aomedia.org/license/patent.
- */
+ * PATENTS file, you can obtain it at www.aomedia.org/license/patent. */
 
 #include <math.h>
 
@@ -32,13 +30,13 @@ void eb_av1_selfguided_restoration_c(const uint8_t *dgd8, int32_t width, int32_t
 void av1_foreach_rest_unit_in_frame(Av1Common *cm, int32_t plane, RestTileStartVisitor on_tile,
                                     RestUnitVisitor on_rest_unit, void *priv);
 
-// When set to RESTORE_WIENER or RESTORE_SGRPROJ only those are allowed.
-// When set to RESTORE_TYPES we allow switchable.
+/*!< When set to RESTORE_WIENER or RESTORE_SGRPROJ only those are allowed.
+ *   When set to RESTORE_TYPES we allow switchable. */
 //static const RestorationType force_restore_type = RESTORE_TYPES;
 
-// Number of Wiener iterations
+/*!< Number of Wiener iterations */
 #define NUM_WIENER_ITERS 5
-// Working precision for Wiener filter coefficients
+/*!< Working precision for Wiener filter coefficients */
 #define WIENER_TAP_SCALE_FACTOR ((int64_t)1 << 16)
 
 typedef int64_t (*SsePartExtractorType)(const Yv12BufferConfig *a, const Yv12BufferConfig *b,
@@ -86,13 +84,12 @@ typedef struct {
     const uint8_t *src_buffer;
     int32_t        src_stride;
 
-    // sse and bits are initialised by reset_rsc in search_rest_type
+    /*!< sse and bits are initialised by reset_rsc in search_rest_type */
     int64_t sse;
     int64_t bits;
     int32_t tile_y0, tile_stripe0;
 
-    // sgrproj and wiener are initialised by rsc_on_tile when starting the first
-    // tile in the frame.
+    /*!< sgrproj and wiener are initialised by rsc_on_tile when starting the first tile in the frame. */
     SgrprojInfo sgrproj;
     WienerInfo  wiener;
 } RestSearchCtxt;
@@ -148,8 +145,7 @@ static int64_t try_restoration_unit_seg(const RestSearchCtxt *       rsc,
 
     const Yv12BufferConfig *fts = rsc->org_frame_to_show;
 
-    // TODO(yunqing): For now, only use optimized LR filter in decoder. Can be
-    // also used in encoder.
+    /*!< TODO(yunqing): For now, only use optimized LR filter in decoder. Can be also used in encoder. */
     const int32_t optimized_lr = 0;
 
     eb_av1_loop_restoration_filter_unit(1,
@@ -400,7 +396,7 @@ static int64_t finer_search_pixel_proj_error(const uint8_t *src8, int32_t width,
                     else {
                         err  = err2;
                         skip = 1;
-                        // At the highest step size continue moving in the same direction
+                        /*!< At the highest step size continue moving in the same direction */
                         if (s == start_step) continue;
                     }
                 }
@@ -427,7 +423,7 @@ static int64_t finer_search_pixel_proj_error(const uint8_t *src8, int32_t width,
                         xqd[p] -= s;
                     else {
                         err = err2;
-                        // At the highest step size continue moving in the same direction
+                        /*!< At the highest step size continue moving in the same direction */
                         if (s == start_step) continue;
                     }
                 }
@@ -455,7 +451,7 @@ void get_proj_subspace_c(const uint8_t *src8, int32_t width, int32_t height, int
     aom_clear_system_state();
     RunEmms();
 
-    // Default
+    /*!< Default */
     xq[0] = 0;
     xq[1] = 0;
     if (!use_highbitdepth) {
@@ -498,20 +494,20 @@ void get_proj_subspace_c(const uint8_t *src8, int32_t width, int32_t height, int
     C[0] /= size;
     C[1] /= size;
     if (params->r[0] == 0) {
-        // H matrix is now only the scalar H[1][1]
-        // C vector is now only the scalar C[1]
+        /*!< H matrix is now only the scalar H[1][1] */
+        /*!< C vector is now only the scalar C[1] */
         det = H[1][1];
-        if (det < 1e-8) return; // ill-posed, return default values
+        if (det < 1e-8) return; /*!< ill-posed, return default values */
         x[0] = 0;
         x[1] = C[1] / det;
 
         xq[0] = 0;
         xq[1] = (int32_t)rint(x[1] * (1 << SGRPROJ_PRJ_BITS));
     } else if (params->r[1] == 0) {
-        // H matrix is now only the scalar H[0][0]
-        // C vector is now only the scalar C[0]
+        /*!< H matrix is now only the scalar H[0][0] */
+        /*!< C vector is now only the scalar C[0] */
         det = H[0][0];
-        if (det < 1e-8) return; // ill-posed, return default values
+        if (det < 1e-8) return; /*!< ill-posed, return default values */
         x[0] = C[0] / det;
         x[1] = 0;
 
@@ -519,7 +515,7 @@ void get_proj_subspace_c(const uint8_t *src8, int32_t width, int32_t height, int
         xq[1] = 0;
     } else {
         det = (H[0][0] * H[1][1] - H[0][1] * H[1][0]);
-        if (det < 1e-8) return; // ill-posed, return default values
+        if (det < 1e-8) return; /*!< ill-posed, return default values */
         x[0] = (H[1][1] * C[0] - H[0][1] * C[1]) / det;
         x[1] = (H[0][0] * C[1] - H[1][0] * C[0]) / det;
 
@@ -542,7 +538,7 @@ static INLINE void encode_xq(int32_t *xq, int32_t *xqd, const SgrParamsType *par
     }
 }
 
-// Apply the self-guided filter across an entire restoration unit.
+/*!< Apply the self-guided filter across an entire restoration unit. */
 static INLINE void apply_sgr(int32_t sgr_params_idx, const uint8_t *dat8, int32_t width,
                              int32_t height, int32_t dat_stride, int32_t use_highbd,
                              int32_t bit_depth, int32_t pu_width, int32_t pu_height, int32_t *flt0,
@@ -553,11 +549,11 @@ static INLINE void apply_sgr(int32_t sgr_params_idx, const uint8_t *dat8, int32_
         int32_t *      flt1_row = flt1 + i * flt_stride;
         const uint8_t *dat8_row = dat8 + i * dat_stride;
 
-        // Iterate over the stripe in blocks of width pu_width
+        /*!< Iterate over the stripe in blocks of width pu_width */
         for (int32_t j = 0; j < width; j += pu_width) {
             const int32_t w = AOMMIN(pu_width, width - j);
 
-            //CHKN SSE
+            /*!< CHKN SSE */
             eb_av1_selfguided_restoration(dat8_row + j,
                                           w,
                                           h,
@@ -717,9 +713,9 @@ void eb_av1_compute_stats_c(int32_t wiener_win, const uint8_t *dgd, const uint8_
             for (k = 0; k < wiener_win2; ++k) {
                 M[k] += (int32_t)y[k] * x;
                 for (l = k; l < wiener_win2; ++l) {
-                    // H is a symmetric matrix, so we only need to fill out the upper
-                    // triangle here. We can copy it down to the lower triangle outside
-                    // the (i, j) loops.
+                    /*!< H is a symmetric matrix, so we only need to fill out the upper
+                     *   triangle here. We can copy it down to the lower triangle outside
+                     *   the (i, j) loops. */
                     H[k * wiener_win2 + l] += (int32_t)y[k] * y[l];
                 }
             }
@@ -763,9 +759,9 @@ void eb_av1_compute_stats_highbd_c(int32_t wiener_win, const uint8_t *dgd8, cons
             for (k = 0; k < wiener_win2; ++k) {
                 M[k] += (int64_t)y[k] * x;
                 for (l = k; l < wiener_win2; ++l) {
-                    // H is a symmetric matrix, so we only need to fill out the upper
-                    // triangle here. We can copy it down to the lower triangle outside
-                    // the (i, j) loops.
+                    /*!< H is a symmetric matrix, so we only need to fill out the upper
+                     *   triangle here. We can copy it down to the lower triangle outside
+                     *   the (i, j) loops. */
                     H[k * wiener_win2 + l] += (int64_t)y[k] * y[l];
                 }
             }
@@ -786,13 +782,13 @@ static INLINE int32_t wrap_index(int32_t i, int32_t wiener_win) {
     return (i >= wiener_halfwin1 ? wiener_win - 1 - i : i);
 }
 
-// Solve linear equations to find Wiener filter tap values
-// Taps are output scaled by WIENER_FILT_STEP
+/*!< Solve linear equations to find Wiener filter tap values */
+/*!< Taps are output scaled by WIENER_FILT_STEP */
 static int32_t linsolve_wiener(int32_t n, int64_t *A, int32_t stride, int64_t *b, int32_t *x) {
     for (int32_t k = 0; k < n - 1; k++) {
-        // Partial pivoting: bring the row with the largest pivot to the top
+        /*!< Partial pivoting: bring the row with the largest pivot to the top */
         for (int32_t i = n - 1; i > k; i--) {
-            // If row i has a better (bigger) pivot than row (i-1), swap them
+            /*!< If row i has a better (bigger) pivot than row (i-1), swap them */
             if (llabs(A[(i - 1) * stride + k]) < llabs(A[i * stride + k])) {
                 for (int32_t j = 0; j < n; j++) {
                     const int64_t c         = A[i * stride + j];
@@ -804,7 +800,7 @@ static int32_t linsolve_wiener(int32_t n, int64_t *A, int32_t stride, int64_t *b
                 b[i - 1]        = c;
             }
         }
-        // Forward elimination (convert A to row-echelon form)
+        /*!< Forward elimination (convert A to row-echelon form) */
         for (int32_t i = k; i < n - 1; i++) {
             if (A[k * stride + k] == 0) return 0;
             const int64_t c  = A[(i + 1) * stride + k];
@@ -814,19 +810,19 @@ static int32_t linsolve_wiener(int32_t n, int64_t *A, int32_t stride, int64_t *b
             b[i + 1] -= c * b[k] / cd;
         }
     }
-    // Back-substitution
+    /*!< Back-substitution */
     for (int32_t i = n - 1; i >= 0; i--) {
         if (A[i * stride + i] == 0) return 0;
         int64_t c = 0;
         for (int32_t j = i + 1; j <= n - 1; j++)
             c += A[i * stride + j] * x[j] / WIENER_TAP_SCALE_FACTOR;
-        // Store filter taps x in scaled form.
+        /*!< Store filter taps x in scaled form. */
         x[i] = (int32_t)(WIENER_TAP_SCALE_FACTOR * (b[i] - c) / A[i * stride + i]);
     }
 
     return 1;
 }
-// Fix vector b, update vector a
+/*!< Fix vector b, update vector a */
 static void update_a_sep_sym(int32_t wiener_win, int64_t **mc, int64_t **hc, int32_t *a,
                              int32_t *b) {
     int32_t       i, j;
@@ -856,7 +852,7 @@ static void update_a_sep_sym(int32_t wiener_win, int64_t **mc, int64_t **hc, int
             }
         }
     }
-    // Normalization enforcement in the system of equations itself
+    /*!< Normalization enforcement in the system of equations itself */
     assert(wiener_halfwin1 <= WIENER_HALFWIN1);
     int64_t a_halfwin_1 = A[wiener_halfwin1 - 1];
     for (i = 0; i < wiener_halfwin1 - 1; ++i) {
@@ -881,7 +877,7 @@ static void update_a_sep_sym(int32_t wiener_win, int64_t **mc, int64_t **hc, int
     }
 }
 
-// Fix vector a, update vector b
+/*!< Fix vector a, update vector b */
 static void update_b_sep_sym(int32_t wiener_win, int64_t **Mc, int64_t **hc, int32_t *a,
                              int32_t *b) {
     int32_t       i, j;
@@ -910,7 +906,7 @@ static void update_b_sep_sym(int32_t wiener_win, int64_t **Mc, int64_t **hc, int
             }
         }
     }
-    // Normalization enforcement in the system of equations itself
+    /*!< Normalization enforcement in the system of equations itself */
     int64_t a_halfwin_1 = A[wiener_halfwin1 - 1];
     for (i = 0; i < wiener_halfwin1 - 1; ++i) {
         A[i] -= a_halfwin_1 * 2 + B[i * wiener_halfwin1 + wiener_halfwin1 - 1] -
@@ -1016,13 +1012,13 @@ static void finalize_sym_filter(int32_t wiener_win, int32_t *f, InterpKernel fi)
     for (i = 0; i < wiener_halfwin; ++i) {
         const int64_t dividend = f[i] * WIENER_FILT_STEP;
         const int64_t divisor  = WIENER_TAP_SCALE_FACTOR;
-        // Perform this division with proper rounding rather than truncation
+        /*!< Perform this division with proper rounding rather than truncation */
         if (dividend < 0)
             fi[i] = (int16_t)((dividend - (divisor / 2)) / divisor);
         else
             fi[i] = (int16_t)((dividend + (divisor / 2)) / divisor);
     }
-    // Specialize for 7-tap filter
+    /*!< Specialize for 7-tap filter */
     if (wiener_win == WIENER_WIN) {
         fi[0] = CLIP(fi[0], WIENER_FILT_TAP0_MINV, WIENER_FILT_TAP0_MAXV);
         fi[1] = CLIP(fi[1], WIENER_FILT_TAP1_MINV, WIENER_FILT_TAP1_MAXV);
@@ -1032,11 +1028,11 @@ static void finalize_sym_filter(int32_t wiener_win, int32_t *f, InterpKernel fi)
         fi[1] = CLIP(fi[0], WIENER_FILT_TAP1_MINV, WIENER_FILT_TAP1_MAXV);
         fi[0] = 0;
     }
-    // Satisfy filter constraints
+    /*!< Satisfy filter constraints */
     fi[WIENER_WIN - 1] = fi[0];
     fi[WIENER_WIN - 2] = fi[1];
     fi[WIENER_WIN - 3] = fi[2];
-    // The central element has an implicit +WIENER_FILT_STEP
+    /*!< The central element has an implicit +WIENER_FILT_STEP */
     fi[3] = -2 * (fi[0] + fi[1] + fi[2]);
 }
 
@@ -1106,7 +1102,7 @@ static int64_t finer_tile_search_wiener_seg(const RestSearchCtxt *       rsc,
                     } else {
                         err  = err2;
                         skip = 1;
-                        // At the highest step size continue moving in the same direction
+                        /*!< At the highest step size continue moving in the same direction */
                         if (s == start_step) continue;
                     }
                 }
@@ -1125,7 +1121,7 @@ static int64_t finer_tile_search_wiener_seg(const RestSearchCtxt *       rsc,
                         plane_wiener->hfilter[WIENER_HALFWIN] += 2 * (int16_t)s;
                     } else {
                         err = err2;
-                        // At the highest step size continue moving in the same direction
+                        /*!< At the highest step size continue moving in the same direction */
                         if (s == start_step) continue;
                     }
                 }
@@ -1147,7 +1143,7 @@ static int64_t finer_tile_search_wiener_seg(const RestSearchCtxt *       rsc,
                     } else {
                         err  = err2;
                         skip = 1;
-                        // At the highest step size continue moving in the same direction
+                        /*!< At the highest step size continue moving in the same direction */
                         if (s == start_step) continue;
                     }
                 }
@@ -1166,7 +1162,7 @@ static int64_t finer_tile_search_wiener_seg(const RestSearchCtxt *       rsc,
                         plane_wiener->vfilter[WIENER_HALFWIN] += 2 * (int16_t)s;
                     } else {
                         err = err2;
-                        // At the highest step size continue moving in the same direction
+                        /*!< At the highest step size continue moving in the same direction */
                         if (s == start_step) continue;
                     }
                 }
@@ -1197,10 +1193,10 @@ static void search_switchable(const RestorationTileLimits *limits, const Av1Pixe
     for (int32_t rest_type = 0; rest_type < RESTORE_SWITCHABLE_TYPES; ++rest_type) {
         RestorationType r = (RestorationType)rest_type;
 
-        // Check for the condition that wiener or sgrproj search could not
-        // find a solution or the solution was worse than RESTORE_NONE.
-        // In either case the best_rtype will be set as RESTORE_NONE. These
-        // should be skipped from the test below.
+        /*!< Check for the condition that wiener or sgrproj search could not
+         *   find a solution or the solution was worse than RESTORE_NONE.
+         *   In either case the best_rtype will be set as RESTORE_NONE. These
+         *   should be skipped from the test below. */
         if (r > RESTORE_NONE)
             if (rusi->best_rtype[r - 1] == RESTORE_NONE) continue;
         const int64_t sse         = rusi->sse[r];
@@ -1390,9 +1386,9 @@ static void search_wiener_seg(const RestorationTileLimits *limits, const Av1Pixe
     finalize_sym_filter(wiener_win, vfilterd, rui.wiener_info.vfilter);
     finalize_sym_filter(wiener_win, hfilterd, rui.wiener_info.hfilter);
 
-    // Filter score computes the value of the function x'*A*x - x'*b for the
-    // learned filter and compares it against identity filer. If there is no
-    // reduction in the function, the filter is reverted back to identity
+    /*!< Filter score computes the value of the function x'*A*x - x'*b for the
+     *   learned filter and compares it against identity filer. If there is no
+     *   reduction in the function, the filter is reverted back to identity */
     if (compute_score(wiener_win, M, H, rui.wiener_info.vfilter, rui.wiener_info.hfilter) > 0) {
         rusi->sse[RESTORE_WIENER] = INT64_MAX;
         return;
@@ -1430,9 +1426,9 @@ static void search_wiener_finish(const RestorationTileLimits *limits, const Av1P
     memset(&rui, 0, sizeof(rui));
     rui.restoration_type = RESTORE_WIENER;
 
-    // Filter score computes the value of the function x'*A*x - x'*b for the
-    // learned filter and compares it against identity filer. If there is no
-    // reduction in the function, the filter is reverted back to identity
+    /*!< Filter score computes the value of the function x'*A*x - x'*b for the
+     *   learned filter and compares it against identity filer. If there is no
+     *   reduction in the function, the filter is reverted back to identity */
 
     rusi->sse[RESTORE_WIENER] = rsc->rusi_pic[rest_unit_idx].sse[RESTORE_WIENER];
     if (rusi->sse[RESTORE_WIENER] == INT64_MAX) {
@@ -1503,13 +1499,13 @@ void restoration_seg_search(int32_t *rst_tmpbuf, Yv12BufferConfig *org_fts,
     Macroblock *     x          = pcs_ptr->parent_pcs_ptr->av1x;
     const int32_t    num_planes = 3;
 
-    // If the restoration unit dimensions are not multiples of
-    // rsi->restoration_unit_size then some elements of the rusi array may be
-    // left uninitialised when we reach copy_unit_info(...). This is not a
-    // problem, as these elements are ignored later, but in order to quiet
-    // Valgrind's warnings we initialise the array  to zero.
+    /*!< If the restoration unit dimensions are not multiples of
+     *   rsi->restoration_unit_size then some elements of the rusi array may be
+     *   left uninitialised when we reach copy_unit_info(...). This is not a
+     *   problem, as these elements are ignored later, but in order to quiet
+     *   Valgrind's warnings we initialise the array  to zero. */
 
-    RestSearchCtxt  rsc; //this context is specific for this segment
+    RestSearchCtxt  rsc; /*!< this context is specific for this segment */
     RestSearchCtxt *rsc_p = &rsc;
 
     const int32_t plane_start = AOM_PLANE_Y;
@@ -1566,18 +1562,18 @@ void rest_finish_search(PictureParentControlSet *p_pcs_ptr, Macroblock *x, Av1Co
     assert(ntiles[1] <= ntiles[0]);
     RestUnitSearchInfo *rusi = (RestUnitSearchInfo *)eb_aom_memalign(16, sizeof(*rusi) * ntiles[0]);
 
-    // If the restoration unit dimensions are not multiples of
-    // rsi->restoration_unit_size then some elements of the rusi array may be
-    // left uninitialised when we reach copy_unit_info(...). This is not a
-    // problem, as these elements are ignored later, but in order to quiet
-    // Valgrind's warnings we initialise the array below.
+    /*!< If the restoration unit dimensions are not multiples of
+     *   rsi->restoration_unit_size then some elements of the rusi array may be
+     *   left uninitialised when we reach copy_unit_info(...). This is not a
+     *   problem, as these elements are ignored later, but in order to quiet
+     *   Valgrind's warnings we initialise the array below. */
     memset(rusi, 0, sizeof(*rusi) * ntiles[0]);
 
     RestSearchCtxt rsc;
     const int32_t  plane_start = AOM_PLANE_Y;
     const int32_t  plane_end   = num_planes > 1 ? AOM_PLANE_V : AOM_PLANE_Y;
     for (int32_t plane = plane_start; plane <= plane_end; ++plane) {
-        //init rsc context for this plane
+        /*!< init rsc context for this plane */
         rsc.cm       = cm;
         rsc.x        = x;
         rsc.plane    = plane;

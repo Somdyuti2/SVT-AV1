@@ -1,21 +1,15 @@
-/*
-* Copyright(c) 2019 Netflix, Inc.
-* SPDX - License - Identifier: BSD - 2 - Clause - Patent
-*/
-/*
-* Copyright(c) 2019 Intel Corporation
-* SPDX - License - Identifier: BSD - 2 - Clause - Patent
-*/
-/*
- * Copyright (c) 2016, Alliance for Open Media. All rights reserved
+/*!< Copyright(c) 2019 Netflix, Inc.
+ * SPDX - License - Identifier: BSD - 2 - Clause - Patent */
+/*!<  Copyright(c) 2019 Intel Corporation
+ * SPDX - License - Identifier: BSD - 2 - Clause - Patent */
+/*!<  Copyright (c) 2016, Alliance for Open Media. All rights reserved
  *
  * This source code is subject to the terms of the BSD 2 Clause License and
  * the Alliance for Open Media Patent License 1.0. If the BSD 2 Clause License
  * was not distributed with this source code in the LICENSE file, you can
  * obtain it at www.aomedia.org/license/software. If the Alliance for Open
  * Media Patent License 1.0 was not distributed with this source code in the
- * PATENTS file, you can obtain it at www.aomedia.org/license/patent.
- */
+ * PATENTS file, you can obtain it at www.aomedia.org/license/patent. */
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -57,7 +51,7 @@ static int64_t index_mult_highbd[14] = {0U,
                                         0U,
                                         991146300U};
 
-// relationship between pu_index and row and col of the 32x32 sub-blocks
+/*!< relationship between pu_index and row and col of the 32x32 sub-blocks */
 static const uint32_t subblock_xy_32x32[4][2] = {{0, 0}, {0, 1}, {1, 0}, {1, 1}};
 
 static const uint32_t subblock_xy_16x16[N_16X16_BLOCKS][2] = {{0, 0},
@@ -85,7 +79,7 @@ static const uint32_t index_16x16_from_subindexes[4][4] = {
 
 extern AomVarianceFnPtr mefn_ptr[BlockSizeS_ALL];
 
-// save YUV to file - auxiliary function for debug
+/*!< save YUV to file - auxiliary function for debug */
 void save_YUV_to_file(char *filename, EbByte buffer_y, EbByte buffer_u, EbByte buffer_v,
                       uint16_t width, uint16_t height, uint16_t stride_y, uint16_t stride_u,
                       uint16_t stride_v, uint16_t origin_y, uint16_t origin_x, uint32_t ss_x,
@@ -94,13 +88,13 @@ void save_YUV_to_file(char *filename, EbByte buffer_y, EbByte buffer_u, EbByte b
     EbByte pic_point;
     int    h;
 
-    // save current source picture to a YUV file
+    /*!< save current source picture to a YUV file */
     FOPEN(fid, filename, "wb");
 
     if (!fid) {
         SVT_LOG("Unable to open file %s to write.\n", "temp_picture.yuv");
     } else {
-        // the source picture saved in the enchanced_picture_ptr contains a border in x and y dimensions
+        /*!< the source picture saved in the enchanced_picture_ptr contains a border in x and y dimensions */
         pic_point = buffer_y + (origin_y * stride_y) + origin_x;
         for (h = 0; h < height; h++) {
             fwrite(pic_point, 1, (size_t)width, fid);
@@ -120,7 +114,7 @@ void save_YUV_to_file(char *filename, EbByte buffer_y, EbByte buffer_u, EbByte b
     }
 }
 
-// save YUV to file - auxiliary function for debug
+/*!< save YUV to file - auxiliary function for debug */
 void save_YUV_to_file_highbd(char *filename, uint16_t *buffer_y, uint16_t *buffer_u,
                              uint16_t *buffer_v, uint16_t width, uint16_t height, uint16_t stride_y,
                              uint16_t stride_u, uint16_t stride_v, uint16_t origin_y,
@@ -129,13 +123,13 @@ void save_YUV_to_file_highbd(char *filename, uint16_t *buffer_y, uint16_t *buffe
     uint16_t *pic_point;
     int       h;
 
-    // save current source picture to a YUV file
+    /*!< save current source picture to a YUV file */
     FOPEN(fid, filename, "wb");
 
     if (!fid) {
         SVT_LOG("Unable to open file %s to write.\n", "temp_picture.yuv");
     } else {
-        // the source picture saved in the enchanced_picture_ptr contains a border in x and y dimensions
+        /*!< the source picture saved in the enchanced_picture_ptr contains a border in x and y dimensions */
         pic_point = buffer_y + (origin_y * stride_y) + origin_x;
         for (h = 0; h < height; h++) {
             fwrite(pic_point, 2, (size_t)width, fid);
@@ -315,12 +309,12 @@ void generate_padding_pic(EbPictureBufferDesc *pic_ptr, uint32_t ss_x, uint32_t 
     }
 }
 
-// assign a single value to all elements in an array
+/*!< assign a single value to all elements in an array */
 static void populate_list_with_value(int *list, int nelements, const int value) {
     for (int i = 0; i < nelements; i++) list[i] = value;
 }
 
-// get block filter weights using a distance metric
+/*!< get block filter weights using a distance metric */
 static void get_blk_fw_using_dist(int const *me_32x32_subblock_vf, int const *me_16x16_subblock_vf,
                                   EbBool use_16x16_subblocks_only, int *blk_fw, EbBool is_highbd) {
     uint32_t blk_idx, idx_32x32;
@@ -341,7 +335,7 @@ static void get_blk_fw_using_dist(int const *me_32x32_subblock_vf, int const *me
 
     if (use_16x16_subblocks_only) {
         for (idx_32x32 = 0; idx_32x32 < 4; idx_32x32++) {
-            // split into 16x16 sub-blocks
+            /*!< split into 16x16 sub-blocks */
 
             for (blk_idx = 0; blk_idx < N_16X16_BLOCKS; blk_idx++) {
                 if (subblocks_from32x32_to_16x16[blk_idx] == idx_32x32) {
@@ -370,7 +364,7 @@ static void get_blk_fw_using_dist(int const *me_32x32_subblock_vf, int const *me
                 ((me_32x32_subblock_vf[idx_32x32] * 14 <
                   (me_sum_16x16_subblock_vf[idx_32x32] << 4)) &&
                  max_me_vf - min_me_vf < THRES_DIFF_LOW)) {
-                // split into 32x32 sub-blocks
+                /*!< split into 32x32 sub-blocks */
 
                 int weight =
                     me_32x32_subblock_vf[idx_32x32] < (threshold_low << THR_SHIFT)
@@ -382,7 +376,7 @@ static void get_blk_fw_using_dist(int const *me_32x32_subblock_vf, int const *me
                         blk_fw[blk_idx] = weight;
                 }
             } else {
-                // split into 16x16 sub-blocks
+                /*!< split into 16x16 sub-blocks */
 
                 for (blk_idx = 0; blk_idx < N_16X16_BLOCKS; blk_idx++) {
                     if (subblocks_from32x32_to_16x16[blk_idx] == idx_32x32) {
@@ -397,7 +391,7 @@ static void get_blk_fw_using_dist(int const *me_32x32_subblock_vf, int const *me
     }
 }
 
-// compute variance for the MC block residuals
+/*!< compute variance for the MC block residuals */
 static void get_me_distortion(int *me_32x32_subblock_vf, int *me_16x16_subblock_vf, uint8_t *pred_y,
                               int stride_pred_y, uint8_t *src_y, int stride_src_y) {
     unsigned int sse;
@@ -432,7 +426,7 @@ static void get_me_distortion(int *me_32x32_subblock_vf, int *me_16x16_subblock_
     }
 }
 
-// compute variance for the MC block residuals - highbd
+/*!< compute variance for the MC block residuals - highbd */
 static void get_me_distortion_highbd(int *me_32x32_subblock_vf, int *me_16x16_subblock_vf,
                                      uint16_t *pred_y, int stride_pred_y, uint16_t *src_y,
                                      int stride_src_y) {
@@ -464,7 +458,7 @@ static void get_me_distortion_highbd(int *me_32x32_subblock_vf, int *me_16x16_su
     }
 }
 
-// Create and initialize all necessary ME context structures
+/*!< Create and initialize all necessary ME context structures */
 static void create_me_context_and_picture_control(
     MotionEstimationContext_t *context_ptr, PictureParentControlSet *picture_control_set_ptr_frame,
     PictureParentControlSet *picture_control_set_ptr_central,
@@ -472,20 +466,20 @@ static void create_me_context_and_picture_control(
     uint32_t ss_y) {
     uint32_t sb_row;
 
-    // set reference picture for alt-refs
+    /*!< set reference picture for alt-refs */
     context_ptr->me_context_ptr->alt_ref_reference_ptr =
         (EbPaReferenceObject *)
             picture_control_set_ptr_frame->pa_reference_picture_wrapper_ptr->object_ptr;
     context_ptr->me_context_ptr->me_alt_ref = EB_TRUE;
 
-    // set the buffers with the original, quarter and sixteenth pixels version of the source frame
+    /*!< set the buffers with the original, quarter and sixteenth pixels version of the source frame */
     EbPaReferenceObject *src_object =
         (EbPaReferenceObject *)
             picture_control_set_ptr_central->pa_reference_picture_wrapper_ptr->object_ptr;
     EbPictureBufferDesc *padded_pic_ptr = src_object->input_padded_picture_ptr;
     SequenceControlSet * scs_ptr =
         (SequenceControlSet *)picture_control_set_ptr_central->scs_wrapper_ptr->object_ptr;
-    // Set 1/4 and 1/16 ME reference buffer(s); filtered or decimated
+    /*!< Set 1/4 and 1/16 ME reference buffer(s); filtered or decimated */
     EbPictureBufferDesc *quarter_pic_ptr =
         (scs_ptr->down_sampling_method_me_search == ME_FILTERED_DOWNSAMPLED)
             ? src_object->quarter_filtered_picture_ptr
@@ -495,7 +489,7 @@ static void create_me_context_and_picture_control(
         (scs_ptr->down_sampling_method_me_search == ME_FILTERED_DOWNSAMPLED)
             ? src_object->sixteenth_filtered_picture_ptr
             : src_object->sixteenth_decimated_picture_ptr;
-    // Parts from MotionEstimationKernel()
+    /*!< Parts from MotionEstimationKernel() */
     uint32_t sb_origin_x = (uint32_t)(blk_col * BW);
     uint32_t sb_origin_y = (uint32_t)(blk_row * BH);
 
@@ -506,22 +500,22 @@ static void create_me_context_and_picture_control(
                              ? input_picture_ptr_central->height - sb_origin_y
                              : BLOCK_SIZE_64;
 
-    // Load the SB from the input to the intermediate SB buffer
+    /*!< Load the SB from the input to the intermediate SB buffer */
     int buffer_index =
         (input_picture_ptr_central->origin_y + sb_origin_y) * input_picture_ptr_central->stride_y +
         input_picture_ptr_central->origin_x + sb_origin_x;
 
-    // set search type
+    /*!< set search type */
     context_ptr->me_context_ptr->hme_search_type = HME_RECTANGULAR;
 
-    // set search method
+    /*!< set search method */
     context_ptr->me_context_ptr->hme_search_method = FULL_SAD_SEARCH;
 
-    // set Lambda
+    /*!< set Lambda */
     context_ptr->me_context_ptr->lambda =
         lambda_mode_decision_ra_sad[picture_control_set_ptr_central->picture_qp];
 
-    // populate src block buffers: sb_buffer, quarter_sb_buffer and sixteenth_sb_buffer
+    /*!< populate src block buffers: sb_buffer, quarter_sb_buffer and sixteenth_sb_buffer */
     for (sb_row = 0; sb_row < BLOCK_SIZE_64; sb_row++) {
         EB_MEMCPY((&(context_ptr->me_context_ptr->sb_buffer[sb_row * BLOCK_SIZE_64])),
                   (&(input_picture_ptr_central
@@ -532,7 +526,7 @@ static void create_me_context_and_picture_control(
     {
         uint8_t *src_ptr = &(padded_pic_ptr->buffer_y[buffer_index]);
 
-        //_MM_HINT_T0     //_MM_HINT_T1    //_MM_HINT_T2    //_MM_HINT_NTA
+        /*!< _MM_HINT_T0 */    /*!< _MM_HINT_T1 */    /*!< _MM_HINT_T2 */    /*!< _MM_HINT_NTA */
         uint32_t i;
         for (i = 0; i < sb_height; i++) {
             char const *p = (char const *)(src_ptr + i * padded_pic_ptr->stride_y);
@@ -543,7 +537,7 @@ static void create_me_context_and_picture_control(
     context_ptr->me_context_ptr->sb_src_ptr    = &(padded_pic_ptr->buffer_y[buffer_index]);
     context_ptr->me_context_ptr->sb_src_stride = padded_pic_ptr->stride_y;
 
-    // Load the 1/4 decimated SB from the 1/4 decimated input to the 1/4 intermediate SB buffer
+    /*!< Load the 1/4 decimated SB from the 1/4 decimated input to the 1/4 intermediate SB buffer */
     buffer_index = (quarter_pic_ptr->origin_y + (sb_origin_y >> ss_y)) * quarter_pic_ptr->stride_y +
                    quarter_pic_ptr->origin_x + (sb_origin_x >> ss_x);
 
@@ -554,7 +548,7 @@ static void create_me_context_and_picture_control(
                   (sb_width >> ss_x) * sizeof(uint8_t));
     }
 
-    // Load the 1/16 decimated SB from the 1/16 decimated input to the 1/16 intermediate SB buffer
+    /*!< Load the 1/16 decimated SB from the 1/16 decimated input to the 1/16 intermediate SB buffer */
     buffer_index =
         (sixteenth_pic_ptr->origin_y + (sb_origin_y >> 2)) * sixteenth_pic_ptr->stride_y +
         sixteenth_pic_ptr->origin_x + (sb_origin_x >> 2);
@@ -579,7 +573,7 @@ static void create_me_context_and_picture_control(
     }
 }
 
-// Get sub-block filter weights for the 16 subblocks case
+/*!< Get sub-block filter weights for the 16 subblocks case */
 static INLINE int get_subblock_filter_weight_16subblocks(unsigned int y, unsigned int x,
                                                          unsigned int block_height,
                                                          unsigned int block_width,
@@ -629,7 +623,7 @@ static INLINE int get_subblock_filter_weight_16subblocks(unsigned int y, unsigne
     return filter_weight;
 }
 
-// Get sub-block filter weights for the 4 subblocks case
+/*!< Get sub-block filter weights for the 4 subblocks case */
 static INLINE int get_subblock_filter_weight_4subblocks(unsigned int y, unsigned int x,
                                                         unsigned int block_height,
                                                         unsigned int block_width,
@@ -649,7 +643,7 @@ static INLINE int get_subblock_filter_weight_4subblocks(unsigned int y, unsigned
     return filter_weight;
 }
 
-// Adjust value of the modified (weight of filtering) based on the distortion and strength parameter
+/*!< Adjust value of the modified (weight of filtering) based on the distortion and strength parameter */
 static INLINE int adjust_modifier(int sum_dist, int index, int rounding, int strength,
                                   int filter_weight) {
     assert(index >= 0 && index <= 13);
@@ -669,7 +663,7 @@ static INLINE int adjust_modifier(int sum_dist, int index, int rounding, int str
     return mod;
 }
 
-// Adjust value of the modified (weight of filtering) based on the distortion and strength parameter - highbd
+/*!< Adjust value of the modified (weight of filtering) based on the distortion and strength parameter - highbd */
 static INLINE int adjust_modifier_highbd(int64_t sum_dist, int index, int rounding, int strength,
                                          int filter_weight) {
     assert(index >= 0 && index <= 13);
@@ -720,7 +714,7 @@ static INLINE void calculate_squared_errors_highbd(const uint16_t *s, int s_stri
     }
 }
 
-// Main function that applies filtering to a block according to the weights
+/*!< Main function that applies filtering to a block according to the weights */
 void svt_av1_apply_filtering_c(const uint8_t *y_src, int y_src_stride, const uint8_t *y_pre,
                                int y_pre_stride, const uint8_t *u_src, const uint8_t *v_src,
                                int uv_src_stride, const uint8_t *u_pre, const uint8_t *v_pre,
@@ -729,7 +723,7 @@ void svt_av1_apply_filtering_c(const uint8_t *y_src, int y_src_stride, const uin
                                const int *blk_fw, int use_whole_blk, uint32_t *y_accum,
                                uint16_t *y_count, uint32_t *u_accum, uint16_t *u_count,
                                uint32_t *v_accum,
-                               uint16_t *v_count) { // sub-block filter weights
+                               uint16_t *v_count) { /*!< sub-block filter weights */
 
     unsigned int       i, j, k, m;
     int                idx, idy;
@@ -748,7 +742,7 @@ void svt_av1_apply_filtering_c(const uint8_t *y_src, int y_src_stride, const uin
     assert(use_whole_blk == 0);
     UNUSED(use_whole_blk);
 
-    // Calculate squared differences for each pixel of the block (pred-orig)
+    /*!< Calculate squared differences for each pixel of the block (pred-orig) */
     calculate_squared_errors(
         y_src, y_src_stride, y_pre, y_pre_stride, y_diff_se, block_width, block_height);
     calculate_squared_errors(
@@ -770,7 +764,7 @@ void svt_av1_apply_filtering_c(const uint8_t *y_src, int y_src_stride, const uin
                     get_subblock_filter_weight_16subblocks(i, j, block_height, block_width, blk_fw);
             }
 
-            // non-local mean approach
+            /*!< non-local mean approach */
             int y_index = 0;
 
             const int uv_r = i >> ss_y;
@@ -803,12 +797,12 @@ void svt_av1_apply_filtering_c(const uint8_t *y_src, int y_src_stride, const uin
             y_count[k] += modifier;
             y_accum[k] += modifier * pixel_value;
 
-            // Process chroma component
+            /*!< Process chroma component */
             if (!(i & ss_y) && !(j & ss_x)) {
                 const int u_pixel_value = u_pre[uv_r * uv_pre_stride + uv_c];
                 const int v_pixel_value = v_pre[uv_r * uv_pre_stride + uv_c];
 
-                // non-local mean approach
+                /*!< non-local mean approach */
                 int cr_index = 0;
                 int u_mod = 0, v_mod = 0;
                 int y_diff = 0;
@@ -858,14 +852,14 @@ void svt_av1_apply_filtering_c(const uint8_t *y_src, int y_src_stride, const uin
     }
 }
 
-// Main function that applies filtering to a block according to the weights - highbd
+/*!< Main function that applies filtering to a block according to the weights - highbd */
 void svt_av1_apply_filtering_highbd_c(
     const uint16_t *y_src, int y_src_stride, const uint16_t *y_pre, int y_pre_stride,
     const uint16_t *u_src, const uint16_t *v_src, int uv_src_stride, const uint16_t *u_pre,
     const uint16_t *v_pre, int uv_pre_stride, unsigned int block_width, unsigned int block_height,
     int ss_x, int ss_y, int strength, const int *blk_fw, int use_whole_blk, uint32_t *y_accum,
     uint16_t *y_count, uint32_t *u_accum, uint16_t *u_count, uint32_t *v_accum,
-    uint16_t *v_count) { // sub-block filter weights
+    uint16_t *v_count) { /*!< sub-block filter weights */
 
     unsigned int       i, j, k, m;
     int                idx, idy;
@@ -883,7 +877,7 @@ void svt_av1_apply_filtering_highbd_c(
     assert(use_whole_blk == 0);
     UNUSED(use_whole_blk);
 
-    // Calculate squared differences for each pixel of the block (pred-orig)
+    /*!< Calculate squared differences for each pixel of the block (pred-orig) */
     calculate_squared_errors_highbd(
         y_src, y_src_stride, y_pre, y_pre_stride, y_diff_se, block_width, block_height);
     calculate_squared_errors_highbd(
@@ -905,7 +899,7 @@ void svt_av1_apply_filtering_highbd_c(
                     get_subblock_filter_weight_16subblocks(i, j, block_height, block_width, blk_fw);
             }
 
-            // non-local mean approach
+            /*!< non-local mean approach */
             int y_index = 0;
 
             const int uv_r = i >> ss_y;
@@ -939,12 +933,12 @@ void svt_av1_apply_filtering_highbd_c(
             y_count[k] += final_y_mod;
             y_accum[k] += final_y_mod * pixel_value;
 
-            // Process chroma component
+            /*!< Process chroma component */
             if (!(i & ss_y) && !(j & ss_x)) {
                 const int u_pixel_value = u_pre[uv_r * uv_pre_stride + uv_c];
                 const int v_pixel_value = v_pre[uv_r * uv_pre_stride + uv_c];
 
-                // non-local mean approach
+                /*!< non-local mean approach */
                 int     cr_index = 0;
                 int64_t u_mod = 0, v_mod = 0;
                 int     final_u_mod, final_v_mod;
@@ -1001,11 +995,11 @@ static void apply_filtering_block(int block_row, int block_col, EbByte *src, uin
                                   EbByte *pred, uint16_t **pred_16bit, uint32_t **accum,
                                   uint16_t **count, uint32_t *stride, uint32_t *stride_pred,
                                   int block_width, int block_height,
-                                  uint32_t ss_x, // chroma sub-sampling in x
-                                  uint32_t ss_y, // chroma sub-sampling in y
+                                  uint32_t ss_x, /*!< chroma sub-sampling in x */
+                                  uint32_t ss_y, /*!< chroma sub-sampling in y */
                                   int altref_strength, const int *blk_fw, EbBool is_highbd) {
     int blk_h = BH >> 1;
-    int blk_w = BW >> 1; // fixed 32x32 blocks for now
+    int blk_w = BW >> 1; /*!< fixed 32x32 blocks for now */
 
     int offset_src_buffer_y = block_row * blk_h * stride[C_Y] + block_col * blk_w;
     int offset_src_buffer_u =
@@ -1054,7 +1048,7 @@ static void apply_filtering_block(int block_row, int block_col, EbByte *src, uin
         pred_ptr[C_U] = pred[C_U] + offset_block_buffer_u;
         pred_ptr[C_V] = pred[C_V] + offset_block_buffer_v;
 
-        // Apply the temporal filtering strategy
+        /*!< Apply the temporal filtering strategy */
         svt_av1_apply_filtering(src_ptr[C_Y],
                                 stride[C_Y],
                                 pred_ptr[C_Y],
@@ -1071,7 +1065,7 @@ static void apply_filtering_block(int block_row, int block_col, EbByte *src, uin
                                 ss_y,
                                 altref_strength,
                                 blk_fw_32x32,
-                                0, // use_32x32
+                                0, /*!< use_32x32 */
                                 accum_ptr[C_Y],
                                 count_ptr[C_Y],
                                 accum_ptr[C_U],
@@ -1087,7 +1081,7 @@ static void apply_filtering_block(int block_row, int block_col, EbByte *src, uin
         pred_ptr_16bit[C_U] = pred_16bit[C_U] + offset_block_buffer_u;
         pred_ptr_16bit[C_V] = pred_16bit[C_V] + offset_block_buffer_v;
 
-        // Apply the temporal filtering strategy
+        /*!< Apply the temporal filtering strategy */
         svt_av1_apply_filtering_highbd(src_ptr_16bit[C_Y],
                                        stride[C_Y],
                                        pred_ptr_16bit[C_Y],
@@ -1104,7 +1098,7 @@ static void apply_filtering_block(int block_row, int block_col, EbByte *src, uin
                                        ss_y,
                                        altref_strength,
                                        blk_fw_32x32,
-                                       0, // use_32x32
+                                       0, /*!< use_32x32 */
                                        accum_ptr[C_Y],
                                        count_ptr[C_Y],
                                        accum_ptr[C_U],
@@ -1114,7 +1108,7 @@ static void apply_filtering_block(int block_row, int block_col, EbByte *src, uin
     }
 }
 
-// Apply filtering to the central picture
+/*!< Apply filtering to the central picture */
 static void apply_filtering_central(EbByte *pred, uint32_t **accum, uint16_t **count,
                                     uint16_t blk_width, uint16_t blk_height, uint32_t ss_x,
                                     uint32_t ss_y) {
@@ -1129,7 +1123,7 @@ static void apply_filtering_central(EbByte *pred, uint32_t **accum, uint16_t **c
     int       filter_weight = INIT_WEIGHT;
     const int modifier      = filter_weight * WEIGHT_MULTIPLIER;
 
-    // Luma
+    /*!< Luma */
     k = 0;
     for (i = 0; i < blk_height_y; i++) {
         for (j = 0; j < blk_width_y; j++) {
@@ -1139,7 +1133,7 @@ static void apply_filtering_central(EbByte *pred, uint32_t **accum, uint16_t **c
         }
     }
 
-    // Chroma
+    /*!< Chroma */
     k = 0;
     for (i = 0; i < blk_height_ch; i++) {
         for (j = 0; j < blk_width_ch; j++) {
@@ -1153,7 +1147,7 @@ static void apply_filtering_central(EbByte *pred, uint32_t **accum, uint16_t **c
     }
 }
 
-// Apply filtering to the central picture
+/*!< Apply filtering to the central picture */
 static void apply_filtering_central_highbd(uint16_t **pred_16bit, uint32_t **accum,
                                            uint16_t **count, uint16_t blk_width,
                                            uint16_t blk_height, uint32_t ss_x, uint32_t ss_y) {
@@ -1168,7 +1162,7 @@ static void apply_filtering_central_highbd(uint16_t **pred_16bit, uint32_t **acc
     int       filter_weight = INIT_WEIGHT;
     const int modifier      = filter_weight * WEIGHT_MULTIPLIER;
 
-    // Luma
+    /*!< Luma */
     k = 0;
     for (i = 0; i < blk_height_y; i++) {
         for (j = 0; j < blk_width_y; j++) {
@@ -1178,7 +1172,7 @@ static void apply_filtering_central_highbd(uint16_t **pred_16bit, uint32_t **acc
         }
     }
 
-    // Chroma
+    /*!< Chroma */
     k = 0;
     for (i = 0; i < blk_height_ch; i++) {
         for (j = 0; j < blk_width_ch; j++) {
@@ -1311,7 +1305,7 @@ static void tf_inter_prediction(PictureParentControlSet *pcs_ptr, MeContext *con
                 uint32_t mv_index = tab16x16[pu_index];
                 mv_unit.mv->x     = _MVXT(context_ptr->p_best_mv16x16[mv_index]);
                 mv_unit.mv->y     = _MVYT(context_ptr->p_best_mv16x16[mv_index]);
-                //AV1 MVs are always in 1/8th pel precision.
+                /*!< AV1 MVs are always in 1/8th pel precision. */
                 mv_unit.mv->x                = mv_unit.mv->x << 1;
                 mv_unit.mv->y                = mv_unit.mv->y << 1;
                 uint64_t     best_distortion = (uint64_t)~0;
@@ -1326,7 +1320,7 @@ static void tf_inter_prediction(PictureParentControlSet *pcs_ptr, MeContext *con
                         mv_unit.mv->y = mv_y + j;
 
                         av1_inter_prediction(
-                            NULL,  //pcs_ptr,
+                            NULL, //pcs_ptr,
                             (uint32_t)interp_filters,
                             &blk_ptr,
                             0, //ref_frame_type,
@@ -1335,8 +1329,8 @@ static void tf_inter_prediction(PictureParentControlSet *pcs_ptr, MeContext *con
                             SIMPLE_TRANSLATION,
                             0,
                             0,
-                            1, //compound_idx not used
-                            NULL, // interinter_comp not used
+                            1, /*!< compound_idx not used */
+                            NULL, /*!< interinter_comp not used */
                             NULL,
                             NULL,
                             NULL,
@@ -1394,13 +1388,13 @@ static void tf_inter_prediction(PictureParentControlSet *pcs_ptr, MeContext *con
                     }
                 }
 
-                // Perform final pass using the 1/8 MV
-                //AV1 MVs are always in 1/8th pel precision.
+                /*!< Perform final pass using the 1/8 MV */
+                /*!< AV1 MVs are always in 1/8th pel precision. */
                 mv_unit.mv->x = best_mv_x;
                 mv_unit.mv->y = best_mv_y;
 
                 av1_inter_prediction(
-                    NULL,  //pcs_ptr,
+                    NULL, //pcs_ptr,
                     (uint32_t)interp_filters,
                     &blk_ptr,
                     0, //ref_frame_type,
@@ -1409,8 +1403,8 @@ static void tf_inter_prediction(PictureParentControlSet *pcs_ptr, MeContext *con
                     SIMPLE_TRANSLATION,
                     0,
                     0,
-                    1, //compound_idx not used
-                    NULL, // interinter_comp not used
+                    1, /*!<compound_idx not used */
+                    NULL, /*!< interinter_comp not used */
                     NULL,
                     NULL,
                     NULL,
@@ -1451,7 +1445,7 @@ static void get_final_filtered_pixels(EbByte *   src_center_ptr_start,
     int i, j, k;
 
     if (!is_highbd) {
-        // Process luma
+        /*!< Process luma */
         int pos = blk_y_src_offset;
         for (i = 0, k = 0; i < BH; i++) {
             for (j = 0; j < BW; j++, k++) {
@@ -1467,7 +1461,7 @@ static void get_final_filtered_pixels(EbByte *   src_center_ptr_start,
             }
             pos += stride[C_Y] - BW;
         }
-        // Process chroma
+        /*!< Process chroma */
         pos = blk_ch_src_offset;
         for (i = 0, k = 0; i < blk_height_ch; i++) {
             for (j = 0; j < blk_width_ch; j++, k++) {
@@ -1492,7 +1486,7 @@ static void get_final_filtered_pixels(EbByte *   src_center_ptr_start,
             pos += stride[C_U] - blk_width_ch;
         }
     } else {
-        // Process luma
+        /*!< Process luma */
         int pos = blk_y_src_offset;
         for (i = 0, k = 0; i < BH; i++) {
             for (j = 0; j < BW; j++, k++) {
@@ -1508,7 +1502,7 @@ static void get_final_filtered_pixels(EbByte *   src_center_ptr_start,
             }
             pos += stride[C_Y] - BW;
         }
-        // Process chroma
+        /*!< Process chroma */
         pos = blk_ch_src_offset;
         for (i = 0, k = 0; i < blk_height_ch; i++) {
             for (j = 0; j < blk_width_ch; j++, k++) {
@@ -1535,8 +1529,8 @@ static void get_final_filtered_pixels(EbByte *   src_center_ptr_start,
     }
 }
 
-// Produce the filtered alt-ref picture
-// - core function
+/*!< Produce the filtered alt-ref picture
+ *   - core function */
 static EbErrorType produce_temporally_filtered_pic(
     PictureParentControlSet **list_picture_control_set_ptr,
     EbPictureBufferDesc **list_input_picture_ptr, uint8_t altref_strength, uint8_t index_center,
@@ -1574,16 +1568,16 @@ static EbErrorType produce_temporally_filtered_pic(
     int encoder_bit_depth =
         (int)picture_control_set_ptr_central->scs_ptr->static_config.encoder_bit_depth;
 
-    // chroma subsampling
+    /*!< chroma subsampling */
     uint32_t ss_x          = picture_control_set_ptr_central->scs_ptr->subsampling_x;
     uint32_t ss_y          = picture_control_set_ptr_central->scs_ptr->subsampling_y;
     uint16_t blk_width_ch  = (uint16_t)BW >> ss_x;
     uint16_t blk_height_ch = (uint16_t)BH >> ss_y;
 
     uint32_t blk_cols = (uint32_t)(input_picture_ptr_central->width + BW - 1) /
-                        BW; // I think only the part of the picture
+                        BW; /*!< I think only the part of the picture */
     uint32_t blk_rows = (uint32_t)(input_picture_ptr_central->height + BH - 1) /
-                        BH; // that fits to the 32x32 blocks are actually filtered
+                        BH; /*!< that fits to the 32x32 blocks are actually filtered */
 
     uint32_t stride[COLOR_CHANNELS]      = {input_picture_ptr_central->stride_y,
                                        input_picture_ptr_central->stride_cb,
@@ -1609,7 +1603,7 @@ static EbErrorType produce_temporally_filtered_pic(
     uint32_t y_b64_end_idx = SEGMENT_END_IDX(
         y_seg_idx, picture_height_in_b64, picture_control_set_ptr_central->tf_segments_row_count);
 
-    // first position of the frame buffer according to the index center
+    /*!< first position of the frame buffer according to the index center */
     src_center_ptr_start[C_Y] =
         input_picture_ptr_central->buffer_y +
         input_picture_ptr_central->origin_y * input_picture_ptr_central->stride_y +
@@ -1648,7 +1642,7 @@ static EbErrorType produce_temporally_filtered_pic(
             blk_y_src_offset  = (blk_col * BW) + (blk_row * BH) * stride[C_Y];
             blk_ch_src_offset = (blk_col * blk_width_ch) + (blk_row * blk_height_ch) * stride[C_U];
 
-            // reset accumulator and count
+            /*!< reset accumulator and count */
             memset(accumulator, 0, BLK_PELS * COLOR_CHANNELS * sizeof(accumulator[0]));
             memset(counter, 0, BLK_PELS * COLOR_CHANNELS * sizeof(counter[0]));
 
@@ -1659,7 +1653,7 @@ static EbErrorType produce_temporally_filtered_pic(
 
             populate_list_with_value(blk_fw, 16, INIT_WEIGHT);
 
-            // for every frame to filter
+            /*!< for every frame to filter */
             for (frame_index = 0;
                  frame_index < (picture_control_set_ptr_central->past_altref_nframes +
                                 picture_control_set_ptr_central->future_altref_nframes + 1);
@@ -1677,13 +1671,13 @@ static EbErrorType produce_temporally_filtered_pic(
                         altref_buffer_highbd_start[C_V] + blk_ch_src_offset;
                 }
 
-                // ------------
-                // Step 1: motion estimation + compensation
-                // ------------
+                /**************/
+                /*!< Step 1: motion estimation + compensation */
+                /**************/
 
-                // if frame to process is the center frame
+                /*!< if frame to process is the center frame */
                 if (frame_index == index_center) {
-                    // skip MC (central frame)
+                    /*!< skip MC (central frame) */
 
                     populate_list_with_value(blk_fw, N_16X16_BLOCKS, 2);
                     populate_list_with_value(use_16x16_subblocks, N_32X32_BLOCKS, 0);
@@ -1725,7 +1719,7 @@ static EbErrorType produce_temporally_filtered_pic(
                     }
 
                 } else {
-                    // Initialize ME context
+                    /*!< Initialize ME context */
                     create_me_context_and_picture_control(
                         me_context_ptr,
                         list_picture_control_set_ptr[frame_index],
@@ -1736,23 +1730,23 @@ static EbErrorType produce_temporally_filtered_pic(
                         ss_x,
                         ss_y);
 
-                    // Perform ME - context_ptr will store the outputs (MVs, buffers, etc)
-                    // Block-based MC using open-loop HME + refinement
+                    /*!< Perform ME - context_ptr will store the outputs (MVs, buffers, etc)
+                     *   Block-based MC using open-loop HME + refinement */
                     motion_estimate_sb(
-                        picture_control_set_ptr_central, // source picture control set -> references come from here
+                        picture_control_set_ptr_central, /*!< source picture control set -> references come from here */
                         (uint32_t)blk_row * blk_cols + blk_col,
-                        (uint32_t)blk_col * BW, // x block
-                        (uint32_t)blk_row * BH, // y block
+                        (uint32_t)blk_col * BW, /*!< x block */
+                        (uint32_t)blk_row * BH, /*!< y block */
                         context_ptr,
-                        input_picture_ptr_central); // source picture
+                        input_picture_ptr_central); /*!< source picture */
 
                     EbBool use_16x16_subblocks_only =
-                        EB_TRUE; // TODO: hardcoded to use 16x16 subblocks only, however,
-                        // the support for the use of 32x32 subblocks as well is almost complete
-                        // experiments have shown low gains by adding this possibility
+                        EB_TRUE; /*!< TODO: hardcoded to use 16x16 subblocks only, however,
+                                  *   the support for the use of 32x32 subblocks as well is almost complete
+                                  *   experiments have shown low gains by adding this possibility */
                     populate_list_with_value(use_16x16_subblocks, N_32X32_BLOCKS, 1);
 
-                    // Perform MC using the information acquired using the ME step
+                    /*!< Perform MC using the information acquired using the ME step */
                     tf_inter_prediction(picture_control_set_ptr_central,
                                         context_ptr,
                                         list_input_picture_ptr[frame_index],
@@ -1769,7 +1763,7 @@ static EbErrorType produce_temporally_filtered_pic(
                                         use_16x16_subblocks,
                                         encoder_bit_depth);
 
-                    // Retrieve distortion (variance) on 32x32 and 16x16 sub-blocks
+                    /*!< Retrieve distortion (variance) on 32x32 and 16x16 sub-blocks */
                     if (!is_highbd)
                         get_me_distortion(me_32x32_subblock_vf,
                                           me_16x16_subblock_vf,
@@ -1785,7 +1779,7 @@ static EbErrorType produce_temporally_filtered_pic(
                                                  altref_buffer_highbd_ptr[C_Y],
                                                  stride[C_Y]);
 
-                    // Get sub-block filter weights depending on the variance
+                    /*!< Get sub-block filter weights depending on the variance */
                     get_blk_fw_using_dist(me_32x32_subblock_vf,
                                           me_16x16_subblock_vf,
                                           use_16x16_subblocks_only,
@@ -1793,11 +1787,11 @@ static EbErrorType produce_temporally_filtered_pic(
                                           is_highbd);
                 }
 
-                // ------------
-                // Step 2: temporal filtering using the motion compensated blocks
-                // ------------
+                /*****************/
+                /*!< Step 2: temporal filtering using the motion compensated blocks */
+                /*****************/
 
-                // if frame to process is the center frame
+                /*!< if frame to process is the center frame */
                 if (frame_index == index_center) {
                     if (!is_highbd)
                         apply_filtering_central(pred, accum, count, BW, BH, ss_x, ss_y);
@@ -1805,8 +1799,8 @@ static EbErrorType produce_temporally_filtered_pic(
                         apply_filtering_central_highbd(
                             pred_16bit, accum, count, BW, BH, ss_x, ss_y);
                 } else {
-                    // split filtering function into 32x32 blocks
-                    // TODO: implement a 64x64 SIMD version
+                    /*!< split filtering function into 32x32 blocks */
+                    /*!< TODO: implement a 64x64 SIMD version */
                     for (int block_row = 0; block_row < 2; block_row++) {
                         for (int block_col = 0; block_col < 2; block_col++) {
                             apply_filtering_block(block_row,
@@ -1819,10 +1813,10 @@ static EbErrorType produce_temporally_filtered_pic(
                                                   count,
                                                   stride,
                                                   stride_pred,
-                                                  BW >> 1, // fixed 32x32
-                                                  BH >> 1, // fixed 32x32
-                                                  ss_x, // chroma sub-sampling in x
-                                                  ss_y, // chroma sub-sampling in y
+                                                  BW >> 1, /*!< fixed 32x32 */
+                                                  BH >> 1, /*!< fixed 32x32 */
+                                                  ss_x, /*!< chroma sub-sampling in x */
+                                                  ss_y, /*!< chroma sub-sampling in y */
                                                   altref_strength,
                                                   blk_fw,
                                                   is_highbd);
@@ -1831,7 +1825,7 @@ static EbErrorType produce_temporally_filtered_pic(
                 }
             }
 
-            // Normalize filter output to produce temporally filtered frame
+            /*!< Normalize filter output to produce temporally filtered frame */
             get_final_filtered_pixels(src_center_ptr_start,
                                       altref_buffer_highbd_start,
                                       accum,
@@ -1855,15 +1849,16 @@ static EbErrorType produce_temporally_filtered_pic(
     return EB_ErrorNone;
 }
 
-// This is an adaptation of the mehtod in the following paper:
-// Shen-Chuan Tai, Shih-Ming Yang, "A fast method for image noise
-// estimation using Laplacian operator and adaptive edge detection,"
-// Proc. 3rd International Symposium on Communications, Control and
-// Signal Processing, 2008, St Julians, Malta.
-// Return noise estimate, or -1.0 if there was a failure
-// function from libaom
-// Standard bit depht input (=8 bits) to estimate the noise, I don't think there needs to be two methods for this
-// Operates on the Y component only
+/*!< This is an adaptation of the mehtod in the following paper:
+ *   Shen-Chuan Tai, Shih-Ming Yang, "A fast method for image noise
+ *   estimation using Laplacian operator and adaptive edge detection,"
+ *   Proc. 3rd International Symposium on Communications, Control and
+ *   Signal Processing, 2008, St Julians, Malta.
+ *   Return noise estimate, or -1.0 if there was a failure
+ *   function from libaom
+ *   Standard bit depht input (=8 bits) to estimate the noise,
+ *   I don't think there needs to be two methods for this
+ *   Operates on the Y component only */
 static double estimate_noise(const uint8_t *src, uint16_t width, uint16_t height,
                              uint16_t stride_y) {
     int64_t sum = 0;
@@ -1872,7 +1867,7 @@ static double estimate_noise(const uint8_t *src, uint16_t width, uint16_t height
     for (int i = 1; i < height - 1; ++i) {
         for (int j = 1; j < width - 1; ++j) {
             const int k = i * stride_y + j;
-            // Sobel gradients
+            /*!< Sobel gradients */
             const int g_x = (src[k - stride_y - 1] - src[k - stride_y + 1]) +
                             (src[k + stride_y - 1] - src[k + stride_y + 1]) +
                             2 * (src[k - 1] - src[k + 1]);
@@ -1880,8 +1875,8 @@ static double estimate_noise(const uint8_t *src, uint16_t width, uint16_t height
                             (src[k - stride_y + 1] - src[k + stride_y + 1]) +
                             2 * (src[k - stride_y] - src[k + stride_y]);
             const int ga = abs(g_x) + abs(g_y);
-            if (ga < EDGE_THRESHOLD) { // Do not consider edge pixels to estimate the noise
-                // Find Laplacian
+            if (ga < EDGE_THRESHOLD) { /*!< Do not consider edge pixels to estimate the noise */
+                /*!< Find Laplacian */
                 const int v =
                     4 * src[k] -
                     2 * (src[k - 1] + src[k + 1] + src[k - stride_y] + src[k + stride_y]) +
@@ -1892,7 +1887,7 @@ static double estimate_noise(const uint8_t *src, uint16_t width, uint16_t height
             }
         }
     }
-    // If very few smooth pels, return -1 since the estimate is unreliable
+    /*!< If very few smooth pels, return -1 since the estimate is unreliable */
     if (num < SMOOTH_THRESHOLD) return -1.0;
 
     const double sigma = (double)sum / (6 * num) * SQRT_PI_BY_2;
@@ -1900,7 +1895,7 @@ static double estimate_noise(const uint8_t *src, uint16_t width, uint16_t height
     return sigma;
 }
 
-// Noise estimation for highbd
+/*!< Noise estimation for highbd */
 static double estimate_noise_highbd(const uint16_t *src, int width, int height, int stride,
                                     int bd) {
     int64_t sum = 0;
@@ -1909,7 +1904,7 @@ static double estimate_noise_highbd(const uint16_t *src, int width, int height, 
     for (int i = 1; i < height - 1; ++i) {
         for (int j = 1; j < width - 1; ++j) {
             const int k = i * stride + j;
-            // Sobel gradients
+            /*!< Sobel gradients */
             const int g_x = (src[k - stride - 1] - src[k - stride + 1]) +
                             (src[k + stride - 1] - src[k + stride + 1]) +
                             2 * (src[k - 1] - src[k + 1]);
@@ -1917,9 +1912,9 @@ static double estimate_noise_highbd(const uint16_t *src, int width, int height, 
                             (src[k - stride + 1] - src[k + stride + 1]) +
                             2 * (src[k - stride] - src[k + stride]);
             const int ga =
-                ROUND_POWER_OF_TWO(abs(g_x) + abs(g_y), bd - 8); // divide by 2^2 and round up
-            if (ga < EDGE_THRESHOLD) { // Do not consider edge pixels to estimate the noise
-                // Find Laplacian
+                ROUND_POWER_OF_TWO(abs(g_x) + abs(g_y), bd - 8); /*!< divide by 2^2 and round up */
+            if (ga < EDGE_THRESHOLD) { /*!< Do not consider edge pixels to estimate the noise */
+                /*!< Find Laplacian */
                 const int v = 4 * src[k] -
                               2 * (src[k - 1] + src[k + 1] + src[k - stride] + src[k + stride]) +
                               (src[k - stride - 1] + src[k - stride + 1] + src[k + stride - 1] +
@@ -1929,25 +1924,25 @@ static double estimate_noise_highbd(const uint16_t *src, int width, int height, 
             }
         }
     }
-    // If very few smooth pels, return -1 since the estimate is unreliable
+    /*!< If very few smooth pels, return -1 since the estimate is unreliable */
     if (num < SMOOTH_THRESHOLD) return -1.0;
 
     const double sigma = (double)sum / (6 * num) * SQRT_PI_BY_2;
     return sigma;
 }
 
-// Adjust filtering parameters: strength and nframes
+/*!< Adjust filtering parameters: strength and nframes */
 static void adjust_filter_strength(PictureParentControlSet *picture_control_set_ptr_central,
 
                                    double noise_level, uint8_t *altref_strength, EbBool is_highbd,
                                    uint32_t encoder_bit_depth) {
     int strength = *altref_strength, adj_strength = strength;
 
-    // Adjust the strength of the temporal filtering
-    // based on the amount of noise present in the frame
-    // adjustment in the integer range [-2, 1]
-    // if noiselevel < 0, it means that the estimation was
-    // unsuccessful and therefore keep the strength as it was set
+    /*!< Adjust the strength of the temporal filtering
+     *   based on the amount of noise present in the frame
+     *   adjustment in the integer range [-2, 1]
+     *   if noiselevel < 0, it means that the estimation was
+     *   unsuccessful and therefore keep the strength as it was set */
     if (noise_level > 0) {
         int noiselevel_adj;
 #if ALTREF_IMPROVEMENT
@@ -1988,7 +1983,7 @@ static void adjust_filter_strength(PictureParentControlSet *picture_control_set_
         strength = strength - 1;
     }
 #endif
-    // if highbd, adjust filter strength strength = strength + 2*(bit depth - 8)
+    /*!< if highbd, adjust filter strength strength = strength + 2*(bit depth - 8) */
     if (is_highbd) strength = strength + 2 * (encoder_bit_depth - 8);
 
 #if DEBUG_TF
@@ -2000,12 +1995,12 @@ static void adjust_filter_strength(PictureParentControlSet *picture_control_set_
 
     *altref_strength = (uint8_t)strength;
 
-    // TODO: apply further refinements to the filter parameters according to 1st pass statistics
+    /*!< TODO: apply further refinements to the filter parameters according to 1st pass statistics */
 }
 
 static void pad_and_decimate_filtered_pic(
     PictureParentControlSet *picture_control_set_ptr_central) {
-    // reference structures (padded pictures + downsampled versions)
+    /*!< reference structures (padded pictures + downsampled versions) */
     EbPaReferenceObject *src_object =
         (EbPaReferenceObject *)
             picture_control_set_ptr_central->pa_reference_picture_wrapper_ptr->object_ptr;
@@ -2036,13 +2031,13 @@ static void pad_and_decimate_filtered_pic(
                      padded_pic_ptr->origin_x,
                      padded_pic_ptr->origin_y);
 
-    // 1/4 & 1/16 input picture decimation
+    /*!< 1/4 & 1/16 input picture decimation */
     downsample_decimation_input_picture(picture_control_set_ptr_central,
                                         padded_pic_ptr,
                                         src_object->quarter_decimated_picture_ptr,
                                         src_object->sixteenth_decimated_picture_ptr);
 
-    // 1/4 & 1/16 input picture downsampling through filtering
+    /*!< 1/4 & 1/16 input picture downsampling through filtering */
     SequenceControlSet *scs_ptr =
         (SequenceControlSet *)picture_control_set_ptr_central->scs_wrapper_ptr->object_ptr;
     if (scs_ptr->down_sampling_method_me_search == ME_FILTERED_DOWNSAMPLED)
@@ -2052,10 +2047,10 @@ static void pad_and_decimate_filtered_pic(
                                            src_object->sixteenth_filtered_picture_ptr);
 }
 
-// save original enchanced_picture_ptr buffer in a separate buffer (to be replaced by the temporally filtered pic)
+/*!< save original enchanced_picture_ptr buffer in a separate buffer (to be replaced by the temporally filtered pic) */
 static EbErrorType save_src_pic_buffers(PictureParentControlSet *picture_control_set_ptr_central,
                                         uint32_t ss_y, EbBool is_highbd) {
-    // allocate memory for the copy of the original enhanced buffer
+    /*!< allocate memory for the copy of the original enhanced buffer */
     EB_MALLOC_ARRAY(picture_control_set_ptr_central->save_enhanced_picture_ptr[C_Y],
                     picture_control_set_ptr_central->enhanced_picture_ptr->luma_size);
     EB_MALLOC_ARRAY(picture_control_set_ptr_central->save_enhanced_picture_ptr[C_U],
@@ -2063,7 +2058,7 @@ static EbErrorType save_src_pic_buffers(PictureParentControlSet *picture_control
     EB_MALLOC_ARRAY(picture_control_set_ptr_central->save_enhanced_picture_ptr[C_V],
                     picture_control_set_ptr_central->enhanced_picture_ptr->chroma_size);
 
-    // if highbd, allocate memory for the copy of the original enhanced buffer - bit inc
+    /*!< if highbd, allocate memory for the copy of the original enhanced buffer - bit inc */
     if (is_highbd) {
         EB_MALLOC_ARRAY(picture_control_set_ptr_central->save_enhanced_picture_bit_inc_ptr[C_Y],
                         picture_control_set_ptr_central->enhanced_picture_ptr->luma_size);
@@ -2073,8 +2068,8 @@ static EbErrorType save_src_pic_buffers(PictureParentControlSet *picture_control
                         picture_control_set_ptr_central->enhanced_picture_ptr->chroma_size);
     }
 
-    // copy buffers
-    // Y
+    /*!< copy buffers */
+    /*!< Y */
     uint32_t height_y =
         (uint32_t)(picture_control_set_ptr_central->enhanced_picture_ptr->height +
                    picture_control_set_ptr_central->enhanced_picture_ptr->origin_y +
@@ -2114,8 +2109,8 @@ static EbErrorType save_src_pic_buffers(PictureParentControlSet *picture_control
                          height_uv);
 
     if (is_highbd) {
-        // if highbd, copy bit inc buffers
-        // Y
+        /*!< if highbd, copy bit inc buffers */
+        /*!< Y */
         pic_copy_kernel_8bit(
             picture_control_set_ptr_central->enhanced_picture_ptr->buffer_bit_inc_y,
             picture_control_set_ptr_central->enhanced_picture_ptr->stride_bit_inc_y,
@@ -2123,7 +2118,7 @@ static EbErrorType save_src_pic_buffers(PictureParentControlSet *picture_control
             picture_control_set_ptr_central->enhanced_picture_ptr->stride_bit_inc_y,
             picture_control_set_ptr_central->enhanced_picture_ptr->stride_bit_inc_y,
             height_y);
-        // U
+        /*!< U */
         pic_copy_kernel_8bit(
             picture_control_set_ptr_central->enhanced_picture_ptr->buffer_bit_inc_cb,
             picture_control_set_ptr_central->enhanced_picture_ptr->stride_bit_inc_cb,
@@ -2131,7 +2126,7 @@ static EbErrorType save_src_pic_buffers(PictureParentControlSet *picture_control
             picture_control_set_ptr_central->enhanced_picture_ptr->stride_bit_inc_cb,
             picture_control_set_ptr_central->enhanced_picture_ptr->stride_bit_inc_cb,
             height_uv);
-        // V
+        /*!< V */
         pic_copy_kernel_8bit(
             picture_control_set_ptr_central->enhanced_picture_ptr->buffer_bit_inc_cr,
             picture_control_set_ptr_central->enhanced_picture_ptr->stride_bit_inc_cr,
@@ -2153,29 +2148,31 @@ EbErrorType svt_av1_init_temporal_filtering(
 
     altref_strength_ptr = &(picture_control_set_ptr_central->altref_strength);
 
-    // index of the central source frame
+    /*!< index of the central source frame */
     index_center = picture_control_set_ptr_central->past_altref_nframes;
 
-    // if this assertion does not fail (as I think it should not, then remove picture_control_set_ptr_central from the input parameters of init_temporal_filtering())
+    /*!< if this assertion does not fail (as I think it should not,
+     *   then remove picture_control_set_ptr_central from the input
+     *   parameters of init_temporal_filtering()) */
     assert(list_picture_control_set_ptr[index_center] == picture_control_set_ptr_central);
 
-    // source central frame picture buffer
+    /*!< source central frame picture buffer */
     central_picture_ptr = picture_control_set_ptr_central->enhanced_picture_ptr;
 
     uint32_t encoder_bit_depth =
         picture_control_set_ptr_central->scs_ptr->static_config.encoder_bit_depth;
     EbBool is_highbd = (encoder_bit_depth == 8) ? (uint8_t)EB_FALSE : (uint8_t)EB_TRUE;
 
-    // chroma subsampling
+    /*!< chroma subsampling */
     uint32_t ss_x = picture_control_set_ptr_central->scs_ptr->subsampling_x;
     uint32_t ss_y = picture_control_set_ptr_central->scs_ptr->subsampling_y;
 
-    //only one performs any picture based prep
+    /*!< only one performs any picture based prep */
     eb_block_on_mutex(picture_control_set_ptr_central->temp_filt_mutex);
     if (picture_control_set_ptr_central->temp_filt_prep_done == 0) {
         picture_control_set_ptr_central->temp_filt_prep_done = 1;
 
-        // allocate 16 bit buffer
+        /*!< allocate 16 bit buffer */
         if (is_highbd) {
             EB_MALLOC_ARRAY(picture_control_set_ptr_central->altref_buffer_highbd[C_Y],
                             central_picture_ptr->luma_size);
@@ -2184,7 +2181,7 @@ EbErrorType svt_av1_init_temporal_filtering(
             EB_MALLOC_ARRAY(picture_control_set_ptr_central->altref_buffer_highbd[C_V],
                             central_picture_ptr->chroma_size);
 
-            // pack byte buffers to 16 bit buffer
+            /*!< pack byte buffers to 16 bit buffer */
             pack_highbd_pic(central_picture_ptr,
                             picture_control_set_ptr_central->altref_buffer_highbd,
                             ss_x,
@@ -2192,11 +2189,11 @@ EbErrorType svt_av1_init_temporal_filtering(
                             EB_TRUE);
         }
 
-        // Estimate source noise level
+        /*!< Estimate source noise level */
         double noise_level;
         if (is_highbd) {
             noise_level = estimate_noise_highbd(
-                picture_control_set_ptr_central->altref_buffer_highbd[C_Y], // Y only
+                picture_control_set_ptr_central->altref_buffer_highbd[C_Y], /*!< Y only */
                 central_picture_ptr->width,
                 central_picture_ptr->height,
                 central_picture_ptr->stride_y,
@@ -2205,20 +2202,20 @@ EbErrorType svt_av1_init_temporal_filtering(
             EbByte buffer_y = central_picture_ptr->buffer_y +
                               central_picture_ptr->origin_y * central_picture_ptr->stride_y +
                               central_picture_ptr->origin_x;
-            noise_level = estimate_noise(buffer_y, // Y only
+            noise_level = estimate_noise(buffer_y, /*!< Y only */
                                          central_picture_ptr->width,
                                          central_picture_ptr->height,
                                          central_picture_ptr->stride_y);
         }
 
-        // adjust filter parameter based on the estimated noise of the picture
+        /*!< adjust filter parameter based on the estimated noise of the picture */
         adjust_filter_strength(picture_control_set_ptr_central,
                                noise_level,
                                altref_strength_ptr,
                                is_highbd,
                                encoder_bit_depth);
 
-        // Pad chroma reference samples - once only per picture
+        /*!< Pad chroma reference samples - once only per picture */
         for (int i = 0; i < (picture_control_set_ptr_central->past_altref_nframes +
                              picture_control_set_ptr_central->future_altref_nframes + 1);
              i++) {
@@ -2228,17 +2225,17 @@ EbErrorType svt_av1_init_temporal_filtering(
         }
 
         picture_control_set_ptr_central->temporal_filtering_on =
-            EB_TRUE; // set temporal filtering flag ON for current picture
+            EB_TRUE; /*!< set temporal filtering flag ON for current picture */
 
-        // save original source picture (to be replaced by the temporally filtered pic)
-        // if stat_report is enabled for PSNR computation
+        /*!< save original source picture (to be replaced by the temporally filtered pic)
+         *   if stat_report is enabled for PSNR computation */
         if (picture_control_set_ptr_central->scs_ptr->static_config.stat_report) {
             save_src_pic_buffers(picture_control_set_ptr_central, ss_y, is_highbd);
         }
     }
     eb_release_mutex(picture_control_set_ptr_central->temp_filt_mutex);
 
-    // populate source frames picture buffer list
+    /*!< populate source frames picture buffer list */
     EbPictureBufferDesc *list_input_picture_ptr[ALTREF_MAX_NFRAMES] = {NULL};
     for (int i = 0; i < (picture_control_set_ptr_central->past_altref_nframes +
                          picture_control_set_ptr_central->future_altref_nframes + 1);
@@ -2313,10 +2310,10 @@ EbErrorType svt_av1_init_temporal_filtering(
             EB_FREE_ARRAY(picture_control_set_ptr_central->altref_buffer_highbd[C_V]);
         }
 
-        // padding + decimation: even if highbd src, this is only performed on the 8 bit buffer (excluding the LSBs)
+        /*!< padding + decimation: even if highbd src, this is only performed on the 8 bit buffer (excluding the LSBs) */
         pad_and_decimate_filtered_pic(picture_control_set_ptr_central);
 
-        // Normalize the filtered SSE. Add 8 bit precision.
+        /*!< Normalize the filtered SSE. Add 8 bit precision. */
         picture_control_set_ptr_central->filtered_sse =
             (picture_control_set_ptr_central->filtered_sse << 8) / central_picture_ptr->width /
             central_picture_ptr->height;
@@ -2325,7 +2322,7 @@ EbErrorType svt_av1_init_temporal_filtering(
              (central_picture_ptr->width >> ss_x) / (central_picture_ptr->height >> ss_y)) /
             2;
 
-        // signal that temp filt is done
+        /*!< signal that temp filt is done */
         eb_post_semaphore(picture_control_set_ptr_central->temp_filt_done_semaphore);
     }
 

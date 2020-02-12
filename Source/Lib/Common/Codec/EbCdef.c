@@ -1,27 +1,25 @@
-/*
- * Copyright (c) 2016, Alliance for Open Media. All rights reserved
+/*!< Copyright (c) 2016, Alliance for Open Media. All rights reserved
  *
  * This source code is subject to the terms of the BSD 2 Clause License and
  * the Alliance for Open Media Patent License 1.0. If the BSD 2 Clause License
  * was not distributed with this source code in the LICENSE file, you can
  * obtain it at www.aomedia.org/license/software. If the Alliance for Open
  * Media Patent License 1.0 was not distributed with this source code in the
- * PATENTS file, you can obtain it at www.aomedia.org/license/patent.
- */
+ * PATENTS file, you can obtain it at www.aomedia.org/license/patent. */
 
 #include "EbCdef.h"
 #include "common_dsp_rtcd.h"
 #include "EbBitstreamUnit.h"
 
-//-------memory stuff
+/*!<-------memory stuff */
 
 #define ADDRESS_STORAGE_SIZE sizeof(size_t)
 #define DEFAULT_ALIGNMENT (2 * sizeof(void *))
-#define AOM_MAX_ALLOCABLE_MEMORY 8589934592 // 8 GB
-/*returns an addr aligned to the byte boundary specified by align*/
+#define AOM_MAX_ALLOCABLE_MEMORY 8589934592 /*!< 8 GB */
+/*!< returns an addr aligned to the byte boundary specified by align*/
 #define align_addr(addr, align) (void *)(((size_t)(addr) + ((align)-1)) & ~(size_t)((align)-1))
 
-// Returns 0 in case of overflow of nmemb * size.
+/*!< Returns 0 in case of overflow of nmemb * size. */
 static int32_t check_size_argument_overflow(uint64_t nmemb, uint64_t size) {
     const uint64_t total_size = nmemb * size;
     if (nmemb == 0) return 1;
@@ -87,7 +85,7 @@ static INLINE int32_t constrain(int32_t diff, int32_t threshold, int32_t damping
     return sign(diff) * AOMMIN(abs(diff), AOMMAX(0, threshold - (abs(diff) >> shift)));
 }
 
-/* Generated from gen_filter_tables.c. */
+/*!< Generated from gen_filter_tables.c. */
 DECLARE_ALIGNED(16, const int32_t, eb_cdef_directions[8][2]) = {
         {-1 * CDEF_BSTRIDE + 1, -2 * CDEF_BSTRIDE + 2},
         {0 * CDEF_BSTRIDE + 1, -1 * CDEF_BSTRIDE + 2},
@@ -98,15 +96,15 @@ DECLARE_ALIGNED(16, const int32_t, eb_cdef_directions[8][2]) = {
         {1 * CDEF_BSTRIDE + 0, 2 * CDEF_BSTRIDE + 0},
         {1 * CDEF_BSTRIDE + 0, 2 * CDEF_BSTRIDE - 1}};
 
-/* Compute the primary filter strength for an 8x8 block based on the
-directional variance difference. A high variance difference means
-that we have a highly directional pattern (e.g. a high contrast
-edge), so we can apply more deringing. A low variance means that we
-either have a low contrast edge, or a non-directional texture, so
-we want to be careful not to blur. */
+/*!< Compute the primary filter strength for an 8x8 block based on the
+ *   directional variance difference. A high variance difference means
+ *   that we have a highly directional pattern (e.g. a high contrast
+ *   edge), so we can apply more deringing. A low variance means that we
+ *   either have a low contrast edge, or a non-directional texture, so
+ *   we want to be careful not to blur. */
 static INLINE int32_t adjust_strength(int32_t strength, int32_t var) {
     const int32_t i = var >> 6 ? AOMMIN(get_msb(var >> 6), 12) : 0;
-    /* We use the variance of 8x8 blocks to adjust the strength. */
+    /*!< We use the variance of 8x8 blocks to adjust the strength. */
     return var ? (strength * (4 + i) + 8) >> 4 : 0;
 }
 
@@ -117,29 +115,28 @@ void eb_copy_rect8_8bit_to_16bit_c(uint16_t *dst, int32_t dstride, const uint8_t
     }
 }
 
-/* Detect direction. 0 means 45-degree up-right, 2 is horizontal, and so on.
-The search minimizes the weighted variance along all the lines in a
-particular direction, i.e. the squared error between the input and a
-"predicted" block where each pixel is replaced by the average along a line
-in a particular direction. Since each direction have the same sum(x^2) term,
-that term is never computed. See Section 2, step 2, of:
-http://jmvalin.ca/notes/intra_paint.pdf */
+/*!< Detect direction. 0 means 45-degree up-right, 2 is horizontal, and so on.
+ *   The search minimizes the weighted variance along all the lines in a
+ *   particular direction, i.e. the squared error between the input and a
+ *   "predicted" block where each pixel is replaced by the average along a line
+ *   in a particular direction. Since each direction have the same sum(x^2) term,
+ *   that term is never computed. See Section 2, step 2, of:
+ *   http://jmvalin.ca/notes/intra_paint.pdf */
 int32_t eb_cdef_find_dir_c(const uint16_t *img, int32_t stride, int32_t *var, int32_t coeff_shift) {
     int32_t i;
     int32_t cost[8]        = {0};
     int32_t partial[8][15] = {{0}};
     int32_t best_cost      = 0;
     int32_t best_dir       = 0;
-    /* Instead of dividing by n between 2 and 8, we multiply by 3*5*7*8/n.
-    The output is then 840 times larger, but we don't care for finding
-    the max. */
+    /*!< Instead of dividing by n between 2 and 8, we multiply by 3*5*7*8/n.
+     *   The output is then 840 times larger, but we don't care for finding
+     *   the max. */
     static const int32_t div_table[] = {0, 840, 420, 280, 210, 168, 140, 120, 105};
     for (i = 0; i < 8; i++) {
         int32_t j;
         for (j = 0; j < 8; j++) {
             int32_t x;
-            /* We subtract 128 here to reduce the maximum range of the squared
-            partial sums. */
+            /*!< We subtract 128 here to reduce the maximum range of the squared partial sums. */
             x = (img[i * stride + j] >> coeff_shift) - 128;
             partial[0][i + j] += x;
             partial[1][i + j / 2] += x;
@@ -180,11 +177,11 @@ int32_t eb_cdef_find_dir_c(const uint16_t *img, int32_t stride, int32_t *var, in
             best_dir  = i;
         }
     }
-    /* Difference between the optimal variance and the variance along the
-    orthogonal direction. Again, the sum(x^2) terms cancel out. */
+    /*!< Difference between the optimal variance and the variance along the
+     *   orthogonal direction. Again, the sum(x^2) terms cancel out. */
     *var = best_cost - cost[(best_dir + 4) & 7];
-    /* We'd normally divide by 840, but dividing by 1024 is close enough
-    for what we're going to do with this. */
+    /*!< We'd normally divide by 840, but dividing by 1024 is close enough
+     *   for what we're going to do with this. */
     *var >>= 10;
     return best_dir;
 }
@@ -192,7 +189,7 @@ int32_t eb_cdef_find_dir_c(const uint16_t *img, int32_t stride, int32_t *var, in
 const int32_t eb_cdef_pri_taps[2][2] = {{4, 2}, {3, 3}};
 const int32_t eb_cdef_sec_taps[2][2] = {{2, 1}, {2, 1}};
 
-/* Smooth in the direction detected. */
+/*!< Smooth in the direction detected. */
 void eb_cdef_filter_block_c(uint8_t *dst8, uint16_t *dst16, int32_t dstride, const uint16_t *in,
                             int32_t pri_strength, int32_t sec_strength, int32_t dir,
                             int32_t pri_damping, int32_t sec_damping, int32_t bsize,
@@ -250,7 +247,7 @@ void fill_rect(uint16_t *dst, int32_t dstride, int32_t v, int32_t h, uint16_t x)
     }
 }
 
-/* FIXME: SSE-optimize this. */
+/*!< FIXME: SSE-optimize this. */
 void copy_sb16_16(uint16_t *dst, int32_t dstride, const uint16_t *src, int32_t src_voffset,
                   int32_t src_hoffset, int32_t sstride, int32_t vsize, int32_t hsize) {
     int32_t         r, c;
@@ -297,15 +294,15 @@ void eb_cdef_filter_fb(uint8_t *dst8, uint16_t *dst16, int32_t dstride, uint16_t
     bsizex = 3 - xdec;
     bsizey = 3 - ydec;
     if (dirinit && pri_strength == 0 && sec_strength == 0) {
-        // If we're here, both primary and secondary strengths are 0, and
-        // we still haven't written anything to y[] yet, so we just copy
-        // the input to y[]. This is necessary only for eb_av1_cdef_search()
-        // and only eb_av1_cdef_search() sets dirinit.
+        /*!< If we're here, both primary and secondary strengths are 0, and
+         *   we still haven't written anything to y[] yet, so we just copy
+         *   the input to y[]. This is necessary only for eb_av1_cdef_search()
+         *   and only eb_av1_cdef_search() sets dirinit. */
         for (bi = 0; bi < cdef_count; bi++) {
             by = dlist[bi].by << bsizey;
             bx = dlist[bi].bx << bsizex;
             int32_t iy, ix;
-            // TODO(stemidts/jmvalin): SIMD optimisations
+            /*!< TODO(stemidts/jmvalin): SIMD optimisations */
             if (dst8) {
                 for (iy = 0; iy < 1 << bsizey; iy++)
                     for (ix = 0; ix < 1 << bsizex; ix++)

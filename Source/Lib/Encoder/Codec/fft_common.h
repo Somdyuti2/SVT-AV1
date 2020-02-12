@@ -1,13 +1,11 @@
-/*
- * Copyright (c) 2018, Alliance for Open Media. All rights reserved
+/*!< Copyright (c) 2018, Alliance for Open Media. All rights reserved
  *
  * This source code is subject to the terms of the BSD 2 Clause License and
  * the Alliance for Open Media Patent License 1.0. If the BSD 2 Clause License
  * was not distributed with this source code in the LICENSE file, you can
  * obtain it at www.aomedia.org/license/software. If the Alliance for Open
  * Media Patent License 1.0 was not distributed with this source code in the
- * PATENTS file, you can obtain it at www.aomedia.org/license/patent.
- */
+ * PATENTS file, you can obtain it at www.aomedia.org/license/patent. */
 
 #ifndef AOM_AOM_DSP_FFT_COMMON_H_
 #define AOM_AOM_DSP_FFT_COMMON_H_
@@ -16,91 +14,86 @@
 extern "C" {
 #endif
 
-/*!\brief A function pointer for computing 1d fft and ifft.
-     *
-     * The function will point to an implementation for a specific transform size,
-     * and may perform the transforms using vectorized instructions.
-     *
-     * For a non-vectorized forward transforms of size n, the input and output
-     * buffers will be size n. The output takes advantage of conjugate symmetry and
-     * packs the results as: [r_0, r_1, ..., r_{n/2}, i_1, ..., i_{n/2-1}], where
-     * (r_{j}, i_{j}) is the complex output for index j.
-     *
-     * An inverse transform will assume that the complex "input" is packed
-     * similarly. Its output will be real.
-     *
-     * Non-vectorized transforms (e.g., on a single row) would use a stride = 1.
-     *
-     * Vectorized implementations are parallelized along the columns so that the fft
-     * can be performed on multiple columns at a time. In such cases the data block
-     * for input and output is typically square (n x n) and the stride will
-     * correspond to the spacing between rows. At minimum, the input size must be
-     * n x simd_vector_length.
-     *
-     * \param[in]  input   Input buffer. See above for size restrictions.
-     * \param[out] output  Output buffer. See above for size restrictions.
-     * \param[in]  stride  The spacing in number of elements between rows
-     *                     (or elements)
-     */
+/*!< brief A function pointer for computing 1d fft and ifft.
+ *
+ * The function will point to an implementation for a specific transform size,
+ * and may perform the transforms using vectorized instructions.
+ *
+ * For a non-vectorized forward transforms of size n, the input and output
+ * buffers will be size n. The output takes advantage of conjugate symmetry and
+ * packs the results as: [r_0, r_1, ..., r_{n/2}, i_1, ..., i_{n/2-1}], where
+ * (r_{j}, i_{j}) is the complex output for index j.
+ *
+ * An inverse transform will assume that the complex "input" is packed
+ * similarly. Its output will be real.
+ *
+ * Non-vectorized transforms (e.g., on a single row) would use a stride = 1.
+ *
+ * Vectorized implementations are parallelized along the columns so that the fft
+ * can be performed on multiple columns at a time. In such cases the data block
+ * for input and output is typically square (n x n) and the stride will
+ * correspond to the spacing between rows. At minimum, the input size must be
+ * n x simd_vector_length.
+ *
+ * \param[in]  input   Input buffer. See above for size restrictions.
+ * \param[out] output  Output buffer. See above for size restrictions.
+ * \param[in]  stride  The spacing in number of elements between rows
+ *                     (or elements)    */
 typedef void (*AomFft1dFunc)(const float *input, float *output, int32_t stride);
 
-// Declare some of the forward non-vectorized transforms which are used in some
-// of the vectorized implementations
+/*!< Declare some of the forward non-vectorized transforms which
+ *   are used in some of the vectorized implementations */
 void eb_aom_fft1d_4_float(const float *input, float *output, int32_t stride);
 void eb_aom_fft1d_8_float(const float *input, float *output, int32_t stride);
 void eb_aom_fft1d_16_float(const float *input, float *output, int32_t stride);
 void eb_aom_fft1d_32_float(const float *input, float *output, int32_t stride);
 
-/**\!brief Function pointer for transposing a matrix of floats.
-     *
-     * \param[in]  input  Input buffer (size n x n)
-     * \param[out] output Output buffer (size n x n)
-     * \param[in]  n      Extent of one dimension of the square matrix.
-     */
+/*!< brief Function pointer for transposing a matrix of floats.
+ *
+ *   \param[in]  input  Input buffer (size n x n)
+ *   \param[out] output Output buffer (size n x n)
+ *   \param[in]  n      Extent of one dimension of the square matrix. */
 typedef void (*AomFftTransposeFunc)(const float *input, float *output, int32_t n);
 
-/**\!brief Function pointer for re-arranging intermediate 2d transform results.
-     *
-     * After re-arrangement, the real and imaginary components will be packed
-     * tightly next to each other.
-     *
-     * \param[in]  input  Input buffer (size n x n)
-     * \param[out] output Output buffer (size 2 x n x n)
-     * \param[in]  n      Extent of one dimension of the square matrix.
-     */
+/*!< brief Function pointer for re-arranging intermediate 2d transform results.
+ *
+ *   After re-arrangement, the real and imaginary components will be packed
+ *   tightly next to each other.
+ *
+ *   \param[in]  input  Input buffer (size n x n)
+ *   \param[out] output Output buffer (size 2 x n x n)
+ *   \param[in]  n      Extent of one dimension of the square matrix. */
 typedef void (*AomFftUnpackFunc)(const float *input, float *output, int32_t n);
 
-/*!\brief Performs a 2d fft with the given functions.
-     *
-     * This generator function allows for multiple different implementations of 2d
-     * fft with different vector operations, without having to redefine the main
-     * body multiple times.
-     *
-     * \param[in]  input     Input buffer to run the transform on (size n x n)
-     * \param[out] temp      Working buffer for computing the transform (size n x n)
-     * \param[out] output    Output buffer (size 2 x n x n)
-     * \param[in]  tform     Forward transform function
-     * \param[in]  transpose Transpose function (for n x n matrix)
-     * \param[in]  unpack    Unpack function used to massage outputs to correct form
-     * \param[in]  vec_size  Vector size (the transform is done vec_size units at
-     *                       a time)
-     */
+/*!< brief Performs a 2d fft with the given functions.
+ *
+ *   This generator function allows for multiple different implementations of 2d
+ *   fft with different vector operations, without having to redefine the main
+ *   body multiple times.
+ *
+ *   \param[in]  input     Input buffer to run the transform on (size n x n)
+ *   \param[out] temp      Working buffer for computing the transform (size n x n)
+ *   \param[out] output    Output buffer (size 2 x n x n)
+ *   \param[in]  tform     Forward transform function
+ *   \param[in]  transpose Transpose function (for n x n matrix)
+ *   \param[in]  unpack    Unpack function used to massage outputs to correct form
+ *   \param[in]  vec_size  Vector size (the transform is done vec_size units at
+ *                         a time) */
 void eb_aom_fft_2d_gen(const float *input, float *temp, float *output, int32_t n,
                        AomFft1dFunc tform, AomFftTransposeFunc transpose,
                        AomFftUnpackFunc unpack, int32_t vec_size);
 
-/*!\brief Perform a 2d inverse fft with the given helper functions
-     *
-     * \param[in]  input      Input buffer to run the transform on (size 2 x n x n)
-     * \param[out] temp       Working buffer for computations (size 2 x n x n)
-     * \param[out] output     Output buffer (size n x n)
-     * \param[in]  fft_single Forward transform function (non vectorized)
-     * \param[in]  fft_multi  Forward transform function (vectorized)
-     * \param[in]  ifft_multi Inverse transform function (vectorized)
-     * \param[in]  transpose  Transpose function (for n x n matrix)
-     * \param[in]  vec_size   Vector size (the transform is done vec_size
-     *                        units at a time)
-     */
+/*!< brief Perform a 2d inverse fft with the given helper functions
+ *
+ *   \param[in]  input      Input buffer to run the transform on (size 2 x n x n)
+ *   \param[out] temp       Working buffer for computations (size 2 x n x n)
+ *   \param[out] output     Output buffer (size n x n)
+ *   \param[in]  fft_single Forward transform function (non vectorized)
+ *   \param[in]  fft_multi  Forward transform function (vectorized)
+ *   \param[in]  ifft_multi Inverse transform function (vectorized)
+ *   \param[in]  transpose  Transpose function (for n x n matrix)
+ *   \param[in]  vec_size   Vector size (the transform is done vec_size
+ *                          units at a time) */
 void eb_aom_ifft_2d_gen(const float *input, float *temp, float *output, int32_t n,
                         AomFft1dFunc fft_single, AomFft1dFunc fft_multi,
                         AomFft1dFunc ifft_multi, AomFftTransposeFunc transpose,
@@ -109,8 +102,8 @@ void eb_aom_ifft_2d_gen(const float *input, float *temp, float *output, int32_t 
 }
 #endif
 
-// The macros below define 1D fft/ifft for different data types and for
-// different simd vector intrinsic types.
+/*!< The macros below define 1D fft/ifft for different data types and for
+ *   different simd vector intrinsic types. */
 
 #define GEN_FFT_2(ret, suffix, T, T_VEC, load, store)                        \
     ret eb_aom_fft1d_2_##suffix(const T *input, T *output, int32_t stride) { \

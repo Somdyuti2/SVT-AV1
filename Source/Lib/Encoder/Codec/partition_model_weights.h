@@ -1,13 +1,11 @@
-/*
- * Copyright (c) 2018, Alliance for Open Media. All rights reserved
+/*!< Copyright (c) 2018, Alliance for Open Media. All rights reserved
  *
  * This source code is subject to the terms of the BSD 2 Clause License and
  * the Alliance for Open Media Patent License 1.0. If the BSD 2 Clause License
  * was not distributed with this source code in the LICENSE file, you can
  * obtain it at www.aomedia.org/license/software. If the Alliance for Open
  * Media Patent License 1.0 was not distributed with this source code in the
- * PATENTS file, you can obtain it at www.aomedia.org/license/patent.
- */
+ * PATENTS file, you can obtain it at www.aomedia.org/license/patent. */
 
 #ifndef AOM_AV1_ENCODER_PARTITION_MODEL_WEIGHTS_H_
 #define AOM_AV1_ENCODER_PARTITION_MODEL_WEIGHTS_H_
@@ -18,7 +16,7 @@ extern "C" {
 
 #include "ml.h"
 
-// nn model for predicting max square partition level of a superblock
+/*!< nn model for predicting max square partition level of a superblock */
 #define NUM_HIDDEN_LAYERS 1
 #define NUM_FEATURES 13
 #define NUM_LAYER_0_UNITS 48

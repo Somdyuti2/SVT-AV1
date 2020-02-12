@@ -1,7 +1,5 @@
-/*
-* Copyright(c) 2019 Intel Corporation
-* SPDX - License - Identifier: BSD - 2 - Clause - Patent
-*/
+/*!< Copyright(c) 2019 Intel Corporation
+ * SPDX - License - Identifier: BSD - 2 - Clause - Patent */
 
 #include "EbAvcStyleMcp_SSSE3.h"
 
@@ -290,7 +288,7 @@ void avc_style_luma_interpolation_filter_horizontal_ssse3_intrin(
     if_coeff_1_0 = _mm_load_si128((__m128i *)(avc_style_luma_if_coeff8_ssse3 + frac_pos - 32));
     if_coeff_3_2 = _mm_load_si128((__m128i *)(avc_style_luma_if_coeff8_ssse3 + frac_pos - 16));
 
-    if (!(pu_width & 15)) { // 16x
+    if (!(pu_width & 15)) { /*!< 16x */
         __m128i ref0, ref1, ref2, ref3, ref01_lo, ref01_hi, ref23_lo, ref23_hi, sum_lo, sum_hi;
 
         for (height_cnt = 0; height_cnt < pu_height; ++height_cnt) {
@@ -321,7 +319,7 @@ void avc_style_luma_interpolation_filter_horizontal_ssse3_intrin(
             ref_pic += src_stride;
             dst += dst_stride;
         }
-        //do the last row if sub-pred ON.
+        /*!< do the last row if sub-pred ON. */
         if (skip) {
             ref_pic -= (src_stride >> 1);
             dst -= (dst_stride >> 1);
@@ -350,7 +348,7 @@ void avc_style_luma_interpolation_filter_horizontal_ssse3_intrin(
                 _mm_storeu_si128((__m128i *)(dst + width_cnt), sum_clip_u8);
             }
         }
-    } else { //8x
+    } else { /*!< 8x */
         __m128i sum01, sum23, sum;
 
         for (height_cnt = 0; height_cnt < pu_height; ++height_cnt) {
@@ -375,7 +373,7 @@ void avc_style_luma_interpolation_filter_horizontal_ssse3_intrin(
             dst += dst_stride;
         }
 
-        //do the last row if sub-pred ON.
+        /*!< do the last row if sub-pred ON. */
         if (skip) {
             ref_pic -= (src_stride >> 1);
             dst -= (dst_stride >> 1);
@@ -419,7 +417,7 @@ void avc_style_luma_interpolation_filter_vertical_ssse3_intrin(EbByte ref_pic, u
     if_coeff_3_2 = _mm_load_si128((__m128i *)(avc_style_luma_if_coeff8_ssse3 + frac_pos - 16));
     dst_stride <<= skip;
     pu_height >>= skip;
-    if (!(pu_width & 15)) { //16x
+    if (!(pu_width & 15)) { /*!< 16x */
 
         __m128i sum_lo, sum_hi, ref0, refs, ref2s, ref3s;
 
@@ -448,7 +446,7 @@ void avc_style_luma_interpolation_filter_vertical_ssse3_intrin(EbByte ref_pic, u
                 dst_temp += dst_stride;
                 ref_pic_temp += src_stride_skip;
             }
-            //do the last row if sub-pred is ON.
+            /*!< do the last row if sub-pred is ON. */
             if (skip) {
                 dst_temp -= (dst_stride >> 1);
                 ref_pic_temp -= (src_stride_skip >> 1);
@@ -475,7 +473,7 @@ void avc_style_luma_interpolation_filter_vertical_ssse3_intrin(EbByte ref_pic, u
             ref_pic += 16;
             dst += 16;
         }
-    } else { //8x
+    } else { /*!< 8x */
         __m128i sum, sum01, sum23;
 
         for (width_cnt = 0; width_cnt < pu_width; width_cnt += 8) {
@@ -501,7 +499,7 @@ void avc_style_luma_interpolation_filter_vertical_ssse3_intrin(EbByte ref_pic, u
                 dst_temp += dst_stride;
                 ref_pic_temp += src_stride_skip;
             }
-            //do the last row if sub-pred is ON.
+            /*!< do the last row if sub-pred is ON. */
             if (skip) {
                 dst_temp -= (dst_stride >> 1);
                 ref_pic_temp -= (src_stride_skip >> 1);

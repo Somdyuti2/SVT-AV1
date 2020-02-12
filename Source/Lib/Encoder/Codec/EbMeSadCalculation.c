@@ -1,7 +1,5 @@
-/*
-* Copyright(c) 2019 Intel Corporation
-* SPDX - License - Identifier: BSD - 2 - Clause - Patent
-*/
+/*!< Copyright(c) 2019 Intel Corporation
+ * SPDX - License - Identifier: BSD - 2 - Clause - Patent */
 #include "EbMeSadCalculation.h"
 
 void initialize_buffer_32bits_c(uint32_t* pointer, uint32_t count128, uint32_t count32,

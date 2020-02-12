@@ -1,13 +1,11 @@
-/*
-* Copyright (c) 2016, Alliance for Open Media. All rights reserved
-*
-* This source code is subject to the terms of the BSD 2 Clause License and
-* the Alliance for Open Media Patent License 1.0. If the BSD 2 Clause License
-* was not distributed with this source code in the LICENSE file, you can
-* obtain it at www.aomedia.org/license/software. If the Alliance for Open
-* Media Patent License 1.0 was not distributed with this source code in the
-* PATENTS file, you can obtain it at www.aomedia.org/license/patent.
-*/
+/*!< Copyright (c) 2016, Alliance for Open Media. All rights reserved
+ *
+ * This source code is subject to the terms of the BSD 2 Clause License and
+ * the Alliance for Open Media Patent License 1.0. If the BSD 2 Clause License
+ * was not distributed with this source code in the LICENSE file, you can
+ * obtain it at www.aomedia.org/license/software. If the Alliance for Open
+ * Media Patent License 1.0 was not distributed with this source code in the
+ * PATENTS file, you can obtain it at www.aomedia.org/license/patent. */
 
 #ifndef AV1_TXMF1D_SSE2_H_
 #define AV1_TXMF1D_SSE2_H_
@@ -31,17 +29,17 @@ static INLINE void transpose_32_4x4(int32_t stride, const __m128i *input, __m128
     output[3 * stride] = _mm_unpackhi_epi32(temp1, temp3);
 }
 
-// the entire input block can be represent by a grid of 4x4 blocks
-// each 4x4 blocks can be represent by 4 vertical __m128i
-// we first transpose each 4x4 block internally
-// then transpose the grid
+/*!< the entire input block can be represent by a grid of 4x4 blocks
+ *   each 4x4 blocks can be represent by 4 vertical __m128i
+ *   we first transpose each 4x4 block internally
+ *   then transpose the grid */
 static INLINE void transpose_32(int32_t txfm_size, const __m128i *input, __m128i *output) {
     const int32_t num_per_128 = 4;
     const int32_t row_size    = txfm_size;
     const int32_t col_size    = txfm_size / num_per_128;
     int32_t       r, c;
 
-    // transpose each 4x4 block internally
+    /*!< transpose each 4x4 block internally */
     for (r = 0; r < row_size; r += 4) {
         for (c = 0; c < col_size; c++) {
             transpose_32_4x4(col_size, &input[r * col_size + c], &output[c * 4 * col_size + r / 4]);

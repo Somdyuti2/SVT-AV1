@@ -1,18 +1,14 @@
-/*
-* Copyright(c) 2019 Intel Corporation
-* SPDX - License - Identifier: BSD - 2 - Clause - Patent
-*/
+/*!< Copyright(c) 2019 Intel Corporation
+ * SPDX - License - Identifier: BSD - 2 - Clause - Patent */
 
-/*
-* Copyright (c) 2016, Alliance for Open Media. All rights reserved
-*
-* This source code is subject to the terms of the BSD 2 Clause License and
-* the Alliance for Open Media Patent License 1.0. If the BSD 2 Clause License
-* was not distributed with this source code in the LICENSE file, you can
-* obtain it at www.aomedia.org/license/software. If the Alliance for Open
-* Media Patent License 1.0 was not distributed with this source code in the
-* PATENTS file, you can obtain it at www.aomedia.org/license/patent.
-*/
+/*!< Copyright (c) 2016, Alliance for Open Media. All rights reserved
+ *
+ * This source code is subject to the terms of the BSD 2 Clause License and
+ * the Alliance for Open Media Patent License 1.0. If the BSD 2 Clause License
+ * was not distributed with this source code in the LICENSE file, you can
+ * obtain it at www.aomedia.org/license/software. If the Alliance for Open
+ * Media Patent License 1.0 was not distributed with this source code in the
+ * PATENTS file, you can obtain it at www.aomedia.org/license/patent. */
 
 #include <stdlib.h>
 
@@ -27,9 +23,9 @@
 #include "common_dsp_rtcd.h"
 #include "EbLog.h"
 
-//This function is present in encoder also, but encoder structures & decoder structures are different.
+/*!< This function is present in encoder also, but encoder structures & decoder structures are different. */
 static INLINE int dec_is_neighbor_overlappable(const BlockModeInfo *mbmi) {
-    // TODO: currently intrabc  is not supporting
+    /*!< TODO: currently intrabc  is not supporting */
     return mbmi->use_intrabc || mbmi->ref_frame[0] > INTRA_FRAME;
 }
 
@@ -45,7 +41,7 @@ void av1_modify_neighbor_predictor_for_obmc(BlockModeInfo *mbmi) {
 
 int av1_skip_u4x4_pred_in_obmc(BlockSize bsize, int dir, int32_t sub_x, int32_t sub_y);
 
-// obmc_mask_N[overlap_position]
+/*!< obmc_mask_N[overlap_position] */
 
 const uint8_t *av1_get_obmc_mask(int length);
 
@@ -73,19 +69,19 @@ static INLINE void build_obmc_inter_pred_above(
         if (recon_picture_buf->bit_depth != EB_8BIT) {
             above_buf =
                 (uint8_t *)((uint16_t *)above_tmp_buf[plane] + ((rel_mi_col * MI_SIZE) >> sub_x) +
-                            0 /*No y-offset for obmc above pred*/);
+                            0 /*!< No y-offset for obmc above pred */);
             above_stride     = above_tmp_stride[plane];
             tmp_recon_buf    = (uint8_t *)((uint16_t *)curr_blk_recon_buf[plane] +
                                         ((rel_mi_col * MI_SIZE) >> sub_x) +
-                                        0 /*No y-offset for obmc above pred*/);
+                                        0 /*!< No y-offset for obmc above pred */);
             tmp_recon_stride = curr_recon_stride[plane];
 
         } else {
             above_buf = above_tmp_buf[plane] + ((rel_mi_col * MI_SIZE) >> sub_x) +
-                        0 /*No y-offset for obmc above pred*/;
+                        0 /*!< No y-offset for obmc above pred */;
             above_stride  = above_tmp_stride[plane];
             tmp_recon_buf = curr_blk_recon_buf[plane] + ((rel_mi_col * MI_SIZE) >> sub_x) +
-                            0 /*No y-offset for obmc above pred*/;
+                            0 /*!< No y-offset for obmc above pred */;
             tmp_recon_stride = curr_recon_stride[plane];
         }
 
@@ -140,23 +136,23 @@ static INLINE void build_obmc_inter_pred_left(
         if (recon_picture_buf->bit_depth != EB_8BIT) {
             left_buf    = (uint8_t *)((uint16_t *)left_tmp_buf[plane] +
                                    ((MI_SIZE * rel_mi_row * left_tmp_stride[plane]) >> sub_y) +
-                                   0 /*No x offst for left obmc pred*/);
+                                   0 /*!< No x offst for left obmc pred */);
             left_stride = left_tmp_stride[plane];
 
             tmp_recon_buf =
                 (uint8_t *)((uint16_t *)curr_blk_recon_buf[plane] +
                             ((MI_SIZE * rel_mi_row * curr_recon_stride[plane]) >> sub_y) +
-                            0 /*No y-offset for obmc above pred*/);
+                            0 /*!< No y-offset for obmc above pred */);
             tmp_recon_stride = curr_recon_stride[plane];
         } else {
             left_buf = left_tmp_buf[plane] +
                        ((MI_SIZE * rel_mi_row * left_tmp_stride[plane]) >> sub_y) +
-                       0 /*No x offst for left obmc pred*/;
+                       0 /*!< No x offst for left obmc pred */;
             left_stride = left_tmp_stride[plane];
 
             tmp_recon_buf = curr_blk_recon_buf[plane] +
                             ((MI_SIZE * rel_mi_row * curr_recon_stride[plane]) >> sub_y) +
-                            0 /*No y-offset for obmc above pred*/;
+                            0 /*!< No y-offset for obmc above pred */;
             tmp_recon_stride = curr_recon_stride[plane];
         }
 
@@ -226,12 +222,12 @@ static INLINE void dec_build_prediction_by_above_pred(
         if (recon_picture_buf->bit_depth != EB_8BIT) {
             tmp_recon_buf =
                 (uint8_t *)((uint16_t *)tmp_buf[plane] + ((rel_mi_col * MI_SIZE) >> sub_x) +
-                            0 /*No y-offset for obmc above pred*/);
+                            0 /*!< No y-offset for obmc above pred */);
 
             tmp_recon_stride = tmp_stride[plane];
         } else {
             tmp_recon_buf = tmp_buf[plane] + ((rel_mi_col * MI_SIZE) >> sub_x) +
-                            0 /*No y-offset for obmc above pred*/;
+                            0 /*!< No y-offset for obmc above pred */;
             tmp_recon_stride = tmp_stride[plane];
         }
 
@@ -240,12 +236,12 @@ static INLINE void dec_build_prediction_by_above_pred(
                                          dec_handle,
                                          backup_pi,
                                          plane,
-                                         1 /*obmc*/,
+                                         1 /*!< obmc */,
                                          mi_x,
                                          mi_y,
                                          (void *)tmp_recon_buf,
                                          tmp_recon_stride,
-                                         0 /*some_use_intra*/,
+                                         0 /*!< some_use_intra */,
                                          recon_picture_buf->bit_depth);
     }
 }
@@ -257,9 +253,9 @@ static void dec_build_prediction_by_above_preds(DecModCtxt *dec_mod_ctx, EbDecHa
     if (!pi->up_available) return;
     PartitionInfo backup_pi = *pi;
 
-    // Adjust mb_to_bottom_edge to have the correct value for the OBMC
-    // prediction block. This is half the height of the original block,
-    // except for 128-wide blocks, where we only use a height of 32.
+    /*1< Adjust mb_to_bottom_edge to have the correct value for the OBMC
+     *   prediction block. This is half the height of the original block,
+     *   except for 128-wide blocks, where we only use a height of 32. */
     BlockSize bsize            = pi->mi->sb_type;
     int       bh4              = mi_size_high[bsize];
     int       bw4              = mi_size_wide[bsize];
@@ -279,7 +275,7 @@ static void dec_build_prediction_by_above_preds(DecModCtxt *dec_mod_ctx, EbDecHa
 
     const int end_col = AOMMIN(mi_col + bw4, (int)frame_info->mi_cols);
 
-    //Calculating buffers for current block i.e getting recon_buffer for blending
+    /*!< Calculating buffers for current block i.e getting recon_buffer for blending */
     void *               curr_blk_recon_buf[MAX_MB_PLANE];
     int32_t              curr_recon_stride[MAX_MB_PLANE];
     int32_t              sub_x, sub_y;
@@ -304,18 +300,18 @@ static void dec_build_prediction_by_above_preds(DecModCtxt *dec_mod_ctx, EbDecHa
 
         mi_step = AOMMIN(mi_size_wide[above_mi->sb_type], mi_size_wide[BLOCK_64X64]);
 
-        // If we're considering a block with width 4, it should be treated as
-        // half of a pair of blocks with chroma information in the second. Move
-        // above_mi_col back to the start of the pair if needed, set above_mbmi
-        // to point at the block with chroma information, and set mi_step to 2 to
-        // step over the entire pair at the end of the iteration.
+        /*!< If we're considering a block with width 4, it should be treated as
+         *   half of a pair of blocks with chroma information in the second. Move
+         *   above_mi_col back to the start of the pair if needed, set above_mbmi
+         *   to point at the block with chroma information, and set mi_step to 2 to
+         *   step over the entire pair at the end of the iteration. */
         if (mi_step == 1) {
             above_mi = get_cur_mode_info(dec_handle, mi_row - 1, above_mi_col | 1, NULL);
             mi_step  = 2;
         }
         if (dec_is_neighbor_overlappable(above_mi)) {
             ++nb_count;
-            /*OBMC above prediction*/
+            /*!< OBMC above prediction */
             dec_build_prediction_by_above_pred(dec_mod_ctx,
                                                dec_handle,
                                                &backup_pi,
@@ -329,7 +325,7 @@ static void dec_build_prediction_by_above_preds(DecModCtxt *dec_mod_ctx, EbDecHa
                                                above_dst_buf,
                                                above_dst_stride,
                                                num_planes);
-            /*OBMC blending for above prediction*/
+            /*!< OBMC blending for above prediction */
             build_obmc_inter_pred_above(dec_handle,
                                         &backup_pi,
                                         bsize,
@@ -384,12 +380,12 @@ static INLINE void dec_build_prediction_by_left_pred(
         if (recon_picture_buf->bit_depth != EB_8BIT) {
             tmp_recon_buf = (uint8_t *)((uint16_t *)tmp_buf[plane] +
                                         ((MI_SIZE * rel_mi_row * tmp_stride[plane]) >> sub_y) +
-                                        0 /*No x offst for left obmc pred*/);
+                                        0 /*!< No x offst for left obmc pred */);
 
             tmp_recon_stride = tmp_stride[plane];
         } else {
             tmp_recon_buf = tmp_buf[plane] + ((MI_SIZE * rel_mi_row * tmp_stride[plane]) >> sub_y) +
-                            0 /*No x offst for left obmc pred*/;
+                            0 /*!< No x offst for left obmc pred */;
             tmp_recon_stride = tmp_stride[plane];
         }
 
@@ -400,12 +396,12 @@ static INLINE void dec_build_prediction_by_left_pred(
                                          dec_handle,
                                          backup_pi,
                                          plane,
-                                         1 /*obmc*/,
+                                         1 /*!< obmc */,
                                          mi_x,
                                          mi_y,
                                          (void *)tmp_recon_buf,
                                          tmp_recon_stride,
-                                         0 /*some_use_intra*/,
+                                         0 /*!< some_use_intra */,
                                          recon_picture_buf->bit_depth);
     }
 }
@@ -417,9 +413,9 @@ static void dec_build_prediction_by_left_preds(DecModCtxt *dec_mod_ctx, EbDecHan
     if (!pi->left_available) return;
     PartitionInfo backup_pi = *pi;
 
-    // Adjust mb_to_right_edge to have the correct value for the OBMC
-    // prediction block. This is half the width of the original block,
-    // except for 128-wide blocks, where we only use a width of 32.
+    /*!< Adjust mb_to_right_edge to have the correct value for the OBMC
+     *   prediction block. This is half the width of the original block,
+     *   except for 128-wide blocks, where we only use a width of 32. */
     BlockSize bsize           = pi->mi->sb_type;
     int       bh4             = mi_size_high[bsize];
     int       bw4             = mi_size_wide[bsize];
@@ -439,7 +435,7 @@ static void dec_build_prediction_by_left_preds(DecModCtxt *dec_mod_ctx, EbDecHan
 
     const int end_row = AOMMIN(mi_row + bh4, (int)frame_info->mi_rows);
 
-    //Calculating buffers for current block i.e getting recon_buffer
+    /*!< Calculating buffers for current block i.e getting recon_buffer */
     void *               curr_blk_recon_buf[MAX_MB_PLANE];
     int32_t              curr_recon_stride[MAX_MB_PLANE];
     int32_t              sub_x, sub_y;
@@ -468,7 +464,7 @@ static void dec_build_prediction_by_left_preds(DecModCtxt *dec_mod_ctx, EbDecHan
         }
         if (dec_is_neighbor_overlappable(left_mi)) {
             ++nb_count;
-            /*OBMC left prediction*/
+            /*!< OBMC left prediction */
             dec_build_prediction_by_left_pred(dec_mod_ctx,
                                               dec_handle,
                                               &backup_pi,
@@ -482,7 +478,7 @@ static void dec_build_prediction_by_left_preds(DecModCtxt *dec_mod_ctx, EbDecHan
                                               left_dst_buf,
                                               left_dst_stride,
                                               num_planes);
-            /*OBMC blending for left prediction*/
+            /*!< OBMC blending for left prediction */
             build_obmc_inter_pred_left(dec_handle,
                                        &backup_pi,
                                        bsize,
@@ -507,11 +503,11 @@ void dec_build_obmc_inter_predictors_sb(void *pv_dec_mod_ctxt, EbDecHandle *dec_
     dst_buf[0] = dec_mod_ctxt->obmc_ctx.tmp_obmc_bufs[AOM_PLANE_Y];
     dst_buf[1] = dec_mod_ctxt->obmc_ctx.tmp_obmc_bufs[AOM_PLANE_U];
     dst_buf[2] = dec_mod_ctxt->obmc_ctx.tmp_obmc_bufs[AOM_PLANE_V];
-    /*OBMC above prediction followed by Blending happen in below fun call*/
+    /*!< OBMC above prediction followed by Blending happen in below fun call */
     dec_build_prediction_by_above_preds(
         dec_mod_ctxt, dec_handle, pi, mi_row, mi_col, dst_buf, dec_mod_ctxt->obmc_ctx.dst_stride);
 
-    /*OBMC left prediction followed by Blending happen in below fun call*/
+    /*!< OBMC left prediction followed by Blending happen in below fun call */
     dec_build_prediction_by_left_preds(
         dec_mod_ctxt, dec_handle, pi, mi_row, mi_col, dst_buf, dec_mod_ctxt->obmc_ctx.dst_stride);
 }

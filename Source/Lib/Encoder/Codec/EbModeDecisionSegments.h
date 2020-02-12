@@ -1,16 +1,14 @@
-/*
-* Copyright(c) 2019 Intel Corporation
-* SPDX - License - Identifier: BSD - 2 - Clause - Patent
-*/
+/*!< Copyright(c) 2019 Intel Corporation
+ * SPDX - License - Identifier: BSD - 2 - Clause - Patent */
 
 #ifndef EbModeDecisionSegments_h
 #define EbModeDecisionSegments_h
 
 #include "EbDefinitions.h"
 
-/**************************************
- * Mode Decision Segments
- **************************************/
+/**************************************/
+/*!< Mode Decision Segments */
+/**************************************/
 typedef struct {
     uint64_t completion_mask;
     EbHandle write_lock_mutex;

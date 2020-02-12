@@ -1,23 +1,21 @@
-/*
-* Copyright(c) 2019 Intel Corporation
-* SPDX - License - Identifier: BSD - 2 - Clause - Patent
-*/
+/*!< Copyright(c) 2019 Intel Corporation
+ * SPDX - License - Identifier: BSD - 2 - Clause - Patent */
 
 #ifndef EbEntropyCodingUtil_h
 #define EbEntropyCodingUtil_h
 
 #include "EbBitstreamUnit.h"
 
-/**************************************
-* Defines
-**************************************/
+/**************************************/
+/*!< Defines */
+/**************************************/
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-/**************************************
-    * Data Structures
-    **************************************/
+/**************************************/
+/*!< Data Structures */
+/**************************************/
 typedef struct BacEncContext {
     OutputBitstreamUnit* m_pc_t_com_bit_if;
 } BacEncContext;

@@ -1,25 +1,20 @@
-/*
-* Copyright(c) 2019 Netflix, Inc.
-* SPDX - License - Identifier: BSD - 2 - Clause - Patent
-*/
+/*!< Copyright(c) 2019 Netflix, Inc.
+ * SPDX - License - Identifier: BSD - 2 - Clause - Patent */
 
-/*
- * Copyright (c) 2016, Alliance for Open Media. All rights reserved
+/*!< Copyright (c) 2016, Alliance for Open Media. All rights reserved
  *
  * This source code is subject to the terms of the BSD 2 Clause License and
  * the Alliance for Open Media Patent License 1.0. If the BSD 2 Clause License
  * was not distributed with this source code in the LICENSE file, you can
  * obtain it at www.aomedia.org/license/software. If the Alliance for Open
  * Media Patent License 1.0 was not distributed with this source code in the
- * PATENTS file, you can obtain it at www.aomedia.org/license/patent.
- */
+ * PATENTS file, you can obtain it at www.aomedia.org/license/patent. */
 
-// SUMMARY
-//   Contains the Decoder Memory Init functions
+/*!< SUMMARY: Contains the Decoder Memory Init functions*/
 
-/**************************************
- * Includes
- **************************************/
+/**************************************/
+/*!< Includes */
+/**************************************/
 #include <stdlib.h>
 
 #include "EbDefinitions.h"
@@ -32,26 +27,24 @@
 
 #include "EbDecPicMgr.h"
 
-#define NUM_REF_FRAMES 8 // TODO: remove (reuse EbObuParse.h macro)
+#define NUM_REF_FRAMES 8 /*!< TODO: remove (reuse EbObuParse.h macro) */
 
-/**
-*******************************************************************************
-*
-* @brief
-*  Picture manager initializer
-*
-* @par Description:
-*  Initialises the Picture manager structure
-*
-* @param[in] ps_pic_mgr
-*  Pointer to the Picture manager structure
-*
-* @returns
-*
-* @remarks
-*
-*******************************************************************************
-*/
+/*!< *******************************************************************************
+ *
+ * @brief
+ *  Picture manager initializer
+ *
+ * @par Description:
+ *  Initialises the Picture manager structure
+ *
+ * @param[in] ps_pic_mgr
+ *  Pointer to the Picture manager structure
+ *
+ * @returns
+ *
+ * @remarks
+ *
+ ******************************************************************************* */
 
 EbErrorType dec_pic_mgr_init(EbDecHandle *dec_handle_ptr) {
     EbDecPicMgr **pps_pic_mgr = (EbDecPicMgr **)&dec_handle_ptr->pv_pic_mgr;
@@ -87,35 +80,35 @@ static INLINE EbErrorType mvs_8x8_memory_alloc(TemporalMvRef **mvs, FrameHeader 
     const int frame_mvs_rows   = ROUND_POWER_OF_TWO(frame_info->mi_rows, 1);
     const int mvs_buff_size    = frame_mvs_stride * frame_mvs_rows;
 
-    EB_MALLOC_DEC(TemporalMvRef *, *mvs, mvs_buff_size * sizeof(TemporalMvRef), EB_N_PTR);
+    EB_MALLOC_DEC(TemporalMvRef *, *mvs, mvs_buff_size * sizeof(*mvs), EB_N_PTR);
 
     return EB_ErrorNone;
 }
 
-/**
-*******************************************************************************
-*
-* @brief
-*  Get current Picture buffer
-*
-* @par Description:
-*  Give the free buffer from pool or dynamically allocate if nothing is free
-*
-* @param[in] ps_pic_mgr
-*  Pointer to the Picture manager structure
-*
-* @returns
-*
-* @remarks
-*
-*******************************************************************************
-*/
+/*!<
+ *******************************************************************************
+ *
+ * @brief
+ *  Get current Picture buffer
+ *
+ * @par Description:
+ *  Give the free buffer from pool or dynamically allocate if nothing is free
+ *
+ * @param[in] ps_pic_mgr
+ *  Pointer to the Picture manager structure
+ *
+ * @returns
+ *
+ * @remarks
+ *
+ *******************************************************************************
+ */
 EbDecPicBuf *dec_pic_mgr_get_cur_pic(EbDecPicMgr *ps_pic_mgr, SeqHeader *seq_header,
                                      FrameHeader *frame_info, EbColorFormat color_format) {
     int32_t      i;
     EbDecPicBuf *pic_buf = NULL;
-    /* TODO: Add lock and unlock for MT */
-    // Find a free buffer.
+    /*!< TODO: Add lock and unlock for MT */
+    /*!< Find a free buffer. */
     for (i = 0; i < MAX_PIC_BUFS; i++) {
         if (ps_pic_mgr->as_dec_pic[i].is_free == 1) break;
     }
@@ -139,10 +132,10 @@ EbDecPicBuf *dec_pic_mgr_get_cur_pic(EbDecPicMgr *ps_pic_mgr, SeqHeader *seq_hea
     size_t frame_size = y_size + uv_size;
 
     if (ps_pic_mgr->as_dec_pic[i].size < frame_size) {
-        /* allocate the buffer. TODO: Should add free and allocate logic */
+        /*!< allocate the buffer. TODO: Should add free and allocate logic */
 
         EbPictureBufferDescInitData input_pic_buf_desc_init_data;
-        // Init Picture Init data
+        /*!< Init Picture Init data */
         input_pic_buf_desc_init_data.max_width  = seq_header->max_frame_width;
         input_pic_buf_desc_init_data.max_height = seq_header->max_frame_height;
         input_pic_buf_desc_init_data.bit_depth  = (EbBitDepthEnum)cc->bit_depth;
@@ -150,7 +143,6 @@ EbDecPicBuf *dec_pic_mgr_get_cur_pic(EbDecPicMgr *ps_pic_mgr, SeqHeader *seq_hea
         input_pic_buf_desc_init_data.color_format = cc->mono_chrome ? EB_YUV400 : color_format;
         input_pic_buf_desc_init_data.buffer_enable_mask =
             cc->mono_chrome ? PICTURE_BUFFER_DESC_LUMA_MASK : PICTURE_BUFFER_DESC_FULL_MASK;
-
 #if MC_DYNAMIC_PAD
         input_pic_buf_desc_init_data.left_padding  = DEC_PAD_VALUE;
         input_pic_buf_desc_init_data.right_padding = DEC_PAD_VALUE;
@@ -171,7 +163,7 @@ EbDecPicBuf *dec_pic_mgr_get_cur_pic(EbDecPicMgr *ps_pic_mgr, SeqHeader *seq_hea
 
         ps_pic_mgr->as_dec_pic[i].size = frame_size;
 
-        /* Memory for storing MV's at 8x8 lvl*/
+        /*!< Memory for storing MV's at 8x8 lvl */
         EbErrorType ret_err = mvs_8x8_memory_alloc(&ps_pic_mgr->as_dec_pic[i].mvs, frame_info);
         if (ret_err != EB_ErrorNone) return NULL;
 
@@ -196,30 +188,28 @@ static INLINE void dec_ref_count_and_rel(EbDecPicBuf *ps_pic_buf) {
     }
 }
 
-/**
-*******************************************************************************
-*
-* @brief
-*  Update Reference Frames
-*
-* @par Description:
-*  Update current frame to references. Remove any free frames.
-*  Should be called at the end of frame parse/decode.
-*
-* @param[in] ps_pic_mgr
-*  Pointer to the Picture manager structure
-*
-* @returns
-*
-* @remarks
-*
-*******************************************************************************
-*/
+/*!< *******************************************************************************
+ *
+ * @brief
+ *  Update Reference Frames
+ *
+ * @par Description:
+ *  Update current frame to references. Remove any free frames.
+ *  Should be called at the end of frame parse/decode.
+ *
+ * @param[in] ps_pic_mgr
+ *  Pointer to the Picture manager structure
+ *
+ * @returns
+ *
+ * @remarks
+ *
+ ******************************************************************************* */
 void dec_pic_mgr_update_ref_pic(EbDecHandle *dec_handle_ptr, int32_t frame_decoded,
                                 int32_t refresh_frame_flags) {
     int32_t ref_index = 0, mask;
 
-    /* TODO: Add lock and unlock for MT */
+    /*!< TODO: Add lock and unlock for MT */
     if (frame_decoded) {
         for (mask = refresh_frame_flags; mask; mask >>= 1) {
             dec_ref_count_and_rel(dec_handle_ptr->ref_frame_map[ref_index]);
@@ -237,16 +227,16 @@ void dec_pic_mgr_update_ref_pic(EbDecHandle *dec_handle_ptr, int32_t frame_decod
         }
 
         if (dec_handle_ptr->frame_header.show_existing_frame) {
-            //TODO: Add output Q logic
+            /*!< TODO: Add output Q logic */
             //assert(0);
         } else
             dec_ref_count_and_rel(dec_handle_ptr->cur_pic_buf[0]);
     } else {
-        // Nothing was decoded, so just drop this frame buffer
+        /*!< Nothing was decoded, so just drop this frame buffer */
         dec_ref_count_and_rel(dec_handle_ptr->cur_pic_buf[0]);
     }
 
-    /* Invalidate these references until the next frame starts. */
+    /*!< Invalidate these references until the next frame starts. */
     for (ref_index = 0; ref_index < INTER_REFS_PER_FRAME; ref_index++) {
         dec_handle_ptr->remapped_ref_idx[ref_index] = INVALID_IDX;
     }
@@ -256,13 +246,13 @@ void dec_pic_mgr_update_ref_pic(EbDecHandle *dec_handle_ptr, int32_t frame_decod
                 dec_handle_ptr->frame_header.order_hint;
 }
 
-// Generate next_ref_frame_map.
+/*!< Generate next_ref_frame_map. */
 void generate_next_ref_frame_map(EbDecHandle *dec_handle_ptr) {
-    /* TODO: Add lock and unlock for MT */
+    /*!< TODO: Add lock and unlock for MT */
 
-    // next_ref_frame_map holds references to frame buffers. After storing a
-    // frame buffer index in next_ref_frame_map, we need to increase the
-    // frame buffer's ref_count.
+    /*!< next_ref_frame_map holds references to frame buffers. After storing a
+     * frame buffer index in next_ref_frame_map, we need to increase the
+     * frame buffer's ref_count. */
     int32_t ref_index = 0;
     for (int32_t mask = dec_handle_ptr->frame_header.refresh_frame_flags; mask; mask >>= 1) {
         if (mask & 1)
@@ -283,9 +273,9 @@ void generate_next_ref_frame_map(EbDecHandle *dec_handle_ptr) {
     }
 }
 
-// These functions take a reference frame label between LAST_FRAME and
-// EXTREF_FRAME inclusive.  Note that this is different to the indexing
-// previously used by the frame_refs[] array.
+/*!< These functions take a reference frame label between LAST_FRAME and
+ *   EXTREF_FRAME inclusive.  Note that this is different to the indexing
+ *   previously used by the frame_refs[] array. */
 static INLINE int32_t get_ref_frame_map_with_idx(EbDecHandle *          dec_handle_ptr,
                                                  const MvReferenceFrame ref_frame) {
     return (ref_frame >= LAST_FRAME && ref_frame <= REF_FRAMES)
@@ -303,8 +293,8 @@ ScaleFactors *get_ref_scale_factors(EbDecHandle *dec_handle_ptr, const MvReferen
     return (map_idx != INVALID_IDX) ? &dec_handle_ptr->ref_scale_factors[map_idx] : NULL;
 }
 
-/* Compares the sort_idx fields. If they are equal, then compares the map_idx
-   fields to break the tie. This ensures a stable sort. */
+/*!< Compares the sort_idx fields. If they are equal, then compares
+ *   the map_idx fields to break the tie. This ensures a stable sort. */
 static int compare_ref_frame_info(const void *arg_a, const void *arg_b) {
     const RefFrameInfo *info_a = (RefFrameInfo *)arg_a;
     const RefFrameInfo *info_b = (RefFrameInfo *)arg_b;
@@ -344,7 +334,7 @@ void svt_set_frame_refs(EbDecHandle *dec_handle_ptr, int32_t lst_map_idx, int32_
         ref_frame_info[i].pic_buf = buf;
 
         if (buf == NULL) continue;
-        // If this assertion fails, there is a reference leak.
+        /*!< If this assertion fails, there is a reference leak. */
         assert(buf->ref_count > 0);
         if (buf->ref_count <= 0) continue;
 
@@ -361,19 +351,18 @@ void svt_set_frame_refs(EbDecHandle *dec_handle_ptr, int32_t lst_map_idx, int32_
         if (map_idx == gld_map_idx) gld_frame_sort_idx = ref_frame_info[i].sort_idx;
     }
 
-    // Confirm both LAST_FRAME and GOLDEN_FRAME are valid forward reference
-    // frames.
+    /*!< Confirm both LAST_FRAME and GOLDEN_FRAME are valid forward reference frames. */
     if (lst_frame_sort_idx == -1 || lst_frame_sort_idx >= cur_frame_sort_idx)
-        assert(0); //"Inter frame requests a look-ahead frame as LAST");
+        assert(0); /*!< "Inter frame requests a look-ahead frame as LAST"); */
     if (gld_frame_sort_idx == -1 || gld_frame_sort_idx >= cur_frame_sort_idx)
-        assert(0); //"Inter frame requests a look-ahead frame as GOLDEN");
+        assert(0); /*!< "Inter frame requests a look-ahead frame as GOLDEN"); */
 
-    // Sort ref frames based on their frame_offset values.
+    /*!< Sort ref frames based on their frame_offset values. */
     qsort(ref_frame_info, REF_FRAMES, sizeof(RefFrameInfo), compare_ref_frame_info);
 
-    // Identify forward and backward reference frames.
-    // Forward  reference: offset < order_hint
-    // Backward reference: offset >= order_hint
+    /*!< Identify forward and backward reference frames. */
+    /*!< Forward  reference: offset < order_hint */
+    /*!< Backward reference: offset >= order_hint */
     int32_t fwd_start_idx = 0, fwd_end_idx = REF_FRAMES - 1;
 
     for (int32_t i = 0; i < REF_FRAMES; i++) {
@@ -391,16 +380,16 @@ void svt_set_frame_refs(EbDecHandle *dec_handle_ptr, int32_t lst_map_idx, int32_
     int32_t bwd_start_idx = fwd_end_idx + 1;
     int32_t bwd_end_idx   = REF_FRAMES - 1;
 
-    // === Backward Reference Frames ===
+    /*!< === Backward Reference Frames === */
 
-    // == ALTREF_FRAME ==
+    /*!< == ALTREF_FRAME == */
     if (bwd_start_idx <= bwd_end_idx) {
         set_ref_frame_info(dec_handle_ptr, ALTREF_FRAME - LAST_FRAME, &ref_frame_info[bwd_end_idx]);
         ref_flag_list[ALTREF_FRAME - LAST_FRAME] = 1;
         bwd_end_idx--;
     }
 
-    // == BWDREF_FRAME ==
+    /*!< == BWDREF_FRAME == */
     if (bwd_start_idx <= bwd_end_idx) {
         set_ref_frame_info(
             dec_handle_ptr, BWDREF_FRAME - LAST_FRAME, &ref_frame_info[bwd_start_idx]);
@@ -408,22 +397,22 @@ void svt_set_frame_refs(EbDecHandle *dec_handle_ptr, int32_t lst_map_idx, int32_
         bwd_start_idx++;
     }
 
-    // == ALTREF2_FRAME ==
+    /*!< == ALTREF2_FRAME == */
     if (bwd_start_idx <= bwd_end_idx) {
         set_ref_frame_info(
             dec_handle_ptr, ALTREF2_FRAME - LAST_FRAME, &ref_frame_info[bwd_start_idx]);
         ref_flag_list[ALTREF2_FRAME - LAST_FRAME] = 1;
     }
 
-    // === Forward Reference Frames ===
+    /*!< === Forward Reference Frames === */
     for (int32_t i = fwd_start_idx; i <= fwd_end_idx; ++i) {
-        // == LAST_FRAME ==
+        /*!< == LAST_FRAME == */
         if (ref_frame_info[i].map_idx == lst_map_idx) {
             set_ref_frame_info(dec_handle_ptr, LAST_FRAME - LAST_FRAME, &ref_frame_info[i]);
             ref_flag_list[LAST_FRAME - LAST_FRAME] = 1;
         }
 
-        // == GOLDEN_FRAME ==
+        /*!< == GOLDEN_FRAME == */
         if (ref_frame_info[i].map_idx == gld_map_idx) {
             set_ref_frame_info(dec_handle_ptr, GOLDEN_FRAME - LAST_FRAME, &ref_frame_info[i]);
             ref_flag_list[GOLDEN_FRAME - LAST_FRAME] = 1;
@@ -433,13 +422,13 @@ void svt_set_frame_refs(EbDecHandle *dec_handle_ptr, int32_t lst_map_idx, int32_
     assert(ref_flag_list[LAST_FRAME - LAST_FRAME] == 1 &&
            ref_flag_list[GOLDEN_FRAME - LAST_FRAME] == 1);
 
-    // == LAST2_FRAME ==
-    // == LAST3_FRAME ==
-    // == BWDREF_FRAME ==
-    // == ALTREF2_FRAME ==
-    // == ALTREF_FRAME ==
+    /*!< == LAST2_FRAME == */
+    /*!< == LAST3_FRAME == */
+    /*!< == BWDREF_FRAME == */
+    /*!< == ALTREF2_FRAME == */
+    /*!< == ALTREF_FRAME == */
 
-    // Set up the reference frames in the anti-chronological order.
+    /*!< Set up the reference frames in the anti-chronological order. */
     static const MvReferenceFrame ref_frame_list[INTER_REFS_PER_FRAME - 2] = {
         LAST2_FRAME, LAST3_FRAME, BWDREF_FRAME, ALTREF2_FRAME, ALTREF_FRAME};
 
@@ -462,7 +451,7 @@ void svt_set_frame_refs(EbDecHandle *dec_handle_ptr, int32_t lst_map_idx, int32_
         fwd_end_idx--;
     }
 
-    // Assign all the remaining frame(s), if any, to the earliest reference frame.
+    /*!< Assign all the remaining frame(s), if any, to the earliest reference frame. */
     for (; ref_idx < (INTER_REFS_PER_FRAME - 2); ref_idx++) {
         const MvReferenceFrame ref_frame = ref_frame_list[ref_idx];
         if (ref_flag_list[ref_frame - LAST_FRAME] == 1) continue;

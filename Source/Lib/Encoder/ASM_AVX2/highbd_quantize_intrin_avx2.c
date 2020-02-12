@@ -1,20 +1,18 @@
-/*
- * Copyright (c) 2017, Alliance for Open Media. All rights reserved
+/*!< Copyright (c) 2017, Alliance for Open Media. All rights reserved
  *
  * This source code is subject to the terms of the BSD 2 Clause License and
  * the Alliance for Open Media Patent License 1.0. If the BSD 2 Clause License
  * was not distributed with this source code in the LICENSE file, you can
  * obtain it at www.aomedia.org/license/software. If the Alliance for Open
  * Media Patent License 1.0 was not distributed with this source code in the
- * PATENTS file, you can obtain it at www.aomedia.org/license/patent.
- */
+ * PATENTS file, you can obtain it at www.aomedia.org/license/patent. */
 
 #include "EbDefinitions.h"
 #include <immintrin.h>
 
 #include "aom_dsp_rtcd.h"
 
-// Note: TranHigh is the datatype used for intermediate transform stages.
+/*!< Note: TranHigh is the datatype used for intermediate transform stages. */
 typedef int64_t TranHigh;
 
 static INLINE void init_one_qp(const __m128i *p, __m256i *qp) {
@@ -44,9 +42,9 @@ static INLINE void init_qp(const int16_t *zbin_ptr, const int16_t *round_ptr,
     init_one_qp(&quant_shift, &qp[4]);
 }
 
-// Note:
-// *x is vector multiplied by *y which is 16 int32_t parallel multiplication
-// and right shift 16.  The output, 16 int32_t is save in *p.
+/*!< Note:
+ *   *x is vector multiplied by *y which is 16 int32_t parallel multiplication
+ *   and right shift 16.  The output, 16 int32_t is save in *p. */
 static INLINE void mm256_mul_shift_epi32(const __m256i *x, const __m256i *y, __m256i *p) {
     __m256i       prod_lo = _mm256_mul_epi32(*x, *y);
     __m256i       prod_hi = _mm256_srli_epi64(*x, 32);

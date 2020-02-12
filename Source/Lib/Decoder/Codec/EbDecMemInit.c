@@ -1,15 +1,12 @@
 // clang-format off
-/*
-* Copyright(c) 2019 Netflix, Inc.
-* SPDX - License - Identifier: BSD - 2 - Clause - Patent
-*/
+/*!< Copyright(c) 2019 Netflix, Inc.
+ * SPDX - License - Identifier: BSD - 2 - Clause - Patent */
 
-// SUMMARY
-//   Contains the Decoder Memory Init functions
+/*!< SUMMARY: Contains the Decoder Memory Init functions */
 
-/**************************************
- * Includes
- **************************************/
+/**************************************/
+/*!< Includes */
+/**************************************/
 #include <stdlib.h>
 
 #include "EbDefinitions.h"
@@ -30,13 +27,13 @@
 
 #include "EbUtility.h"
 
-/*TODO: Remove and harmonize with encoder. Globals prevent harmonization now! */
-/*****************************************
- * eb_recon_picture_buffer_desc_ctor
- *  Initializes the Buffer Descriptor's
- *  values that are fixed for the life of
- *  the descriptor.
- *****************************************/
+/*!< TODO: Remove and harmonize with encoder. Globals prevent harmonization now! */
+/*****************************************/
+/*!< eb_recon_picture_buffer_desc_ctor
+ *    Initializes the Buffer Descriptor's
+ *    values that are fixed for the life of
+ *    the descriptor. */
+/*****************************************/
 EbErrorType dec_eb_recon_picture_buffer_desc_ctor(
     EbPtr  *object_dbl_ptr,
     EbPtr   object_init_data_ptr)
@@ -48,10 +45,10 @@ EbErrorType dec_eb_recon_picture_buffer_desc_ctor(
 
     EB_MALLOC_DEC(EbPictureBufferDesc*, picture_buffer_desc_ptr, sizeof(EbPictureBufferDesc), EB_N_PTR);
 
-    // Allocate the PictureBufferDesc Object
+    /*!< Allocate the PictureBufferDesc Object */
     *object_dbl_ptr = (EbPtr)picture_buffer_desc_ptr;
 
-    // Set the Picture Buffer Static variables
+    /*!< Set the Picture Buffer Static variables */
     picture_buffer_desc_ptr->max_width = picture_buffer_desc_init_data_ptr->max_width;
     picture_buffer_desc_ptr->max_height = picture_buffer_desc_init_data_ptr->max_height;
     picture_buffer_desc_ptr->width = picture_buffer_desc_init_data_ptr->max_width;
@@ -89,7 +86,7 @@ EbErrorType dec_eb_recon_picture_buffer_desc_ctor(
     picture_buffer_desc_ptr->stride_bit_inc_cb = 0;
     picture_buffer_desc_ptr->stride_bit_inc_cr = 0;
 
-    // Allocate the Picture Buffers (luma & chroma)
+    /*!< Allocate the Picture Buffers (luma & chroma) */
     if (picture_buffer_desc_init_data_ptr->buffer_enable_mask & PICTURE_BUFFER_DESC_Y_FLAG) {
         EB_ALLIGN_MALLOC_DEC(EbByte, picture_buffer_desc_ptr->buffer_y, picture_buffer_desc_ptr->luma_size * bytes_per_pixel, EB_A_PTR);
         memset(picture_buffer_desc_ptr->buffer_y, 0, picture_buffer_desc_ptr->luma_size      * bytes_per_pixel);
@@ -111,10 +108,10 @@ EbErrorType dec_eb_recon_picture_buffer_desc_ctor(
     return EB_ErrorNone;
 }
 
-/**********************************
-* Master Frame Buf containing all frame level bufs like ModeInfo
-for all the frames in parallel
-**********************************/
+/***************************************************/
+/*!< Master Frame Buf containing all frame level bufs
+ *   like ModeInfo for all the frames in parallel */
+/***************************************************/
 
 static EbErrorType init_master_frame_ctxt(EbDecHandle  *dec_handle_ptr) {
     EbErrorType return_error = EB_ErrorNone;
@@ -125,7 +122,7 @@ static EbErrorType init_master_frame_ctxt(EbDecHandle  *dec_handle_ptr) {
     SeqHeader   *seq_header = &dec_handle_ptr->seq_header;
 
     EbBool is_st = dec_handle_ptr->dec_config.threads == 1 ? EB_TRUE : EB_FALSE;
-    ///* 8x8 alignment for various tools like CDEF */
+    /*!< 8x8 alignment for various tools like CDEF */
     //int32_t aligned_width   = ALIGN_POWER_OF_TWO(seq_header->max_frame_width, 3);
     //int32_t aligned_height  = ALIGN_POWER_OF_TWO(seq_header->max_frame_height, 3);
     /*int32_t mi_cols = aligned_width >> MI_SIZE_LOG2;
@@ -154,45 +151,45 @@ static EbErrorType init_master_frame_ctxt(EbDecHandle  *dec_handle_ptr) {
     for (i = 0; i < dec_handle_ptr->num_frms_prll; i++) {
         cur_frame_buf = &master_frame_buf->cur_frame_bufs[i];
 
-        /* SuperBlock str allocation at SB level */
+        /*!< SuperBlock str allocation at SB level */
         EB_MALLOC_DEC(SBInfo*, cur_frame_buf->sb_info,
             (num_sb * sizeof(SBInfo)), EB_N_PTR);
 
-        /* ModeInfo str allocation at 4x4 level */
+        /*!< ModeInfo str allocation at 4x4 level */
         EB_MALLOC_DEC(BlockModeInfo*, cur_frame_buf->mode_info,
                     (num_sb * num_mis_in_sb * sizeof(BlockModeInfo)), EB_N_PTR);
 
-        /* TransformInfo str allocation at 4x4 level
-           TO-DO optimize memory based on the chroma subsampling.*/
+        /*!< TransformInfo str allocation at 4x4 level
+         *   TO-DO optimize memory based on the chroma subsampling. */
         EB_MALLOC_DEC(TransformInfo_t*, cur_frame_buf->trans_info[AOM_PLANE_Y],
             (num_sb * num_mis_in_sb * sizeof(TransformInfo_t)), EB_N_PTR);
 
-        /* Coeff buf (1D compact) allocation for entire frame
-            TODO: Should reduce this to save memory and
-            dynammically allocate if needed */
-            /*TODO : Change to macro */
-            /* (16+1) : 1 for Length and 16 for all coeffs in 4x4 */
+        /*!< Coeff buf (1D compact) allocation for entire frame
+         *   TODO: Should reduce this to save memory and
+         *   dynammically allocate if needed */
+            /*!< TODO : Change to macro */
+            /*!< (16+1) : 1 for Length and 16 for all coeffs in 4x4 */
         if (is_st) {
-            /*Size of coeff buf reduced to sb_sizesss*/
+            /*!< Size of coeff buf reduced to sb_sizesss */
             EB_MALLOC_DEC(int32_t*, cur_frame_buf->coeff[AOM_PLANE_Y],
                 (num_mis_in_sb * sizeof(int32_t) * (16 + 1)), EB_N_PTR);
         }
-        else {
+        else{
             EB_MALLOC_DEC(int32_t*, cur_frame_buf->coeff[AOM_PLANE_Y],
                 (num_sb * num_mis_in_sb * sizeof(int32_t) * (16 + 1)), EB_N_PTR);
         }
 
-        /*TODO : Change to macro */
+        /*!< TODO : Change to macro */
         EB_MALLOC_DEC(TransformInfo_t*, cur_frame_buf->trans_info[AOM_PLANE_U],
             (num_sb * num_mis_in_sb * sizeof(TransformInfo_t) * 2), EB_N_PTR);
 
-        /* Coeff buf (1D compact) allocation for entire frame
-        TODO: Should reduce this to save memory and
-        dynammically allocate if needed */
-        /*TODO : Change to macro */
-        /* (16+1) : 1 for Length and 16 for all coeffs in 4x4 */
+        /*!< Coeff buf (1D compact) allocation for entire frame
+         *   TODO: Should reduce this to save memory and
+         *         dynammically allocate if needed */
+        /*!< TODO : Change to macro */
+        /*!< (16+1) : 1 for Length and 16 for all coeffs in 4x4 */
         if (seq_header->color_config.subsampling_x == 1 &&
-            seq_header->color_config.subsampling_y == 1) // 420
+            seq_header->color_config.subsampling_y == 1) /*!< 420 */
         {
             if (is_st) {
                 EB_MALLOC_DEC(int32_t*, cur_frame_buf->coeff[AOM_PLANE_U],
@@ -212,7 +209,7 @@ static EbErrorType init_master_frame_ctxt(EbDecHandle  *dec_handle_ptr) {
             }
         }
         else if (seq_header->color_config.subsampling_x == 1 &&
-                 seq_header->color_config.subsampling_y == 0) // 422
+                 seq_header->color_config.subsampling_y == 0) /*!< 422 */
         {
             if (is_st) {
                 EB_MALLOC_DEC(int32_t*, cur_frame_buf->coeff[AOM_PLANE_U],
@@ -232,7 +229,7 @@ static EbErrorType init_master_frame_ctxt(EbDecHandle  *dec_handle_ptr) {
             }
         }
         else if (seq_header->color_config.subsampling_x == 0 &&
-                 seq_header->color_config.subsampling_y == 0) // 444
+                 seq_header->color_config.subsampling_y == 0) /*!< 444 */
         {
             if (is_st) {
                 EB_MALLOC_DEC(int32_t*, cur_frame_buf->coeff[AOM_PLANE_U],
@@ -254,11 +251,11 @@ static EbErrorType init_master_frame_ctxt(EbDecHandle  *dec_handle_ptr) {
         else
             assert(0);
 
-        /* delta_q allocation at SB level */
+        /*!< delta_q allocation at SB level */
         EB_MALLOC_DEC(int32_t*, cur_frame_buf->delta_q,
             (num_sb * sizeof(int32_t)), EB_N_PTR);
 
-        /* cdef_strength allocation at SB level */
+        /*!< cdef_strength allocation at SB level */
         EB_MALLOC_DEC(int8_t*, cur_frame_buf->cdef_strength,
             (num_sb * (seq_header->use_128x128_superblock ? 4 : 1) *
             sizeof(int8_t)), EB_N_PTR);
@@ -266,20 +263,20 @@ static EbErrorType init_master_frame_ctxt(EbDecHandle  *dec_handle_ptr) {
             (seq_header->use_128x128_superblock ? 4 : 1) *
             sizeof(int8_t)));
 
-        /* delta_lf allocation at SB level */
+        /*!< delta_lf allocation at SB level */
         EB_MALLOC_DEC(int32_t*, cur_frame_buf->delta_lf,
             (num_sb * FRAME_LF_COUNT * sizeof(int32_t)), EB_N_PTR);
 
-        /* tile map allocation at SB level */
+        /*!< tile map allocation at SB level */
         EB_MALLOC_DEC(uint8_t*, cur_frame_buf->tile_map_sb,
             (num_sb * sizeof(uint8_t)), EB_N_PTR);
 
-        // Allocating lr_unit based on SB_SIZE as worst case memory.
-        // rest_unit_size cannot be less than SB_size.
-        // if rest_unit_size > SB_size then holes are introduced in-between and
-        // accessing will skip few SB in-between.
-        // if rest_unit_size == SB_size then it's straight forward to access
-        // every SB level loop restoration filter value.
+        /*!< Allocating lr_unit based on SB_SIZE as worst case memory.
+         * rest_unit_size cannot be less than SB_size.
+         * if rest_unit_size > SB_size then holes are introduced in-between and
+         * accessing will skip few SB in-between.
+         * if rest_unit_size == SB_size then it's straight forward to access
+         * every SB level loop restoration filter value. */
         LrCtxt *lr_ctxt = (LrCtxt *)dec_handle_ptr->pv_lr_ctxt;
         for (int32_t plane = 0; plane <= AOM_PLANE_V; plane++) {
             EB_MALLOC_DEC(RestorationUnitInfo *, cur_frame_buf->lr_unit[plane],
@@ -293,10 +290,10 @@ static EbErrorType init_master_frame_ctxt(EbDecHandle  *dec_handle_ptr) {
     frame_mi_map->sb_rows = sb_rows;
     frame_mi_map->mi_cols_algnsb = sb_cols * (1 << (sb_size_log2 - MI_SIZE_LOG2));
     frame_mi_map->mi_rows_algnsb = sb_cols * (1 << (sb_size_log2 - MI_SIZE_LOG2));
-    /* SBInfo pointers for entire frame */
+    /*!< SBInfo pointers for entire frame */
     EB_MALLOC_DEC(SBInfo**, frame_mi_map->pps_sb_info,
         sb_rows * sb_cols * sizeof(SBInfo *), EB_N_PTR);
-    /* ModeInfo offset wrt it's SB start for entire frame at 4x4 lvl */
+    /*!< ModeInfo offset wrt it's SB start for entire frame at 4x4 lvl */
     EB_MALLOC_DEC(uint16_t*, frame_mi_map->p_mi_offset, frame_mi_map->
     mi_rows_algnsb * frame_mi_map->mi_cols_algnsb * sizeof(uint16_t), EB_N_PTR);
     frame_mi_map->sb_size_log2 = sb_size_log2;
@@ -309,7 +306,7 @@ static EbErrorType init_master_frame_ctxt(EbDecHandle  *dec_handle_ptr) {
     return return_error;
 }
 
-/*TODO: Move to module files */
+/*!< TODO: Move to module files */
 static EbErrorType init_parse_context (EbDecHandle  *dec_handle_ptr) {
     EbErrorType return_error = EB_ErrorNone;
 
@@ -330,7 +327,7 @@ static EbErrorType init_parse_context (EbDecHandle  *dec_handle_ptr) {
     return return_error;
 }
 
-/*TODO: Move to module files */
+/*!< TODO: Move to module files */
 EbErrorType init_dec_mod_ctxt(EbDecHandle  *dec_handle_ptr,
     void **pp_dec_mod_ctxt)
 {
@@ -385,14 +382,14 @@ EbErrorType init_dec_mod_ctxt(EbDecHandle  *dec_handle_ptr,
     return return_error;
 }
 
-/*mem init function for LF params*/
+/*!< mem init function for LF params */
 static EbErrorType init_lf_ctxt(EbDecHandle  *dec_handle_ptr) {
 
     EbErrorType return_error = EB_ErrorNone;
 
     SeqHeader *seq_header = &dec_handle_ptr->seq_header;
-    /*Boundary checking of mi_row & mi_col are not done while populating,
-    so more memory is allocated by alligning to sb_size */
+    /*!< Boundary checking of mi_row & mi_col are not done while populating,
+     *   so more memory is allocated by alligning to sb_size */
     int32_t aligned_width   = ALIGN_POWER_OF_TWO(seq_header->max_frame_width,
         MAX_SB_SIZE_LOG2);
     int32_t aligned_height  = ALIGN_POWER_OF_TWO(seq_header->max_frame_height,
@@ -403,11 +400,11 @@ static EbErrorType init_lf_ctxt(EbDecHandle  *dec_handle_ptr) {
     EB_MALLOC_DEC(void *, dec_handle_ptr->pv_lf_ctxt, sizeof(LfCtxt), EB_N_PTR);
 
     LfCtxt *lf_ctxt = (LfCtxt *)dec_handle_ptr->pv_lf_ctxt;
-    /*Mem allocation for luma parmas 4x4 unit*/
+    /*!< Mem allocation for luma parmas 4x4 unit */
     EB_MALLOC_DEC(TxSize *, lf_ctxt->tx_size_l,
         mi_rows * mi_cols * sizeof(TxSize), EB_N_PTR);
 
-    /*Allocation of chroma params at 4x4 luma unit, can be optimized */
+    /*!< Allocation of chroma params at 4x4 luma unit, can be optimized */
     EB_MALLOC_DEC(TxSize *, lf_ctxt->tx_size_uv,
         mi_rows * mi_cols * sizeof(TxSize), EB_N_PTR);
 
@@ -460,7 +457,7 @@ static EbErrorType init_lr_ctxt(EbDecHandle  *dec_handle_ptr)
     int frame_height = dec_handle_ptr->seq_header.max_frame_height;
     int sub_x = dec_handle_ptr->seq_header.color_config.subsampling_x;
 
-    // Allocate memory for Deblocked line buffer around stripe(64) boundary for a frame
+    /*!< Allocate memory for Deblocked line buffer around stripe(64) boundary for a frame */
     const int ext_h = RESTORATION_UNIT_OFFSET + frame_height;
     const int num_stripes = (ext_h + 63) / 64;
     int use_highbd = (dec_handle_ptr->seq_header.color_config.bit_depth > 8);
@@ -492,7 +489,7 @@ EbErrorType dec_mem_init(EbDecHandle  *dec_handle_ptr) {
     if (0 == dec_handle_ptr->seq_header_done)
         return EB_ErrorNone;
 
-    /* init module ctxts */
+    /*!< init module ctxts */
     return_error |= dec_pic_mgr_init(dec_handle_ptr);
 
     return_error |= init_parse_context(dec_handle_ptr);
@@ -504,10 +501,10 @@ EbErrorType dec_mem_init(EbDecHandle  *dec_handle_ptr) {
 
     return_error |= init_lr_ctxt(dec_handle_ptr);
 
-    /* init frame buffers */
+    /*!< init frame buffers */
     return_error |= init_master_frame_ctxt(dec_handle_ptr);
 
-    /* Initialize the references to NULL */
+    /*!< Initialize the references to NULL */
     for (int i = 0; i < REF_FRAMES; i++) {
         dec_handle_ptr->ref_frame_map[i] = NULL;
         dec_handle_ptr->next_ref_frame_map[i] = NULL;

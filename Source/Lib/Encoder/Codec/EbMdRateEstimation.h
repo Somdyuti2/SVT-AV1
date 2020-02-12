@@ -1,8 +1,6 @@
-// clang-format off
-/*
-* Copyright(c) 2019 Intel Corporation
-* SPDX - License - Identifier: BSD - 2 - Clause - Patent
-*/
+/* clang-format off */
+/*!< Copyright(c) 2019 Intel Corporation
+ * SPDX - License - Identifier: BSD - 2 - Clause - Patent */
 
 #ifndef EbMdRateEstimation_h
 #define EbMdRateEstimation_h
@@ -13,19 +11,19 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
-    /**************************************
-     * MD Rate Estimation Defines
-     **************************************/
+    /**************************************/
+    /*!< MD Rate Estimation Defines */
+    /**************************************/
 #define MV_COST_WEIGHT_SUB 120
 
 #define TOTAL_NUMBER_OF_MD_RATE_ESTIMATION_CASE_BUFFERS (TOTAL_NUMBER_OF_QP_VALUES * TOTAL_NUMBER_OF_SLICE_TYPES)
-#define NUMBER_OF_SPLIT_FLAG_CASES                            6       // number of cases for bit estimation for split flag
-#define NUMBER_OF_MVD_CASES                                  12       // number of cases for bit estimation for motion vector difference
-     // Set to (1 << 5) if the 32-ary codebooks are used for any bock size
+#define NUMBER_OF_SPLIT_FLAG_CASES                            6       /*!< number of cases for bit estimation for split flag */
+#define NUMBER_OF_MVD_CASES                                  12       /*!< number of cases for bit estimation for motion vector difference */
+     /*!< Set to (1 << 5) if the 32-ary codebooks are used for any bock size */
 #define MAX_WEDGE_TYPES                                      (1 << 4)
-     // The factor to scale from cost in bits to cost in av1_prob_cost units.
+     /*!< The factor to scale from cost in bits to cost in av1_prob_cost units. */
 #define AV1_PROB_COST_SHIFT 9
-     // Cost of coding an n bit literal, using 128 (i.e. 50%) probability for each bit.
+     /*!< Cost of coding an n bit literal, using 128 (i.e. 50%) probability for each bit. */
 #define av1_cost_literal(n) ((n) * (1 << AV1_PROB_COST_SHIFT))
 
     typedef struct LvMapEobCost {
@@ -42,22 +40,22 @@ extern "C" {
         int32_t lps_cost[LEVEL_CONTEXTS][COEFF_BASE_RANGE + 1 + COEFF_BASE_RANGE + 1];
     } LvMapCoeffCost;
 
-    /**************************************
-     * The EbBitFraction is used to define the bit fraction numbers
-     **************************************/
+    /**************************************/
+    /*!< The EbBitFraction is used to define the bit fraction numbers */
+    /**************************************/
     typedef uint32_t EbBitFraction;
 
-    /**************************************
-     * MD Rate Estimation Structure
-     **************************************/
+    /**************************************/
+    /*!< MD Rate Estimation Structure */
+    /**************************************/
     typedef struct MdRateEstimationContext
     {
         EbBitFraction  split_flag_bits[NUMBER_OF_SPLIT_FLAG_CASES];
         EbBitFraction  mvd_bits[NUMBER_OF_MVD_CASES];
-        // Partition
+        /*!< Partition */
         int32_t partition_fac_bits[PARTITION_CONTEXTS][CDF_SIZE(EXT_PARTITION_TYPES)];
 
-        // MV Mode
+        /*!< MV Mode */
         int32_t skip_mode_fac_bits[SKIP_CONTEXTS][CDF_SIZE(2)];
         int32_t new_mv_mode_fac_bits[NEWMV_MODE_CONTEXTS][CDF_SIZE(2)];
         int32_t zero_mv_mode_fac_bits[GLOBALMV_MODE_CONTEXTS][CDF_SIZE(2)];
@@ -71,7 +69,7 @@ extern "C" {
         int dv_cost[2][MV_VALS];
         int dv_joint_cost[MV_JOINTS];
 
-        // Compouned Mode
+        /*!< Compouned Mode */
         int32_t inter_compound_mode_fac_bits[INTER_MODE_CONTEXTS][CDF_SIZE(INTER_COMPOUND_MODES)];
         int32_t compound_type_fac_bits[BlockSizeS_ALL][CDF_SIZE(MASKED_COMPOUND_TYPES)];
         int32_t single_ref_fac_bits[REF_CONTEXTS][SINGLE_REFS - 1][CDF_SIZE(2)];
@@ -83,7 +81,7 @@ extern "C" {
         int32_t comp_group_idx_fac_bits[COMP_GROUP_IDX_CONTEXTS][CDF_SIZE(2)];
         int32_t comp_inter_fac_bits[COMP_INTER_CONTEXTS][CDF_SIZE(2)];
 
-        // Wedge Mode
+        /*!< Wedge Mode */
         int32_t wedge_idx_fac_bits[BlockSizeS_ALL][CDF_SIZE(16)];
         int32_t inter_intra_fac_bits[BlockSize_GROUPS][CDF_SIZE(2)];
         int32_t wedge_inter_intra_fac_bits[BlockSizeS_ALL][CDF_SIZE(2)];
@@ -91,7 +89,7 @@ extern "C" {
         int32_t motion_mode_fac_bits[BlockSizeS_ALL][MOTION_MODES];
         int32_t motion_mode_fac_bits1[BlockSizeS_ALL][2];
 
-        // Intra Mode
+        /*!< Intra Mode */
         int32_t intrabc_fac_bits[CDF_SIZE(2)];
         int32_t intra_inter_fac_bits[INTRA_INTER_CONTEXTS][2];
         int32_t filter_intra_fac_bits[BlockSizeS_ALL][CDF_SIZE(2)];
@@ -105,7 +103,7 @@ extern "C" {
         int32_t angle_delta_fac_bits[DIRECTIONAL_MODES][CDF_SIZE(2 * MAX_ANGLE_DELTA + 1)];
         int32_t cfl_alpha_fac_bits[CFL_JOINT_SIGNS][CFL_PRED_PLANES][CFL_ALPHABET_SIZE];
 
-        // Palette Mode
+        /*!< Palette Mode */
         int32_t palette_ysize_fac_bits[PALATTE_BSIZE_CTXS][CDF_SIZE(PALETTE_SIZES)];
         int32_t palette_uv_size_fac_bits[PALATTE_BSIZE_CTXS][CDF_SIZE(PALETTE_SIZES)];
         int32_t palette_ycolor_fac_bitss[PALETTE_SIZES][PALETTE_COLOR_INDEX_CONTEXTS][PALETTE_COLORS];
@@ -113,7 +111,7 @@ extern "C" {
         int32_t palette_ymode_fac_bits[PALATTE_BSIZE_CTXS][PALETTE_Y_MODE_CONTEXTS][CDF_SIZE(2)];
         int32_t palette_uv_mode_fac_bits[PALETTE_UV_MODE_CONTEXTS][CDF_SIZE(2)];
 
-        // Tx and Coeff Rate Estimation
+        /*!< Tx and Coeff Rate Estimation */
         LvMapCoeffCost coeff_fac_bits[TX_SIZES][PLANE_TYPES];
         LvMapEobCost eob_frac_bits[7][2];
         int32_t txfm_partition_fac_bits[TXFM_PARTITION_CONTEXTS][CDF_SIZE(2)];
@@ -124,10 +122,10 @@ extern "C" {
         int32_t switchable_interp_fac_bitss[SWITCHABLE_FILTER_CONTEXTS][SWITCHABLE_FILTERS];
         int32_t initialized;
     } MdRateEstimationContext;
-    /***************************************************************************
-    * AV1 Probability table
-    * // round(-log2(i/256.) * (1 << AV1_PROB_COST_SHIFT)); i = 128~255.
-    ***************************************************************************/
+    /***************************************************************************/
+    /*!< AV1 Probability table
+     *  round(-log2(i/256.) * (1 << AV1_PROB_COST_SHIFT)); i = 128~255. */
+    /***************************************************************************/
     static const uint16_t av1_prob_cost[128] = {
         512, 506, 501, 495, 489, 484, 478, 473, 467, 462, 456, 451, 446, 441, 435,
         430, 425, 420, 415, 410, 405, 400, 395, 390, 385, 380, 375, 371, 366, 361,
@@ -142,7 +140,7 @@ extern "C" {
 
     static const int32_t use_inter_ext_tx_for_txsize[EXT_TX_SETS_INTER][EXT_TX_SIZES] =
     {
-        { 1, 1, 1, 1 },  // unused
+        { 1, 1, 1, 1 },  /*!< unused */
         { 1, 1, 0, 0 },
         { 0, 0, 1, 0 },
         { 0, 0, 0, 1 },
@@ -150,20 +148,20 @@ extern "C" {
 
     static const int32_t use_intra_ext_tx_for_txsize[EXT_TX_SETS_INTRA][EXT_TX_SIZES] =
     {
-        { 1, 1, 1, 1 },  // unused
+        { 1, 1, 1, 1 },  /*!< unused */
         { 1, 1, 0, 0 },
         { 0, 0, 1, 0 },
     };
 
     static const int32_t av1_ext_tx_set_idx_to_type[2][AOMMAX(EXT_TX_SETS_INTRA, EXT_TX_SETS_INTER)] = {
             {
-            // Intra
+            /*!< Intra */
             EXT_TX_SET_DCTONLY,
             EXT_TX_SET_DTT4_IDTX_1DDCT,
             EXT_TX_SET_DTT4_IDTX,
         },
         {
-            // Inter
+            /*!< Inter */
             EXT_TX_SET_DCTONLY,
             EXT_TX_SET_ALL16,
             EXT_TX_SET_DTT9_IDTX_1DDCT,
@@ -171,33 +169,33 @@ extern "C" {
         },
     };
 
-    /***************************************************************************
-    * av1_get_syntax_rate_from_cdf
-    ***************************************************************************/
+    /***************************************************************************/
+    /*!< av1_get_syntax_rate_from_cdf */
+    /***************************************************************************/
     extern void av1_get_syntax_rate_from_cdf(
         int32_t                        *costs,
         const AomCdfProb             *cdf,
         const int32_t                  *inv_map);
-    /**************************************************************************
-    * Estimate the rate for each syntax elements and for
-    * all scenarios based on the frame CDF
-    ***************************************************************************/
+    /**************************************************************************/
+    /*!< Estimate the rate for each syntax elements and for
+     *   all scenarios based on the frame CDF */
+    /***************************************************************************/
     extern void av1_estimate_syntax_rate(
         MdRateEstimationContext      *md_rate_estimation_array,
         EbBool                          is_i_slice,
         FRAME_CONTEXT                  *fc);
-    /**************************************************************************
-    * Estimate the rate of the quantised coefficient
-    * based on the frame CDF
-    ***************************************************************************/
+    /**************************************************************************/
+    /*!< Estimate the rate of the quantised coefficient
+     * based on the frame CDF */
+    /***************************************************************************/
     extern void av1_estimate_coefficients_rate(
         MdRateEstimationContext  *md_rate_estimation_array,
         FRAME_CONTEXT              *fc);
-    /**************************************************************************
-    * av1_estimate_mv_rate()
-    * Estimate the rate of motion vectors
-    * based on the frame CDF
-    ***************************************************************************/
+    /**************************************************************************/
+    /*!< av1_estimate_mv_rate()
+     *   Estimate the rate of motion vectors
+     *   based on the frame CDF
+    /***************************************************************************/
 extern void av1_estimate_mv_rate(
         struct PictureControlSet *pcs_ptr,
         MdRateEstimationContext  *md_rate_estimation_array,
@@ -227,9 +225,9 @@ static AOM_INLINE void avg_cdf_symbol(AomCdfProb *cdf_ptr_left,
 
 #define AVG_CDF_STRIDE(cname_left, cname_tr, nsymbs, cdf_stride)           \
   do {                                                                     \
-    AomCdfProb *cdf_ptr_left = (AomCdfProb *)cname_left;               \
-    AomCdfProb *cdf_ptr_tr = (AomCdfProb *)cname_tr;                   \
-    int array_size = (int)sizeof(cname_left) / sizeof(AomCdfProb);       \
+    AomCdfProb *cdf_ptr_left = (AomCdfProb *)cname_left;                   \
+    AomCdfProb *cdf_ptr_tr = (AomCdfProb *)cname_tr;                       \
+    int array_size = (int)sizeof(cname_left) / sizeof(AomCdfProb);         \
     int num_cdfs = array_size / cdf_stride;                                \
     avg_cdf_symbol(cdf_ptr_left, cdf_ptr_tr, num_cdfs, cdf_stride, nsymbs, \
                    wt_left, wt_tr);                                        \
@@ -254,10 +252,9 @@ static AOM_INLINE void avg_nmv(NmvContext *nmv_left, NmvContext *nmv_tr,
     }
 }
 
-// Since the top and left SBs are completed, we can average the top SB's CDFs and
-// the left SB's CDFs and use it for current SB's encoding to
-// improve the performance. This function facilitates the averaging
-// of CDF.
+/*!< Since the top and left SBs are completed, we can average the top SB's CDFs and
+ *   the left SB's CDFs and use it for current SB's encoding to
+ *   improve the performance. This function facilitates the averaging of CDF. */
 static AOM_INLINE void avg_cdf_symbols(FRAME_CONTEXT *ctx_left,
     FRAME_CONTEXT *ctx_tr, int wt_left,
     int wt_tr) {
@@ -380,17 +377,17 @@ static AOM_INLINE void avg_cdf_symbols(FRAME_CONTEXT *ctx_left,
     AVERAGE_CDF(ctx_left->cfl_alpha_cdf, ctx_tr->cfl_alpha_cdf,
         CFL_ALPHABET_SIZE);
 }
-/*******************************************************************************
- * Updates all the syntax stats/CDF for the current block
- ******************************************************************************/
+/*******************************************************************************/
+/*!< Updates all the syntax stats/CDF for the current block */
+/*******************************************************************************/
 void update_stats(
     struct PictureControlSet   *pcs_ptr,
     struct BlkStruct          *blk_ptr,
     int                         mi_row,
     int                         mi_col);
-/*******************************************************************************
- * Updates the partition stats/CDF for the current block
- ******************************************************************************/
+/*******************************************************************************/
+/*!< Updates the partition stats/CDF for the current block */
+/************************************************************&******************/
 void update_part_stats(
     struct PictureControlSet   *pcs_ptr,
     struct BlkStruct          *blk_ptr,

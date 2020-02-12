@@ -1,11 +1,9 @@
-/*
-* Copyright(c) 2019 Netflix, Inc.
-* SPDX - License - Identifier: BSD - 2 - Clause - Patent
-*/
+/*!< Copyright(c) 2019 Netflix, Inc.
+* SPDX - License - Identifier: BSD - 2 - Clause - Patent */
 
-/***************************************
- * Includes
- ***************************************/
+/********************************/
+/*!< Includes */
+/********************************/
 #include <stdio.h>
 #include <stdlib.h>
 #include <assert.h>
@@ -17,8 +15,8 @@
 #include "EbDecTime.h"
 
 #ifdef _WIN32
-#include <io.h> /* _setmode() */
-#include <fcntl.h> /* _O_BINARY */
+#include <io.h> /*!< _setmode() */
+#include <fcntl.h> /*!< _O_BINARY */
 #endif
 
 int init_pic_buffer(EbSvtIOFormat *pic_buffer, CliInput *cli, EbSvtAv1DecConfiguration *config) {
@@ -75,7 +73,7 @@ void write_frame(EbBufferHeaderType *recon_buffer, CliInput *cli) {
 
     const int bytes_per_sample = (img->bit_depth == EB_EIGHT_BIT) ? 1 : 2;
 
-    // Write luma plane
+    /*!< Write luma plane */
     unsigned char *buf    = img->luma;
     int            stride = img->y_stride;
     int            w      = img->width;
@@ -87,7 +85,7 @@ void write_frame(EbBufferHeaderType *recon_buffer, CliInput *cli) {
         buf += (stride * bytes_per_sample);
     }
     if (img->color_fmt != EB_YUV400) {
-        //Write chroma planes
+        /*!< Write chroma planes */
         buf    = img->cb;
         stride = img->cb_stride;
         if (img->color_fmt == EB_YUV420) {
@@ -122,16 +120,16 @@ static void show_progress(int in_frame, uint64_t dx_time) {
             (double)in_frame * 1000000.0 / (double)dx_time);
 }
 
-/***************************************
- * Decoder App Main
- ***************************************/
+/**********************/
+/*!< Decoder App Main */
+/**********************/
 int32_t main(int32_t argc, char *argv[]) {
 #ifdef _WIN32
     _setmode(_fileno(stdin), _O_BINARY);
     _setmode(_fileno(stdout), _O_BINARY);
 #endif
-    // GLOBAL VARIABLES
-    EbErrorType               return_error = EB_ErrorNone; // Error Handling
+    /*!< GLOBAL VARIABLES */
+    EbErrorType               return_error = EB_ErrorNone; /*!< Error Handling */
     EbSvtAv1DecConfiguration *config_ptr =
         (EbSvtAv1DecConfiguration *)malloc(sizeof(EbSvtAv1DecConfiguration));
     CliInput cli;
@@ -162,11 +160,11 @@ int32_t main(int32_t argc, char *argv[]) {
     uint8_t *buf             = NULL;
     size_t   bytes_in_buffer = 0, buffer_size = 0;
 
-    // Print Decoder Info
+    /*!< Print Decoder Info */
     fprintf(stderr, "-------------------------------------\n");
     fprintf(stderr, "SVT-AV1 Decoder\n");
 
-    // Initialize config
+    /*!< Initialize config */
     if (!config_ptr) return EB_ErrorInsufficientResources;
     EbComponentType *p_handle;
     void *           p_app_data = NULL;
@@ -215,7 +213,7 @@ int32_t main(int32_t argc, char *argv[]) {
             }
             stop_after = config_ptr->frames_to_be_decoded;
             if (enable_md5) md5_init(&md5_ctx);
-            // Input Loop Thread
+            /*!< Input Loop Thread */
             while (read_input_frame(&input, &buf, &bytes_in_buffer, &buffer_size, NULL)) {
                 if (!stop_after || in_frame < stop_after) {
                     dec_timer_start(&timer);

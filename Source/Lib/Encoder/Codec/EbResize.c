@@ -1,17 +1,13 @@
-/*
- * Copyright (c) 2016, Alliance for Open Media. All rights reserved
+/*!< Copyright (c) 2016, Alliance for Open Media. All rights reserved
  *
  * This source code is subject to the terms of the BSD 2 Clause License and
  * the Alliance for Open Media Patent License 1.0. If the BSD 2 Clause License
  * was not distributed with this source code in the LICENSE file, you can
  * obtain it at www.aomedia.org/license/software. If the Alliance for Open
  * Media Patent License 1.0 was not distributed with this source code in the
- * PATENTS file, you can obtain it at www.aomedia.org/license/patent.
- */
-/*
-* Copyright(c) 2019 Intel Corporation
-* SPDX - License - Identifier: BSD - 2 - Clause - Patent
-*/
+ * PATENTS file, you can obtain it at www.aomedia.org/license/patent. */
+/*!< Copyright(c) 2019 Intel Corporation
+* SPDX - License - Identifier: BSD - 2 - Clause - Patent */
 
 #include <assert.h>
 #include <limits.h>
@@ -24,7 +20,7 @@
 #define DEBUG_SCALING 0
 #define DIVIDE_AND_ROUND(x, y) (((x) + ((y) >> 1)) / (y))
 
-// Filters for factor of 2 downsampling.
+/*!< Filters for factor of 2 downsampling. */
 static const int16_t av1_down2_symeven_half_filter[] = {56, 12, -3, -1};
 static const int16_t av1_down2_symodd_half_filter[]  = {64, 35, 0, -3};
 
@@ -186,9 +182,8 @@ static int get_down2_steps(int in_length, int out_length) {
         ++steps;
         in_length = proj_in_length;
         if (in_length == 1) {
-            // Special case: we break because any further calls to get_down2_length()
-            // with be with length == 1, which return 1, resulting in an infinite
-            // loop.
+            /*!< Special case: we break because any further calls to get_down2_length()
+             *   with be with length == 1, which return 1, resulting in an infinite loop. */
             break;
         }
     }
@@ -196,7 +191,7 @@ static int get_down2_steps(int in_length, int out_length) {
 }
 
 static void down2_symeven(const uint8_t *const input, int length, uint8_t *output) {
-    // Actual filter len = 2 * filter_len_half.
+    /*!< Actual filter len = 2 * filter_len_half. */
     const int16_t *filter          = av1_down2_symeven_half_filter;
     const int      filter_len_half = sizeof(av1_down2_symeven_half_filter) / 2;
     int            i, j;
@@ -206,7 +201,7 @@ static void down2_symeven(const uint8_t *const input, int length, uint8_t *outpu
     l1 += (l1 & 1);
     l2 += (l2 & 1);
     if (l1 > l2) {
-        // Short input length.
+        /*!< Short input length. */
         for (i = 0; i < length; i += 2) {
             int sum = (1 << (FILTER_BITS - 1));
             for (j = 0; j < filter_len_half; ++j) {
@@ -216,7 +211,7 @@ static void down2_symeven(const uint8_t *const input, int length, uint8_t *outpu
             *optr++ = clip_pixel(sum);
         }
     } else {
-        // Initial part.
+        /*!< Initial part. */
         for (i = 0; i < l1; i += 2) {
             int sum = (1 << (FILTER_BITS - 1));
             for (j = 0; j < filter_len_half; ++j) {
@@ -225,7 +220,7 @@ static void down2_symeven(const uint8_t *const input, int length, uint8_t *outpu
             sum >>= FILTER_BITS;
             *optr++ = clip_pixel(sum);
         }
-        // Middle part.
+        /*!< Middle part. */
         for (; i < l2; i += 2) {
             int sum = (1 << (FILTER_BITS - 1));
             for (j = 0; j < filter_len_half; ++j) {
@@ -234,7 +229,7 @@ static void down2_symeven(const uint8_t *const input, int length, uint8_t *outpu
             sum >>= FILTER_BITS;
             *optr++ = clip_pixel(sum);
         }
-        // End part.
+        /*!< End part. */
         for (; i < length; i += 2) {
             int sum = (1 << (FILTER_BITS - 1));
             for (j = 0; j < filter_len_half; ++j) {
@@ -247,7 +242,7 @@ static void down2_symeven(const uint8_t *const input, int length, uint8_t *outpu
 }
 
 static void down2_symodd(const uint8_t *const input, int length, uint8_t *output) {
-    // Actual filter len = 2 * filter_len_half - 1.
+    /*!< Actual filter len = 2 * filter_len_half - 1. */
     const int16_t *filter          = av1_down2_symodd_half_filter;
     const int      filter_len_half = sizeof(av1_down2_symodd_half_filter) / 2;
     int            i, j;
@@ -257,7 +252,7 @@ static void down2_symodd(const uint8_t *const input, int length, uint8_t *output
     l1 += (l1 & 1);
     l2 += (l2 & 1);
     if (l1 > l2) {
-        // Short input length.
+        /*!< Short input length. */
         for (i = 0; i < length; i += 2) {
             int sum = (1 << (FILTER_BITS - 1)) + input[i] * filter[0];
             for (j = 1; j < filter_len_half; ++j) {
@@ -269,7 +264,7 @@ static void down2_symodd(const uint8_t *const input, int length, uint8_t *output
             *optr++ = clip_pixel(sum);
         }
     } else {
-        // Initial part.
+        /*!< Initial part. */
         for (i = 0; i < l1; i += 2) {
             int sum = (1 << (FILTER_BITS - 1)) + input[i] * filter[0];
             for (j = 1; j < filter_len_half; ++j) {
@@ -278,7 +273,7 @@ static void down2_symodd(const uint8_t *const input, int length, uint8_t *output
             sum >>= FILTER_BITS;
             *optr++ = clip_pixel(sum);
         }
-        // Middle part.
+        /*!< Middle part. */
         for (; i < l2; i += 2) {
             int sum = (1 << (FILTER_BITS - 1)) + input[i] * filter[0];
             for (j = 1; j < filter_len_half; ++j) {
@@ -287,7 +282,7 @@ static void down2_symodd(const uint8_t *const input, int length, uint8_t *output
             sum >>= FILTER_BITS;
             *optr++ = clip_pixel(sum);
         }
-        // End part.
+        /*!< End part. */
         for (; i < length; i += 2) {
             int sum = (1 << (FILTER_BITS - 1)) + input[i] * filter[0];
             for (j = 1; j < filter_len_half; ++j) {
@@ -301,10 +296,10 @@ static void down2_symodd(const uint8_t *const input, int length, uint8_t *output
 
 static const InterpKernel *choose_interp_filter(int in_length, int out_length) {
     int out_length16 = out_length * 16;
-    // TODO: use original filter in libaom
+    /*!< TODO: use original filter in libaom */
     if (out_length16 >= in_length * 16) return filteredinterp_filters1000;
     if (out_length16 >= in_length * 16)
-        return filteredinterp_filters875; // wrong
+        return filteredinterp_filters875; /*!< wrong */
     else if (out_length16 >= in_length * 13)
         return filteredinterp_filters875;
     else if (out_length16 >= in_length * 11)
@@ -357,7 +352,7 @@ static void interpolate_core(const uint8_t *const input, int in_length, uint8_t 
             *optr++ = clip_pixel(ROUND_POWER_OF_TWO(sum, FILTER_BITS));
         }
     } else {
-        // Initial part.
+        /*!< Initial part. */
         for (x = 0, y = offset + RS_SCALE_EXTRA_OFF; x < x1; ++x, y += delta) {
             int_pel               = y >> RS_SCALE_SUBPEL_BITS;
             sub_pel               = (y >> RS_SCALE_EXTRA_BITS) & RS_SUBPEL_MASK;
@@ -367,7 +362,7 @@ static void interpolate_core(const uint8_t *const input, int in_length, uint8_t 
                 sum += filter[k] * input[AOMMAX(int_pel - interp_taps / 2 + 1 + k, 0)];
             *optr++ = clip_pixel(ROUND_POWER_OF_TWO(sum, FILTER_BITS));
         }
-        // Middle part.
+        /*!< Middle part. */
         for (; x <= x2; ++x, y += delta) {
             int_pel               = y >> RS_SCALE_SUBPEL_BITS;
             sub_pel               = (y >> RS_SCALE_EXTRA_BITS) & RS_SUBPEL_MASK;
@@ -377,7 +372,7 @@ static void interpolate_core(const uint8_t *const input, int in_length, uint8_t 
                 sum += filter[k] * input[int_pel - interp_taps / 2 + 1 + k];
             *optr++ = clip_pixel(ROUND_POWER_OF_TWO(sum, FILTER_BITS));
         }
-        // End part.
+        /*!< End part. */
         for (; x < out_length; ++x, y += delta) {
             int_pel               = y >> RS_SCALE_SUBPEL_BITS;
             sub_pel               = (y >> RS_SCALE_EXTRA_BITS) & RS_SUBPEL_MASK;
@@ -525,7 +520,7 @@ static void highbd_interpolate_core(const uint16_t *const input, int in_length, 
             *optr++ = clip_pixel_highbd(ROUND_POWER_OF_TWO(sum, FILTER_BITS), bd);
         }
     } else {
-        // Initial part.
+        /*!< Initial part. */
         for (x = 0, y = offset + RS_SCALE_EXTRA_OFF; x < x1; ++x, y += delta) {
             int_pel               = y >> RS_SCALE_SUBPEL_BITS;
             sub_pel               = (y >> RS_SCALE_EXTRA_BITS) & RS_SUBPEL_MASK;
@@ -535,7 +530,7 @@ static void highbd_interpolate_core(const uint16_t *const input, int in_length, 
                 sum += filter[k] * input[AOMMAX(int_pel - interp_taps / 2 + 1 + k, 0)];
             *optr++ = clip_pixel_highbd(ROUND_POWER_OF_TWO(sum, FILTER_BITS), bd);
         }
-        // Middle part.
+        /*!< Middle part. */
         for (; x <= x2; ++x, y += delta) {
             int_pel               = y >> RS_SCALE_SUBPEL_BITS;
             sub_pel               = (y >> RS_SCALE_EXTRA_BITS) & RS_SUBPEL_MASK;
@@ -545,7 +540,7 @@ static void highbd_interpolate_core(const uint16_t *const input, int in_length, 
                 sum += filter[k] * input[int_pel - interp_taps / 2 + 1 + k];
             *optr++ = clip_pixel_highbd(ROUND_POWER_OF_TWO(sum, FILTER_BITS), bd);
         }
-        // End part.
+        /*!< End part. */
         for (; x < out_length; ++x, y += delta) {
             int_pel               = y >> RS_SCALE_SUBPEL_BITS;
             sub_pel               = (y >> RS_SCALE_EXTRA_BITS) & RS_SUBPEL_MASK;
@@ -568,7 +563,7 @@ static void highbd_interpolate(const uint16_t *const input, int in_length, uint1
 
 static void highbd_down2_symeven(const uint16_t *const input, int length, uint16_t *output,
                                  int bd) {
-    // Actual filter len = 2 * filter_len_half.
+    /*!< Actual filter len = 2 * filter_len_half. */
     static const int16_t *filter          = av1_down2_symeven_half_filter;
     const int             filter_len_half = sizeof(av1_down2_symeven_half_filter) / 2;
     int                   i, j;
@@ -578,7 +573,7 @@ static void highbd_down2_symeven(const uint16_t *const input, int length, uint16
     l1 += (l1 & 1);
     l2 += (l2 & 1);
     if (l1 > l2) {
-        // Short input length.
+        /*!< Short input length. */
         for (i = 0; i < length; i += 2) {
             int sum = (1 << (FILTER_BITS - 1));
             for (j = 0; j < filter_len_half; ++j) {
@@ -588,7 +583,7 @@ static void highbd_down2_symeven(const uint16_t *const input, int length, uint16
             *optr++ = clip_pixel_highbd(sum, bd);
         }
     } else {
-        // Initial part.
+        /*!< Initial part. */
         for (i = 0; i < l1; i += 2) {
             int sum = (1 << (FILTER_BITS - 1));
             for (j = 0; j < filter_len_half; ++j) {
@@ -597,7 +592,7 @@ static void highbd_down2_symeven(const uint16_t *const input, int length, uint16
             sum >>= FILTER_BITS;
             *optr++ = clip_pixel_highbd(sum, bd);
         }
-        // Middle part.
+        /*!< Middle part. */
         for (; i < l2; i += 2) {
             int sum = (1 << (FILTER_BITS - 1));
             for (j = 0; j < filter_len_half; ++j) {
@@ -606,7 +601,7 @@ static void highbd_down2_symeven(const uint16_t *const input, int length, uint16
             sum >>= FILTER_BITS;
             *optr++ = clip_pixel_highbd(sum, bd);
         }
-        // End part.
+        /*!< End part. */
         for (; i < length; i += 2) {
             int sum = (1 << (FILTER_BITS - 1));
             for (j = 0; j < filter_len_half; ++j) {
@@ -619,7 +614,7 @@ static void highbd_down2_symeven(const uint16_t *const input, int length, uint16
 }
 
 static void highbd_down2_symodd(const uint16_t *const input, int length, uint16_t *output, int bd) {
-    // Actual filter len = 2 * filter_len_half - 1.
+    /*!< Actual filter len = 2 * filter_len_half - 1. */
     static const int16_t *filter          = av1_down2_symodd_half_filter;
     const int             filter_len_half = sizeof(av1_down2_symodd_half_filter) / 2;
     int                   i, j;
@@ -629,7 +624,7 @@ static void highbd_down2_symodd(const uint16_t *const input, int length, uint16_
     l1 += (l1 & 1);
     l2 += (l2 & 1);
     if (l1 > l2) {
-        // Short input length.
+        /*!< Short input length. */
         for (i = 0; i < length; i += 2) {
             int sum = (1 << (FILTER_BITS - 1)) + input[i] * filter[0];
             for (j = 1; j < filter_len_half; ++j) {
@@ -639,7 +634,7 @@ static void highbd_down2_symodd(const uint16_t *const input, int length, uint16_
             *optr++ = clip_pixel_highbd(sum, bd);
         }
     } else {
-        // Initial part.
+        /*!< Initial part. */
         for (i = 0; i < l1; i += 2) {
             int sum = (1 << (FILTER_BITS - 1)) + input[i] * filter[0];
             for (j = 1; j < filter_len_half; ++j) {
@@ -648,7 +643,7 @@ static void highbd_down2_symodd(const uint16_t *const input, int length, uint16_
             sum >>= FILTER_BITS;
             *optr++ = clip_pixel_highbd(sum, bd);
         }
-        // Middle part.
+        /*!< Middle part. */
         for (; i < l2; i += 2) {
             int sum = (1 << (FILTER_BITS - 1)) + input[i] * filter[0];
             for (j = 1; j < filter_len_half; ++j) {
@@ -657,7 +652,7 @@ static void highbd_down2_symodd(const uint16_t *const input, int length, uint16_
             sum >>= FILTER_BITS;
             *optr++ = clip_pixel_highbd(sum, bd);
         }
-        // End part.
+        /*!< End part. */
         for (; i < length; i += 2) {
             int sum = (1 << (FILTER_BITS - 1)) + input[i] * filter[0];
             for (j = 1; j < filter_len_half; ++j) {
@@ -947,21 +942,21 @@ EbErrorType av1_resize_and_extend_frame(const EbPictureBufferDesc *src, EbPictur
         EB_FREE(dst_buffer_highbd[2]);
     }
 
-    // TODO: extend frame borders
-    // use eb_extend_frame() instead
-    // aom_extend_frame_borders(dst, num_planes);
+    /*!< TODO: extend frame borders
+     *   use eb_extend_frame() instead
+     *   aom_extend_frame_borders(dst, num_planes); */
 
     return EB_ErrorNone;
 }
 
-// Generate a random number in the range [0, 32768).
+/*!< Generate a random number in the range [0, 32768). */
 static INLINE unsigned int lcg_rand16(unsigned int *state) {
     *state = (unsigned int)(*state * 1103515245ULL + 12345);
     return *state / 65536 % 32768;
 }
 
-// Given the superres configurations and the frame type, determine the denominator and
-// encoding resolution
+/*!< Given the superres configurations and the frame type, determine the denominator and
+ *   encoding resolution */
 void calc_superres_params(superres_params_type *spr_params, SequenceControlSet *scs_ptr,
                           PictureParentControlSet *pcs_ptr) {
     spr_params->superres_denom = SCALE_NUMERATOR;
@@ -971,17 +966,17 @@ void calc_superres_params(superres_params_type *spr_params, SequenceControlSet *
     uint8_t superres_mode = scs_ptr->static_config.superres_mode;
     uint8_t cfg_denom     = scs_ptr->static_config.superres_denom;
     uint8_t cfg_kf_denom  = scs_ptr->static_config.superres_kf_denom;
-    //uint8_t superres_qthres = scs_ptr->static_config.superres_qthres;
+    /*!<uint8_t superres_qthres = scs_ptr->static_config.superres_qthres;
 
-    // For now, super-resolution can only be enabled for key frames or intra only frames
-    // In addition, it can only be enabled in case allow_intrabc is disabled and
-    // loop restoration is enabled
+    /*!< For now, super-resolution can only be enabled for key frames or intra only frames
+     *   In addition, it can only be enabled in case allow_intrabc is disabled and
+     *   loop restoration is enabled */
     if ((frm_hdr->frame_type != KEY_FRAME &&
         frm_hdr->frame_type != INTRA_ONLY_FRAME) ||
         frm_hdr->allow_intrabc ||
         !scs_ptr->seq_header.enable_restoration) { return; }
 
-    // remove assertion when rest of the modes are implemented
+    /*!< remove assertion when rest of the modes are implemented */
     assert(superres_mode <= SUPERRES_RANDOM);
 
     switch (superres_mode) {
@@ -993,13 +988,13 @@ void calc_superres_params(superres_params_type *spr_params, SequenceControlSet *
             spr_params->superres_denom = cfg_denom;
         break;
     case SUPERRES_RANDOM: spr_params->superres_denom = (uint8_t)(lcg_rand16(&seed) % 9 + 8); break;
-    //SUPERRES_QTHRESH and SUPERRES_AUTO are not yet implemented
+    /*!< SUPERRES_QTHRESH and SUPERRES_AUTO are not yet implemented */
     case SUPERRES_QTHRESH: break;
     case SUPERRES_AUTO: break;
     default: break;
     }
 
-    // only encoding width is adjusted
+    /*!< only encoding width is adjusted */
     calculate_scaled_size_helper(&spr_params->encoding_width, spr_params->superres_denom);
 }
 
@@ -1033,14 +1028,14 @@ EbErrorType scale_pcs_params(SequenceControlSet *scs_ptr, PictureParentControlSe
                              uint16_t source_height) {
     Av1Common *cm = pcs_ptr->av1_cm;
 
-    // frame sizes
+    /*!< frame sizes */
     cm->frm_size.frame_width          = spr_params.encoding_width;
     cm->frm_size.frame_height         = spr_params.encoding_height;
     cm->frm_size.render_width         = source_width;
     cm->frm_size.render_height        = source_height;
     cm->frm_size.superres_denominator = spr_params.superres_denom;
 
-    // align width and height to be a multiple of 8
+    /*!< align width and height to be a multiple of 8 */
     uint16_t aligned_width  = (uint16_t)ALIGN_POWER_OF_TWO(spr_params.encoding_width, 3);
     uint16_t aligned_height = (uint16_t)ALIGN_POWER_OF_TWO(spr_params.encoding_height, 3);
 
@@ -1048,25 +1043,25 @@ EbErrorType scale_pcs_params(SequenceControlSet *scs_ptr, PictureParentControlSe
            "Downscaled width needs to be a multiple of 8 "
            "(otherwise not yet implemented)");
 
-    // change frame width and height params in pcs
+    /*!< change frame width and height params in pcs */
     pcs_ptr->frame_width  = spr_params.encoding_width;
     pcs_ptr->frame_height = spr_params.encoding_height;
 
     pcs_ptr->aligned_width  = aligned_width;
     pcs_ptr->aligned_height = aligned_height;
 
-    // number of SBs
+    /*!< number of SBs */
     const uint16_t picture_sb_width =
         (uint16_t)((aligned_width + scs_ptr->sb_sz - 1) / scs_ptr->sb_sz);
     const uint16_t picture_sb_height =
         (uint16_t)((aligned_height + scs_ptr->sb_sz - 1) / scs_ptr->sb_sz);
 
-    pcs_ptr->picture_sb_width  = picture_sb_width; // TODO: use this instead of re-computing
+    pcs_ptr->picture_sb_width  = picture_sb_width; /*!< TODO: use this instead of re-computing */
     pcs_ptr->picture_sb_height = picture_sb_height;
 
     pcs_ptr->sb_total_count = picture_sb_width * picture_sb_height;
 
-    // mi params
+    /*!< mi params */
     cm->mi_stride = picture_sb_width * (BLOCK_SIZE_64 / 4);
     cm->mi_cols   = aligned_width >> MI_SIZE_LOG2;
     cm->mi_rows   = aligned_height >> MI_SIZE_LOG2;
@@ -1075,7 +1070,7 @@ EbErrorType scale_pcs_params(SequenceControlSet *scs_ptr, PictureParentControlSe
         derive_input_resolution(&pcs_ptr->input_resolution,
                                 spr_params.encoding_width * spr_params.encoding_height);
 
-        // create new picture level sb_params and sb_geom
+        /*!< create new picture level sb_params and sb_geom */
         sb_params_init_pcs(scs_ptr, pcs_ptr);
 
         sb_geom_init_pcs(scs_ptr, pcs_ptr);
@@ -1087,20 +1082,20 @@ EbErrorType scale_pcs_params(SequenceControlSet *scs_ptr, PictureParentControlSe
 void init_resize_picture(SequenceControlSet *scs_ptr, PictureParentControlSet *pcs_ptr) {
     EbPictureBufferDesc *input_picture_ptr = pcs_ptr->enhanced_picture_ptr;
 
-    superres_params_type spr_params = {input_picture_ptr->width, // encoding_width
-                                       input_picture_ptr->height, // encoding_height
+    superres_params_type spr_params = {input_picture_ptr->width, /*!< encoding_width */
+                                       input_picture_ptr->height, /*!< encoding_height */
                                        scs_ptr->static_config.superres_mode};
 
-    // determine super-resolution parameters - encoding resolution
-    // given configs and frame type
+    /*!< determine super-resolution parameters - encoding resolution
+     *   given configs and frame type */
     calc_superres_params(&spr_params, scs_ptr, pcs_ptr);
 
     if (spr_params.superres_denom != SCALE_NUMERATOR) {
 
-        scs_ptr->seq_header.enable_superres = 1; // enable sequence level super-res flag
-                                                 // if super-res is ON for any frame
+        scs_ptr->seq_header.enable_superres = 1; /*!< enable sequence level super-res flag */
+                                                 /*!< if super-res is ON for any frame */
 
-        // Allocate downsampled picture buffer descriptor
+        /*!< Allocate downsampled picture buffer descriptor */
         downscaled_source_buffer_desc_ctor(
             &pcs_ptr->enhanced_downscaled_picture_ptr, input_picture_ptr, spr_params);
 
@@ -1108,7 +1103,7 @@ void init_resize_picture(SequenceControlSet *scs_ptr, PictureParentControlSet *p
         const uint32_t ss_x       = scs_ptr->subsampling_x;
         const uint32_t ss_y       = scs_ptr->subsampling_y;
 
-        // downsample picture buffer
+        /*!< downsample picture buffer */
         av1_resize_and_extend_frame(input_picture_ptr,
                                     pcs_ptr->enhanced_downscaled_picture_ptr,
                                     pcs_ptr->enhanced_downscaled_picture_ptr->bit_depth,
@@ -1116,8 +1111,8 @@ void init_resize_picture(SequenceControlSet *scs_ptr, PictureParentControlSet *p
                                     ss_x,
                                     ss_y);
 
-        // use downscaled picture instead of original res for mode decision, encoding loop etc
-        // after temporal filtering and motion estimation
+        /*!< use downscaled picture instead of original res for mode decision, encoding loop etc
+         *   after temporal filtering and motion estimation */
         pcs_ptr->enhanced_picture_ptr = pcs_ptr->enhanced_downscaled_picture_ptr;
 
         pcs_ptr->frame_superres_enabled = EB_TRUE;

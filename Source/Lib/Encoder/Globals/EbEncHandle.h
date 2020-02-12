@@ -1,7 +1,5 @@
-/*
-* Copyright(c) 2019 Intel Corporation
-* SPDX - License - Identifier: BSD - 2 - Clause - Patent
-*/
+/*!< Copyright(c) 2019 Intel Corporation
+ * SPDX - License - Identifier: BSD - 2 - Clause - Patent */
 
 #ifndef EbEncHandle_h
 #define EbEncHandle_h
@@ -18,41 +16,41 @@ struct _EbThreadContext {
     EbPtr   priv;
 };
 
-/**************************************
- * Component Private Data
- **************************************/
+/**************************************/
+/*!< Component Private Data */
+/**************************************/
 struct _EbEncHandle {
     EbDctor dctor;
-    // Encode Instances & Compute Segments
+    /*!< Encode Instances & Compute Segments */
     uint32_t encode_instance_total_count;
     uint32_t compute_segments_total_count_array;
 
-    // Config Set Counts
+    /*!< Config Set Counts */
     uint32_t scs_pool_total_count;
 
-    // Full Results Count
+    /*!< Full Results Count */
     uint32_t pcs_pool_total_count;
 
-    // Picture Buffer Count
+    /*!< Picture Buffer Count */
     uint32_t ref_pic_pool_total_count;
 
-    // Config Set Pool & Active Array
-    EbSystemResource *             scs_pool_ptr; // sequence_control_set_pool
+    /*!< Config Set Pool & Active Array */
+    EbSystemResource *             scs_pool_ptr; /*!< sequence_control_set_pool */
     EbSequenceControlSetInstance **scs_instance_array;
 
-    // Full Results
+    /*!< Full Results */
     EbSystemResource **picture_control_set_pool_ptr_array;
 
-    //ParentControlSet
+    /*!< ParentControlSet */
     EbSystemResource **picture_parent_control_set_pool_ptr_array;
-    // Picture Buffers
+    /*!< Picture Buffers */
     EbSystemResource **reference_picture_pool_ptr_array;
     EbSystemResource **pa_reference_picture_pool_ptr_array;
 
-    // Overlay input picture
+    /*!< Overlay input picture */
     EbSystemResource **overlay_input_picture_pool_ptr_array;
 
-    // Thread Handles
+    /*!< Thread Handles */
     EbHandle  resource_coordination_thread_handle;
     EbHandle *picture_analysis_thread_handle_array;
     EbHandle  picture_decision_thread_handle;
@@ -70,7 +68,7 @@ struct _EbEncHandle {
 
     EbHandle packetization_thread_handle;
 
-    // Contexts
+    /*!< Contexts */
     EbThreadContext * resource_coordination_context_ptr;
     EbThreadContext **picture_analysis_context_ptr_array;
     EbThreadContext * picture_decision_context_ptr;
@@ -87,7 +85,7 @@ struct _EbEncHandle {
     EbThreadContext **rest_context_ptr_array;
     EbThreadContext * packetization_context_ptr;
 
-    // System Resource Managers
+    /*!< System Resource Managers */
     EbSystemResource * input_buffer_resource_ptr;
     EbSystemResource **output_stream_buffer_resource_ptr_array;
     EbSystemResource **output_recon_buffer_resource_ptr_array;
@@ -107,7 +105,7 @@ struct _EbEncHandle {
     EbSystemResource * cdef_results_resource_ptr;
     EbSystemResource * rest_results_resource_ptr;
 
-    // Callbacks
+    /*!< Callbacks */
     EbCallback **app_callback_ptr_array;
 
     EbFifo *input_buffer_producer_fifo_ptr;

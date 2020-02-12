@@ -1,7 +1,5 @@
-/*
-* Copyright(c) 2019 Intel Corporation
-* SPDX - License - Identifier: BSD - 2 - Clause - Patent
-*/
+/*!< Copyright(c) 2019 Intel Corporation
+ * SPDX - License - Identifier: BSD - 2 - Clause - Patent */
 
 #include <stdlib.h>
 #include <string.h>
@@ -18,22 +16,22 @@ void initialize_samples_neighboring_reference_picture16_bit(EbByte   recon_sampl
     uint16_t *recon_samples_ptr;
     uint16_t  sample_count;
 
-    // 1. zero out the top row
+    /*!< 1. zero out the top row */
     recon_samples_ptr =
         (uint16_t *)recon_samples_buffer_ptr + (top_padding - 1) * stride + left_padding - 1;
     EB_MEMSET((uint8_t *)recon_samples_ptr, 0, sizeof(uint16_t) * (1 + recon_width + 1));
 
-    // 2. zero out the bottom row
+    /*!< 2. zero out the bottom row */
     recon_samples_ptr = (uint16_t *)recon_samples_buffer_ptr +
                         (top_padding + recon_height) * stride + left_padding - 1;
     EB_MEMSET((uint8_t *)recon_samples_ptr, 0, sizeof(uint16_t) * (1 + recon_width + 1));
 
-    // 3. zero out the left column
+    /*!< 3. zero out the left column */
     recon_samples_ptr =
         (uint16_t *)recon_samples_buffer_ptr + top_padding * stride + left_padding - 1;
     for (sample_count = 0; sample_count < recon_height; sample_count++)
         recon_samples_ptr[sample_count * stride] = 0;
-    // 4. zero out the right column
+    /*!< 4. zero out the right column */
     recon_samples_ptr =
         (uint16_t *)recon_samples_buffer_ptr + top_padding * stride + left_padding + recon_width;
     for (sample_count = 0; sample_count < recon_height; sample_count++)
@@ -48,20 +46,20 @@ void initialize_samples_neighboring_reference_picture_8bit(EbByte   recon_sample
     uint8_t *recon_samples_ptr;
     uint16_t sample_count;
 
-    // 1. zero out the top row
+    /*!< 1. zero out the top row */
     recon_samples_ptr = recon_samples_buffer_ptr + (top_padding - 1) * stride + left_padding - 1;
     EB_MEMSET(recon_samples_ptr, 0, sizeof(uint8_t) * (1 + recon_width + 1));
 
-    // 2. zero out the bottom row
+    /*!< 2. zero out the bottom row */
     recon_samples_ptr =
         recon_samples_buffer_ptr + (top_padding + recon_height) * stride + left_padding - 1;
     EB_MEMSET(recon_samples_ptr, 0, sizeof(uint8_t) * (1 + recon_width + 1));
 
-    // 3. zero out the left column
+    /*!< 3. zero out the left column */
     recon_samples_ptr = recon_samples_buffer_ptr + top_padding * stride + left_padding - 1;
     for (sample_count = 0; sample_count < recon_height; sample_count++)
         recon_samples_ptr[sample_count * stride] = 0;
-    // 4. zero out the right column
+    /*!< 4. zero out the right column */
     recon_samples_ptr =
         recon_samples_buffer_ptr + top_padding * stride + left_padding + recon_width;
     for (sample_count = 0; sample_count < recon_height; sample_count++)
@@ -130,12 +128,12 @@ static void eb_reference_object_dctor(EbPtr p) {
     EB_DESTROY_MUTEX(obj->referenced_area_mutex);
 }
 
-/*****************************************
+/*!< ****************************************
  * eb_picture_buffer_desc_ctor
  *  Initializes the Buffer Descriptor's
  *  values that are fixed for the life of
  *  the descriptor.
- *****************************************/
+ **************************************** */
 EbErrorType eb_reference_object_ctor(EbReferenceObject *reference_object,
                                      EbPtr              object_init_data_ptr) {
     EbPictureBufferDescInitData *picture_buffer_desc_init_data_ptr =
@@ -144,9 +142,9 @@ EbErrorType eb_reference_object_ctor(EbReferenceObject *reference_object,
         *picture_buffer_desc_init_data_ptr;
 
     reference_object->dctor = eb_reference_object_dctor;
-    //TODO:12bit
+    /*!< TODO:12bit */
     if (picture_buffer_desc_init_data_16bit_ptr.bit_depth == EB_10BIT) {
-        // Hsan: set split_mode to 0 to construct the packed reference buffer (used @ EP)
+        /*!< Hsan: set split_mode to 0 to construct the packed reference buffer (used @ EP) */
         picture_buffer_desc_init_data_16bit_ptr.split_mode = EB_FALSE;
         EB_NEW(reference_object->reference_picture16bit,
                eb_picture_buffer_desc_ctor,
@@ -157,13 +155,13 @@ EbErrorType eb_reference_object_ctor(EbReferenceObject *reference_object,
             &picture_buffer_desc_init_data_16bit_ptr,
             picture_buffer_desc_init_data_16bit_ptr.bit_depth);
 
-        // Hsan: set split_mode to 1 to construct the unpacked reference buffer (used @ MD)
+        /*!< Hsan: set split_mode to 1 to construct the unpacked reference buffer (used @ MD) */
         picture_buffer_desc_init_data_16bit_ptr.split_mode = EB_TRUE;
         EB_NEW(reference_object->reference_picture,
                eb_picture_buffer_desc_ctor,
                (EbPtr)&picture_buffer_desc_init_data_16bit_ptr);
     } else {
-        // Hsan: set split_mode to 0 to as 8BIT input
+        /*!< Hsan: set split_mode to 0 to as 8BIT input */
         picture_buffer_desc_init_data_ptr->split_mode = EB_FALSE;
         EB_NEW(reference_object->reference_picture,
                eb_picture_buffer_desc_ctor,
@@ -175,7 +173,7 @@ EbErrorType eb_reference_object_ctor(EbReferenceObject *reference_object,
             picture_buffer_desc_init_data_16bit_ptr.bit_depth);
     }
     if (picture_buffer_desc_init_data_ptr->mfmv) {
-        //MFMV map is 8x8 based.
+        /*!< MFMV map is 8x8 based. */
         uint32_t  mi_rows  = reference_object->reference_picture->height >> MI_SIZE_LOG2;
         uint32_t  mi_cols  = reference_object->reference_picture->width >> MI_SIZE_LOG2;
         const int mem_size = ((mi_rows + 1) >> 1) * ((mi_cols + 1) >> 1);
@@ -205,12 +203,12 @@ static void eb_pa_reference_object_dctor(EbPtr p) {
     EB_DELETE(obj->sixteenth_filtered_picture_ptr);
 }
 
-/*****************************************
+/*!< ****************************************
  * eb_pa_reference_object_ctor
  *  Initializes the Buffer Descriptor's
  *  values that are fixed for the life of
  *  the descriptor.
- *****************************************/
+ **************************************** */
 EbErrorType eb_pa_reference_object_ctor(EbPaReferenceObject *pa_ref_obj_,
                                         EbPtr                object_init_data_ptr) {
     EbPictureBufferDescInitData *picture_buffer_desc_init_data_ptr =
@@ -218,24 +216,24 @@ EbErrorType eb_pa_reference_object_ctor(EbPaReferenceObject *pa_ref_obj_,
 
     pa_ref_obj_->dctor = eb_pa_reference_object_dctor;
 
-    // Reference picture constructor
+    /*!< Reference picture constructor */
     EB_NEW(pa_ref_obj_->input_padded_picture_ptr,
            eb_picture_buffer_desc_ctor,
            (EbPtr)picture_buffer_desc_init_data_ptr);
-    // Quarter Decim reference picture constructor
+    /*!< Quarter Decim reference picture constructor */
     EB_NEW(pa_ref_obj_->quarter_decimated_picture_ptr,
            eb_picture_buffer_desc_ctor,
            (EbPtr)(picture_buffer_desc_init_data_ptr + 1));
     EB_NEW(pa_ref_obj_->sixteenth_decimated_picture_ptr,
            eb_picture_buffer_desc_ctor,
            (EbPtr)(picture_buffer_desc_init_data_ptr + 2));
-    // Quarter Filtered reference picture constructor
+    /*!< Quarter Filtered reference picture constructor */
     if ((picture_buffer_desc_init_data_ptr + 1)->down_sampled_filtered) {
         EB_NEW(pa_ref_obj_->quarter_filtered_picture_ptr,
                eb_picture_buffer_desc_ctor,
                (EbPtr)(picture_buffer_desc_init_data_ptr + 1));
     }
-    // Sixteenth Filtered reference picture constructor
+    /*!< Sixteenth Filtered reference picture constructor */
     if ((picture_buffer_desc_init_data_ptr + 2)->down_sampled_filtered) {
         EB_NEW(pa_ref_obj_->sixteenth_filtered_picture_ptr,
                eb_picture_buffer_desc_ctor,

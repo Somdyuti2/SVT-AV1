@@ -1,13 +1,11 @@
-/*
- * Copyright (c) 2018, Alliance for Open Media. All rights reserved
+/*!< Copyright (c) 2018, Alliance for Open Media. All rights reserved
  *
  * This source code is subject to the terms of the BSD 2 Clause License and
  * the Alliance for Open Media Patent License 1.0. If the BSD 2 Clause License
  * was not distributed with this source code in the LICENSE file, you can
  * obtain it at www.aomedia.org/license/software. If the Alliance for Open
  * Media Patent License 1.0 was not distributed with this source code in the
- * PATENTS file, you can obtain it at www.aomedia.org/license/patent.
- */
+ * PATENTS file, you can obtain it at www.aomedia.org/license/patent. */
 
 #include <assert.h>
 #include <immintrin.h>
@@ -107,12 +105,12 @@ static INLINE __m256i wiener_convolve_v16_tap7(const __m256i coeffs[2], const __
     return dst;
 }
 
-// Note: If this function crash in Windows, please pay attention to the pointer
-// filter_x, which could be overridden by other instructions. It's a bug from
-// Visual Studio compiler. Please adjust the positions of the following 2
-// instructions randomly to work around.
-// 1. const __m128i coeffs_x = xx_loadu_128(filter_x);
-// 2. const int cnt_zero_coef = calc_zero_coef(filter_x, filter_y);
+/*!< Note: If this function crash in Windows, please pay attention to the pointer
+ *   filter_x, which could be overridden by other instructions. It's a bug from
+ *   Visual Studio compiler. Please adjust the positions of the following 2
+ *   instructions randomly to work around.
+ *   1. const __m128i coeffs_x = xx_loadu_128(filter_x);
+ *   2. const int cnt_zero_coef = calc_zero_coef(filter_x, filter_y); */
 void eb_av1_wiener_convolve_add_src_avx2(const uint8_t* const src, const ptrdiff_t src_stride,
                                          uint8_t* const dst, const ptrdiff_t dst_stride,
                                          const int16_t* const filter_x,
@@ -129,8 +127,8 @@ void eb_av1_wiener_convolve_add_src_avx2(const uint8_t* const src, const ptrdiff
     const __m256i  clamp_high = _mm256_set1_epi16(WIENER_CLAMP_LIMIT(round_0, bd) - 1);
     const __m128i  zero_128   = _mm_setzero_si128();
     const __m128i  offset_0   = _mm_insert_epi16(zero_128, 1 << FILTER_BITS, 3);
-    // Note: Don't adjust the position of the following instruction.
-    // Please see comments on top of this function.
+    /*!< Note: Don't adjust the position of the following instruction.
+     *   Please see comments on top of this function. */
     const __m128i coeffs_x        = xx_loadu_128(filter_x);
     const __m128i coeffs_y        = _mm_add_epi16(xx_loadu_128(filter_y), offset_0);
     const __m256i filter_coeffs_y = _mm256_broadcastsi128_si256(coeffs_y);
@@ -147,8 +145,8 @@ void eb_av1_wiener_convolve_add_src_avx2(const uint8_t* const src, const ptrdiff
     filt[0] = yy_load_256(filt1_global_avx);
     filt[1] = yy_load_256(filt2_global_avx);
 
-    // Note: Don't adjust the position of the following instruction.
-    // Please see comments on top of this function.
+    /*!< Note: Don't adjust the position of the following instruction.
+     *   Please see comments on top of this function. */
     const int cnt_zero_coef = calc_zero_coef(filter_x, filter_y);
 
     if (!cnt_zero_coef) {
@@ -158,9 +156,9 @@ void eb_av1_wiener_convolve_add_src_avx2(const uint8_t* const src, const ptrdiff
         filt[2] = yy_load_256(filt3_global_avx);
         filt[3] = yy_load_256(filt4_global_avx);
         populate_coeffs_8tap_avx2(coeffs_x, coeffs_h);
-        // coeffs 0 1 0 1 0 1 0 1
+        /*!< coeffs 0 1 0 1 0 1 0 1 */
         coeffs_v[0] = _mm256_shuffle_epi32(filter_coeffs_y, 0x00);
-        // coeffs 2 3 2 3 2 3 2 3
+        /*!< coeffs 2 3 2 3 2 3 2 3 */
         coeffs_v[1] = _mm256_shuffle_epi32(filter_coeffs_y, 0x55);
 
         width -= x;
@@ -373,9 +371,9 @@ void eb_av1_wiener_convolve_add_src_avx2(const uint8_t* const src, const ptrdiff
         src_ptr += src_stride + 1;
         filt[2] = yy_load_256(filt3_global_avx);
         populate_coeffs_6tap_avx2(coeffs_x, coeffs_h);
-        // coeffs 1 2 1 2 1 2 1 2
+        /*!< coeffs 1 2 1 2 1 2 1 2 */
         coeffs_v[0] = _mm256_shuffle_epi8(filter_coeffs_y, _mm256_set1_epi32(0x05040302u));
-        // coeffs 3 4 3 4 3 4 3 4
+        /*!< coeffs 3 4 3 4 3 4 3 4 */
         coeffs_v[1] = _mm256_shuffle_epi8(filter_coeffs_y, _mm256_set1_epi32(0x09080706u));
 
         width -= x;
@@ -547,9 +545,9 @@ void eb_av1_wiener_convolve_add_src_avx2(const uint8_t* const src, const ptrdiff
 
         src_ptr += 2 * src_stride + 2;
         populate_coeffs_4tap_avx2(coeffs_x, coeffs_h);
-        // coeffs 2 3 2 3 2 3 2 3
+        /*!< coeffs 2 3 2 3 2 3 2 3 */
         coeffs_v[0] = _mm256_shuffle_epi32(filter_coeffs_y, 0x55);
-        // coeffs 4 5 4 5 4 5 4 5
+        /*!< coeffs 4 5 4 5 4 5 4 5 */
         coeffs_v[1] = _mm256_shuffle_epi32(filter_coeffs_y, 0xaa);
 
         width -= x;
@@ -676,30 +674,30 @@ void eb_av1_wiener_convolve_add_src_avx2(const uint8_t* const src, const ptrdiff
     }
 }
 
-// 128-bit xmmwords are written as [ ... ] with the MSB on the left.
-// 256-bit ymmwords are written as two xmmwords, [ ... ][ ... ] with the MSB
-// on the left.
-// A row of, say, 8-bit pixels with values p0, p1, p2, ..., p30, p31 will be
-// loaded and stored as [ p31 ... p17 p16 ][ p15 ... p1 p0 ].
-
-// Exploiting the range of wiener filter coefficients,
-// horizontal filtering can be done in 16 bit intermediate precision.
-// The details are as follows :
-// Consider the horizontal wiener filter coefficients of the following form :
-//      [c0, C1, C2, 2^(FILTER_BITS) -2 * (c0 + C1 + C2), C2, C1, c0]
-// Subtracting  2^(FILTER_BITS) from the centre tap we get the following  :
-//      [c0, C1, C2,     -2 * (c0 + C1 + C2),             C2, C1, c0]
-// The sum of the product "c0 * p0 + C1 * p1 + C2 * p2 -2 * (c0 + C1 + C2) * p3
-// + C2 * p4 + C1 * p5 + c0 * p6" would be in the range of signed 16 bit
-// precision. Finally, after rounding the above result by round_0, we multiply
-// the centre pixel by 2^(FILTER_BITS - round_0) and add it to get the
-// horizontal filter output.
-
-// 128-bit xmmwords are written as [ ... ] with the MSB on the left.
-// 256-bit ymmwords are written as two xmmwords, [ ... ][ ... ] with the MSB
-// on the left.
-// A row of, say, 16-bit pixels with values p0, p1, p2, ..., p14, p15 will be
-// loaded and stored as [ p15 ... p9 p8 ][ p7 ... p1 p0 ].
+/*!< 128-bit xmmwords are written as [ ... ] with the MSB on the left.
+ *   256-bit ymmwords are written as two xmmwords, [ ... ][ ... ] with the MSB
+ *   on the left.
+ *   A row of, say, 8-bit pixels with values p0, p1, p2, ..., p30, p31 will be
+ *   loaded and stored as [ p31 ... p17 p16 ][ p15 ... p1 p0 ].
+ *
+ *   Exploiting the range of wiener filter coefficients,
+ *   horizontal filtering can be done in 16 bit intermediate precision.
+ *   The details are as follows :
+ *   Consider the horizontal wiener filter coefficients of the following form :
+ *        [c0, C1, C2, 2^(FILTER_BITS) -2 * (c0 + C1 + C2), C2, C1, c0]
+ *   Subtracting  2^(FILTER_BITS) from the centre tap we get the following  :
+ *        [c0, C1, C2,     -2 * (c0 + C1 + C2),             C2, C1, c0]
+ *   The sum of the product "c0 * p0 + C1 * p1 + C2 * p2 -2 * (c0 + C1 + C2) * p3
+ *   + C2 * p4 + C1 * p5 + c0 * p6" would be in the range of signed 16 bit
+ *   precision. Finally, after rounding the above result by round_0, we multiply
+ *   the centre pixel by 2^(FILTER_BITS - round_0) and add it to get the
+ *   horizontal filter output.
+ *
+ *   128-bit xmmwords are written as [ ... ] with the MSB on the left.
+ *   256-bit ymmwords are written as two xmmwords, [ ... ][ ... ] with the MSB
+ *   on the left.
+ *   A row of, say, 16-bit pixels with values p0, p1, p2, ..., p14, p15 will be
+ *   loaded and stored as [ p15 ... p9 p8 ][ p7 ... p1 p0 ]. */
 void eb_av1_highbd_wiener_convolve_add_src_avx2(
     const uint8_t* const src, const ptrdiff_t src_stride, uint8_t* const dst,
     const ptrdiff_t dst_stride, const int16_t* const filter_x, const int16_t* const filter_y,
@@ -718,40 +716,40 @@ void eb_av1_highbd_wiener_convolve_add_src_avx2(
     const __m128i zero_128 = _mm_setzero_si128();
     const __m256i zero_256 = _mm256_setzero_si256();
 
-    // Add an offset to account for the "add_src" part of the convolve function.
+    /*!< Add an offset to account for the "add_src" part of the convolve function. */
     const __m128i offset = _mm_insert_epi16(zero_128, 1 << FILTER_BITS, 3);
 
     const __m256i clamp_low = zero_256;
 
-    /* Horizontal filter */
+    /*!< Horizontal filter */
     {
         const __m256i clamp_high_ep =
             _mm256_set1_epi16(WIENER_CLAMP_LIMIT(conv_params->round_0, bd) - 1);
 
-        // coeffs [ f7 f6 f5 f4 f3 f2 f1 f0 ]
+        /*!< coeffs [ f7 f6 f5 f4 f3 f2 f1 f0 ] */
         const __m128i coeffs_x = _mm_add_epi16(xx_loadu_128(filter_x), offset);
 
-        // coeffs [ f3 f2 f3 f2 f1 f0 f1 f0 ]
+        /*!< coeffs [ f3 f2 f3 f2 f1 f0 f1 f0 ] */
         const __m128i coeffs_0123 = _mm_unpacklo_epi32(coeffs_x, coeffs_x);
-        // coeffs [ f7 f6 f7 f6 f5 f4 f5 f4 ]
+        /*!< coeffs [ f7 f6 f7 f6 f5 f4 f5 f4 ] */
         const __m128i coeffs_4567 = _mm_unpackhi_epi32(coeffs_x, coeffs_x);
 
-        // coeffs [ f1 f0 f1 f0 f1 f0 f1 f0 ]
+        /*!< coeffs [ f1 f0 f1 f0 f1 f0 f1 f0 ] */
         const __m128i coeffs_01_128 = _mm_unpacklo_epi64(coeffs_0123, coeffs_0123);
-        // coeffs [ f3 f2 f3 f2 f3 f2 f3 f2 ]
+        /*!< coeffs [ f3 f2 f3 f2 f3 f2 f3 f2 ] */
         const __m128i coeffs_23_128 = _mm_unpackhi_epi64(coeffs_0123, coeffs_0123);
-        // coeffs [ f5 f4 f5 f4 f5 f4 f5 f4 ]
+        /*!< coeffs [ f5 f4 f5 f4 f5 f4 f5 f4 ] */
         const __m128i coeffs_45_128 = _mm_unpacklo_epi64(coeffs_4567, coeffs_4567);
-        // coeffs [ f7 f6 f7 f6 f7 f6 f7 f6 ]
+        /*!< coeffs [ f7 f6 f7 f6 f7 f6 f7 f6 ] */
         const __m128i coeffs_67_128 = _mm_unpackhi_epi64(coeffs_4567, coeffs_4567);
 
-        // coeffs [ f1 f0 f1 f0 f1 f0 f1 f0 ][ f1 f0 f1 f0 f1 f0 f1 f0 ]
+        /*!< coeffs [ f1 f0 f1 f0 f1 f0 f1 f0 ][ f1 f0 f1 f0 f1 f0 f1 f0 ] */
         const __m256i coeffs_01 = yy_set_m128i(coeffs_01_128, coeffs_01_128);
-        // coeffs [ f3 f2 f3 f2 f3 f2 f3 f2 ][ f3 f2 f3 f2 f3 f2 f3 f2 ]
+        /*!< coeffs [ f3 f2 f3 f2 f3 f2 f3 f2 ][ f3 f2 f3 f2 f3 f2 f3 f2 ] */
         const __m256i coeffs_23 = yy_set_m128i(coeffs_23_128, coeffs_23_128);
-        // coeffs [ f5 f4 f5 f4 f5 f4 f5 f4 ][ f5 f4 f5 f4 f5 f4 f5 f4 ]
+        /*!< coeffs [ f5 f4 f5 f4 f5 f4 f5 f4 ][ f5 f4 f5 f4 f5 f4 f5 f4 ] */
         const __m256i coeffs_45 = yy_set_m128i(coeffs_45_128, coeffs_45_128);
-        // coeffs [ f7 f6 f7 f6 f7 f6 f7 f6 ][ f7 f6 f7 f6 f7 f6 f7 f6 ]
+        /*!< coeffs [ f7 f6 f7 f6 f7 f6 f7 f6 ][ f7 f6 f7 f6 f7 f6 f7 f6 ] */
         const __m256i coeffs_67 = yy_set_m128i(coeffs_67_128, coeffs_67_128);
 
         const __m256i round_const =
@@ -761,7 +759,7 @@ void eb_av1_highbd_wiener_convolve_add_src_avx2(
             for (int32_t j = 0; j < w; j += 16) {
                 const uint16_t* src_ij = src_ptr + i * src_stride + j;
 
-                // Load 16-bit src data
+                /*!< Load 16-bit src data */
                 const __m256i src_0 = yy_loadu_256(src_ij + 0);
                 const __m256i src_1 = yy_loadu_256(src_ij + 1);
                 const __m256i src_2 = yy_loadu_256(src_ij + 2);
@@ -771,7 +769,7 @@ void eb_av1_highbd_wiener_convolve_add_src_avx2(
                 const __m256i src_6 = yy_loadu_256(src_ij + 6);
                 const __m256i src_7 = yy_loadu_256(src_ij + 7);
 
-                // Multiply src data by filter coeffs and sum pairs
+                /*!< Multiply src data by filter coeffs and sum pairs */
                 const __m256i res_0 = _mm256_madd_epi16(src_0, coeffs_01);
                 const __m256i res_1 = _mm256_madd_epi16(src_1, coeffs_01);
                 const __m256i res_2 = _mm256_madd_epi16(src_2, coeffs_23);
@@ -781,8 +779,8 @@ void eb_av1_highbd_wiener_convolve_add_src_avx2(
                 const __m256i res_6 = _mm256_madd_epi16(src_6, coeffs_67);
                 const __m256i res_7 = _mm256_madd_epi16(src_7, coeffs_67);
 
-                // Calculate scalar product for even- and odd-indices separately,
-                // increasing to 32-bit precision
+                /*!< Calculate scalar product for even- and odd-indices separately,
+                 *   increasing to 32-bit precision */
                 const __m256i res_even_sum = _mm256_add_epi32(_mm256_add_epi32(res_0, res_4),
                                                               _mm256_add_epi32(res_2, res_6));
                 const __m256i res_even     = _mm256_srai_epi32(
@@ -793,48 +791,48 @@ void eb_av1_highbd_wiener_convolve_add_src_avx2(
                 const __m256i res_odd     = _mm256_srai_epi32(
                     _mm256_add_epi32(res_odd_sum, round_const), conv_params->round_0);
 
-                // Reduce to 16-bit precision and pack even- and odd-index results
-                // back into one register. The _mm256_packs_epi32 intrinsic returns
-                // a register with the pixels ordered as follows:
-                // [ 15 13 11 9 14 12 10 8 ] [ 7 5 3 1 6 4 2 0 ]
+                /*!< Reduce to 16-bit precision and pack even- and odd-index results
+                 *   back into one register. The _mm256_packs_epi32 intrinsic returns
+                 *   a register with the pixels ordered as follows:
+                 *   [ 15 13 11 9 14 12 10 8 ] [ 7 5 3 1 6 4 2 0 ] */
                 const __m256i res = _mm256_packs_epi32(res_even, res_odd);
                 const __m256i res_clamped =
                     _mm256_min_epi16(_mm256_max_epi16(res, clamp_low), clamp_high_ep);
 
-                // Store in a temporary array
+                /*!< Store in a temporary array */
                 yy_storeu_256(temp + i * MAX_SB_SIZE + j, res_clamped);
             }
         }
     }
 
-    /* Vertical filter */
+    /*!< Vertical filter */
     {
         const __m256i clamp_high = _mm256_set1_epi16((1 << bd) - 1);
 
-        // coeffs [ f7 f6 f5 f4 f3 f2 f1 f0 ]
+        /*!< coeffs [ f7 f6 f5 f4 f3 f2 f1 f0 ] */
         const __m128i coeffs_y = _mm_add_epi16(xx_loadu_128(filter_y), offset);
 
-        // coeffs [ f3 f2 f3 f2 f1 f0 f1 f0 ]
+        /*!< coeffs [ f3 f2 f3 f2 f1 f0 f1 f0 ] */
         const __m128i coeffs_0123 = _mm_unpacklo_epi32(coeffs_y, coeffs_y);
-        // coeffs [ f7 f6 f7 f6 f5 f4 f5 f4 ]
+        /*!< coeffs [ f7 f6 f7 f6 f5 f4 f5 f4 ] */
         const __m128i coeffs_4567 = _mm_unpackhi_epi32(coeffs_y, coeffs_y);
 
-        // coeffs [ f1 f0 f1 f0 f1 f0 f1 f0 ]
+        /*!< coeffs [ f1 f0 f1 f0 f1 f0 f1 f0 ] */
         const __m128i coeffs_01_128 = _mm_unpacklo_epi64(coeffs_0123, coeffs_0123);
-        // coeffs [ f3 f2 f3 f2 f3 f2 f3 f2 ]
+        /*!< coeffs [ f3 f2 f3 f2 f3 f2 f3 f2 ] */
         const __m128i coeffs_23_128 = _mm_unpackhi_epi64(coeffs_0123, coeffs_0123);
-        // coeffs [ f5 f4 f5 f4 f5 f4 f5 f4 ]
+        /*!< coeffs [ f5 f4 f5 f4 f5 f4 f5 f4 ] */
         const __m128i coeffs_45_128 = _mm_unpacklo_epi64(coeffs_4567, coeffs_4567);
-        // coeffs [ f7 f6 f7 f6 f7 f6 f7 f6 ]
+        /*!< coeffs [ f7 f6 f7 f6 f7 f6 f7 f6 ] */
         const __m128i coeffs_67_128 = _mm_unpackhi_epi64(coeffs_4567, coeffs_4567);
 
-        // coeffs [ f1 f0 f1 f0 f1 f0 f1 f0 ][ f1 f0 f1 f0 f1 f0 f1 f0 ]
+        /*!< coeffs [ f1 f0 f1 f0 f1 f0 f1 f0 ][ f1 f0 f1 f0 f1 f0 f1 f0 ] */
         const __m256i coeffs_01 = yy_set_m128i(coeffs_01_128, coeffs_01_128);
-        // coeffs [ f3 f2 f3 f2 f3 f2 f3 f2 ][ f3 f2 f3 f2 f3 f2 f3 f2 ]
+        /*!< coeffs [ f3 f2 f3 f2 f3 f2 f3 f2 ][ f3 f2 f3 f2 f3 f2 f3 f2 ] */
         const __m256i coeffs_23 = yy_set_m128i(coeffs_23_128, coeffs_23_128);
-        // coeffs [ f5 f4 f5 f4 f5 f4 f5 f4 ][ f5 f4 f5 f4 f5 f4 f5 f4 ]
+        /*!< coeffs [ f5 f4 f5 f4 f5 f4 f5 f4 ][ f5 f4 f5 f4 f5 f4 f5 f4 ] */
         const __m256i coeffs_45 = yy_set_m128i(coeffs_45_128, coeffs_45_128);
-        // coeffs [ f7 f6 f7 f6 f7 f6 f7 f6 ][ f7 f6 f7 f6 f7 f6 f7 f6 ]
+        /*!< coeffs [ f7 f6 f7 f6 f7 f6 f7 f6 ][ f7 f6 f7 f6 f7 f6 f7 f6 ] */
         const __m256i coeffs_67 = yy_set_m128i(coeffs_67_128, coeffs_67_128);
 
         const __m256i round_const = _mm256_set1_epi32((1 << (conv_params->round_1 - 1)) -
@@ -844,9 +842,9 @@ void eb_av1_highbd_wiener_convolve_add_src_avx2(
             for (int32_t j = 0; j < w; j += 16) {
                 const uint16_t* temp_ij = temp + i * MAX_SB_SIZE + j;
 
-                // Load 16-bit data from the output of the horizontal filter in
-                // which the pixels are ordered as follows:
-                // [ 15 13 11 9 14 12 10 8 ] [ 7 5 3 1 6 4 2 0 ]
+                /*!< Load 16-bit data from the output of the horizontal filter in
+                 *   which the pixels are ordered as follows:
+                 *   [ 15 13 11 9 14 12 10 8 ] [ 7 5 3 1 6 4 2 0 ] */
                 const __m256i data_0 = yy_loadu_256(temp_ij + 0 * MAX_SB_SIZE);
                 const __m256i data_1 = yy_loadu_256(temp_ij + 1 * MAX_SB_SIZE);
                 const __m256i data_2 = yy_loadu_256(temp_ij + 2 * MAX_SB_SIZE);
@@ -856,7 +854,7 @@ void eb_av1_highbd_wiener_convolve_add_src_avx2(
                 const __m256i data_6 = yy_loadu_256(temp_ij + 6 * MAX_SB_SIZE);
                 const __m256i data_7 = yy_loadu_256(temp_ij + 7 * MAX_SB_SIZE);
 
-                // Filter the even-indices, increasing to 32-bit precision
+                /*!< Filter the even-indices, increasing to 32-bit precision */
                 const __m256i src_0 = _mm256_unpacklo_epi16(data_0, data_1);
                 const __m256i src_2 = _mm256_unpacklo_epi16(data_2, data_3);
                 const __m256i src_4 = _mm256_unpacklo_epi16(data_4, data_5);
@@ -870,7 +868,7 @@ void eb_av1_highbd_wiener_convolve_add_src_avx2(
                 const __m256i res_even = _mm256_add_epi32(_mm256_add_epi32(res_0, res_2),
                                                           _mm256_add_epi32(res_4, res_6));
 
-                // Filter the odd-indices, increasing to 32-bit precision
+                /*!< Filter the odd-indices, increasing to 32-bit precision */
                 const __m256i src_1 = _mm256_unpackhi_epi16(data_0, data_1);
                 const __m256i src_3 = _mm256_unpackhi_epi16(data_2, data_3);
                 const __m256i src_5 = _mm256_unpackhi_epi16(data_4, data_5);
@@ -884,13 +882,13 @@ void eb_av1_highbd_wiener_convolve_add_src_avx2(
                 const __m256i res_odd = _mm256_add_epi32(_mm256_add_epi32(res_1, res_3),
                                                          _mm256_add_epi32(res_5, res_7));
 
-                // Pixels are currently in the following order:
-                // res_even order: [ 14 12 10 8 ] [ 6 4 2 0 ]
-                // res_odd order:  [ 15 13 11 9 ] [ 7 5 3 1 ]
-                //
-                // Rearrange the pixels into the following order:
-                // res_lo order: [ 11 10  9  8 ] [ 3 2 1 0 ]
-                // res_hi order: [ 15 14 13 12 ] [ 7 6 5 4 ]
+                /*!< Pixels are currently in the following order:
+                 *   res_even order: [ 14 12 10 8 ] [ 6 4 2 0 ]
+                 *   res_odd order:  [ 15 13 11 9 ] [ 7 5 3 1 ]
+                 *
+                 *   Rearrange the pixels into the following order:
+                 *   res_lo order: [ 11 10  9  8 ] [ 3 2 1 0 ]
+                 *   res_hi order: [ 15 14 13 12 ] [ 7 6 5 4 ] */
                 const __m256i res_lo = _mm256_unpacklo_epi32(res_even, res_odd);
                 const __m256i res_hi = _mm256_unpackhi_epi32(res_even, res_odd);
 
@@ -899,13 +897,13 @@ void eb_av1_highbd_wiener_convolve_add_src_avx2(
                 const __m256i res_hi_round =
                     _mm256_srai_epi32(_mm256_add_epi32(res_hi, round_const), conv_params->round_1);
 
-                // Reduce to 16-bit precision and pack into the correct order:
-                // [ 15 14 13 12 11 10 9 8 ][ 7 6 5 4 3 2 1 0 ]
+                /*!< Reduce to 16-bit precision and pack into the correct order:
+                 *   [ 15 14 13 12 11 10 9 8 ][ 7 6 5 4 3 2 1 0 ] */
                 const __m256i res_16bit = _mm256_packs_epi32(res_lo_round, res_hi_round);
                 const __m256i res_16bit_clamped =
                     _mm256_min_epi16(_mm256_max_epi16(res_16bit, clamp_low), clamp_high);
 
-                // Store in the dst array
+                /*!< Store in the dst array */
                 if (j + 8 < w) {
                     yy_storeu_256(dst16 + i * dst_stride + j, res_16bit_clamped);
                 }

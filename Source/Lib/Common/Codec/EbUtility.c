@@ -1,7 +1,5 @@
-/*
-* Copyright(c) 2019 Intel Corporation
-* SPDX - License - Identifier: BSD - 2 - Clause - Patent
-*/
+/*!< Copyright(c) 2019 Intel Corporation
+ * SPDX - License - Identifier: BSD - 2 - Clause - Patent */
 
 #include <time.h>
 #include <stdio.h>
@@ -15,10 +13,8 @@
 
 #include "EbUtility.h"
 #include "EbLog.h"
-/********************************************************************************************
-* faster memcopy for <= 64B blocks, great w/ inlining and size known at compile time (or w/ PGO)
-* THIS NEEDS TO STAY IN A HEADER FOR BEST PERFORMANCE
-********************************************************************************************/
+/*!< faster memcopy for <= 64B blocks, great w/ inlining and size known at compile time (or w/ PGO)
+ *   THIS NEEDS TO STAY IN A HEADER FOR BEST PERFORMANCE */
 
 #include <immintrin.h>
 
@@ -53,7 +49,7 @@ static void eb_memcpy_sse(void* dst_ptr, void const* src_ptr, size_t size) {
     size_t      i         = 0;
     size_t      align_cnt = EB_MIN((64 - ((size_t)dst & 63)), size);
 
-    // align dest to a $line
+    /*!< align dest to a $line */
     if (align_cnt != 64) {
         eb_memcpy_small(dst, src, align_cnt);
         dst += align_cnt;
@@ -61,8 +57,8 @@ static void eb_memcpy_sse(void* dst_ptr, void const* src_ptr, size_t size) {
         size -= align_cnt;
     }
 
-    // copy a $line at a time
-    // dst aligned to a $line
+    /*!< copy a $line at a time */
+    /*!< dst aligned to a $line */
     size_t cline_cnt = (size & ~(size_t)63);
     for (i = 0; i < cline_cnt; i += 64) {
         __m128 c0 = _mm_loadu_ps((const float*)(src + i));
@@ -76,7 +72,7 @@ static void eb_memcpy_sse(void* dst_ptr, void const* src_ptr, size_t size) {
         _mm_storeu_ps((float*)(dst + i + sizeof(c0) * 3), c3);
     }
 
-    // copy the remainder
+    /*!< copy the remainder */
     if (i < size) eb_memcpy_small(dst + i, src + i, size - i);
 }
 void eb_memcpy(void* dst_ptr, void* src_ptr, size_t size) {
@@ -85,139 +81,133 @@ void eb_memcpy(void* dst_ptr, void* src_ptr, size_t size) {
     else
         eb_memcpy_small(dst_ptr, src_ptr, size);
 }
-/*****************************************
- * Z-Order
- *****************************************/
+/*!< Z-Order */
 static TxSize blocksize_to_txsize[BlockSizeS_ALL] = {
-    TX_4X4, // BLOCK_4X4
-    TX_4X8, // BLOCK_4X8
-    TX_8X4, // BLOCK_8X4
-    TX_8X8, // BLOCK_8X8
-    TX_8X16, // BLOCK_8X16
-    TX_16X8, // BLOCK_16X8
-    TX_16X16, // BLOCK_16X16
-    TX_16X32, // BLOCK_16X32
-    TX_32X16, // BLOCK_32X16
-    TX_32X32, // BLOCK_32X32
-    TX_32X64, // BLOCK_32X64
-    TX_64X32, // BLOCK_64X32
-    TX_64X64, // BLOCK_64X64
-    TX_64X64, // BLOCK_64X128
-    TX_64X64, // BLOCK_128X64
-    TX_64X64, // BLOCK_128X128
-    TX_4X16, // BLOCK_4X16
-    TX_16X4, // BLOCK_16X4
-    TX_8X32, // BLOCK_8X32
-    TX_32X8, // BLOCK_32X8
-    TX_16X64, // BLOCK_16X64
-    TX_64X16 // BLOCK_64X16
+    TX_4X4,   /*!< BLOCK_4X4 */
+    TX_4X8,   /*!< BLOCK_4X8 */
+    TX_8X4,   /*!< BLOCK_8X4 */
+    TX_8X8,   /*!< BLOCK_8X8 */
+    TX_8X16,  /*!< BLOCK_8X16 */
+    TX_16X8,  /*!< BLOCK_16X8 */
+    TX_16X16, /*!< BLOCK_16X16 */
+    TX_16X32, /*!< BLOCK_16X32 */
+    TX_32X16, /*!< BLOCK_32X16 */
+    TX_32X32, /*!< BLOCK_32X32 */
+    TX_32X64, /*!< BLOCK_32X64 */
+    TX_64X32, /*!< BLOCK_64X32 */
+    TX_64X64, /*!< BLOCK_64X64 */
+    TX_64X64, /*!< BLOCK_64X128 */
+    TX_64X64, /*!< BLOCK_128X64 */
+    TX_64X64, /*!< BLOCK_128X128 */
+    TX_4X16,  /*!< BLOCK_4X16 */
+    TX_16X4,  /*!< BLOCK_16X4 */
+    TX_8X32,  /*!< BLOCK_8X32 */
+    TX_32X8,  /*!< BLOCK_32X8 */
+    TX_16X64, /*!< BLOCK_16X64 */
+    TX_64X16  /*!< BLOCK_64X16 */
 };
 
 static CodedBlockStats coded_unit_stats_array[] = {
-    //   Depth       Size      SizeLog2     OriginX    OriginY   cu_num_in_depth   Index
-    {0, 64, 6, 0, 0, 0, 0}, // 0
-    {1, 32, 5, 0, 0, 0, 1}, // 1
-    {2, 16, 4, 0, 0, 0, 1}, // 2
-    {3, 8, 3, 0, 0, 0, 1}, // 3
-    {3, 8, 3, 8, 0, 1, 1}, // 4
-    {3, 8, 3, 0, 8, 8, 1}, // 5
-    {3, 8, 3, 8, 8, 9, 1}, // 6
-    {2, 16, 4, 16, 0, 1, 1}, // 7
-    {3, 8, 3, 16, 0, 2, 1}, // 8
-    {3, 8, 3, 24, 0, 3, 1}, // 9
-    {3, 8, 3, 16, 8, 10, 1}, // 10
-    {3, 8, 3, 24, 8, 11, 1}, // 11
-    {2, 16, 4, 0, 16, 4, 1}, // 12
-    {3, 8, 3, 0, 16, 16, 1}, // 13
-    {3, 8, 3, 8, 16, 17, 1}, // 14
-    {3, 8, 3, 0, 24, 24, 1}, // 15
-    {3, 8, 3, 8, 24, 25, 1}, // 16
-    {2, 16, 4, 16, 16, 5, 1}, // 17
-    {3, 8, 3, 16, 16, 18, 1}, // 18
-    {3, 8, 3, 24, 16, 19, 1}, // 19
-    {3, 8, 3, 16, 24, 26, 1}, // 20
-    {3, 8, 3, 24, 24, 27, 1}, // 21
-    {1, 32, 5, 32, 0, 1, 2}, // 22
-    {2, 16, 4, 32, 0, 2, 2}, // 23
-    {3, 8, 3, 32, 0, 4, 2}, // 24
-    {3, 8, 3, 40, 0, 5, 2}, // 25
-    {3, 8, 3, 32, 8, 12, 2}, // 26
-    {3, 8, 3, 40, 8, 13, 2}, // 27
-    {2, 16, 4, 48, 0, 3, 2}, // 28
-    {3, 8, 3, 48, 0, 6, 2}, // 29
-    {3, 8, 3, 56, 0, 7, 2}, // 30
-    {3, 8, 3, 48, 8, 14, 2}, // 31
-    {3, 8, 3, 56, 8, 15, 2}, // 32
-    {2, 16, 4, 32, 16, 6, 2}, // 33
-    {3, 8, 3, 32, 16, 20, 2}, // 34
-    {3, 8, 3, 40, 16, 21, 2}, // 35
-    {3, 8, 3, 32, 24, 28, 2}, // 36
-    {3, 8, 3, 40, 24, 29, 2}, // 37
-    {2, 16, 4, 48, 16, 7, 2}, // 38
-    {3, 8, 3, 48, 16, 22, 2}, // 39
-    {3, 8, 3, 56, 16, 23, 2}, // 40
-    {3, 8, 3, 48, 24, 30, 2}, // 41
-    {3, 8, 3, 56, 24, 31, 2}, // 42
-    {1, 32, 5, 0, 32, 2, 3}, // 43
-    {2, 16, 4, 0, 32, 8, 3}, // 44
-    {3, 8, 3, 0, 32, 32, 3}, // 45
-    {3, 8, 3, 8, 32, 33, 3}, // 46
-    {3, 8, 3, 0, 40, 40, 3}, // 47
-    {3, 8, 3, 8, 40, 41, 3}, // 48
-    {2, 16, 4, 16, 32, 9, 3}, // 49
-    {3, 8, 3, 16, 32, 34, 3}, // 50
-    {3, 8, 3, 24, 32, 35, 3}, // 51
-    {3, 8, 3, 16, 40, 42, 3}, // 52
-    {3, 8, 3, 24, 40, 43, 3}, // 53
-    {2, 16, 4, 0, 48, 12, 3}, // 54
-    {3, 8, 3, 0, 48, 48, 3}, // 55
-    {3, 8, 3, 8, 48, 49, 3}, // 56
-    {3, 8, 3, 0, 56, 56, 3}, // 57
-    {3, 8, 3, 8, 56, 57, 3}, // 58
-    {2, 16, 4, 16, 48, 13, 3}, // 59
-    {3, 8, 3, 16, 48, 50, 3}, // 60
-    {3, 8, 3, 24, 48, 51, 3}, // 61
-    {3, 8, 3, 16, 56, 58, 3}, // 62
-    {3, 8, 3, 24, 56, 59, 3}, // 63
-    {1, 32, 5, 32, 32, 3, 4}, // 64
-    {2, 16, 4, 32, 32, 10, 4}, // 65
-    {3, 8, 3, 32, 32, 36, 4}, // 66
-    {3, 8, 3, 40, 32, 37, 4}, // 67
-    {3, 8, 3, 32, 40, 44, 4}, // 68
-    {3, 8, 3, 40, 40, 45, 4}, // 69
-    {2, 16, 4, 48, 32, 11, 4}, // 70
-    {3, 8, 3, 48, 32, 38, 4}, // 71
-    {3, 8, 3, 56, 32, 39, 4}, // 72
-    {3, 8, 3, 48, 40, 46, 4}, // 73
-    {3, 8, 3, 56, 40, 47, 4}, // 74
-    {2, 16, 4, 32, 48, 14, 4}, // 75
-    {3, 8, 3, 32, 48, 52, 4}, // 76
-    {3, 8, 3, 40, 48, 53, 4}, // 77
-    {3, 8, 3, 32, 56, 60, 4}, // 78
-    {3, 8, 3, 40, 56, 61, 4}, // 79
-    {2, 16, 4, 48, 48, 15, 4}, // 80
-    {3, 8, 3, 48, 48, 54, 4}, // 81
-    {3, 8, 3, 56, 48, 55, 4}, // 82
-    {3, 8, 3, 48, 56, 62, 4}, // 83
-    {3, 8, 3, 56, 56, 63, 4} // 84
+    /*!<   Depth       Size      SizeLog2     OriginX    OriginY   cu_num_in_depth   Index */
+    {0, 64, 6, 0, 0, 0, 0},    /*!< 0 */
+    {1, 32, 5, 0, 0, 0, 1},    /*!< 1 */
+    {2, 16, 4, 0, 0, 0, 1},    /*!< 2 */
+    {3, 8, 3, 0, 0, 0, 1},     /*!< 3 */
+    {3, 8, 3, 8, 0, 1, 1},     /*!< 4 */
+    {3, 8, 3, 0, 8, 8, 1},     /*!< 5 */
+    {3, 8, 3, 8, 8, 9, 1},     /*!< 6 */
+    {2, 16, 4, 16, 0, 1, 1},   /*!< 7 */
+    {3, 8, 3, 16, 0, 2, 1},    /*!< 8 */
+    {3, 8, 3, 24, 0, 3, 1},    /*!< 9 */
+    {3, 8, 3, 16, 8, 10, 1},   /*!< 10 */
+    {3, 8, 3, 24, 8, 11, 1},   /*!< 11 */
+    {2, 16, 4, 0, 16, 4, 1},   /*!< 12 */
+    {3, 8, 3, 0, 16, 16, 1},   /*!< 13 */
+    {3, 8, 3, 8, 16, 17, 1},   /*!< 14 */
+    {3, 8, 3, 0, 24, 24, 1},   /*!< 15 */
+    {3, 8, 3, 8, 24, 25, 1},   /*!< 16 */
+    {2, 16, 4, 16, 16, 5, 1},  /*!< 17 */
+    {3, 8, 3, 16, 16, 18, 1},  /*!< 18 */
+    {3, 8, 3, 24, 16, 19, 1},  /*!< 19 */
+    {3, 8, 3, 16, 24, 26, 1},  /*!< 20 */
+    {3, 8, 3, 24, 24, 27, 1},  /*!< 21 */
+    {1, 32, 5, 32, 0, 1, 2},   /*!< 22 */
+    {2, 16, 4, 32, 0, 2, 2},   /*!< 23 */
+    {3, 8, 3, 32, 0, 4, 2},    /*!< 24 */
+    {3, 8, 3, 40, 0, 5, 2},    /*!< 25 */
+    {3, 8, 3, 32, 8, 12, 2},   /*!< 26 */
+    {3, 8, 3, 40, 8, 13, 2},   /*!< 27 */
+    {2, 16, 4, 48, 0, 3, 2},   /*!< 28 */
+    {3, 8, 3, 48, 0, 6, 2},    /*!< 29 */
+    {3, 8, 3, 56, 0, 7, 2},    /*!< 30 */
+    {3, 8, 3, 48, 8, 14, 2},   /*!< 31 */
+    {3, 8, 3, 56, 8, 15, 2},   /*!< 32 */
+    {2, 16, 4, 32, 16, 6, 2},  /*!< 33 */
+    {3, 8, 3, 32, 16, 20, 2},  /*!< 34 */
+    {3, 8, 3, 40, 16, 21, 2},  /*!< 35 */
+    {3, 8, 3, 32, 24, 28, 2},  /*!< 36 */
+    {3, 8, 3, 40, 24, 29, 2},  /*!< 37 */
+    {2, 16, 4, 48, 16, 7, 2},  /*!< 38 */
+    {3, 8, 3, 48, 16, 22, 2},  /*!< 39 */
+    {3, 8, 3, 56, 16, 23, 2},  /*!< 40 */
+    {3, 8, 3, 48, 24, 30, 2},  /*!< 41 */
+    {3, 8, 3, 56, 24, 31, 2},  /*!< 42 */
+    {1, 32, 5, 0, 32, 2, 3},   /*!< 43 */
+    {2, 16, 4, 0, 32, 8, 3},   /*!< 44 */
+    {3, 8, 3, 0, 32, 32, 3},   /*!< 45 */
+    {3, 8, 3, 8, 32, 33, 3},   /*!< 46 */
+    {3, 8, 3, 0, 40, 40, 3},   /*!< 47 */
+    {3, 8, 3, 8, 40, 41, 3},   /*!< 48 */
+    {2, 16, 4, 16, 32, 9, 3},  /*!< 49 */
+    {3, 8, 3, 16, 32, 34, 3},  /*!< 50 */
+    {3, 8, 3, 24, 32, 35, 3},  /*!< 51 */
+    {3, 8, 3, 16, 40, 42, 3},  /*!< 52 */
+    {3, 8, 3, 24, 40, 43, 3},  /*!< 53 */
+    {2, 16, 4, 0, 48, 12, 3},  /*!< 54 */
+    {3, 8, 3, 0, 48, 48, 3},   /*!< 55 */
+    {3, 8, 3, 8, 48, 49, 3},   /*!< 56 */
+    {3, 8, 3, 0, 56, 56, 3},   /*!< 57 */
+    {3, 8, 3, 8, 56, 57, 3},   /*!< 58 */
+    {2, 16, 4, 16, 48, 13, 3}, /*!< 59 */
+    {3, 8, 3, 16, 48, 50, 3},  /*!< 60 */
+    {3, 8, 3, 24, 48, 51, 3},  /*!< 61 */
+    {3, 8, 3, 16, 56, 58, 3},  /*!< 62 */
+    {3, 8, 3, 24, 56, 59, 3},  /*!< 63 */
+    {1, 32, 5, 32, 32, 3, 4},  /*!< 64 */
+    {2, 16, 4, 32, 32, 10, 4}, /*!< 65 */
+    {3, 8, 3, 32, 32, 36, 4},  /*!< 66 */
+    {3, 8, 3, 40, 32, 37, 4},  /*!< 67 */
+    {3, 8, 3, 32, 40, 44, 4},  /*!< 68 */
+    {3, 8, 3, 40, 40, 45, 4},  /*!< 69 */
+    {2, 16, 4, 48, 32, 11, 4}, /*!< 70 */
+    {3, 8, 3, 48, 32, 38, 4},  /*!< 71 */
+    {3, 8, 3, 56, 32, 39, 4},  /*!< 72 */
+    {3, 8, 3, 48, 40, 46, 4},  /*!< 73 */
+    {3, 8, 3, 56, 40, 47, 4},  /*!< 74 */
+    {2, 16, 4, 32, 48, 14, 4}, /*!< 75 */
+    {3, 8, 3, 32, 48, 52, 4},  /*!< 76 */
+    {3, 8, 3, 40, 48, 53, 4},  /*!< 77 */
+    {3, 8, 3, 32, 56, 60, 4},  /*!< 78 */
+    {3, 8, 3, 40, 56, 61, 4},  /*!< 79 */
+    {2, 16, 4, 48, 48, 15, 4}, /*!< 80 */
+    {3, 8, 3, 48, 48, 54, 4},  /*!< 81 */
+    {3, 8, 3, 56, 48, 55, 4},  /*!< 82 */
+    {3, 8, 3, 48, 56, 62, 4},  /*!< 83 */
+    {3, 8, 3, 56, 56, 63, 4}   /*!< 84 */
 };
 
-/**************************************************************
- * Get Coded Unit Statistics
- **************************************************************/
+/*!< Get Coded Unit Statistics */
 const CodedBlockStats* get_coded_blk_stats(const uint32_t cu_idx) {
-    //ASSERT(cu_idx < CU_MAX_COUNT && "get_coded_blk_stats: Out-of-range CU Idx\n");
+    /*!< ASSERT(cu_idx < CU_MAX_COUNT && "get_coded_blk_stats: Out-of-range CU Idx\n"); */
     if (cu_idx == 255) SVT_LOG("Invalid CuIndex\n");
 
     return &coded_unit_stats_array[cu_idx];
 }
 
-/*****************************************
-  * Long Log 2
-  *  This is a quick adaptation of a Number
-  *  Leading Zeros (NLZ) algorithm to get
-  *  the log2f of a 64-bit number
-  *****************************************/
+/*!< Long Log 2
+ *   This is a quick adaptation of a Number
+ *   Leading Zeros (NLZ) algorithm to get
+ *   the log2f of a 64-bit number */
 inline uint64_t log2f_64(uint64_t x) {
     uint64_t y;
     int64_t  n = 64, c = 32;
@@ -245,7 +235,7 @@ uint64_t log2f_high_precision(uint64_t x, uint8_t precision) {
     return result;
 }
 
-// concatenate two linked list, and return the pointer to the new concatenated list
+/*!< concatenate two linked list, and return the pointer to the new concatenated list */
 EbLinkedListNode* concat_eb_linked_list(EbLinkedListNode* a, EbLinkedListNode* b) {
     if (a) {
         while (a->next) a = a->next;
@@ -255,13 +245,13 @@ EbLinkedListNode* concat_eb_linked_list(EbLinkedListNode* a, EbLinkedListNode* b
         return b;
 }
 
-// split a linked list
+/*!< split a linked list */
 EbLinkedListNode* split_eb_linked_list(EbLinkedListNode* input, EbLinkedListNode** restLL,
                                        EbBool (*predicate_func)(EbLinkedListNode*)) {
     EbLinkedListNode* ll_true_ptr =
-        (EbLinkedListNode*)EB_NULL; // list of nodes satifying predicate_func(node) == TRUE
+        (EbLinkedListNode*)EB_NULL; /*!< list of nodes satifying predicate_func(node) == TRUE */
     EbLinkedListNode* ll_rest_ptr =
-        (EbLinkedListNode*)EB_NULL; // list of nodes satifying predicate_func(node) != TRUE
+        (EbLinkedListNode*)EB_NULL; /*!< list of nodes satifying predicate_func(node) != TRUE */
 
     while (input) {
         EbLinkedListNode* next = input->next;
@@ -278,62 +268,60 @@ EbLinkedListNode* split_eb_linked_list(EbLinkedListNode* input, EbLinkedListNode
 }
 
 static const MiniGopStats mini_gop_stats_array[] = {
-    //    hierarchical_levels    start_index    end_index    Lenght    mini_gop_index
-    {5, 0, 31, 32}, // 0
-    {4, 0, 15, 16}, // 1
-    {3, 0, 7, 8}, // 2
-    {2, 0, 3, 4}, // 3
-    {2, 4, 7, 4}, // 4
-    {3, 8, 15, 8}, // 5
-    {2, 8, 11, 4}, // 6
-    {2, 12, 15, 4}, // 7
-    {4, 16, 31, 16}, // 8
-    {3, 16, 23, 8}, // 9
-    {2, 16, 19, 4}, // 10
-    {2, 20, 23, 4}, // 11
-    {3, 24, 31, 8}, // 12
-    {2, 24, 27, 4}, // 13
-    {2, 28, 31, 4} // 14
+    /*!<    hierarchical_levels    start_index    end_index    Lenght    mini_gop_index */
+    {5, 0, 31, 32},  /*!< 0 */
+    {4, 0, 15, 16},  /*!< 1 */
+    {3, 0, 7, 8},    /*!< 2 */
+    {2, 0, 3, 4},    /*!< 3 */
+    {2, 4, 7, 4},    /*!< 4 */
+    {3, 8, 15, 8},   /*!< 5 */
+    {2, 8, 11, 4},   /*!< 6 */
+    {2, 12, 15, 4},  /*!< 7 */
+    {4, 16, 31, 16}, /*!< 8 */
+    {3, 16, 23, 8},  /*!< 9 */
+    {2, 16, 19, 4},  /*!< 10 */
+    {2, 20, 23, 4},  /*!< 11 */
+    {3, 24, 31, 8},  /*!< 12 */
+    {2, 24, 27, 4},  /*!< 13 */
+    {2, 28, 31, 4}   /*!< 14 */
 };
 
-/**************************************************************
-* Get Mini GOP Statistics
-**************************************************************/
+/*!< Get Mini GOP Statistics */
 const MiniGopStats* get_mini_gop_stats(const uint32_t mini_gop_index) {
     return &mini_gop_stats_array[mini_gop_index];
 }
 
-uint32_t ns_quarter_off_mult[9 /*Up to 9 part*/][2 /*x+y*/][4 /*Up to 4 ns blocks per part*/] = {
-    //9 means not used.
+uint32_t ns_quarter_off_mult[9 /*!< Up to 9 part */][2 /*!< x+y */][4 /*!< Up to 4 ns blocks per part */] = {
+    /*!< 9 means not used. */
 
-    //          |   x   |     |   y   |
+    /*!<          |   x   |     |   y   | */
 
-    /*P=0*/ {{0, 9, 9, 9}, {0, 9, 9, 9}},
-    /*P=1*/ {{0, 0, 9, 9}, {0, 2, 9, 9}},
-    /*P=2*/ {{0, 2, 9, 9}, {0, 0, 9, 9}},
-    /*P=3*/ {{0, 2, 0, 9}, {0, 0, 2, 9}},
-    /*P=4*/ {{0, 0, 2, 9}, {0, 2, 2, 9}},
-    /*P=5*/ {{0, 0, 2, 9}, {0, 2, 0, 9}},
-    /*P=6*/ {{0, 2, 2, 9}, {0, 0, 2, 9}},
-    /*P=7*/ {{0, 0, 0, 0}, {0, 1, 2, 3}},
-    /*P=8*/ {{0, 1, 2, 3}, {0, 0, 0, 0}}};
+    /*!< P=0 */ {{0, 9, 9, 9}, {0, 9, 9, 9}},
+    /*!< P=1 */ {{0, 0, 9, 9}, {0, 2, 9, 9}},
+    /*!< P=2 */ {{0, 2, 9, 9}, {0, 0, 9, 9}},
+    /*!< P=3 */ {{0, 2, 0, 9}, {0, 0, 2, 9}},
+    /*!< P=4 */ {{0, 0, 2, 9}, {0, 2, 2, 9}},
+    /*!< P=5 */ {{0, 0, 2, 9}, {0, 2, 0, 9}},
+    /*!< P=6 */ {{0, 2, 2, 9}, {0, 0, 2, 9}},
+    /*!< P=7 */ {{0, 0, 0, 0}, {0, 1, 2, 3}},
+    /*!< P=8 */ {{0, 1, 2, 3}, {0, 0, 0, 0}}};
 
-uint32_t ns_quarter_size_mult[9 /*Up to 9 part*/][2 /*h+v*/][4 /*Up to 4 ns blocks per part*/] = {
-    //9 means not used.
+uint32_t ns_quarter_size_mult[9 /*!< Up to 9 part */][2 /*!< h+v */][4 /*!< Up to 4 ns blocks per part */] = {
+    /*!< 9 means not used. */
 
-    //          |   h   |     |   v   |
+    /*!<      |   h   |     |   v   | */
 
-    /*P=0*/ {{4, 9, 9, 9}, {4, 9, 9, 9}},
-    /*P=1*/ {{4, 4, 9, 9}, {2, 2, 9, 9}},
-    /*P=2*/ {{2, 2, 9, 9}, {4, 4, 9, 9}},
-    /*P=3*/ {{2, 2, 4, 9}, {2, 2, 2, 9}},
-    /*P=4*/ {{4, 2, 2, 9}, {2, 2, 2, 9}},
-    /*P=5*/ {{2, 2, 2, 9}, {2, 2, 4, 9}},
-    /*P=6*/ {{2, 2, 2, 9}, {4, 2, 2, 9}},
-    /*P=7*/ {{4, 4, 4, 4}, {1, 1, 1, 1}},
-    /*P=8*/ {{1, 1, 1, 1}, {4, 4, 4, 4}}};
+    /*!< P=0 */ {{4, 9, 9, 9}, {4, 9, 9, 9}},
+    /*!< P=1 */ {{4, 4, 9, 9}, {2, 2, 9, 9}},
+    /*!< P=2 */ {{2, 2, 9, 9}, {4, 4, 9, 9}},
+    /*!< P=3 */ {{2, 2, 4, 9}, {2, 2, 2, 9}},
+    /*!< P=4 */ {{4, 2, 2, 9}, {2, 2, 2, 9}},
+    /*!< P=5 */ {{2, 2, 2, 9}, {2, 2, 4, 9}},
+    /*!< P=6 */ {{2, 2, 2, 9}, {4, 2, 2, 9}},
+    /*!< P=7 */ {{4, 4, 4, 4}, {1, 1, 1, 1}},
+    /*!< P=8 */ {{1, 1, 1, 1}, {4, 4, 4, 4}}};
 
-BlockSize hvsize_to_bsize[/*H*/ 6][/*V*/ 6] = {
+BlockSize hvsize_to_bsize[/*!< H */ 6][/*!< V */ 6] = {
     {BLOCK_4X4, BLOCK_4X8, BLOCK_4X16, BLOCK_INVALID, BLOCK_INVALID, BLOCK_INVALID},
     {BLOCK_8X4, BLOCK_8X8, BLOCK_8X16, BLOCK_8X32, BLOCK_INVALID, BLOCK_INVALID},
     {BLOCK_16X4, BLOCK_16X8, BLOCK_16X16, BLOCK_16X32, BLOCK_16X64, BLOCK_INVALID},
@@ -346,15 +334,15 @@ uint32_t max_depth = 5;
 uint32_t max_part  = 9;
 uint32_t max_num_active_blocks;
 
-//data could be  organized in 2 forms: depth scan (dps) or MD scan (mds):
-//dps: all depth0 - all depth1 - all depth2 - all depth3.
-//     within a depth: square blk0 in raster scan (followed by all its ns blcoks),
-//     square blk1 in raster scan (followed by all its ns blcoks), etc
-//mds: top-down and Z scan.
+/*!< data could be  organized in 2 forms: depth scan (dps) or MD scan (mds):
+ *   dps: all depth0 - all depth1 - all depth2 - all depth3.
+ *        within a depth: square blk0 in raster scan (followed by all its ns blcoks),
+          square blk1 in raster scan (followed by all its ns blcoks), etc
+ *   mds: top-down and Z scan. */
 BlockGeom blk_geom_dps
-    [MAX_NUM_BLOCKS_ALLOC]; //to access geom info of a particular block : use this table if you have the block index in depth scan
+    [MAX_NUM_BLOCKS_ALLOC]; /*!< to access geom info of a particular block : use this table if you have the block index in depth scan */
 BlockGeom blk_geom_mds
-    [MAX_NUM_BLOCKS_ALLOC]; //to access geom info of a particular block : use this table if you have the block index in md    scan
+    [MAX_NUM_BLOCKS_ALLOC]; /*!< to access geom info of a particular block : use this table if you have the block index in md    scan */
 
 uint32_t search_matching_from_dps(uint32_t depth, uint32_t part, uint32_t x, uint32_t y) {
     uint32_t found = 0;
@@ -400,20 +388,20 @@ uint32_t search_matching_from_mds(uint32_t depth, uint32_t part, uint32_t x, uin
 }
 
 static INLINE TxSize av1_get_tx_size(BlockSize sb_type, int32_t plane /*, const MacroBlockD *xd*/) {
-    //const MbModeInfo *mbmi = xd->mi[0];
-    // if (xd->lossless[mbmi->segment_id]) return TX_4X4;
+    /*!< const MbModeInfo *mbmi = xd->mi[0]; */
+    /*!< if (xd->lossless[mbmi->segment_id]) return TX_4X4; */
     if (plane == 0) return blocksize_to_txsize[sb_type];
-    // const MacroblockdPlane *pd = &xd->plane[plane];
+    /*!< const MacroblockdPlane *pd = &xd->plane[plane]; */
 
     uint32_t subsampling_x = plane > 0 ? 1 : 0;
     uint32_t subsampling_y = plane > 0 ? 1 : 0;
-    return av1_get_max_uv_txsize(/*mbmi->*/ sb_type, subsampling_x, subsampling_y);
+    return av1_get_max_uv_txsize(/*!< mbmi-> */ sb_type, subsampling_x, subsampling_y);
     UNUSED(plane);
 }
 
 void md_scan_all_blks(uint32_t* idx_mds, uint32_t sq_size, uint32_t x, uint32_t y,
                       int32_t is_last_quadrant, uint8_t quad_it) {
-    //the input block is the parent square block of size sq_size located at pos (x,y)
+    /*!< the input block is the parent square block of size sq_size located at pos (x,y) */
 
     uint32_t part_it, nsq_it, d1_it, sqi_mds;
 
@@ -481,8 +469,8 @@ void md_scan_all_blks(uint32_t* idx_mds, uint32_t sq_size, uint32_t x, uint32_t 
                 int32_t num_blk_same_uv = 1;
                 if (blk_geom_mds[*idx_mds].bwidth >> 1 < 4) num_blk_same_uv *= 2;
                 if (blk_geom_mds[*idx_mds].bheight >> 1 < 4) num_blk_same_uv *= 2;
-                //if (blk_geom_mds[*idx_mds].nsi % 2 == 0)
-                //if (blk_geom_mds[*idx_mds].nsi != (blk_geom_mds[*idx_mds].totns-1) )
+                // if (blk_geom_mds[*idx_mds].nsi % 2 == 0)
+                // if (blk_geom_mds[*idx_mds].nsi != (blk_geom_mds[*idx_mds].totns-1) )
                 if (blk_geom_mds[*idx_mds].nsi != (num_blk_same_uv - 1) &&
                     blk_geom_mds[*idx_mds].nsi != (2 * num_blk_same_uv - 1))
                     blk_geom_mds[*idx_mds].has_uv = 0;
@@ -491,7 +479,7 @@ void md_scan_all_blks(uint32_t* idx_mds, uint32_t sq_size, uint32_t x, uint32_t 
             blk_geom_mds[*idx_mds].bsize_uv =
                 get_plane_block_size(blk_geom_mds[*idx_mds].bsize, 1, 1);
             uint16_t txb_itr = 0;
-            // tx_depth 1 geom settings
+            /*!< tx_depth 1 geom settings */
             uint8_t tx_depth = 0;
             blk_geom_mds[*idx_mds].txb_count[tx_depth] =
                 blk_geom_mds[*idx_mds].bsize == BLOCK_128X128
@@ -549,7 +537,7 @@ void md_scan_all_blks(uint32_t* idx_mds, uint32_t sq_size, uint32_t x, uint32_t 
                 blk_geom_mds[*idx_mds].tx_height_uv[tx_depth][txb_itr] =
                     tx_size_high[blk_geom_mds[*idx_mds].txsize_uv[tx_depth][txb_itr]];
             }
-            // tx_depth 1 geom settings
+            /*!< tx_depth 1 geom settings */
             tx_depth = 1;
             blk_geom_mds[*idx_mds].txb_count[tx_depth] =
                 blk_geom_mds[*idx_mds].bsize == BLOCK_128X128
@@ -590,8 +578,8 @@ void md_scan_all_blks(uint32_t* idx_mds, uint32_t sq_size, uint32_t x, uint32_t 
                         blk_geom_mds[*idx_mds].txsize_uv[0][0];
                     uint8_t offsetx[4] = {0, 32, 0, 32};
                     uint8_t offsety[4] = {0, 0, 32, 32};
-                    //   0  1
-                    //   2  3
+                    /*!<   0  1 */
+                    /*!<   2  3 */
                     uint8_t tbx = offsetx[txb_itr];
                     uint8_t tby = offsety[txb_itr];
 
@@ -600,7 +588,7 @@ void md_scan_all_blks(uint32_t* idx_mds, uint32_t sq_size, uint32_t x, uint32_t 
                             blk_geom_mds[*idx_mds].origin_x + tbx;
                     blk_geom_mds[*idx_mds].tx_org_y[0][tx_depth][txb_itr] =
                         blk_geom_mds[*idx_mds].tx_org_y[1][tx_depth][txb_itr] =
-                            blk_geom_mds[*idx_mds].origin_y + tby;
+                        blk_geom_mds[*idx_mds].origin_y + tby;
                 } else if (blk_geom_mds[*idx_mds].bsize == BLOCK_64X32) {
                     blk_geom_mds[*idx_mds].txsize[tx_depth][txb_itr] =
                         av1_get_tx_size(BLOCK_32X32, 0);
@@ -608,7 +596,7 @@ void md_scan_all_blks(uint32_t* idx_mds, uint32_t sq_size, uint32_t x, uint32_t 
                         blk_geom_mds[*idx_mds].txsize_uv[0][0];
                     uint8_t offsetx[2] = {0, 32};
                     uint8_t offsety[2] = {0, 0};
-                    //   0  1
+                    /*!<  0  1 */
                     uint8_t tbx = offsetx[txb_itr];
                     uint8_t tby = offsety[txb_itr];
 
@@ -617,7 +605,7 @@ void md_scan_all_blks(uint32_t* idx_mds, uint32_t sq_size, uint32_t x, uint32_t 
                             blk_geom_mds[*idx_mds].origin_x + tbx;
                     blk_geom_mds[*idx_mds].tx_org_y[0][tx_depth][txb_itr] =
                         blk_geom_mds[*idx_mds].tx_org_y[1][tx_depth][txb_itr] =
-                            blk_geom_mds[*idx_mds].origin_y + tby;
+                        blk_geom_mds[*idx_mds].origin_y + tby;
                 } else if (blk_geom_mds[*idx_mds].bsize == BLOCK_32X64) {
                     blk_geom_mds[*idx_mds].txsize[tx_depth][txb_itr] =
                         av1_get_tx_size(BLOCK_32X32, 0);
@@ -625,7 +613,7 @@ void md_scan_all_blks(uint32_t* idx_mds, uint32_t sq_size, uint32_t x, uint32_t 
                         blk_geom_mds[*idx_mds].txsize_uv[0][0];
                     uint8_t offsetx[2] = {0, 0};
                     uint8_t offsety[2] = {0, 32};
-                    //   0  1
+                    /*!<   0  1 */
                     uint8_t tbx = offsetx[txb_itr];
                     uint8_t tby = offsety[txb_itr];
 
@@ -634,7 +622,7 @@ void md_scan_all_blks(uint32_t* idx_mds, uint32_t sq_size, uint32_t x, uint32_t 
                             blk_geom_mds[*idx_mds].origin_x + tbx;
                     blk_geom_mds[*idx_mds].tx_org_y[0][tx_depth][txb_itr] =
                         blk_geom_mds[*idx_mds].tx_org_y[1][tx_depth][txb_itr] =
-                            blk_geom_mds[*idx_mds].origin_y + tby;
+                        blk_geom_mds[*idx_mds].origin_y + tby;
                 } else if (blk_geom_mds[*idx_mds].bsize == BLOCK_32X32) {
                     blk_geom_mds[*idx_mds].txsize[tx_depth][txb_itr] =
                         av1_get_tx_size(BLOCK_16X16, 0);
@@ -642,8 +630,8 @@ void md_scan_all_blks(uint32_t* idx_mds, uint32_t sq_size, uint32_t x, uint32_t 
                         blk_geom_mds[*idx_mds].txsize_uv[0][0];
                     uint8_t offsetx[4] = {0, 16, 0, 16};
                     uint8_t offsety[4] = {0, 0, 16, 16};
-                    //   0  1
-                    //   2  3
+                    /*!<   0  1 */
+                    /*!<   2  3 */
                     uint8_t tbx = offsetx[txb_itr];
                     uint8_t tby = offsety[txb_itr];
 
@@ -652,7 +640,7 @@ void md_scan_all_blks(uint32_t* idx_mds, uint32_t sq_size, uint32_t x, uint32_t 
                             blk_geom_mds[*idx_mds].origin_x + tbx;
                     blk_geom_mds[*idx_mds].tx_org_y[0][tx_depth][txb_itr] =
                         blk_geom_mds[*idx_mds].tx_org_y[1][tx_depth][txb_itr] =
-                            blk_geom_mds[*idx_mds].origin_y + tby;
+                        blk_geom_mds[*idx_mds].origin_y + tby;
                 } else if (blk_geom_mds[*idx_mds].bsize == BLOCK_32X16) {
                     blk_geom_mds[*idx_mds].txsize[tx_depth][txb_itr] =
                         av1_get_tx_size(BLOCK_16X16, 0);
@@ -660,7 +648,7 @@ void md_scan_all_blks(uint32_t* idx_mds, uint32_t sq_size, uint32_t x, uint32_t 
                         blk_geom_mds[*idx_mds].txsize_uv[0][0];
                     uint8_t offsetx[2] = {0, 16};
                     uint8_t offsety[2] = {0, 0};
-                    //   0  1
+                    /*!<   0  1 */
                     uint8_t tbx = offsetx[txb_itr];
                     uint8_t tby = offsety[txb_itr];
 
@@ -669,7 +657,7 @@ void md_scan_all_blks(uint32_t* idx_mds, uint32_t sq_size, uint32_t x, uint32_t 
                             blk_geom_mds[*idx_mds].origin_x + tbx;
                     blk_geom_mds[*idx_mds].tx_org_y[0][tx_depth][txb_itr] =
                         blk_geom_mds[*idx_mds].tx_org_y[1][tx_depth][txb_itr] =
-                            blk_geom_mds[*idx_mds].origin_y + tby;
+                        blk_geom_mds[*idx_mds].origin_y + tby;
                 } else if (blk_geom_mds[*idx_mds].bsize == BLOCK_16X32) {
                     blk_geom_mds[*idx_mds].txsize[tx_depth][txb_itr] =
                         av1_get_tx_size(BLOCK_16X16, 0);
@@ -677,7 +665,7 @@ void md_scan_all_blks(uint32_t* idx_mds, uint32_t sq_size, uint32_t x, uint32_t 
                         blk_geom_mds[*idx_mds].txsize_uv[0][0];
                     uint8_t offsetx[2] = {0, 0};
                     uint8_t offsety[2] = {0, 16};
-                    //   0  1
+                    /*!<   0  1 */
                     uint8_t tbx = offsetx[txb_itr];
                     uint8_t tby = offsety[txb_itr];
 
@@ -686,7 +674,7 @@ void md_scan_all_blks(uint32_t* idx_mds, uint32_t sq_size, uint32_t x, uint32_t 
                             blk_geom_mds[*idx_mds].origin_x + tbx;
                     blk_geom_mds[*idx_mds].tx_org_y[0][tx_depth][txb_itr] =
                         blk_geom_mds[*idx_mds].tx_org_y[1][tx_depth][txb_itr] =
-                            blk_geom_mds[*idx_mds].origin_y + tby;
+                        blk_geom_mds[*idx_mds].origin_y + tby;
                 } else if (blk_geom_mds[*idx_mds].bsize == BLOCK_16X16) {
                     blk_geom_mds[*idx_mds].txsize[tx_depth][txb_itr] =
                         av1_get_tx_size(BLOCK_8X8, 0);
@@ -694,8 +682,8 @@ void md_scan_all_blks(uint32_t* idx_mds, uint32_t sq_size, uint32_t x, uint32_t 
                         blk_geom_mds[*idx_mds].txsize_uv[0][0];
                     uint8_t offsetx[4] = {0, 8, 0, 8};
                     uint8_t offsety[4] = {0, 0, 8, 8};
-                    //   0  1
-                    //   2  3
+                    /*!<   0  1 */
+                    /*!<   2  3 */
                     uint8_t tbx = offsetx[txb_itr];
                     uint8_t tby = offsety[txb_itr];
 
@@ -704,7 +692,7 @@ void md_scan_all_blks(uint32_t* idx_mds, uint32_t sq_size, uint32_t x, uint32_t 
                             blk_geom_mds[*idx_mds].origin_x + tbx;
                     blk_geom_mds[*idx_mds].tx_org_y[0][tx_depth][txb_itr] =
                         blk_geom_mds[*idx_mds].tx_org_y[1][tx_depth][txb_itr] =
-                            blk_geom_mds[*idx_mds].origin_y + tby;
+                        blk_geom_mds[*idx_mds].origin_y + tby;
                 } else if (blk_geom_mds[*idx_mds].bsize == BLOCK_16X8) {
                     blk_geom_mds[*idx_mds].txsize[tx_depth][txb_itr] =
                         av1_get_tx_size(BLOCK_8X8, 0);
@@ -712,7 +700,7 @@ void md_scan_all_blks(uint32_t* idx_mds, uint32_t sq_size, uint32_t x, uint32_t 
                         blk_geom_mds[*idx_mds].txsize_uv[0][0];
                     uint8_t offsetx[2] = {0, 8};
                     uint8_t offsety[2] = {0, 0};
-                    //   0  1
+                    /*!<   0  1 */
                     uint8_t tbx = offsetx[txb_itr];
                     uint8_t tby = offsety[txb_itr];
 
@@ -721,7 +709,8 @@ void md_scan_all_blks(uint32_t* idx_mds, uint32_t sq_size, uint32_t x, uint32_t 
                             blk_geom_mds[*idx_mds].origin_x + tbx;
                     blk_geom_mds[*idx_mds].tx_org_y[0][tx_depth][txb_itr] =
                         blk_geom_mds[*idx_mds].tx_org_y[1][tx_depth][txb_itr] =
-                            blk_geom_mds[*idx_mds].origin_y + tby;
+                        blk_geom_mds[*idx_mds].origin_y + tby;
+                    //SVT_LOG("");
                 } else if (blk_geom_mds[*idx_mds].bsize == BLOCK_8X16) {
                     blk_geom_mds[*idx_mds].txsize[tx_depth][txb_itr] =
                         av1_get_tx_size(BLOCK_8X8, 0);
@@ -729,16 +718,16 @@ void md_scan_all_blks(uint32_t* idx_mds, uint32_t sq_size, uint32_t x, uint32_t 
                         blk_geom_mds[*idx_mds].txsize_uv[0][0];
                     uint8_t offsetx[2] = {0, 0};
                     uint8_t offsety[2] = {0, 8};
-                    //   0  1
+                    /*!<   0  1 */
                     uint8_t tbx = offsetx[txb_itr];
                     uint8_t tby = offsety[txb_itr];
 
-                    blk_geom_mds[*idx_mds].tx_org_x[0][tx_depth][txb_itr] =
+                     blk_geom_mds[*idx_mds].tx_org_x[0][tx_depth][txb_itr] =
                         blk_geom_mds[*idx_mds].tx_org_x[1][tx_depth][txb_itr] =
                             blk_geom_mds[*idx_mds].origin_x + tbx;
                     blk_geom_mds[*idx_mds].tx_org_y[0][tx_depth][txb_itr] =
                         blk_geom_mds[*idx_mds].tx_org_y[1][tx_depth][txb_itr] =
-                            blk_geom_mds[*idx_mds].origin_y + tby;
+                        blk_geom_mds[*idx_mds].origin_y + tby;
                 } else if (blk_geom_mds[*idx_mds].bsize == BLOCK_8X8) {
                     blk_geom_mds[*idx_mds].txsize[tx_depth][txb_itr] =
                         av1_get_tx_size(BLOCK_4X4, 0);
@@ -746,8 +735,8 @@ void md_scan_all_blks(uint32_t* idx_mds, uint32_t sq_size, uint32_t x, uint32_t 
                         blk_geom_mds[*idx_mds].txsize_uv[0][0];
                     uint8_t offsetx[4] = {0, 4, 0, 4};
                     uint8_t offsety[4] = {0, 0, 4, 4};
-                    //   0  1
-                    //   2  3
+                    /*!<   0  1 */
+                    /*!<   2  3 */
                     uint8_t tbx = offsetx[txb_itr];
                     uint8_t tby = offsety[txb_itr];
 
@@ -756,13 +745,13 @@ void md_scan_all_blks(uint32_t* idx_mds, uint32_t sq_size, uint32_t x, uint32_t 
                             blk_geom_mds[*idx_mds].origin_x + tbx;
                     blk_geom_mds[*idx_mds].tx_org_y[0][tx_depth][txb_itr] =
                         blk_geom_mds[*idx_mds].tx_org_y[1][tx_depth][txb_itr] =
-                            blk_geom_mds[*idx_mds].origin_y + tby;
+                        blk_geom_mds[*idx_mds].origin_y + tby;
                 } else if (blk_geom_mds[*idx_mds].bsize == BLOCK_64X16) {
                     blk_geom_mds[*idx_mds].txsize[tx_depth][txb_itr] =
                         av1_get_tx_size(BLOCK_16X16, 0);
                     blk_geom_mds[*idx_mds].txsize_uv[tx_depth][txb_itr] =
                         blk_geom_mds[*idx_mds].txsize_uv[0][0];
-                    //   0  1 2 3
+                    /*!<   0  1 2 3 */
                     uint8_t offsetx[4] = {0, 16, 32, 48};
                     uint8_t offsety[4] = {0, 0, 0, 0};
                     uint8_t tbx        = offsetx[txb_itr];
@@ -773,13 +762,13 @@ void md_scan_all_blks(uint32_t* idx_mds, uint32_t sq_size, uint32_t x, uint32_t 
                             blk_geom_mds[*idx_mds].origin_x + tbx;
                     blk_geom_mds[*idx_mds].tx_org_y[0][tx_depth][txb_itr] =
                         blk_geom_mds[*idx_mds].tx_org_y[1][tx_depth][txb_itr] =
-                            blk_geom_mds[*idx_mds].origin_y + tby;
+                        blk_geom_mds[*idx_mds].origin_y + tby;
                 } else if (blk_geom_mds[*idx_mds].bsize == BLOCK_16X64) {
                     blk_geom_mds[*idx_mds].txsize[tx_depth][txb_itr] =
                         av1_get_tx_size(BLOCK_16X16, 0);
                     blk_geom_mds[*idx_mds].txsize_uv[tx_depth][txb_itr] =
                         blk_geom_mds[*idx_mds].txsize_uv[0][0];
-                    //   0  1 2 3
+                    /*!<   0  1 2 3 */
                     uint8_t offsetx[4] = {0, 0, 0, 0};
                     uint8_t offsety[4] = {0, 16, 32, 48};
                     uint8_t tbx        = offsetx[txb_itr];
@@ -790,13 +779,13 @@ void md_scan_all_blks(uint32_t* idx_mds, uint32_t sq_size, uint32_t x, uint32_t 
                             blk_geom_mds[*idx_mds].origin_x + tbx;
                     blk_geom_mds[*idx_mds].tx_org_y[0][tx_depth][txb_itr] =
                         blk_geom_mds[*idx_mds].tx_org_y[1][tx_depth][txb_itr] =
-                            blk_geom_mds[*idx_mds].origin_y + tby;
+                        blk_geom_mds[*idx_mds].origin_y + tby;
                 } else if (blk_geom_mds[*idx_mds].bsize == BLOCK_32X8) {
                     blk_geom_mds[*idx_mds].txsize[tx_depth][txb_itr] =
                         av1_get_tx_size(BLOCK_8X8, 0);
                     blk_geom_mds[*idx_mds].txsize_uv[tx_depth][txb_itr] =
                         blk_geom_mds[*idx_mds].txsize_uv[0][0];
-                    //   0  1 2 3
+                    /*!<   0  1 2 3 */
                     uint8_t offsetx[4] = {0, 8, 16, 24};
                     uint8_t offsety[4] = {0, 0, 0, 0};
                     uint8_t tbx        = offsetx[txb_itr];
@@ -807,13 +796,13 @@ void md_scan_all_blks(uint32_t* idx_mds, uint32_t sq_size, uint32_t x, uint32_t 
                             blk_geom_mds[*idx_mds].origin_x + tbx;
                     blk_geom_mds[*idx_mds].tx_org_y[0][tx_depth][txb_itr] =
                         blk_geom_mds[*idx_mds].tx_org_y[1][tx_depth][txb_itr] =
-                            blk_geom_mds[*idx_mds].origin_y + tby;
+                        blk_geom_mds[*idx_mds].origin_y + tby;
                 } else if (blk_geom_mds[*idx_mds].bsize == BLOCK_8X32) {
                     blk_geom_mds[*idx_mds].txsize[tx_depth][txb_itr] =
                         av1_get_tx_size(BLOCK_8X8, 0);
                     blk_geom_mds[*idx_mds].txsize_uv[tx_depth][txb_itr] =
                         blk_geom_mds[*idx_mds].txsize_uv[0][0];
-                    //   0  1 2 3
+                    /*!<   0  1 2 3 */
                     uint8_t offsetx[4] = {0, 0, 0, 0};
                     uint8_t offsety[4] = {0, 8, 16, 24};
                     uint8_t tbx        = offsetx[txb_itr];
@@ -824,13 +813,13 @@ void md_scan_all_blks(uint32_t* idx_mds, uint32_t sq_size, uint32_t x, uint32_t 
                             blk_geom_mds[*idx_mds].origin_x + tbx;
                     blk_geom_mds[*idx_mds].tx_org_y[0][tx_depth][txb_itr] =
                         blk_geom_mds[*idx_mds].tx_org_y[1][tx_depth][txb_itr] =
-                            blk_geom_mds[*idx_mds].origin_y + tby;
+                        blk_geom_mds[*idx_mds].origin_y + tby;
                 } else if (blk_geom_mds[*idx_mds].bsize == BLOCK_16X4) {
                     blk_geom_mds[*idx_mds].txsize[tx_depth][txb_itr] =
                         av1_get_tx_size(BLOCK_4X4, 0);
                     blk_geom_mds[*idx_mds].txsize_uv[tx_depth][txb_itr] =
                         blk_geom_mds[*idx_mds].txsize_uv[0][0];
-                    //   0  1 2 3
+                    /*!<   0  1 2 3 */
                     uint8_t offsetx[4] = {0, 4, 8, 12};
                     uint8_t offsety[4] = {0, 0, 0, 0};
                     uint8_t tbx        = offsetx[txb_itr];
@@ -841,13 +830,13 @@ void md_scan_all_blks(uint32_t* idx_mds, uint32_t sq_size, uint32_t x, uint32_t 
                             blk_geom_mds[*idx_mds].origin_x + tbx;
                     blk_geom_mds[*idx_mds].tx_org_y[0][tx_depth][txb_itr] =
                         blk_geom_mds[*idx_mds].tx_org_y[1][tx_depth][txb_itr] =
-                            blk_geom_mds[*idx_mds].origin_y + tby;
+                        blk_geom_mds[*idx_mds].origin_y + tby;
                 } else if (blk_geom_mds[*idx_mds].bsize == BLOCK_4X16) {
                     blk_geom_mds[*idx_mds].txsize[tx_depth][txb_itr] =
                         av1_get_tx_size(BLOCK_4X4, 0);
                     blk_geom_mds[*idx_mds].txsize_uv[tx_depth][txb_itr] =
                         blk_geom_mds[*idx_mds].txsize_uv[0][0];
-                    //   0  1 2 3
+                    /*!<   0  1 2 3 */
                     uint8_t offsetx[4] = {0, 0, 0, 0};
                     uint8_t offsety[4] = {0, 4, 8, 12};
                     uint8_t tbx        = offsetx[txb_itr];
@@ -858,7 +847,7 @@ void md_scan_all_blks(uint32_t* idx_mds, uint32_t sq_size, uint32_t x, uint32_t 
                             blk_geom_mds[*idx_mds].origin_x + tbx;
                     blk_geom_mds[*idx_mds].tx_org_y[0][tx_depth][txb_itr] =
                         blk_geom_mds[*idx_mds].tx_org_y[1][tx_depth][txb_itr] =
-                            blk_geom_mds[*idx_mds].origin_y + tby;
+                        blk_geom_mds[*idx_mds].origin_y + tby;
                 } else {
                     if (blk_geom_mds[*idx_mds].bsize == BLOCK_128X128) {
                         blk_geom_mds[*idx_mds].txsize[tx_depth][txb_itr] =
@@ -1105,7 +1094,7 @@ void log_redundancy_similarity(uint32_t max_block_count) {
             if (cur_geom->bsize == search_geom->bsize &&
                 cur_geom->origin_x == search_geom->origin_x &&
                 cur_geom->origin_y == search_geom->origin_y && s_it != blk_it) {
-                //one block could have similar and redundant blocks
+                /*!< one block could have similar and redundant blocks */
                 cur_geom->similar = 1;
                 cur_geom->similar_list.blk_mds_table[cur_geom->similar_list.list_size] =
                     search_geom->blkidx_mds;
@@ -1125,25 +1114,25 @@ void build_blk_geom(int32_t use_128x128) {
     max_depth                = use_128x128 ? 6 : 5;
     uint32_t max_block_count = use_128x128 ? BLOCK_MAX_COUNT_SB_128 : BLOCK_MAX_COUNT_SB_64;
 
-    //(0)compute total number of blocks using the information provided
+    /*!< (0)compute total number of blocks using the information provided */
     max_num_active_blocks = count_total_num_of_active_blks();
     if (max_num_active_blocks != max_block_count)
         SVT_LOG(" \n\n Error %i blocks\n\n ", max_num_active_blocks);
 
-    //(1) Construct depth scan blk_geom_dps
+    /*!< (1) Construct depth scan blk_geom_dps */
     depth_scan_all_blks();
 
-    //(2) Construct md scan blk_geom_mds:  use info from dps
+    /*!< (2) Construct md scan blk_geom_mds:  use info from dps */
     uint32_t idx_mds = 0;
     md_scan_all_blks(&idx_mds, max_sb, 0, 0, 0, 0);
 
-    //(3) Fill more info from mds to dps - print using dps
+    /*!< (3) Fill more info from mds to dps - print using dps */
     finish_depth_scan_all_blks();
 
     log_redundancy_similarity(max_block_count);
 }
 
-//need to finish filling dps by inherting data from mds
+/*!< need to finish filling dps by inherting data from mds */
 const BlockGeom* get_blk_geom_mds(uint32_t bidx_mds) { return &blk_geom_mds[bidx_mds]; }
 
 uint32_t get_mds_idx(uint32_t orgx, uint32_t orgy, uint32_t size, uint32_t use_128x128) {

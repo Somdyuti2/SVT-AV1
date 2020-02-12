@@ -1,20 +1,18 @@
-/*
- * Copyright (c) 2017, Alliance for Open Media. All rights reserved
+/*!< Copyright (c) 2017, Alliance for Open Media. All rights reserved
  *
  * This source code is subject to the terms of the BSD 2 Clause License and
  * the Alliance for Open Media Patent License 1.0. If the BSD 2 Clause License
  * was not distributed with this source code in the LICENSE file, you can
  * obtain it at www.aomedia.org/license/software. If the Alliance for Open
  * Media Patent License 1.0 was not distributed with this source code in the
- * PATENTS file, you can obtain it at www.aomedia.org/license/patent.
- */
+ * PATENTS file, you can obtain it at www.aomedia.org/license/patent. */
 
 #include "EbDefinitions.h"
 #include "common_dsp_rtcd.h"
 #include <tmmintrin.h>
 
-// Weights are quadratic from '1' to '1 / BlockSize', scaled by
-// 2^sm_weight_log2_scale.
+/*!< Weights are quadratic from '1' to '1 / BlockSize', scaled by
+ *   2^sm_weight_log2_scale. */
 static const int32_t sm_weight_log2_scale = 8;
 
 // max(block_size_wide[BLOCK_LARGEST], block_size_high[BLOCK_LARGEST])
@@ -22,35 +20,35 @@ static const int32_t sm_weight_log2_scale = 8;
 
 /* clang-format off */
 static const uint8_t sm_weight_arrays[2 * MAX_BLOCK_DIM] = {
-    // Unused, because we always offset by bs, which is at least 2.
+    /*!< Unused, because we always offset by bs, which is at least 2. */
     0, 0,
-    // bs = 2
+    /*!< bs = 2 */
     255, 128,
-    // bs = 4
+    /*!< bs = 4 */
     255, 149, 85, 64,
-    // bs = 8
+    /*!< bs = 8 */
     255, 197, 146, 105, 73, 50, 37, 32,
-    // bs = 16
+    /*!< bs = 16 */
     255, 225, 196, 170, 145, 123, 102, 84, 68, 54, 43, 33, 26, 20, 17, 16,
-    // bs = 32
+    /*!< bs = 32 */
     255, 240, 225, 210, 196, 182, 169, 157, 145, 133, 122, 111, 101, 92, 83, 74,
     66, 59, 52, 45, 39, 34, 29, 25, 21, 17, 14, 12, 10, 9, 8, 8,
-    // bs = 64
+    /*!< bs = 64 */
     255, 248, 240, 233, 225, 218, 210, 203, 196, 189, 182, 176, 169, 163, 156,
     150, 144, 138, 133, 127, 121, 116, 111, 106, 101, 96, 91, 86, 82, 77, 73, 69,
     65, 61, 57, 54, 50, 47, 44, 41, 38, 35, 32, 29, 27, 25, 22, 20, 18, 16, 15,
     13, 12, 10, 9, 8, 7, 6, 6, 5, 5, 4, 4, 4,
 };
 
-// -----------------------------------------------------------------------------
-// PAETH_PRED
+/********************************************************************************/
+/*!< PAETH_PRED */
 
-// -----------------------------------------------------------------------------
-// SMOOTH_PRED
+/********************************************************************************/
+/*!< SMOOTH_PRED */
 
-// pixels[0]: above and below_pred interleave vector
-// pixels[1]: left vector
-// pixels[2]: right_pred vector
+/*!< pixels[0]: above and below_pred interleave vector
+ *   pixels[1]: left vector
+ *   pixels[2]: right_pred vector */
 static INLINE void load_pixel_w4(const uint8_t *above, const uint8_t *left,
     int32_t height, __m128i *pixels) {
     __m128i d = _mm_cvtsi32_si128(((const uint32_t *)above)[0]);
@@ -69,11 +67,11 @@ static INLINE void load_pixel_w4(const uint8_t *above, const uint8_t *left,
     pixels[0] = _mm_unpacklo_epi16(d, bp);
 }
 
-// weight_h[0]: weight_h vector
-// weight_h[1]: scale - weight_h vector
-// weight_h[2]: same as [0], second half for height = 16 only
-// weight_h[3]: same as [1], second half for height = 16 only
-// weight_w[0]: weights_w and scale - weights_w interleave vector
+/*!< weight_h[0]: weight_h vector
+ *   weight_h[1]: scale - weight_h vector
+ *   weight_h[2]: same as [0], second half for height = 16 only
+ *   weight_h[3]: same as [1], second half for height = 16 only
+ *   weight_w[0]: weights_w and scale - weights_w interleave vector */
 static INLINE void load_weight_w4(const uint8_t *weight_array, int32_t height,
     __m128i *weight_h, __m128i *weight_w) {
     const __m128i zero = _mm_setzero_si128();
@@ -166,14 +164,14 @@ void eb_aom_smooth_predictor_4x16_ssse3(uint8_t *dst, ptrdiff_t stride,
     smooth_pred_4xh(pixels, &wh[2], ww, 8, dst, stride, 1);
 }
 
-// pixels[0]: above and below_pred interleave vector, first half
-// pixels[1]: above and below_pred interleave vector, second half
-// pixels[2]: left vector
-// pixels[3]: right_pred vector
-// pixels[4]: above and below_pred interleave vector, first half
-// pixels[5]: above and below_pred interleave vector, second half
-// pixels[6]: left vector + 16
-// pixels[7]: right_pred vector
+/*!< pixels[0]: above and below_pred interleave vector, first half
+ *   pixels[1]: above and below_pred interleave vector, second half
+ *   pixels[2]: left vector
+ *   pixels[3]: right_pred vector
+ *   pixels[4]: above and below_pred interleave vector, first half
+ *   pixels[5]: above and below_pred interleave vector, second half
+ *   pixels[6]: left vector + 16
+ *   pixels[7]: right_pred vector */
 static INLINE void load_pixel_w8(const uint8_t *above, const uint8_t *left,
     int32_t height, __m128i *pixels) {
     const __m128i zero = _mm_setzero_si128();
@@ -200,16 +198,16 @@ static INLINE void load_pixel_w8(const uint8_t *above, const uint8_t *left,
     }
 }
 
-// weight_h[0]: weight_h vector
-// weight_h[1]: scale - weight_h vector
-// weight_h[2]: same as [0], offset 8
-// weight_h[3]: same as [1], offset 8
-// weight_h[4]: same as [0], offset 16
-// weight_h[5]: same as [1], offset 16
-// weight_h[6]: same as [0], offset 24
-// weight_h[7]: same as [1], offset 24
-// weight_w[0]: weights_w and scale - weights_w interleave vector, first half
-// weight_w[1]: weights_w and scale - weights_w interleave vector, second half
+/*!< weight_h[0]: weight_h vector
+ *   weight_h[1]: scale - weight_h vector
+ *   weight_h[2]: same as [0], offset 8
+ *   weight_h[3]: same as [1], offset 8
+ *   weight_h[4]: same as [0], offset 16
+ *   weight_h[5]: same as [1], offset 16
+ *   weight_h[6]: same as [0], offset 24
+ *   weight_h[7]: same as [1], offset 24
+ *   weight_w[0]: weights_w and scale - weights_w interleave vector, first half
+ *   weight_w[1]: weights_w and scale - weights_w interleave vector, second half */
 static INLINE void load_weight_w8(const uint8_t *weight_array, int32_t height,
     __m128i *weight_h, __m128i *weight_w) {
     const __m128i zero = _mm_setzero_si128();
@@ -482,10 +480,10 @@ void eb_aom_smooth_predictor_16x64_ssse3(uint8_t *dst, ptrdiff_t stride,
     smooth_predictor_wxh(dst, stride, above, left, 16, 64);
 }
 
-// -----------------------------------------------------------------------------
-// SMOOTH_V_PRED
+/***********************************************************************************/
+/*!< SMOOTH_V_PRED */
 
-// pixels[0]: above and below_pred interleave vector
+/*!< pixels[0]: above and below_pred interleave vector */
 static INLINE void load_pixel_v_w4(const uint8_t *above, const uint8_t *left,
     int32_t height, __m128i *pixels) {
     const __m128i zero = _mm_setzero_si128();
@@ -495,8 +493,8 @@ static INLINE void load_pixel_v_w4(const uint8_t *above, const uint8_t *left,
     pixels[0] = _mm_unpacklo_epi16(d, bp);
 }
 
-// weights[0]: weights_h vector
-// weights[1]: scale - weights_h vector
+/*!< weights[0]: weights_h vector
+ *   weights[1]: scale - weights_h vector */
 static INLINE void load_weight_v_w4(const uint8_t *weight_array, int32_t height,
     __m128i *weights) {
     const __m128i zero = _mm_setzero_si128();
@@ -582,8 +580,8 @@ void eb_aom_smooth_v_predictor_4x16_ssse3(uint8_t *dst, ptrdiff_t stride,
     smooth_v_pred_4xh(&pixels, &weights[2], 8, dst, stride);
 }
 
-// pixels[0]: above and below_pred interleave vector, first half
-// pixels[1]: above and below_pred interleave vector, second half
+/*!< pixels[0]: above and below_pred interleave vector, first half
+ *   pixels[1]: above and below_pred interleave vector, second half */
 static INLINE void load_pixel_v_w8(const uint8_t *above, const uint8_t *left,
     int32_t height, __m128i *pixels) {
     const __m128i zero = _mm_setzero_si128();
@@ -594,14 +592,14 @@ static INLINE void load_pixel_v_w8(const uint8_t *above, const uint8_t *left,
     pixels[1] = _mm_unpackhi_epi16(d, bp);
 }
 
-// weight_h[0]: weight_h vector
-// weight_h[1]: scale - weight_h vector
-// weight_h[2]: same as [0], offset 8
-// weight_h[3]: same as [1], offset 8
-// weight_h[4]: same as [0], offset 16
-// weight_h[5]: same as [1], offset 16
-// weight_h[6]: same as [0], offset 24
-// weight_h[7]: same as [1], offset 24
+/*!< weight_h[0]: weight_h vector
+ *   weight_h[1]: scale - weight_h vector
+ *   weight_h[2]: same as [0], offset 8
+ *   weight_h[3]: same as [1], offset 8
+ *   weight_h[4]: same as [0], offset 16
+ *   weight_h[5]: same as [1], offset 16
+ *   weight_h[6]: same as [0], offset 24
+ *   weight_h[7]: same as [1], offset 24 */
 static INLINE void load_weight_v_w8(const uint8_t *weight_array, int32_t height,
     __m128i *weight_h) {
     const __m128i zero = _mm_setzero_si128();
@@ -746,7 +744,7 @@ static INLINE void smooth_v_predictor_wxh(uint8_t *dst, ptrdiff_t stride,
 
         for (uint32_t x = 0; x < bw; x += 8) {
             const __m128i top_x = _mm_loadl_epi64((const __m128i *)(above + x));
-            // 8 -> 16
+            /*!< 8 -> 16 */
             const __m128i tw_x = _mm_unpacklo_epi8(top_x, zero);
             const __m128i tw_x_lo = _mm_unpacklo_epi16(tw_x, scale_m_weights_y);
             const __m128i tw_x_hi = _mm_unpackhi_epi16(tw_x, scale_m_weights_y);
@@ -839,11 +837,11 @@ void eb_aom_smooth_v_predictor_16x64_ssse3(uint8_t *dst, ptrdiff_t stride,
     smooth_v_predictor_wxh(dst, stride, above, left, 16, 64);
 }
 
-// -----------------------------------------------------------------------------
-// SMOOTH_H_PRED
+/******************************************************************************/
+/*!< SMOOTH_H_PRED */
 
-// pixels[0]: left vector
-// pixels[1]: right_pred vector
+/*!< pixels[0]: left vector
+ *   pixels[1]: right_pred vector */
 static INLINE void load_pixel_h_w4(const uint8_t *above, const uint8_t *left,
     int32_t height, __m128i *pixels) {
     if (height == 4)
@@ -855,7 +853,7 @@ static INLINE void load_pixel_h_w4(const uint8_t *above, const uint8_t *left,
     pixels[1] = _mm_set1_epi16((uint16_t)above[3]);
 }
 
-// weights[0]: weights_w and scale - weights_w interleave vector
+/*!< weights[0]: weights_w and scale - weights_w interleave vector */
 static INLINE void load_weight_h_w4(const uint8_t *weight_array, int32_t height,
     __m128i *weights) {
     (void)height;
@@ -932,10 +930,10 @@ void eb_aom_smooth_h_predictor_4x16_ssse3(uint8_t *dst, ptrdiff_t stride,
     smooth_h_pred_4xh(pixels, &weights, 8, dst, stride);
 }
 
-// pixels[0]: left vector
-// pixels[1]: right_pred vector
-// pixels[2]: left vector + 16
-// pixels[3]: right_pred vector
+/*!< pixels[0]: left vector
+ *   pixels[1]: right_pred vector
+ *   pixels[2]: left vector + 16
+ *   pixels[3]: right_pred vector */
 static INLINE void load_pixel_h_w8(const uint8_t *above, const uint8_t *left,
     int32_t height, __m128i *pixels) {
     pixels[1] = _mm_set1_epi16((uint16_t)above[7]);
@@ -953,8 +951,8 @@ static INLINE void load_pixel_h_w8(const uint8_t *above, const uint8_t *left,
     }
 }
 
-// weight_w[0]: weights_w and scale - weights_w interleave vector, first half
-// weight_w[1]: weights_w and scale - weights_w interleave vector, second half
+/*!< weight_w[0]: weights_w and scale - weights_w interleave vector, first half
+ *   weight_w[1]: weights_w and scale - weights_w interleave vector, second half */
 static INLINE void load_weight_h_w8(const uint8_t *weight_array, int32_t height,
     __m128i *weight_w) {
     (void)height;

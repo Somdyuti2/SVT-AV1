@@ -1,7 +1,5 @@
-/*
-* Copyright(c) 2019 Intel Corporation
-* SPDX - License - Identifier: BSD - 2 - Clause - Patent
-*/
+/*!< Copyright(c) 2019 Intel Corporation
+ * SPDX - License - Identifier: BSD - 2 - Clause - Patent */
 
 //#include "EbUtility.h"
 #include "EbDefinitions.h"
@@ -74,7 +72,7 @@ void eb_av1_filter_intra_predictor_c(uint8_t *dst, ptrdiff_t stride,
 
     assert(bw <= 32 && bh <= 32);
 
-    // The initialization is just for silencing Jenkins static analysis warnings
+    /*!< The initialization is just for silencing Jenkins static analysis warnings */
     for (r = 0; r < bh + 1; ++r)
         memset(buffer[r], 0, (bw + 1) * sizeof(buffer[0][0]));
 

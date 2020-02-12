@@ -1,13 +1,11 @@
-/*
- * Copyright (c) 2018, Alliance for Open Media. All rights reserved
+/*!< Copyright (c) 2018, Alliance for Open Media. All rights reserved
  *
  * This source code is subject to the terms of the BSD 2 Clause License and
  * the Alliance for Open Media Patent License 1.0. If the BSD 2 Clause License
  * was not distributed with this source code in the LICENSE file, you can
  * obtain it at www.aomedia.org/license/software. If the Alliance for Open
  * Media Patent License 1.0 was not distributed with this source code in the
- * PATENTS file, you can obtain it at www.aomedia.org/license/patent.
- */
+ * PATENTS file, you can obtain it at www.aomedia.org/license/patent. */
 
 #include "hash.h"
 #include "hash_motion.h"
@@ -29,8 +27,8 @@ static void hash_table_clear_all(HashTable *p_hash_table) {
     }
 }
 
-// TODO(youzhou@microsoft.com): is higher than 8 bits screen content supported?
-// If yes, fix this function
+/*!< TODO(youzhou@microsoft.com): is higher than 8 bits screen content supported?
+ *   If yes, fix this function */
 static void get_pixels_in_1d_char_array_by_block_2x2(uint8_t *y_src, int stride,
                                                      uint8_t *p_pixels_in1D) {
     uint8_t *p_pel = y_src;
@@ -71,9 +69,9 @@ static int is_block16_2x2_col_same_value(uint16_t *p) {
     return 1;
 }
 
-// the hash value (hash_value1 consists two parts, the first 3 bits relate to
-// the block size and the remaining 16 bits are the crc values. This fuction
-// is used to get the first 3 bits.
+/*!< The hash value (hash_value1 consists two parts, the first 3 bits relate to
+ *   the block size and the remaining 16 bits are the crc values. This fuction
+ *   is used to get the first 3 bits. */
 static int hash_block_size_to_index(int block_size) {
     switch (block_size) {
     case 4: return 0;
@@ -262,7 +260,7 @@ void av1_add_to_hash_map_by_row_with_precal_data(HashTable *p_hash_table, uint32
     for (int x_pos = 0; x_pos < x_end; x_pos++) {
         for (int y_pos = 0; y_pos < y_end; y_pos++) {
             const int pos = y_pos * pic_width + x_pos;
-            // valid data
+            /*!< valid data */
             if (src_is_added[pos]) {
                 BlockHash curr_block_hash;
                 curr_block_hash.x = x_pos;
@@ -286,7 +284,7 @@ void av1_get_block_hash_value(uint8_t *y_src, int stride, int block_size, uint32
     assert(add_value >= 0);
     const int crc_mask = (1 << crc_bits) - 1;
 
-    // 2x2 subblock hash values in current CU
+    /*!< 2x2 subblock hash values in current CU */
     int sub_block_in_width = (block_size >> 1);
     if (use_highbitdepth) {
         uint16_t  pixel_to_hash[4];
@@ -325,7 +323,7 @@ void av1_get_block_hash_value(uint8_t *y_src, int stride, int block_size, uint32
     int src_idx = 1;
     int dst_idx = 0;
 
-    // 4x4 subblock hash values to current block hash values
+    /*!< 4x4 subblock hash values to current block hash values */
     for (int sub_width = 4; sub_width <= block_size; sub_width *= 2) {
         src_idx = 1 - src_idx;
         dst_idx = 1 - dst_idx;

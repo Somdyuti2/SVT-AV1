@@ -1,30 +1,28 @@
-/*
- * Copyright (c) 2016, Alliance for Open Media. All rights reserved
+/*!< Copyright (c) 2016, Alliance for Open Media. All rights reserved
  *
  * This source code is subject to the terms of the BSD 2 Clause License and
  * the Alliance for Open Media Patent License 1.0. If the BSD 2 Clause License
  * was not distributed with this source code in the LICENSE file, you can
  * obtain it at www.aomedia.org/license/software. If the Alliance for Open
  * Media Patent License 1.0 was not distributed with this source code in the
- * PATENTS file, you can obtain it at www.aomedia.org/license/patent.
- */
+ * PATENTS file, you can obtain it at www.aomedia.org/license/patent. */
 
 #include <assert.h>
 #include "convolve.h"
 #include "common_dsp_rtcd.h"
 
-// Note: Fixed size intermediate buffers, place limits on parameters
-// of some functions. 2d filtering proceeds in 2 steps:
-//   (1) Interpolate horizontally into an intermediate buffer, temp.
-//   (2) Interpolate temp vertically to derive the sub-pixel result.
-// Deriving the maximum number of rows in the temp buffer (135):
-// --Smallest scaling factor is x1/2 ==> y_step_q4 = 32 (Normative).
-// --Largest block size is 128x128 pixels.
-// --128 rows in the downscaled frame span a distance of (128 - 1) * 32 in the
-//   original frame (in 1/16th pixel units).
-// --Must round-up because block may be located at sub-pixel position.
-// --Require an additional SUBPEL_TAPS rows for the 8-tap filter tails.
-// --((128 - 1) * 32 + 15) >> 4 + 8 = 263.
+/*!< Note: Fixed size intermediate buffers, place limits on parameters
+ *   of some functions. 2d filtering proceeds in 2 steps:
+ *     (1) Interpolate horizontally into an intermediate buffer, temp.
+ *     (2) Interpolate temp vertically to derive the sub-pixel result.
+ *   Deriving the maximum number of rows in the temp buffer (135):
+ *   --Smallest scaling factor is x1/2 ==> y_step_q4 = 32 (Normative).
+ *   --Largest block size is 128x128 pixels.
+ *   --128 rows in the downscaled frame span a distance of (128 - 1) * 32 in the
+ *     original frame (in 1/16th pixel units).
+ *   --Must round-up because block may be located at sub-pixel position.
+ *   --Require an additional SUBPEL_TAPS rows for the 8-tap filter tails.
+ *   --((128 - 1) * 32 + 15) >> 4 + 8 = 263. */
 #define WIENER_MAX_EXT_SIZE 263
 
 static INLINE int32_t horz_scalar_product(const uint8_t *a, const int16_t *b) {
@@ -47,8 +45,8 @@ static INLINE int32_t highbd_vert_scalar_product(const uint16_t *a, ptrdiff_t a_
 }
 
 static const InterpKernel *get_filter_base(const int16_t *filter) {
-    // NOTE: This assumes that the filter table is 256-byte aligned.
-    // TODO(agrange) Modify to make independent of table alignment.
+    /*!< NOTE: This assumes that the filter table is 256-byte aligned. */
+    /*!< TODO(agrange) Modify to make independent of table alignment. */
     return (const InterpKernel *)(((intptr_t)filter) & ~((intptr_t)0xFF));
 }
 

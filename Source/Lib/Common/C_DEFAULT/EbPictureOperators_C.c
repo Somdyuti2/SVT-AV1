@@ -1,14 +1,12 @@
-/*
-* Copyright(c) 2019 Intel Corporation
-* SPDX - License - Identifier: BSD - 2 - Clause - Patent
-*/
+/*!< Copyright(c) 2019 Intel Corporation
+ * SPDX - License - Identifier: BSD - 2 - Clause - Patent */
 
 #include "EbPictureOperators_C.h"
 #include "EbUtility.h"
 
-/*********************************
-* Picture Average
-*********************************/
+/*********************************/
+/* Picture Average */
+/*********************************/
 void picture_average_kernel_c(EbByte src0, uint32_t src0_stride, EbByte src1, uint32_t src1_stride,
                               EbByte dst, uint32_t dst_stride, uint32_t area_width,
                               uint32_t area_height) {
@@ -27,12 +25,12 @@ void picture_average_kernel1_line_c(EbByte src0, EbByte src1, EbByte dst, uint32
     for (i = 0; i < areaWidth; i++) dst[i] = (src0[i] + src1[i] + 1) / 2;
 }
 
-/*********************************
-* Picture Copy Kernel
-*********************************/
+/*********************************/
+/*!< Picture Copy Kernel */
+/*********************************/
 void picture_copy_kernel(EbByte src, uint32_t src_stride, EbByte dst, uint32_t dst_stride,
                          uint32_t area_width, uint32_t area_height,
-                         uint32_t bytes_per_sample) //=1 always)
+                         uint32_t bytes_per_sample) /*!< =1 always) */
 {
     uint32_t       sample_count       = 0;
     const uint32_t sample_total_count = area_width * area_height;
@@ -51,7 +49,7 @@ void picture_copy_kernel(EbByte src, uint32_t src_stride, EbByte dst, uint32_t d
     return;
 }
 
-// C equivalents
+/*!< C equivalents */
 
 uint64_t spatial_full_distortion_kernel_c(uint8_t *input, uint32_t input_offset,
                                           uint32_t input_stride, uint8_t *recon,

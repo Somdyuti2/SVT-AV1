@@ -1,18 +1,14 @@
-/*
-* Copyright(c) 2019 Netflix, Inc.
-* SPDX - License - Identifier: BSD - 2 - Clause - Patent
-*/
+/*!< Copyright(c) 2019 Netflix, Inc.
+ * SPDX - License - Identifier: BSD - 2 - Clause - Patent */
 
-/*
-* Copyright (c) 2016, Alliance for Open Media. All rights reserved
-*
-* This source code is subject to the terms of the BSD 2 Clause License and
-* the Alliance for Open Media Patent License 1.0. If the BSD 2 Clause License
-* was not distributed with this source code in the LICENSE file, you can
-* obtain it at www.aomedia.org/license/software. If the Alliance for Open
-* Media Patent License 1.0 was not distributed with this source code in the
-* PATENTS file, you can obtain it at www.aomedia.org/license/patent.
-*/
+/*!< Copyright (c) 2016, Alliance for Open Media. All rights reserved
+ *
+ * This source code is subject to the terms of the BSD 2 Clause License and
+ * the Alliance for Open Media Patent License 1.0. If the BSD 2 Clause License
+ * was not distributed with this source code in the LICENSE file, you can
+ * obtain it at www.aomedia.org/license/software. If the Alliance for Open
+ * Media Patent License 1.0 was not distributed with this source code in the
+ * PATENTS file, you can obtain it at www.aomedia.org/license/patent. */
 
 #include "EbDefinitions.h"
 
@@ -26,7 +22,7 @@
 #include "EbQMatrices.h"
 #include "EbInvTransforms.h"
 
-// Same wrapper(av1_ac/dc_quant_qtx) available in .c file of encoder
+/*!< Same wrapper(av1_ac/dc_quant_qtx) available in .c file of encoder */
 static INLINE int16_t get_dc_quant(int32_t qindex, int32_t delta, AomBitDepth bit_depth) {
     return eb_av1_dc_quant_q3(qindex, delta, bit_depth);
 }
@@ -35,7 +31,7 @@ static INLINE int16_t get_ac_quant(int32_t qindex, int32_t delta, AomBitDepth bi
     return eb_av1_ac_quant_q3(qindex, delta, bit_depth);
 }
 
-// Called in read_frame_header_obu() -> av1_decode_frame_headers_and_setup() -> read_uncompressed_header()
+/*!< Called in read_frame_header_obu() -> av1_decode_frame_headers_and_setup() -> read_uncompressed_header() */
 void setup_segmentation_dequant(DecModCtxt *dec_mod_ctxt) {
     SeqHeader *  seq_header = dec_mod_ctxt->seq_header;
     FrameHeader *frame_info = dec_mod_ctxt->frame_header;
@@ -73,7 +69,7 @@ void av1_inverse_qm_init(DecModCtxt *dec_mod_ctxt, SeqHeader *seq_header) {
                 const uint8_t qm_tx_size = av1_get_adjusted_tx_size(t);
                 if (q == NUM_QM_LEVELS - 1)
                     dec_mod_ctxt->giqmatrix[q][c][t] = NULL;
-                else if (t != qm_tx_size) { // Reuse matrices for 'qm_tx_size'
+                else if (t != qm_tx_size) { /*!< Reuse matrices for 'qm_tx_size' */
                     dec_mod_ctxt->giqmatrix[q][c][t] = dec_mod_ctxt->giqmatrix[q][c][qm_tx_size];
                 } else {
                     assert(current + size <= QM_TOTAL_SIZE);
@@ -85,8 +81,8 @@ void av1_inverse_qm_init(DecModCtxt *dec_mod_ctxt, SeqHeader *seq_header) {
     }
 }
 
-// Called in decode_tiles()
-// Default initilaization of dequant and iquant
+/*!< Called in decode_tiles() */
+/*!< Default initilaization of dequant and iquant */
 /*
 void av1_init_sb(FrameHeader *frame)
 {
@@ -94,8 +90,8 @@ void av1_init_sb(FrameHeader *frame)
 }
 */
 
-// Called in parse_decode_block()
-// Update de-quantization parameter based on delta qp param
+/*!< Called in parse_decode_block() */
+/*!< Update de-quantization parameter based on delta qp param */
 void update_dequant(DecModCtxt *dec_mod_ctxt, SBInfo *sb_info) {
     int32_t      current_qindex;
     int          dc_delta_q, ac_delta_q;
@@ -153,13 +149,13 @@ int32_t inverse_quantize(DecModCtxt *dec_mod_ctxt, PartitionInfo *part, BlockMod
                                         : dec_mod_ctxt->giqmatrix[NUM_QM_LEVELS - 1][0][qm_tx_size];
     const int shift = av1_get_tx_scale(tx_size);
 
-    // Level is 1D array with eob length as first value then continued by
-    // coeffs value to the length of eob.
+    /*!< Level is 1D array with eob length as first value then continued by
+     *   coeffs value to the length of eob. */
 #if SVT_DEC_COEFF_DEBUG
     int16_t *cur_coeff = (int16_t *)level;
     n_coeffs           = cur_coeff[1];
 #else
-    n_coeffs = level[0]; // coeffs length
+    n_coeffs = level[0]; /*!< coeffs length */
 #endif
     level++;
 

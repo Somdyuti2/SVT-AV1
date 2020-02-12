@@ -1,13 +1,11 @@
-/*
- * Copyright (c) 2016, Alliance for Open Media. All rights reserved
+/*!< Copyright (c) 2016, Alliance for Open Media. All rights reserved
  *
  * This source code is subject to the terms of the BSD 2 Clause License and
  * the Alliance for Open Media Patent License 1.0. If the BSD 2 Clause License
  * was not distributed with this source code in the LICENSE file, you can
  * obtain it at www.aomedia.org/license/software. If the Alliance for Open
  * Media Patent License 1.0 was not distributed with this source code in the
- * PATENTS file, you can obtain it at www.aomedia.org/license/patent.
- */
+ * PATENTS file, you can obtain it at www.aomedia.org/license/patent. */
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -26,11 +24,11 @@
 
 #define MIN_TRANS_THRESH (1 * GM_TRANS_DECODE_FACTOR)
 
-// Border over which to compute the global motion
+/*!< Border over which to compute the global motion */
 #define ERRORADV_BORDER 0
 
-// TODO(sarahparker) These need to be retuned for speed 0 and 1 to
-// maximize gains from segmented error metric
+/*!< TODO(sarahparker): These need to be retuned for speed 0 and 1 to
+ *   maximize gains from segmented error metric */
 static const double erroradv_tr[]      = {0.65, 0.60, 0.65};
 static const double erroradv_prod_tr[] = {20000, 18000, 16000};
 
@@ -87,30 +85,29 @@ void av1_convert_model_to_params(const double *params, EbWarpedMotionParams *mod
     model->invalid = 0;
 }
 
-// Adds some offset to a global motion parameter and handles
-// all of the necessary precision shifts, clamping, and
-// zero-centering.
+/*!< Adds some offset to a global motion parameter and handles
+ *   all of the necessary precision shifts, clamping, and zero-centering. */
 static int32_t add_param_offset(int param_index, int32_t param_value, int32_t offset) {
     const int scale_vals[3] = {GM_TRANS_PREC_DIFF, GM_ALPHA_PREC_DIFF, GM_ROW3HOMO_PREC_DIFF};
     const int clamp_vals[3] = {GM_TRANS_MAX, GM_ALPHA_MAX, GM_ROW3HOMO_MAX};
-    // type of param: 0 - translation, 1 - affine, 2 - homography
+    /*!< type of param: 0 - translation, 1 - affine, 2 - homography */
     const int param_type      = (param_index < 2 ? 0 : (param_index < 6 ? 1 : 2));
     const int is_one_centered = (param_index == 2 || param_index == 5);
 
-    // Make parameter zero-centered and offset the shift that was done to make
-    // it compatible with the warped model
+    /*!< Make parameter zero-centered and offset the shift that was done to make
+     *   it compatible with the warped model */
     param_value =
         (param_value - (is_one_centered << WARPEDMODEL_PREC_BITS)) >> scale_vals[param_type];
-    // Add desired offset to the rescaled/zero-centered parameter
+    /*!< Add desired offset to the rescaled/zero-centered parameter */
     param_value += offset;
-    // Clamp the parameter so it does not overflow the number of bits allotted
-    // to it in the Bitstream
+    /*!< Clamp the parameter so it does not overflow the number of bits allotted
+     *   to it in the Bitstream */
     param_value = (int32_t)clamp(param_value, -clamp_vals[param_type], clamp_vals[param_type]);
-    // Rescale the parameter to WARPEDMODEL_PRECISION_BITS so it is compatible
-    // with the warped motion library
+    /*!< Rescale the parameter to WARPEDMODEL_PRECISION_BITS so it is compatible
+     *   with the warped motion library */
     param_value *= (1 << scale_vals[param_type]);
 
-    // Undo the zero-centering step if necessary
+    /*!< Undo the zero-centering step if necessary */
     return param_value + (is_one_centered << WARPEDMODEL_PREC_BITS);
 }
 
@@ -171,11 +168,11 @@ int64_t av1_refine_integerized_param(EbWarpedMotionParams *wm, TransformationTyp
     for (i = 0; i < n_refinements; i++, step >>= 1) {
         for (p = 0; p < n_params; ++p) {
             int step_dir = 0;
-            // Skip searches for parameters that are forced to be 0
+            /*!< Skip searches for parameters that are forced to be 0 */
             param      = param_mat + p;
             curr_param = *param;
             best_param = curr_param;
-            // look to the left
+            /*!< look to the left */
             *param     = add_param_offset(p, curr_param, -step);
             step_error = eb_av1_warp_error(wm,
                                            use_hbd,
@@ -199,7 +196,7 @@ int64_t av1_refine_integerized_param(EbWarpedMotionParams *wm, TransformationTyp
                 step_dir   = -1;
             }
 
-            // look to the right
+            /*!< look to the right */
             *param     = add_param_offset(p, curr_param, step);
             step_error = eb_av1_warp_error(wm,
                                            use_hbd,
@@ -224,8 +221,8 @@ int64_t av1_refine_integerized_param(EbWarpedMotionParams *wm, TransformationTyp
             }
             *param = best_param;
 
-            // look to the direction chosen above repeatedly until error increases
-            // for the biggest step size
+            /*!< look to the direction chosen above repeatedly until error increases
+             *   for the biggest step size */
             while (step_dir) {
                 *param     = add_param_offset(p, best_param, step * step_dir);
                 step_error = eb_av1_warp_error(wm,
@@ -291,7 +288,7 @@ static int compute_global_motion_feature_based(TransformationType type, unsigned
     num_ref_corners = av1_fast_corner_detect(
         ref_buffer, frm_width, frm_height, ref_stride, ref_corners, MAX_CORNERS);
 
-    // find correspondences between the two images
+    /*!< find correspondences between the two images */
     correspondences     = (int *)malloc(num_frm_corners * 4 * sizeof(*correspondences));
     num_correspondences = av1_determine_correspondence(frm_buffer,
                                                        (int *)frm_corners,
@@ -308,7 +305,7 @@ static int compute_global_motion_feature_based(TransformationType type, unsigned
     ransac(
         correspondences, num_correspondences, num_inliers_by_motion, params_by_motion, num_motions);
 
-    // Set num_inliers = 0 for motions with too few inliers so they are ignored.
+    /*!< Set num_inliers = 0 for motions with too few inliers so they are ignored. */
     for (i = 0; i < num_motions; ++i) {
         if (num_inliers_by_motion[i] < MIN_INLIER_PROB * num_correspondences ||
             num_correspondences == 0) {
@@ -320,7 +317,7 @@ static int compute_global_motion_feature_based(TransformationType type, unsigned
 
     free(correspondences);
 
-    // Return true if any one of the motions has inliers.
+    /*!< Return true if any one of the motions has inliers. */
     for (i = 0; i < num_motions; ++i) {
         if (num_inliers_by_motion[i] > 0) return 1;
     }

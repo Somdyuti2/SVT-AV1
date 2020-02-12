@@ -1,7 +1,5 @@
-/*
-* Copyright(c) 2019 Intel Corporation
-* SPDX - License - Identifier: BSD - 2 - Clause - Patent
-*/
+/*!< Copyright(c) 2019 Intel Corporation
+ * SPDX - License - Identifier: BSD - 2 - Clause - Patent */
 
 #include "EbAvcStyleMcp.h"
 #include "EbPictureOperators.h"
@@ -286,8 +284,8 @@ void avc_style_luma_interpolation_filter_helper_c(EbByte ref_pic, uint32_t src_s
                                                   uint32_t dst_stride, uint32_t pu_width,
                                                   uint32_t pu_height, EbByte temp_buf, EbBool skip,
                                                   uint32_t frac_pos, uint8_t fractional_position) {
-    /* Code with 'skip' true are not used. Cleanup should remove 'skip' parameter. */
-    /* frac_pos and fractional_position are redundant as well, cleanup should also unify the two*/
+    /*!< Code with 'skip' true are not used. Cleanup should remove 'skip' parameter. */
+    /*!< frac_pos and fractional_position are redundant as well, cleanup should also unify the two*/
     (void)skip;
     assert(!skip);
 

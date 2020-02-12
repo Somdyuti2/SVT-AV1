@@ -1,13 +1,11 @@
-/*
- * Copyright (c) 2017, Alliance for Open Media. All rights reserved
+/*!< Copyright (c) 2017, Alliance for Open Media. All rights reserved
  *
  * This source code is subject to the terms of the BSD 2 Clause License and
  * the Alliance for Open Media Patent License 1.0. If the BSD 2 Clause License
  * was not distributed with this source code in the LICENSE file, you can
  * obtain it at www.aomedia.org/license/software. If the Alliance for Open
  * Media Patent License 1.0 was not distributed with this source code in the
- * PATENTS file, you can obtain it at www.aomedia.org/license/patent.
- */
+ * PATENTS file, you can obtain it at www.aomedia.org/license/patent. */
 
 #ifndef AOM_AV1_ENCODER_MATHUTILS_H_
 #define AOM_AV1_ENCODER_MATHUTILS_H_
@@ -22,13 +20,13 @@ static const double tiny_near_zero = 1.0E-16;
 
 #define PI 3.141592653589793238462643383279502884
 
-// Solves Ax = b, where x and b are column vectors of size nx1 and A is nxn
+/*!< Solves Ax = b, where x and b are column vectors of size nx1 and A is nxn */
 static INLINE int32_t linsolve(int32_t n, double *A, int32_t stride, double *b, double *x) {
     int32_t i, j, k;
     double  c;
-    // Forward elimination
+    /*!< Forward elimination */
     for (k = 0; k < n - 1; k++) {
-        // Bring the largest magnitude to the diagonal position
+        /*!< Bring the largest magnitude to the diagonal position */
         for (i = n - 1; i > k; i--) {
             if (fabs(A[(i - 1) * stride + k]) < fabs(A[i * stride + k])) {
                 for (j = 0; j < n; j++) {
@@ -48,7 +46,7 @@ static INLINE int32_t linsolve(int32_t n, double *A, int32_t stride, double *b, 
             b[i + 1] -= c * b[k];
         }
     }
-    // Backward substitution
+    /*!< Backward substitution */
     for (i = n - 1; i >= 0; i--) {
         if (fabs(A[i * stride + i]) < tiny_near_zero) return 0;
         c = 0;
@@ -59,11 +57,11 @@ static INLINE int32_t linsolve(int32_t n, double *A, int32_t stride, double *b, 
     return 1;
 }
 
-////////////////////////////////////////////////////////////////////////////////
-// Least-squares
-// Solves for n-dim x in a least squares sense to minimize |Ax - b|^2
-// The solution is simply x = (A'A)^-1 A'b or simply the solution for
-// the system: A'A x = A'b
+/**********************************************************************/
+/*!< Least-squares
+ *   Solves for n-dim x in a least squares sense to minimize |Ax - b|^2
+ *   The solution is simply x = (A'A)^-1 A'b or simply the solution for
+ *   the system: A'A x = A'b */
 static INLINE int32_t least_squares(int32_t n, double *A, int32_t rows, int32_t stride, double *b,
                                     double *scratch, double *x) {
     int32_t i, j, k;
@@ -90,7 +88,7 @@ static INLINE int32_t least_squares(int32_t n, double *A, int32_t rows, int32_t 
     return ret;
 }
 
-// Matrix multiply
+/*!< Matrix multiply */
 static INLINE void multiply_mat(const double *m1, const double *m2, double *res,
                                 const int32_t m1_rows, const int32_t inner_dim,
                                 const int32_t m2_cols) {
@@ -107,13 +105,12 @@ static INLINE void multiply_mat(const double *m1, const double *m2, double *res,
     }
 }
 
-//
-// The functions below are needed only for homography computation
-// Remove if the homography models are not used.
-//
-///////////////////////////////////////////////////////////////////////////////
-// svdcmp
-// Adopted from Numerical Recipes in C
+/*!< The functions below are needed only for homography computation
+ *   Remove if the homography models are not used. */
+
+/********************************************/
+/*!< svdcmp
+ *   - Adopted from Numerical Recipes in C */
 
 static INLINE double sign(double a, double b) { return ((b) >= 0 ? fabs(a) : -fabs(a)); }
 

@@ -1,7 +1,5 @@
-/*
-* Copyright(c) 2019 Intel Corporation
-* SPDX - License - Identifier: BSD - 2 - Clause - Patent
-*/
+/*!< Copyright(c) 2019 Intel Corporation
+* SPDX - License - Identifier: BSD - 2 - Clause - Patent */
 
 #include "EbDefinitions.h"
 #include "emmintrin.h"
@@ -140,16 +138,16 @@ static INLINE void repeat_high_4pixels(const __m128i *x, __m128i *row) {
     row[2] = _mm_unpackhi_epi64(u2, u2);
     row[3] = _mm_unpackhi_epi64(u3, u3);
 }
-// Process 16x8, first 4 rows
-// Use first 8 bytes of left register: xxxxxxxx33221100
+/*!< Process 16x8, first 4 rows
+ *   Use first 8 bytes of left register: xxxxxxxx33221100 */
 static INLINE void h_prediction_16x8_1(const __m128i *left, uint8_t *dst, ptrdiff_t stride) {
     __m128i row[4];
     repeat_low_4pixels(left, row);
     h_pred_store_16xh(row, 4, dst, stride);
 }
 
-// Process 16x8, second 4 rows
-// Use second 8 bytes of left register: 77665544xxxxxxxx
+/*!< Process 16x8, second 4 rows
+ *   Use second 8 bytes of left register: 77665544xxxxxxxx */
 static INLINE void h_prediction_16x8_2(const __m128i *left, uint8_t *dst, ptrdiff_t stride) {
     __m128i row[4];
     repeat_high_4pixels(left, row);
@@ -188,16 +186,16 @@ static INLINE void h_pred_store_32xh(const __m128i *row, int32_t h, uint8_t *dst
     }
 }
 
-// Process 32x8, first 4 rows
-// Use first 8 bytes of left register: xxxxxxxx33221100
+/*!< Process 32x8, first 4 rows
+ *   Use first 8 bytes of left register: xxxxxxxx33221100 */
 static INLINE void h_prediction_32x8_1(const __m128i *left, uint8_t *dst, ptrdiff_t stride) {
     __m128i row[4];
     repeat_low_4pixels(left, row);
     h_pred_store_32xh(row, 4, dst, stride);
 }
 
-// Process 32x8, second 4 rows
-// Use second 8 bytes of left register: 77665544xxxxxxxx
+/*!< Process 32x8, second 4 rows
+ *   Use second 8 bytes of left register: 77665544xxxxxxxx */
 static INLINE void h_prediction_32x8_2(const __m128i *left, uint8_t *dst, ptrdiff_t stride) {
     __m128i row[4];
     repeat_high_4pixels(left, row);
@@ -591,8 +589,8 @@ void eb_aom_v_predictor_8x4_sse2(uint8_t *dst, ptrdiff_t stride, const uint8_t *
     (void)left;
     dc_store_8xh(&row, 4, dst, stride);
 }
-// -----------------------------------------------------------------------------
-// DC_128
+/*****************************************************************************/
+/*!< DC_128 */
 
 void eb_aom_dc_128_predictor_4x8_sse2(uint8_t *dst, ptrdiff_t stride, const uint8_t *above,
                                       const uint8_t *left) {
@@ -674,8 +672,8 @@ void eb_aom_dc_128_predictor_32x8_sse2(uint8_t *dst, ptrdiff_t stride, const uin
     dc_store_32xh(&row, 8, dst, stride);
 }
 
-// -----------------------------------------------------------------------------
-// DC_TOP
+/*****************************************************************************/
+/*!< DC_TOP */
 
 void eb_aom_dc_top_predictor_4x8_sse2(uint8_t *dst, ptrdiff_t stride, const uint8_t *above,
                                       const uint8_t *left) {
@@ -806,8 +804,8 @@ void eb_aom_dc_top_predictor_32x8_sse2(uint8_t *dst, ptrdiff_t stride, const uin
     dc_store_32xh(&row, 8, dst, stride);
 }
 
-// -----------------------------------------------------------------------------
-// DC_LEFT
+/*****************************************************************************/
+/*!< DC_LEFT */
 
 void eb_aom_dc_left_predictor_4x8_sse2(uint8_t *dst, ptrdiff_t stride, const uint8_t *above,
                                        const uint8_t *left) {
@@ -938,8 +936,8 @@ void eb_aom_dc_left_predictor_32x8_sse2(uint8_t *dst, ptrdiff_t stride, const ui
     dc_store_32xh(&row, 8, dst, stride);
 }
 
-// -----------------------------------------------------------------------------
-// DC_PRED
+/*****************************************************************************/
+/*!< DC_PRED */
 
 void eb_aom_dc_predictor_4x8_sse2(uint8_t *dst, ptrdiff_t stride, const uint8_t *above,
                                   const uint8_t *left) {

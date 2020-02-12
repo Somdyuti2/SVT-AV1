@@ -1,7 +1,5 @@
-/*
-* Copyright(c) 2019 Intel Corporation
-* SPDX - License - Identifier: BSD - 2 - Clause - Patent
-*/
+/*!< Copyright(c) 2019 Intel Corporation
+ * SPDX - License - Identifier: BSD - 2 - Clause - Patent */
 
 #include "EbDefinitions.h"
 #include <immintrin.h>
@@ -20,8 +18,8 @@
 #define _mm256_setr_m128i(/* __m128i */ lo, /* __m128i */ hi) _mm256_set_m128i((hi), (lo))
 #endif
 
-/* Search for the best luma+chroma strength to add as an option, knowing we
-already selected nb_strengths options. */
+/*!< Search for the best luma+chroma strength to add as an option, knowing we
+ *   already selected nb_strengths options. */
 uint64_t search_one_dual_avx2(int *lev0, int *lev1, int nb_strengths,
                               uint64_t (**mse)[TOTAL_STRENGTHS], int sb_count, int fast,
                               int start_gi, int end_gi) {
@@ -44,16 +42,16 @@ uint64_t search_one_dual_avx2(int *lev0, int *lev1, int nb_strengths,
     for (i = 0; i < sb_count; i++) {
         int      gi;
         uint64_t best_mse = (uint64_t)1 << 62;
-        /* Find best mse among already selected options. */
+        /*!< Find best mse among already selected options. */
         for (gi = 0; gi < nb_strengths; gi++) {
             uint64_t curr = mse[0][i][lev0[gi]];
             curr += mse[1][i][lev1[gi]];
             if (curr < best_mse) best_mse = curr;
         }
         best_mse_ = _mm256_set1_epi64x(best_mse);
-        /* Find best mse when adding each possible new option. */
+        /*!< Find best mse when adding each possible new option. */
         //assert(~total_strengths % 4);
-        for (int j = start_gi; j < total_strengths; ++j) { // process by 4x4
+        for (int j = start_gi; j < total_strengths; ++j) { /*!< process by 4x4 */
             tmp = _mm256_set1_epi64x(mse[0][i][j]);
             for (int k = 0; k < total_strengths; k += 4) {
                 v_mse = _mm256_loadu_si256((const __m256i *)&mse[1][i][k]);
@@ -195,14 +193,14 @@ static INLINE uint64_t dist_8x8_16bit_avx2(const uint16_t **src, const uint16_t 
     sum                  = _mm_add_epi32(ssdd_l, ssdd_h);
     sum                  = _mm_hadd_epi32(sum, sum);
 
-    /* Compute the variance -- the calculation cannot go negative. */
+    /*!< Compute the variance -- the calculation cannot go negative. */
     uint64_t sum_s  = _mm_cvtsi128_si32(sum);
     uint64_t sum_d  = _mm_extract_epi32(sum, 1);
     uint64_t sum_s2 = sum32(s2);
     uint64_t sum_d2 = sum32(d2);
     uint64_t sum_sd = sum32(sd);
 
-    /* Compute the variance -- the calculation cannot go negative. */
+    /*!< Compute the variance -- the calculation cannot go negative. */
     uint64_t svar = sum_s2 - ((sum_s * sum_s + 32) >> 6);
     uint64_t dvar = sum_d2 - ((sum_d * sum_d + 32) >> 6);
     return (uint64_t)floor(.5 + (sum_d2 + sum_s2 - 2 * sum_sd) * .5 *
@@ -244,14 +242,14 @@ static INLINE uint64_t dist_8x8_8bit_avx2(const uint8_t **src, const uint8_t *ds
     sum                  = _mm_add_epi32(ssdd_l, ssdd_h);
     sum                  = _mm_hadd_epi32(sum, sum);
 
-    /* Compute the variance -- the calculation cannot go negative. */
+    /*!< Compute the variance -- the calculation cannot go negative. */
     uint64_t sum_s  = _mm_cvtsi128_si32(sum);
     uint64_t sum_d  = _mm_extract_epi32(sum, 1);
     uint64_t sum_s2 = sum32(s2);
     uint64_t sum_d2 = sum32(d2);
     uint64_t sum_sd = sum32(sd);
 
-    /* Compute the variance -- the calculation cannot go negative. */
+    /*!< Compute the variance -- the calculation cannot go negative. */
     uint64_t svar = sum_s2 - ((sum_s * sum_s + 32) >> 6);
     uint64_t dvar = sum_d2 - ((sum_d * sum_d + 32) >> 6);
     return (uint64_t)floor(.5 + (sum_d2 + sum_s2 - 2 * sum_sd) * .5 *
@@ -275,7 +273,7 @@ static INLINE uint64_t sum64(const __m256i src) {
     return (uint64_t)_mm_cvtsi128_si64(dst);
 }
 
-/* Compute MSE only on the blocks we filtered. */
+/*!< Compute MSE only on the blocks we filtered. */
 uint64_t compute_cdef_dist_avx2(const uint16_t *dst, int32_t dstride, const uint16_t *src,
                                 const CdefList *dlist, int32_t cdef_count, BlockSize bsize,
                                 int32_t coeff_shift, int32_t pli) {

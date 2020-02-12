@@ -1,7 +1,5 @@
-/*
-* Copyright(c) 2019 Intel Corporation
-* SPDX - License - Identifier: BSD - 2 - Clause - Patent
-*/
+/*!< Copyright(c) 2019 Intel Corporation
+* SPDX - License - Identifier: BSD - 2 - Clause - Patent */
 
 #define MACRO_VERTICAL_LUMA_8(A, b, C)                                                            \
     _mm_storel_epi64((__m128i*)prediction_ptr, _mm_or_si128(_mm_and_si128(A, b), C));             \

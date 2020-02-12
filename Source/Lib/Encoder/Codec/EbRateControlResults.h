@@ -1,7 +1,5 @@
-/*
-* Copyright(c) 2019 Intel Corporation
-* SPDX - License - Identifier: BSD - 2 - Clause - Patent
-*/
+/*!< Copyright(c) 2019 Intel Corporation
+ * SPDX - License - Identifier: BSD - 2 - Clause - Patent */
 
 #ifndef EbRateControlResults_h
 #define EbRateControlResults_h
@@ -12,9 +10,9 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
-/**************************************
- * Process Results
- **************************************/
+/**************************************/
+/* Process Results */
+/**************************************/
 typedef struct RateControlResults {
     EbDctor          dctor;
     EbObjectWrapper *pcs_wrapper_ptr;
@@ -24,9 +22,9 @@ typedef struct RateControlResultsInitData {
     int32_t junk;
 } RateControlResultsInitData;
 
-/**************************************
- * Extern Function Declarations
- **************************************/
+/**************************************/
+/* Extern Function Declarations */
+/**************************************/
 extern EbErrorType rate_control_results_creator(EbPtr *object_dbl_ptr, EbPtr object_init_data_ptr);
 
 #ifdef __cplusplus

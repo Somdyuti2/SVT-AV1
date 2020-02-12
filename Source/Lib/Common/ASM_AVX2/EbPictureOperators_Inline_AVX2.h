@@ -1,7 +1,5 @@
-/*
-* Copyright(c) 2019 Intel Corporation
-* SPDX - License - Identifier: BSD - 2 - Clause - Patent
-*/
+/*!< Copyright(c) 2019 Intel Corporation
+ * SPDX - License - Identifier: BSD - 2 - Clause - Patent */
 
 #ifndef EbPictureOperators_Inline_AVX2_h
 #define EbPictureOperators_Inline_AVX2_h
@@ -142,7 +140,7 @@ static INLINE void full_distortion_kernel16_avx2_intrin(__m256i in, __m256i re,
 }
 
 static INLINE void sum32_to64(__m256i *const sum32, __m256i *const sum64) {
-    //Save partial sum into large 64bit register instead of 32 bit (which could overflow)
+    /*!< Save partial sum into large 64bit register instead of 32 bit (which could overflow) */
     *sum64 = _mm256_add_epi64(*sum64, _mm256_unpacklo_epi32(*sum32, _mm256_setzero_si256()));
     *sum64 = _mm256_add_epi64(*sum64, _mm256_unpackhi_epi32(*sum32, _mm256_setzero_si256()));
     *sum32 = _mm256_setzero_si256();

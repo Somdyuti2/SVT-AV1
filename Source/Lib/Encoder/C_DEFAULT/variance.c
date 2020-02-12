@@ -1,13 +1,11 @@
-/*
- * Copyright (c) 2016, Alliance for Open Media. All rights reserved
+/*!< Copyright (c) 2016, Alliance for Open Media. All rights reserved
  *
  * This source code is subject to the terms of the BSD 2 Clause License and
  * the Alliance for Open Media Patent License 1.0. If the BSD 2 Clause License
  * was not distributed with this source code in the LICENSE file, you can
  * obtain it at www.aomedia.org/license/software. If the Alliance for Open
  * Media Patent License 1.0 was not distributed with this source code in the
- * PATENTS file, you can obtain it at www.aomedia.org/license/patent.
- */
+ * PATENTS file, you can obtain it at www.aomedia.org/license/patent. */
 
 #include <assert.h>
 #include <stdlib.h>
@@ -17,18 +15,18 @@
 #include "convolve.h"
 #include "aom_dsp_rtcd.h"
 
-// 2 tap bilinear filters
+/*!< 2 tap bilinear filters */
 #define BIL_SUBPEL_BITS 3
 #define BIL_SUBPEL_SHIFTS (1 << BIL_SUBPEL_BITS)
 
-// Applies a 1-D 2-tap bilinear filter to the source block in either horizontal
-// or vertical direction to produce the filtered output block. Used to implement
-// the first-pass of 2-D separable filter.
-//
-// Produces int16_t output to retain precision for the next pass. Two filter
-// taps should sum to FILTER_WEIGHT. pixel_step defines whether the filter is
-// applied horizontally (pixel_step = 1) or vertically (pixel_step = stride).
-// It defines the offset required to move from one input to the next.
+/*!< Applies a 1-D 2-tap bilinear filter to the source block in either horizontal
+ *   or vertical direction to produce the filtered output block. Used to implement
+ *   the first-pass of 2-D separable filter.
+ *
+ *   Produces int16_t output to retain precision for the next pass. Two filter
+ *   taps should sum to FILTER_WEIGHT. pixel_step defines whether the filter is
+ *   applied horizontally (pixel_step = 1) or vertically (pixel_step = stride).
+ *   It defines the offset required to move from one input to the next. */
 void aom_var_filter_block2d_bil_first_pass_c(const uint8_t *a, uint16_t *b,
                                              unsigned int src_pixels_per_line,
                                              unsigned int pixel_step, unsigned int output_height,
@@ -48,15 +46,15 @@ void aom_var_filter_block2d_bil_first_pass_c(const uint8_t *a, uint16_t *b,
     }
 }
 
-// Applies a 1-D 2-tap bilinear filter to the source block in either horizontal
-// or vertical direction to produce the filtered output block. Used to implement
-// the second-pass of 2-D separable filter.
-//
-// Requires 16-bit input as produced by filter_block2d_bil_first_pass. Two
-// filter taps should sum to FILTER_WEIGHT. pixel_step defines whether the
-// filter is applied horizontally (pixel_step = 1) or vertically
-// (pixel_step = stride). It defines the offset required to move from one input
-// to the next. Output is 8-bit.
+/*!< Applies a 1-D 2-tap bilinear filter to the source block in either horizontal
+ *   or vertical direction to produce the filtered output block. Used to implement
+ *   the second-pass of 2-D separable filter.
+ *
+ *   Requires 16-bit input as produced by filter_block2d_bil_first_pass. Two
+ *   filter taps should sum to FILTER_WEIGHT. pixel_step defines whether the
+ *   filter is applied horizontally (pixel_step = 1) or vertically
+ *   (pixel_step = stride). It defines the offset required to move from one input
+ *   to the next. Output is 8-bit. */
 void aom_var_filter_block2d_bil_second_pass_c(const uint16_t *a, uint8_t *b,
                                               unsigned int src_pixels_per_line,
                                               unsigned int pixel_step, unsigned int output_height,
@@ -183,7 +181,7 @@ DECLARE_ALIGNED(256, static const InterpKernel, av1_sub_pel_filters_8smooth[SUBP
     {0, 0, 4, 40, 62, 22, 0, 0},
     {0, 0, 4, 36, 62, 26, 0, 0},
     {0, 0, 2, 34, 62, 28, 2, 0}};
-// For w<=4, MULTITAP_SHARP is the same as EIGHTTAP_REGULAR
+/*!< For w<=4, MULTITAP_SHARP is the same as EIGHTTAP_REGULAR */
 static const InterpFilterParams av1_interp_4tap[SWITCHABLE_FILTERS + 1] = {
     {(const int16_t *)av1_sub_pel_filters_4, SUBPEL_TAPS, SUBPEL_SHIFTS, EIGHTTAP_REGULAR},
     {(const int16_t *)av1_sub_pel_filters_4smooth, SUBPEL_TAPS, SUBPEL_SHIFTS, EIGHTTAP_SMOOTH},
@@ -210,7 +208,7 @@ static INLINE const InterpFilterParams *av1_get_filter(int subpel_search) {
     }
 }
 
-// Get pred block from up-sampled reference.
+/*!< Get pred block from up-sampled reference. */
 void aom_upsampled_pred_c(MacroBlockD *                 xd,
                           const struct AV1Common *const cm, //const AV1_COMMON *const cm,
                           int mi_row, int mi_col, const MV *const mv, uint8_t *comp_pred, int width,

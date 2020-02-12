@@ -1,18 +1,14 @@
-/*
-* Copyright(c) 2019 Intel Corporation
-* SPDX - License - Identifier: BSD - 2 - Clause - Patent
-*/
+/*!< Copyright(c) 2019 Intel Corporation
+ * SPDX - License - Identifier: BSD - 2 - Clause - Patent */
 
-/*
-* Copyright (c) 2016, Alliance for Open Media. All rights reserved
-*
-* This source code is subject to the terms of the BSD 2 Clause License and
-* the Alliance for Open Media Patent License 1.0. If the BSD 2 Clause License
-* was not distributed with this source code in the LICENSE file, you can
-* obtain it at www.aomedia.org/license/software. If the Alliance for Open
-* Media Patent License 1.0 was not distributed with this source code in the
-* PATENTS file, you can obtain it at www.aomedia.org/license/patent.
-*/
+/*!< Copyright (c) 2016, Alliance for Open Media. All rights reserved
+ *
+ * This source code is subject to the terms of the BSD 2 Clause License and
+ * the Alliance for Open Media Patent License 1.0. If the BSD 2 Clause License
+ * was not distributed with this source code in the LICENSE file, you can
+ * obtain it at www.aomedia.org/license/software. If the Alliance for Open
+ * Media Patent License 1.0 was not distributed with this source code in the
+ * PATENTS file, you can obtain it at www.aomedia.org/license/patent. */
 
 #include <stdlib.h>
 
@@ -29,9 +25,7 @@ static void output_bitstream_unit_dctor(EbPtr p) {
     EB_FREE_ARRAY(obj->buffer_begin_av1);
 }
 
-/**********************************
- * Constructor
- **********************************/
+/*!< Constructor */
 EbErrorType output_bitstream_unit_ctor(OutputBitstreamUnit *bitstream_ptr, uint32_t buffer_size) {
     bitstream_ptr->dctor = output_bitstream_unit_dctor;
     if (buffer_size) {
@@ -48,23 +42,19 @@ EbErrorType output_bitstream_unit_ctor(OutputBitstreamUnit *bitstream_ptr, uint3
     return EB_ErrorNone;
 }
 
-/**********************************
- * Reset Bitstream
- **********************************/
+/*!< Reset Bitstream */
 EbErrorType output_bitstream_reset(OutputBitstreamUnit *bitstream_ptr) {
     EbErrorType return_error = EB_ErrorNone;
 
     bitstream_ptr->written_bits_count = 0;
-    // Reset the write ptr to the beginning of the buffer
+    /*!< Reset the write ptr to the beginning of the buffer */
     bitstream_ptr->buffer_av1 = bitstream_ptr->buffer_begin_av1;
 
     return return_error;
 }
 
-/**********************************
- * Output RBSP to payload
- *   Intended to be used in CABAC
- **********************************/
+/*!< Output RBSP to payload
+ *   Intended to be used in CABAC */
 EbErrorType output_bitstream_rbsp_to_payload(OutputBitstreamUnit *bitstream_ptr,
                                              EbByte output_buffer, uint32_t *output_buffer_index,
                                              uint32_t *output_buffer_size,
@@ -77,10 +67,10 @@ EbErrorType output_bitstream_rbsp_to_payload(OutputBitstreamUnit *bitstream_ptr,
     EbByte   read_byte_ptr;
     EbByte   write_byte_ptr;
 
-    // IVF data
+    /*!<  IVF data */
     read_byte_ptr  = (EbByte)bitstream_ptr->buffer_begin_av1;
     write_byte_ptr = &output_buffer[*output_buffer_index];
-    //frame_count++;
+    // frame_count++;
     while ((read_location < buffer_written_bytes_count)) {
         if ((*output_buffer_index) < (*output_buffer_size)) {
             write_byte_ptr[write_location++] = read_byte_ptr[read_location];
@@ -91,11 +81,12 @@ EbErrorType output_bitstream_rbsp_to_payload(OutputBitstreamUnit *bitstream_ptr,
 
     return return_error;
 }
+
 /********************************************************************************************************************************/
 /********************************************************************************************************************************/
 /********************************************************************************************************************************/
 /********************************************************************************************************************************/
-// daalaboolwriter.c
+/*!<  daalaboolwriter.c */
 void eb_aom_daala_start_encode(DaalaWriter *br, uint8_t *source) {
     br->buffer = source;
     br->pos    = 0;
@@ -114,36 +105,35 @@ int32_t eb_aom_daala_stop_encode(DaalaWriter *br) {
     return nb_bits;
 }
 
-/*A range encoder.
-See entdec.c and the references for implementation details \cite{Mar79,MNW98}.
-
-@INPROCEEDINGS{Mar79,
-author="Martin, G.N.N.",
-title="Range encoding: an algorithm for removing redundancy from a digitised
-message",
-booktitle="Video \& Data Recording Conference",
-year=1979,
-address="Southampton",
-month=Jul,
-URL="http://www.compressconsult.com/rangecoder/rngcod.pdf.gz"
-}
-@ARTICLE{MNW98,
-author="Alistair Moffat and Radford Neal and Ian H. Witten",
-title="Arithmetic Coding Revisited",
-journal="{ACM} Transactions on Information Systems",
-year=1998,
-volume=16,
-number=3,
-pages="256--294",
-month=Jul,
-URL="http://researchcommons.waikato.ac.nz/Bitstream/handle/10289/78/content.pdf"
-}*/
-
-/*Takes updated low and range values, renormalizes them so that
-32768 <= rng < 65536 (flushing bytes from low to the pre-carry buffer if
-necessary), and stores them back in the encoder context.
-low: The new value of low.
-rng: The new value of the range.*/
+/*!< A range encoder.
+ *   See entdec.c and the references for implementation details \cite{Mar79,MNW98}.
+ *
+ *   @INPROCEEDINGS{Mar79,
+ *   author="Martin, G.N.N.",
+ *   title="Range encoding: an algorithm for removing redundancy from a digitised
+ *   message",
+ *   booktitle="Video \& Data Recording Conference",
+ *   year=1979,
+ *   address="Southampton",
+ *   month=Jul,
+ *   URL="http://www.compressconsult.com/rangecoder/rngcod.pdf.gz"
+ *   }
+ *   @ARTICLE{MNW98,
+ *   author="Alistair Moffat and Radford Neal and Ian H. Witten",
+ *   title="Arithmetic Coding Revisited",
+ *   journal="{ACM} Transactions on Information Systems",
+ *   year=1998,
+ *   volume=16,
+ *   number=3,
+ *   pages="256--294",
+ *   month=Jul,
+ *   URL="http://researchcommons.waikato.ac.nz/Bitstream/handle/10289/78/content.pdf"
+ * }*/
+/*!< Takes updated low and range values, renormalizes them so that
+ *   32768 <= rng < 65536 (flushing bytes from low to the pre-carry buffer if
+ *   necessary), and stores them back in the encoder context.
+ *   low: The new value of low.
+ *   rng: The new value of the range. */
 static void od_ec_enc_normalize(OdEcEnc *enc, OdEcWindow low, unsigned rng) {
     int32_t d;
     int32_t c;
@@ -152,11 +142,11 @@ static void od_ec_enc_normalize(OdEcEnc *enc, OdEcWindow low, unsigned rng) {
     assert(rng <= 65535U);
     d = 16 - OD_ILOG_NZ(rng);
     s = c + d;
-    /*TODO: Right now we flush every time we have at least one byte available.
-    Instead we should use an OdEcWindow and flush right before we're about to
-    shift bits off the end of the window.
-    For a 32-bit window this is about the same amount of work, but for a 64-bit
-    window it should be a fair win.*/
+    /*!< TODO: Right now we flush every time we have at least one byte available.
+     *   Instead we should use an OdEcWindow and flush right before we're about to
+     *   shift bits off the end of the window.
+     *   For a 32-bit window this is about the same amount of work, but for a 64-bit
+     *   window it should be a fair win.*/
     if (s >= 0) {
         uint16_t *buf;
         uint32_t  storage;
@@ -196,8 +186,8 @@ static void od_ec_enc_normalize(OdEcEnc *enc, OdEcWindow low, unsigned rng) {
     enc->cnt = (int16_t)s;
 }
 
-/*Initializes the encoder.
-size: The initial size of the buffer, in bytes.*/
+/*!< Initializes the encoder.
+ *   size: The initial size of the buffer, in bytes. */
 void eb_od_ec_enc_init(OdEcEnc *enc, uint32_t size) {
     eb_od_ec_enc_reset(enc);
     enc->buf     = (uint8_t *)malloc(sizeof(*enc->buf) * size);
@@ -214,13 +204,13 @@ void eb_od_ec_enc_init(OdEcEnc *enc, uint32_t size) {
     }
 }
 
-/*Reinitializes the encoder.*/
+/*!< Reinitializes the encoder. */
 void eb_od_ec_enc_reset(OdEcEnc *enc) {
     enc->offs = 0;
     enc->low  = 0;
     enc->rng  = 0x8000;
-    /*This is initialized to -9 so that it crosses zero after we've accumulated
-    one byte + one carry bit.*/
+    /*!< This is initialized to -9 so that it crosses zero after we've accumulated
+     *   one byte + one carry bit. */
     enc->cnt   = -9;
     enc->error = 0;
 #if OD_MEASURE_EC_OVERHEAD
@@ -229,19 +219,17 @@ void eb_od_ec_enc_reset(OdEcEnc *enc) {
 #endif
 }
 
-/*Frees the buffers used by the encoder.*/
+/*!< Frees the buffers used by the encoder. */
 void eb_od_ec_enc_clear(OdEcEnc *enc) {
     free(enc->precarry_buf);
     free(enc->buf);
 }
 
-/*Encodes a symbol given its frequency in Q15.
-fl: CDF_PROB_TOP minus the cumulative frequency of all symbols that come
-before the
-one to be encoded.
-fh: CDF_PROB_TOP minus the cumulative frequency of all symbols up to and
-including
-the one to be encoded.*/
+/*!< Encodes a symbol given its frequency in Q15.
+ *   fl: CDF_PROB_TOP minus the cumulative frequency of all symbols that come
+ *   before the one to be encoded.
+ *   fh: CDF_PROB_TOP minus the cumulative frequency of all symbols up to and
+ *   including the one to be encoded.*/
 static void od_ec_encode_q15(OdEcEnc *enc, unsigned fl, unsigned fh, int32_t s, int32_t nsyms) {
     OdEcWindow l;
     unsigned   r;
@@ -272,9 +260,9 @@ static void od_ec_encode_q15(OdEcEnc *enc, unsigned fl, unsigned fh, int32_t s, 
 #endif
 }
 
-/*Encode a single binary value.
-val: The value to encode (0 or 1).
-f: The probability that the val is one, scaled by 32768.*/
+/*!< Encode a single binary value.
+*    val: The value to encode (0 or 1).
+*    f: The probability that the val is one, scaled by 32768. */
 void eb_od_ec_encode_bool_q15(OdEcEnc *enc, int32_t val, unsigned f) {
     OdEcWindow l;
     unsigned   r;
@@ -295,14 +283,13 @@ void eb_od_ec_encode_bool_q15(OdEcEnc *enc, int32_t val, unsigned f) {
 #endif
 }
 
-/*Encodes a symbol given a cumulative distribution function (CDF) table in Q15.
-s: The index of the symbol to encode.
-icdf: 32768 minus the CDF, such that symbol s falls in the range
-[s > 0 ? (32768 - icdf[s - 1]) : 0, 32768 - icdf[s]).
-The values must be monotonically decreasing, and icdf[nsyms - 1] must
-be 0.
-nsyms: The number of symbols in the alphabet.
-This should be at most 16.*/
+/*!< Encodes a symbol given a cumulative distribution function (CDF) table in Q15.
+ *   s: The index of the symbol to encode.
+ *   icdf: 32768 minus the CDF, such that symbol s falls in the range
+ *   [s > 0 ? (32768 - icdf[s - 1]) : 0, 32768 - icdf[s]).
+ *   The values must be monotonically decreasing, and icdf[nsyms - 1] must be 0.
+ *   nsyms: The number of symbols in the alphabet.
+ *   This should be at most 16. */
 void eb_od_ec_encode_cdf_q15(OdEcEnc *enc, int32_t s, const uint16_t *icdf, int32_t nsyms) {
     (void)nsyms;
     assert(s >= 0);
@@ -325,14 +312,14 @@ uint8_t *eb_od_ec_enc_done(OdEcEnc *enc, uint32_t *nbytes) {
 #if OD_MEASURE_EC_OVERHEAD
     {
         uint32_t tell;
-        /* Don't count the 1 bit we lose to raw bits as overhead. */
+        /*!< Don't count the 1 bit we lose to raw bits as overhead. */
         tell = eb_od_ec_enc_tell(enc) - 1;
         SVT_ERROR("overhead: %f%%\n", 100 * (tell - enc->entropy) / enc->entropy);
         SVT_ERROR("efficiency: %f bits/symbol\n", (double)tell / enc->nb_symbols);
     }
 #endif
-    /*We output the minimum number of bits that ensures that the symbols encoded
-    thus far will be decoded correctly regardless of the bits that follow.*/
+    /*!< We output the minimum number of bits that ensures that the symbols encoded
+     *   thus far will be decoded correctly regardless of the bits that follow. */
     l = enc->low;
     c = enc->cnt;
     s = 10;
@@ -364,7 +351,7 @@ uint8_t *eb_od_ec_enc_done(OdEcEnc *enc, uint32_t *nbytes) {
             n >>= 8;
         } while (s > 0);
     }
-    /*Make sure there's enough room for the entropy-coded bits.*/
+    /*!< Make sure there's enough room for the entropy-coded bits. */
     out     = enc->buf;
     storage = enc->storage;
     c       = OD_MAXI((s + 7) >> 3, 0);
@@ -379,7 +366,7 @@ uint8_t *eb_od_ec_enc_done(OdEcEnc *enc, uint32_t *nbytes) {
         enc->storage = storage;
     }
     *nbytes = offs;
-    /*Perform carry propagation.*/
+    /*!< Perform carry propagation. */
     assert(offs <= storage);
     out = out + storage - offs;
     c   = 0;
@@ -389,27 +376,27 @@ uint8_t *eb_od_ec_enc_done(OdEcEnc *enc, uint32_t *nbytes) {
         out[offs] = (uint8_t)c;
         c >>= 8;
     }
-    /*Note: Unless there's an allocation error, if you keep encoding into the
-    current buffer and call this function again later, everything will work
-    just fine (you won't get a new packet out, but you will get a single
-    buffer with the new data appended to the old).
-    However, this function is O(N) where N is the amount of data coded so far,
-    so calling it more than once for a given packet is a bad idea.*/
+    /*!< Note: Unless there's an allocation error, if you keep encoding into the
+     *   current buffer and call this function again later, everything will work
+     *   just fine (you won't get a new packet out, but you will get a single
+     *   buffer with the new data appended to the old).
+     *   However, this function is O(N) where N is the amount of data coded so far,
+     *   so calling it more than once for a given packet is a bad idea. */
     return out;
 }
 
-/*Returns the number of bits "used" by the encoded symbols so far.
-This same number can be computed in either the encoder or the decoder, and is
-suitable for making coding decisions.
-Warning: The value returned by this function can decrease compared to an
-earlier call, even after encoding more data, if there is an encoding error
-(i.e., a failure to allocate enough space for the output buffer).
-Return: The number of bits.
-This will always be slightly larger than the exact value (e.g., all
-rounding error is in the positive direction).*/
+/*!< Returns the number of bits "used" by the encoded symbols so far.
+ *   This same number can be computed in either the encoder or the decoder, and is
+ *   suitable for making coding decisions.
+ *   Warning: The value returned by this function can decrease compared to an
+ *   earlier call, even after encoding more data, if there is an encoding error
+ *   (i.e., a failure to allocate enough space for the output buffer).
+ *   Return: The number of bits.
+ *   This will always be slightly larger than the exact value (e.g., all
+ *   rounding error is in the positive direction). */
 int32_t eb_od_ec_enc_tell(const OdEcEnc *enc) {
-    /*The 10 here counteracts the offset of -9 baked into cnt, and adds 1 extra
-    bit, which we reserve for terminating the stream.*/
+    /*!< The 10 here counteracts the offset of -9 baked into cnt, and adds 1 extra
+     *   bit, which we reserve for terminating the stream. */
     return (enc->cnt + 10) + enc->offs * 8;
 }
 /********************************************************************************************************************************/

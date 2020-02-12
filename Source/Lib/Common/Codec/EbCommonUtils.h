@@ -1,7 +1,5 @@
-/*
-* Copyright(c) 2019 Netflix, Inc.
-* SPDX - License - Identifier: BSD - 2 - Clause - Patent
-*/
+/*!< Copyright(c) 2019 Netflix, Inc.
+ * SPDX - License - Identifier: BSD - 2 - Clause - Patent */
 
 #ifndef EbCommonUtils_h
 #define EbCommonUtils_h
@@ -38,41 +36,41 @@ static INLINE int get_txb_high(TxSize tx_size) {
 static INLINE PredictionMode get_uv_mode(UvPredictionMode mode) {
     assert(mode < UV_INTRA_MODES);
     static const PredictionMode uv2y[] = {
-            DC_PRED, // UV_DC_PRED
-            V_PRED, // UV_V_PRED
-            H_PRED, // UV_H_PRED
-            D45_PRED, // UV_D45_PRED
-            D135_PRED, // UV_D135_PRED
-            D113_PRED, // UV_D113_PRED
-            D157_PRED, // UV_D157_PRED
-            D203_PRED, // UV_D203_PRED
-            D67_PRED, // UV_D67_PRED
-            SMOOTH_PRED, // UV_SMOOTH_PRED
-            SMOOTH_V_PRED, // UV_SMOOTH_V_PRED
-            SMOOTH_H_PRED, // UV_SMOOTH_H_PRED
-            PAETH_PRED, // UV_PAETH_PRED
-            DC_PRED, // UV_CFL_PRED
-            INTRA_INVALID, // UV_INTRA_MODES
-            INTRA_INVALID, // UV_MODE_INVALID
+            DC_PRED, /*!< UV_DC_PRED */
+            V_PRED, /*!< UV_V_PRED */
+            H_PRED, /*!< UV_H_PRED */
+            D45_PRED, /*!< UV_D45_PRED */
+            D135_PRED, /*!< UV_D135_PRED */
+            D113_PRED, /*!< UV_D113_PRED */
+            D157_PRED, /*!< UV_D157_PRED */
+            D203_PRED, /*!< UV_D203_PRED */
+            D67_PRED, /*!< UV_D67_PRED */
+            SMOOTH_PRED, /*!< UV_SMOOTH_PRED */
+            SMOOTH_V_PRED, /*!< UV_SMOOTH_V_PRED */
+            SMOOTH_H_PRED, /*!< UV_SMOOTH_H_PRED */
+            PAETH_PRED, /*!< UV_PAETH_PRED */
+            DC_PRED, /*!< UV_CFL_PRED */
+            INTRA_INVALID, /*!< UV_INTRA_MODES */
+            INTRA_INVALID, /*!< UV_MODE_INVALID */
     };
     return uv2y[mode];
 }
 
 static INLINE TxType intra_mode_to_tx_type(const BlockModeInfo *mbmi, PlaneType plane_type) {
     static const TxType _intra_mode_to_tx_type[INTRA_MODES] = {
-            DCT_DCT, // DC
-            ADST_DCT, // V
-            DCT_ADST, // H
-            DCT_DCT, // D45
-            ADST_ADST, // D135
-            ADST_DCT, // D117
-            DCT_ADST, // D153
-            DCT_ADST, // D207
-            ADST_DCT, // D63
-            ADST_ADST, // SMOOTH
-            ADST_DCT, // SMOOTH_V
-            DCT_ADST, // SMOOTH_H
-            ADST_ADST, // PAETH
+            DCT_DCT, /*!< DC */
+            ADST_DCT, /*!< V */
+            DCT_ADST, /*!< H */
+            DCT_DCT, /*!< D45 */
+            ADST_ADST, /*!< D135 */
+            ADST_DCT, /*!< D117 */
+            DCT_ADST, /*!< D153 */
+            DCT_ADST, /*!< D207 */
+            ADST_DCT, /*!< D63 */
+            ADST_ADST, /*!< SMOOTH */
+            ADST_DCT, /*!< SMOOTH_V */
+            DCT_ADST, /*!< SMOOTH_H */
+            ADST_ADST, /*!< PAETH */
     };
     const PredictionMode mode =
             (plane_type == PLANE_TYPE_Y) ? mbmi->mode : get_uv_mode(mbmi->uv_mode);
@@ -99,7 +97,7 @@ static const PredictionMode fimode_to_intradir[FILTER_INTRA_MODES] = {
 
 
 static INLINE int32_t get_br_ctx(const uint8_t *const levels,
-                                 const int32_t        c, // raster order
+                                 const int32_t        c, /*!< raster order */
                                  const int32_t bwl, const TxType tx_type) {
     const int32_t row      = c >> bwl;
     const int32_t col      = c - (row << bwl);

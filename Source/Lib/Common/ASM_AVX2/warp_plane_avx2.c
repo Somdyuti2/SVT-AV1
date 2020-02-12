@@ -1,37 +1,34 @@
-/*
- * Copyright (c) 2019, Alliance for Open Media. All rights reserved
+/*!< Copyright (c) 2019, Alliance for Open Media. All rights reserved
  *
  * This source code is subject to the terms of the BSD 2 Clause License and
  * the Alliance for Open Media Patent License 1.0. If the BSD 2 Clause License
  * was not distributed with this source code in the LICENSE file, you can
  * obtain it at www.aomedia.org/license/software. If the Alliance for Open
  * Media Patent License 1.0 was not distributed with this source code in the
- * PATENTS file, you can obtain it at www.aomedia.org/license/patent.
- */
+ * PATENTS file, you can obtain it at www.aomedia.org/license/patent. */
 
 #include <immintrin.h>
 #include "common_dsp_rtcd.h"
 #include "EbWarpedMotion.h"
 
-/* This is a modified version of 'eb_warped_filter' from warped_motion.c:
-    * Each coefficient is stored in 8 bits instead of 16 bits
-    * The coefficients are rearranged in the column order 0, 2, 4, 6, 1, 3, 5, 7
-
-      This is done in order to avoid overflow: Since the tap with the largest
-      coefficient could be any of taps 2, 3, 4 or 5, we can't use the summation
-      order ((0 + 1) + (4 + 5)) + ((2 + 3) + (6 + 7)) used in the regular
-      convolve functions.
-
-      Instead, we use the summation order
-      ((0 + 2) + (4 + 6)) + ((1 + 3) + (5 + 7)).
-      The rearrangement of coefficients in this table is so that we can get the
-      coefficients into the correct order more quickly.
- */
+/*!< This is a modified version of 'eb_warped_filter' from warped_motion.c:
+ *   * Each coefficient is stored in 8 bits instead of 16 bits
+ *   * The coefficients are rearranged in the column order 0, 2, 4, 6, 1, 3, 5, 7
+ *
+ *     This is done in order to avoid overflow: Since the tap with the largest
+ *     coefficient could be any of taps 2, 3, 4 or 5, we can't use the summation
+ *     order ((0 + 1) + (4 + 5)) + ((2 + 3) + (6 + 7)) used in the regular
+ *     convolve functions.
+ *
+ *     Instead, we use the summation order
+ *     ((0 + 2) + (4 + 6)) + ((1 + 3) + (5 + 7)).
+ *     The rearrangement of coefficients in this table is so that we can get the
+ *     coefficients into the correct order more quickly. */
 /* clang-format off */
 DECLARE_ALIGNED(8, const int8_t,
 eb_av1_filter_8bit[WARPEDPIXEL_PREC_SHIFTS * 3 + 1][8]) = {
 #if WARPEDPIXEL_PREC_BITS == 6
-        // [-1, 0)
+        /*!< [-1, 0) */
         { 0, 127,   0, 0,   0,   1, 0, 0}, { 0, 127,   0, 0,  -1,   2, 0, 0},
         { 1, 127,  -1, 0,  -3,   4, 0, 0}, { 1, 126,  -2, 0,  -4,   6, 1, 0},
         { 1, 126,  -3, 0,  -5,   8, 1, 0}, { 1, 125,  -4, 0,  -6,  11, 1, 0},
@@ -64,7 +61,7 @@ eb_av1_filter_8bit[WARPEDPIXEL_PREC_SHIFTS * 3 + 1][8]) = {
         { 1,  13,  -7, 0,  -4, 124, 1, 0}, { 1,  11,  -6, 0,  -4, 125, 1, 0},
         { 1,   8,  -5, 0,  -3, 126, 1, 0}, { 1,   6,  -4, 0,  -2, 126, 1, 0},
         { 0,   4,  -3, 0,  -1, 127, 1, 0}, { 0,   2,  -1, 0,   0, 127, 0, 0},
-        // [0, 1)
+        /*!< [0, 1) */
         { 0,   0,   1, 0, 0, 127,   0,  0}, { 0,  -1,   2, 0, 0, 127,   0,  0},
         { 0,  -3,   4, 1, 1, 127,  -2,  0}, { 0,  -5,   6, 1, 1, 127,  -2,  0},
         { 0,  -6,   8, 1, 2, 126,  -3,  0}, {-1,  -7,  11, 2, 2, 126,  -4, -1},
@@ -97,7 +94,7 @@ eb_av1_filter_8bit[WARPEDPIXEL_PREC_SHIFTS * 3 + 1][8]) = {
         {-1,  -5, 125, 3, 2,  13,  -8, -1}, {-1,  -4, 126, 2, 2,  11,  -7, -1},
         { 0,  -3, 126, 2, 1,   8,  -6,  0}, { 0,  -2, 127, 1, 1,   6,  -5,  0},
         { 0,  -2, 127, 1, 1,   4,  -3,  0}, { 0,   0, 127, 0, 0,   2,  -1,  0},
-        // [1, 2)
+        /*!< [1, 2) */
         { 0, 0, 127,   0, 0,   1,   0, 0}, { 0, 0, 127,   0, 0,  -1,   2, 0},
         { 0, 1, 127,  -1, 0,  -3,   4, 0}, { 0, 1, 126,  -2, 0,  -4,   6, 1},
         { 0, 1, 126,  -3, 0,  -5,   8, 1}, { 0, 1, 125,  -4, 0,  -6,  11, 1},
@@ -130,11 +127,11 @@ eb_av1_filter_8bit[WARPEDPIXEL_PREC_SHIFTS * 3 + 1][8]) = {
         { 0, 1,  13,  -7, 0,  -4, 124, 1}, { 0, 1,  11,  -6, 0,  -4, 125, 1},
         { 0, 1,   8,  -5, 0,  -3, 126, 1}, { 0, 1,   6,  -4, 0,  -2, 126, 1},
         { 0, 0,   4,  -3, 0,  -1, 127, 1}, { 0, 0,   2,  -1, 0,   0, 127, 0},
-        // dummy (replicate row index 191)
+        /*!< dummy (replicate row index 191) */
         { 0, 0,   2,  -1, 0,   0, 127, 0},
 
       #else
-        // [-1, 0)
+        /*!< [-1, 0) */
         { 0, 127,   0, 0,   0,   1, 0, 0}, { 1, 127,  -1, 0,  -3,   4, 0, 0},
         { 1, 126,  -3, 0,  -5,   8, 1, 0}, { 1, 124,  -4, 0,  -7,  13, 1, 0},
         { 2, 122,  -6, 0,  -9,  18, 1, 0}, { 2, 120,  -7, 0, -11,  22, 2, 0},
@@ -151,7 +148,7 @@ eb_av1_filter_8bit[WARPEDPIXEL_PREC_SHIFTS * 3 + 1][8]) = {
         { 2,  27, -13, 0,  -8, 117, 3, 0}, { 2,  22, -11, 0,  -7, 120, 2, 0},
         { 1,  18,  -9, 0,  -6, 122, 2, 0}, { 1,  13,  -7, 0,  -4, 124, 1, 0},
         { 1,   8,  -5, 0,  -3, 126, 1, 0}, { 0,   4,  -3, 0,  -1, 127, 1, 0},
-        // [0, 1)
+        /*!< [0, 1) */
         { 0,   0,   1, 0, 0, 127,   0,  0}, { 0,  -3,   4, 1, 1, 127,  -2,  0},
         { 0,  -6,   8, 1, 2, 126,  -3,  0}, {-1,  -8,  13, 2, 3, 125,  -5, -1},
         {-1, -11,  18, 3, 4, 123,  -7, -1}, {-1, -13,  23, 3, 4, 121,  -8, -1},
@@ -168,7 +165,7 @@ eb_av1_filter_8bit[WARPEDPIXEL_PREC_SHIFTS * 3 + 1][8]) = {
         {-1, -10, 119, 5, 4,  27, -15, -1}, {-1,  -8, 121, 4, 3,  23, -13, -1},
         {-1,  -7, 123, 4, 3,  18, -11, -1}, {-1,  -5, 125, 3, 2,  13,  -8, -1},
         { 0,  -3, 126, 2, 1,   8,  -6,  0}, { 0,  -2, 127, 1, 1,   4,  -3,  0},
-        // [1, 2)
+        /*!< [1, 2) */
         { 0,  0, 127,   0, 0,   1,   0, 0}, { 0, 1, 127,  -1, 0,  -3,   4, 0},
         { 0,  1, 126,  -3, 0,  -5,   8, 1}, { 0, 1, 124,  -4, 0,  -7,  13, 1},
         { 0,  2, 122,  -6, 0,  -9,  18, 1}, { 0, 2, 120,  -7, 0, -11,  22, 2},
@@ -185,7 +182,7 @@ eb_av1_filter_8bit[WARPEDPIXEL_PREC_SHIFTS * 3 + 1][8]) = {
         { 0,  2,  27, -13, 0,  -8, 117, 3}, { 0, 2,  22, -11, 0,  -7, 120, 2},
         { 0,  1,  18,  -9, 0,  -6, 122, 2}, { 0, 1,  13,  -7, 0,  -4, 124, 1},
         { 0,  1,   8,  -5, 0,  -3, 126, 1}, { 0, 0,   4,  -3, 0,  -1, 127, 1},
-        // dummy (replicate row index 95)
+        /*!< dummy (replicate row index 95) */
         { 0, 0,   4,  -3, 0,  -1, 127, 1},
       #endif  // WARPEDPIXEL_PREC_BITS == 6
 };
@@ -698,7 +695,7 @@ static INLINE void filter_src_pixels_vertical_avx2(__m256i *horz_out, __m256i *s
     const __m256i res_odd =
         _mm256_add_epi32(_mm256_add_epi32(res_1, res_3), _mm256_add_epi32(res_5, res_7));
 
-    // Rearrange pixels back into the order 0 ... 7
+    /*!< Rearrange pixels back into the order 0 ... 7 */
     *res_lo = _mm256_unpacklo_epi32(res_even, res_odd);
     *res_hi = _mm256_unpackhi_epi32(res_even, res_odd);
 }
@@ -797,7 +794,7 @@ static INLINE void store_vertical_filter_output_avx2(
         const __m128i res_8bit0 = _mm256_castsi256_si128(res_8bit);
         const __m128i res_8bit1 = _mm256_extracti128_si256(res_8bit, 1);
 
-        // Store, blending with 'pred' if needed
+        /*!< Store, blending with 'pred' if needed */
         __m128i *const p  = (__m128i *)&pred[(i + k + 4) * p_stride + j];
         __m128i *const p1 = (__m128i *)&pred[(i + (k + 1) + 4) * p_stride + j];
 
@@ -1235,17 +1232,17 @@ void eb_av1_warp_affine_avx2(const int32_t *mat, const uint8_t *ref, int width, 
             int32_t iy4 = y4 >> WARPEDMODEL_PREC_BITS;
             int32_t sy4 = y4 & ((1 << WARPEDMODEL_PREC_BITS) - 1);
 
-            // Add in all the constant terms, including rounding and offset
+            /*!< Add in all the constant terms, including rounding and offset */
             sx4 += const1;
             sy4 += const2;
 
             sx4 &= ~const3;
             sy4 &= ~const3;
 
-            // Horizontal filter
-            // If the block is aligned such that, after clamping, every sample
-            // would be taken from the leftmost/rightmost column, then we can
-            // skip the expensive horizontal filter.
+            /*!< Horizontal filter
+             *   If the block is aligned such that, after clamping, every sample
+             *   would be taken from the leftmost/rightmost column, then we can
+             *   skip the expensive horizontal filter. */
 
             if (ix4 <= -7) {
                 int iy, row = 0;
@@ -1345,7 +1342,7 @@ void eb_av1_warp_affine_avx2(const int32_t *mat, const uint8_t *ref, int width, 
                                                     &shift,
                                                     shuffle_src);
 
-            // Vertical filter
+            /*!< Vertical filter */
             prepare_warp_vertical_filter_avx2(pred,
                                               horz_out,
                                               conv_params,

@@ -1,7 +1,5 @@
-/*
-* Copyright(c) 2019 Intel Corporation
-* SPDX - License - Identifier: BSD - 2 - Clause - Patent
-*/
+/*!< Copyright(c) 2019 Intel Corporation
+ * SPDX - License - Identifier: BSD - 2 - Clause - Patent */
 
 #include <stdlib.h>
 #include <string.h>
@@ -49,7 +47,7 @@ EbErrorType me_context_ctor(MeContext *object_ptr, uint16_t max_input_luma_width
 
     object_ptr->dctor = me_context_dctor;
 
-    // Intermediate SB-sized buffer to retain the input samples
+    /*!< Intermediate SB-sized buffer to retain the input samples */
     object_ptr->sb_buffer_stride = BLOCK_SIZE_64;
     EB_MALLOC_ALIGNED_ARRAY(object_ptr->sb_buffer, BLOCK_SIZE_64 * object_ptr->sb_buffer_stride);
 
@@ -68,46 +66,47 @@ EbErrorType me_context_ctor(MeContext *object_ptr, uint16_t max_input_luma_width
     EB_MEMSET(
         object_ptr->sb_buffer, 0, sizeof(uint8_t) * BLOCK_SIZE_64 * object_ptr->sb_buffer_stride);
     EB_MALLOC_ARRAY(object_ptr->mvd_bits_array, NUMBER_OF_MVD_CASES);
-    // 15 intermediate buffers to retain the interpolated reference samples
+    /*!< 15 intermediate buffers to retain the interpolated reference samples */
 
-    //      0    1    2    3
-    // 0    A    a    b    c
-    // 1    d    e    f    g
-    // 2    h    i    j    k
-    // 3    n    p    q    r
+    /*!<
+     *      0    1    2    3
+     * 0    A    a    b    c
+     * 1    d    e    f    g
+     * 2    h    i    j    k
+     * 3    n    p    q    r */
 
-    //                  _____________
-    //                 |             |
-    // --I samples --> |Interpolation|-- O samples -->
-    //                 | ____________|
+    /*!<                  _____________
+     *                   |             |
+     *   --I samples --> |Interpolation|-- O samples -->
+     *                   | ____________|                */
 
-    // Before Interpolation: 2 x 3
-    //   I   I
-    //   I   I
-    //   I   I
+    /*!< Before Interpolation: 2 x 3
+     *     I   I
+     *     I   I
+     *     I   I */
 
-    // After 1-D Horizontal Interpolation: (2 + 1) x 3 - a, b, and c
-    // O I O I O
-    // O I O I O
-    // O I O I O
+    /*!< After 1-D Horizontal Interpolation: (2 + 1) x 3 - a, b, and c
+     *   O I O I O
+     *   O I O I O
+     *   O I O I O */
 
-    // After 1-D Vertical Interpolation: 2 x (3 + 1) - d, h, and n
-    //   O   O
-    //   I   I
-    //   O   O
-    //   I   I
-    //   O   O
-    //   I   I
-    //   O   O
+    /*!< After 1-D Vertical Interpolation: 2 x (3 + 1) - d, h, and n
+     *     O   O
+     *     I   I
+     *     O   O
+     *     I   I
+     *     O   O
+     *     I   I
+     *     O   O */
 
-    // After 2-D (Horizontal/Vertical) Interpolation: (2 + 1) x (3 + 1) - e, f, g, i, j, k, n, p, q, and r
-    // O   O   O
-    //   I   I
-    // O   O   O
-    //   I   I
-    // O   O   O
-    //   I   I
-    // O   O   O
+    /*!< After 2-D (Horizontal/Vertical) Interpolation: (2 + 1) x (3 + 1) - e, f, g, i, j, k, n, p, q, and r
+     *   O   O   O
+     *     I   I
+     *   O   O   O
+     *     I   I
+     *   O   O   O
+     *     I   I
+     *   O   O   O */
 
     for (list_index = 0; list_index < MAX_NUM_OF_REF_PIC_LIST; list_index++) {
         for (ref_pic_index = 0; ref_pic_index < MAX_REF_IDX; ref_pic_index++) {
@@ -140,9 +139,9 @@ EbErrorType me_context_ctor(MeContext *object_ptr, uint16_t max_input_luma_width
     EB_MALLOC_ARRAY(object_ptr->avctemp_buffer,
                     object_ptr->interpolated_stride * max_search_area_height);
     EB_MALLOC_ARRAY(object_ptr->p_eight_pos_sad16x16,
-                    8 * 16); //16= 16 16x16 blocks in a SB.       8=8search points
+                    8 * 16); /*!< 16= 16 16x16 blocks in a SB.       8=8search points */
 
-    // Initialize Alt-Ref parameters
+    /*!< Initialize Alt-Ref parameters */
     object_ptr->me_alt_ref = EB_FALSE;
 
     return EB_ErrorNone;

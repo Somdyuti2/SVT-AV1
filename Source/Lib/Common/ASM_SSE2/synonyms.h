@@ -1,13 +1,11 @@
-/*
- * Copyright (c) 2016, Alliance for Open Media. All rights reserved
+/*!< Copyright (c) 2016, Alliance for Open Media. All rights reserved
  *
  * This source code is subject to the terms of the BSD 2 Clause License and
  * the Alliance for Open Media Patent License 1.0. If the BSD 2 Clause License
  * was not distributed with this source code in the LICENSE file, you can
  * obtain it at www.aomedia.org/license/software. If the Alliance for Open
  * Media Patent License 1.0 was not distributed with this source code in the
- * PATENTS file, you can obtain it at www.aomedia.org/license/patent.
- */
+ * PATENTS file, you can obtain it at www.aomedia.org/license/patent. */
 
 #ifndef AOM_DSP_X86_SYNONYMS_H_
 #define AOM_DSP_X86_SYNONYMS_H_
@@ -17,12 +15,10 @@
 
 //#define EB_TEST_SIMD_ALIGN
 
-/**
-  * Various reusable shorthands for x86 SIMD intrinsics.
+/*!< Various reusable shorthands for x86 SIMD intrinsics.
   *
-  * Intrinsics prefixed with xx_ operate on or return 128bit XMM registers.
-  * Intrinsics prefixed with yy_ operate on or return 256bit YMM registers.
-  */
+  *  Intrinsics prefixed with xx_ operate on or return 128bit XMM registers.
+  *   Intrinsics prefixed with yy_ operate on or return 256bit YMM registers.  */
 
 static INLINE __m128i xx_loadl_32(const void *a) {
     int val;
@@ -93,9 +89,9 @@ SIMD_INLINE void store_u16_4x2_sse2(const __m128i src, uint16_t *const dst,
     _mm_storeh_epi64((__m128i *)(dst + stride), src);
 }
 
-// The _mm_set_epi64x() intrinsic is undefined for some Visual Studio
-// compilers. The following function is equivalent to _mm_set_epi64x()
-// acting on 32-bit integers.
+/*!< The _mm_set_epi64x() intrinsic is undefined for some Visual Studio
+ *   compilers. The following function is equivalent to _mm_set_epi64x()
+ *   acting on 32-bit integers. */
 static INLINE __m128i xx_set_64_from_32i(int32_t e1, int32_t e0) {
 #if defined(_MSC_VER) && _MSC_VER < 1900
     return _mm_set_epi32(0, e1, 0, e0);
@@ -104,9 +100,9 @@ static INLINE __m128i xx_set_64_from_32i(int32_t e1, int32_t e0) {
 #endif
 }
 
-// The _mm_set1_epi64x() intrinsic is undefined for some Visual Studio
-// compilers. The following function is equivalent to _mm_set1_epi64x()
-// acting on a 32-bit integer.
+/*!< The _mm_set1_epi64x() intrinsic is undefined for some Visual Studio
+ *   compilers. The following function is equivalent to _mm_set1_epi64x()
+ *   acting on a 32-bit integer. */
 static INLINE __m128i xx_set1_64_from_32i(int32_t a) {
 #if defined(_MSC_VER) && _MSC_VER < 1900
     return _mm_set_epi32(0, a, 0, a);
@@ -130,14 +126,14 @@ static INLINE __m128i xx_roundn_epu32(__m128i v_val_d, int32_t bits) {
     return _mm_srli_epi32(v_tmp_d, bits);
 }
 
-// This is equivalent to ROUND_POWER_OF_TWO(v_val_d, bits)
+/*!< This is equivalent to ROUND_POWER_OF_TWO(v_val_d, bits) */
 static INLINE __m128i xx_roundn_epi32_unsigned(__m128i v_val_d, int32_t bits) {
     const __m128i v_bias_d = _mm_set1_epi32((1 << bits) >> 1);
     const __m128i v_tmp_d  = _mm_add_epi32(v_val_d, v_bias_d);
     return _mm_srai_epi32(v_tmp_d, bits);
 }
 
-// This is equivalent to ROUND_POWER_OF_TWO_SIGNED(v_val_d, bits)
+/*!< This is equivalent to ROUND_POWER_OF_TWO_SIGNED(v_val_d, bits) */
 static INLINE __m128i xx_roundn_epi32(__m128i v_val_d, int32_t bits) {
     const __m128i v_bias_d = _mm_set1_epi32((1 << bits) >> 1);
     const __m128i v_sign_d = _mm_srai_epi32(v_val_d, 31);
@@ -152,8 +148,8 @@ static INLINE __m128i xx_roundn_epi16(__m128i v_val_d, int32_t bits) {
     return _mm_srai_epi16(v_tmp_d, bits);
 }
 
-// This fucntion will fail gcc Linux ABI build
-// Tunraround is to replace the core of the fucntion in each call
+/*!< This fucntion will fail gcc Linux ABI build
+ *   Tunraround is to replace the core of the fucntion in each call */
 
 //static INLINE __m256i yy_roundn_epu16(__m256i v_val_w, int bits) {
 //  const __m256i v_s_w = _mm256_srli_epi16(v_val_w, bits - 1);
@@ -161,16 +157,16 @@ static INLINE __m128i xx_roundn_epi16(__m128i v_val_d, int32_t bits) {
 //}
 //
 
-// Note:
-// _mm256_insert_epi16 intrinsics is available from vs2017.
-// We define this macro for vs2015 and earlier. The
-// intrinsics used here are in vs2015 document:
-// https://msdn.microsoft.com/en-us/library/hh977022.aspx
-// Input parameters:
-// a: __m256i,
-// d: int16_t,
-// indx: imm8 (0 - 15)
-//#if _MSC_VER <= 1900
+/*!< Note:
+ *   _mm256_insert_epi16 intrinsics is available from vs2017.
+ *   We define this macro for vs2015 and earlier. The
+ *   intrinsics used here are in vs2015 document:
+ *   https://msdn.microsoft.com/en-us/library/hh977022.aspx
+ *   Input parameters:
+ *   a: __m256i,
+ *   d: int16_t,
+ *   indx: imm8 (0 - 15)
+ *  #if _MSC_VER <= 1900 */
 #if defined(_MSC_VER) && _MSC_VER < 1910
 #define _mm256_insert_epi16(a, d, indx) \
     _mm256_insertf128_si256(            \

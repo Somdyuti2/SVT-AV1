@@ -1,7 +1,5 @@
-/*
-* Copyright(c) 2019 Intel Corporation
-* SPDX - License - Identifier: BSD - 2 - Clause - Patent
-*/
+/*!< Copyright(c) 2019 Intel Corporation
+ * SPDX - License - Identifier: BSD - 2 - Clause - Patent */
 
 #ifndef EbPictureManagerQueue_h
 #define EbPictureManagerQueue_h
@@ -15,9 +13,9 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
-/************************************************
-     * Input Queue Entry
-     ************************************************/
+/************************************************/
+/*!< Input Queue Entry */
+/************************************************/
 struct ReferenceQueueEntry; // empty struct definition
 
 typedef struct InputQueueEntry {
@@ -33,9 +31,9 @@ typedef struct InputQueueEntry {
     EbBool           encoding_has_begun;
 } InputQueueEntry;
 
-/************************************************
-     * Reference Queue Entry
-     ************************************************/
+/************************************************/
+/*!< Reference Queue Entry */
+/************************************************/
 typedef struct ReferenceQueueEntry {
     EbDctor dctor;
 
@@ -58,9 +56,9 @@ typedef struct ReferenceQueueEntry {
     EbBool           frame_context_updated;
 } ReferenceQueueEntry;
 
-/************************************************
-     * Rate Control Input Queue Entry
-     ************************************************/
+/************************************************/
+/*!< Rate Control Input Queue Entry */
+/************************************************/
 
 typedef struct RcInputQueueEntry {
     uint64_t         picture_number;
@@ -72,9 +70,9 @@ typedef struct RcInputQueueEntry {
     uint32_t         gop_index;
 } RcInputQueueEntry;
 
-/************************************************
-     * Rate Control FeedBack  Queue Entry
-     ************************************************/
+/************************************************/
+/*!< Rate Control FeedBack  Queue Entry */
+/************************************************/
 typedef struct RcFeedbackQueueEntry {
     uint64_t         picture_number;
     EbObjectWrapper *feedback_object_ptr;

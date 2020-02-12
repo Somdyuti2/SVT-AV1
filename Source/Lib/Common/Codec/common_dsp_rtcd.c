@@ -1,18 +1,14 @@
-/*
-* Copyright(c) 2019 Intel Corporation
-* SPDX - License - Identifier: BSD - 2 - Clause - Patent
-*/
+/*!< Copyright(c) 2019 Intel Corporation
+ * SPDX - License - Identifier: BSD - 2 - Clause - Patent */
 
-/*
-* Copyright (c) 2016, Alliance for Open Media. All rights reserved
-*
-* This source code is subject to the terms of the BSD 2 Clause License and
-* the Alliance for Open Media Patent License 1.0. If the BSD 2 Clause License
-* was not distributed with this source code in the LICENSE file, you can
-* obtain it at www.aomedia.org/license/software. If the Alliance for Open
-* Media Patent License 1.0 was not distributed with this source code in the
-* PATENTS file, you can obtain it at www.aomedia.org/license/patent.
-*/
+/*!< Copyright (c) 2016, Alliance for Open Media. All rights reserved
+ *
+ * This source code is subject to the terms of the BSD 2 Clause License and
+ * the Alliance for Open Media Patent License 1.0. If the BSD 2 Clause License
+ * was not distributed with this source code in the LICENSE file, you can
+ * obtain it at www.aomedia.org/license/software. If the Alliance for Open
+ * Media Patent License 1.0 was not distributed with this source code in the
+ * PATENTS file, you can obtain it at www.aomedia.org/license/patent. */
 
 #define RTCD_C
 #include "common_dsp_rtcd.h"
@@ -24,9 +20,7 @@
 #include "EbAvcStyleMcp_SSSE3.h"
 #include "EbAvcStyleMcp.h"
 
-/*
- * DSP deprecated flags
- */
+/*!< DSP deprecated flags */
 #define HAS_MMX CPU_FLAGS_MMX
 #define HAS_SSE CPU_FLAGS_SSE
 #define HAS_SSE2 CPU_FLAGS_SSE2
@@ -44,18 +38,18 @@
 #define HAS_AVX512BW CPU_FLAGS_AVX512BW
 #define HAS_AVX512VL CPU_FLAGS_AVX512VL
 
-/**************************************
- * Instruction Set Support
- **************************************/
+/**************************************/
+/*!< Instruction Set Support */
+/**************************************/
 
-// Helper Functions
+/*!< Helper Functions */
 static INLINE void run_cpuid(uint32_t eax, uint32_t ecx, int32_t* abcd) {
 #ifdef _WIN32
     __cpuidex(abcd, eax, ecx);
 #else
     uint32_t ebx = 0, edx = 0;
 #if defined(__i386__) && defined(__PIC__)
-    /* in case of PIC under 32-bit EBX cannot be clobbered */
+    /*!< in case of PIC under 32-bit EBX cannot be clobbered */
     __asm__("movl %%ebx, %%edi \n\t cpuid \n\t xchgl %%ebx, %%edi"
             : "=D"(ebx),
 #else
@@ -75,11 +69,11 @@ static INLINE void run_cpuid(uint32_t eax, uint32_t ecx, int32_t* abcd) {
 static INLINE int32_t check_xcr0_ymm() {
     uint32_t xcr0;
 #ifdef _WIN32
-    xcr0 = (uint32_t)_xgetbv(0); /* min VS2010 SP1 compiler is required */
+    xcr0 = (uint32_t)_xgetbv(0); /*!< min VS2010 SP1 compiler is required */
 #else
     __asm__("xgetbv" : "=a"(xcr0) : "c"(0) : "%edx");
 #endif
-    return ((xcr0 & 6) == 6); /* checking if xmm and ymm state are enabled in XCR0 */
+    return ((xcr0 & 6) == 6); /*!< checking if xmm and ymm state are enabled in XCR0 */
 }
 
 static int32_t check_4thgen_intel_core_features() {
@@ -110,12 +104,12 @@ static INLINE int check_xcr0_zmm() {
     uint32_t xcr0;
     uint32_t zmm_ymm_xmm = (7 << 5) | (1 << 2) | (1 << 1);
 #ifdef _WIN32
-    xcr0 = (uint32_t)_xgetbv(0); /* min VS2010 SP1 compiler is required */
+    xcr0 = (uint32_t)_xgetbv(0); /*!< min VS2010 SP1 compiler is required */
 #else
     __asm__("xgetbv" : "=a"(xcr0) : "c"(0) : "%edx");
 #endif
     return ((xcr0 & zmm_ymm_xmm) ==
-            zmm_ymm_xmm); /* check if xmm, ymm and zmm state are enabled in XCR0 */
+            zmm_ymm_xmm); /*!< check if xmm, ymm and zmm state are enabled in XCR0 */
 }
 
 static int32_t can_use_intel_avx512() {
@@ -127,15 +121,15 @@ static int32_t can_use_intel_avx512() {
     CPUID.(EAX=07H, ECX=0):EBX[bit 30] AVX512BW
     CPUID.(EAX=07H, ECX=0):EBX[bit 31] AVX512VL */
 
-    int avx512_ebx_mask = (1 << 16) // AVX-512F
-                          | (1 << 17) // AVX-512DQ
-                          | (1 << 28) // AVX-512CD
-                          | (1 << 30) // AVX-512BW
-                          | (1 << 31); // AVX-512VL
+    int avx512_ebx_mask = (1 << 16) /*!< AVX-512F */
+                          | (1 << 17) /*!< AVX-512DQ */
+                          | (1 << 28) /*!< AVX-512CD */
+                          | (1 << 30) /*!< AVX-512BW */
+                          | (1 << 31); /*!< AVX-512VL */
 
     if (!check_4thgen_intel_core_features()) return 0;
 
-    // ensure OS supports ZMM registers (and YMM, and XMM)
+    /*!< ensure OS supports ZMM registers (and YMM, and XMM) */
     if (!check_xcr0_zmm()) return 0;
 
     run_cpuid(7, 0, abcd);
@@ -147,10 +141,9 @@ static int32_t can_use_intel_avx512() {
 CPU_FLAGS get_cpu_flags() {
     CPU_FLAGS flags = 0;
 
-    /* To detail tests CPU features, requires more accurate implementation.
-        Documentation help:
-        https://docs.microsoft.com/en-us/cpp/intrinsics/cpuid-cpuidex?redirectedfrom=MSDN&view=vs-2019
-    */
+    /*!< To detail tests CPU features, requires more accurate implementation.
+     *   Documentation help:
+     *   https://docs.microsoft.com/en-us/cpp/intrinsics/cpuid-cpuidex?redirectedfrom=MSDN&view=vs-2019 */
 
     if (check_4thgen_intel_core_features()) {
         flags |= CPU_FLAGS_MMX | CPU_FLAGS_SSE | CPU_FLAGS_SSE2 | CPU_FLAGS_SSE3 | CPU_FLAGS_SSSE3 |
@@ -168,7 +161,7 @@ CPU_FLAGS get_cpu_flags() {
 CPU_FLAGS get_cpu_flags_to_use() {
     CPU_FLAGS flags = get_cpu_flags();
 #ifdef NON_AVX512_SUPPORT
-    /* Remove AVX512 flags. */
+    /*!< Remove AVX512 flags. */
     flags &= (CPU_FLAGS_AVX512F - 1);
 #endif
     return flags;
@@ -220,11 +213,11 @@ CPU_FLAGS get_cpu_flags_to_use() {
 
 
 void setup_common_rtcd_internal(CPU_FLAGS flags) {
-    /** Should be done during library initialization,
-        but for safe limiting cpu flags again. */
+    /*!< Should be done during library initialization,
+     *   but for safe limiting cpu flags again. */
     flags &= get_cpu_flags_to_use();
 
-    //to use C: flags=0
+    /*!< to use C: flags=0 */
 
     aom_blend_a64_mask = aom_blend_a64_mask_c;
     if (flags & HAS_SSE4_1) aom_blend_a64_mask = aom_blend_a64_mask_sse4_1;

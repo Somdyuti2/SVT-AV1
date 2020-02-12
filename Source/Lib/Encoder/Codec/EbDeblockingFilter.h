@@ -1,18 +1,14 @@
-/*
-* Copyright(c) 2019 Intel Corporation
-* SPDX - License - Identifier: BSD - 2 - Clause - Patent
-*/
+/*!< Copyright(c) 2019 Intel Corporation
+ * SPDX - License - Identifier: BSD - 2 - Clause - Patent */
 
-/*
-* Copyright (c) 2016, Alliance for Open Media. All rights reserved
-*
-* This source code is subject to the terms of the BSD 2 Clause License and
-* the Alliance for Open Media Patent License 1.0. If the BSD 2 Clause License
-* was not distributed with this source code in the LICENSE file, you can
-* obtain it at www.aomedia.org/license/software. If the Alliance for Open
-* Media Patent License 1.0 was not distributed with this source code in the
-* PATENTS file, you can obtain it at www.aomedia.org/license/patent.
-*/
+/*!< Copyright (c) 2016, Alliance for Open Media. All rights reserved
+ *
+ * This source code is subject to the terms of the BSD 2 Clause License and
+ * the Alliance for Open Media Patent License 1.0. If the BSD 2 Clause License
+ * was not distributed with this source code in the LICENSE file, you can
+ * obtain it at www.aomedia.org/license/software. If the Alliance for Open
+ * Media Patent License 1.0 was not distributed with this source code in the
+ * PATENTS file, you can obtain it at www.aomedia.org/license/patent. */
 
 #include "EbDeblockingFilter_SSE2.h"
 
@@ -29,17 +25,17 @@ extern "C" {
 #endif
 
 typedef enum LpfPickMethod {
-    // Try the full image with different values.
+    /*!< Try the full image with different values. */
     LPF_PICK_FROM_FULL_IMAGE,
-    // Try a small portion of the image with different values.
+    /*!< Try a small portion of the image with different values. */
     LPF_PICK_FROM_SUBIMAGE,
-    // Estimate the level based on quantizer and frame type
+    /*!< Estimate the level based on quantizer and frame type */
     LPF_PICK_FROM_Q,
-    // Pick 0 to disable LPF if LPF was enabled last frame
+    /*!< Pick 0 to disable LPF if LPF was enabled last frame */
     LPF_PICK_MINIMAL_LPF
 } LpfPickMethod;
 
-/* assorted LoopFilter functions which get used elsewhere */
+/*!< assorted LoopFilter functions which get used elsewhere */
 struct AV1Common;
 struct macroblockd;
 struct AV1LfSyncData;
@@ -59,7 +55,7 @@ void eb_av1_loop_filter_frame(
         int32_t partial_frame*/);
 
 void eb_av1_pick_filter_level(DlfContext *         context_ptr,
-                              EbPictureBufferDesc *srcBuffer, // source input
+                              EbPictureBufferDesc *srcBuffer, /*!< source input */
                               PictureControlSet *pcs_ptr, LpfPickMethod method);
 
 void eb_av1_filter_block_plane_vert(const PictureControlSet *const pcs_ptr,
@@ -76,8 +72,8 @@ typedef struct LoopFilterWorkerData {
     EbPictureBufferDesc *   frame_buffer; //reconpicture,
     PictureControlSet *     pcs_ptr;
     struct MacroblockdPlane planes[MAX_MB_PLANE];
-    // TODO(Ranjit): When the filter functions are modified to use xd->lossless
-    // add lossless as a member here.
+    /*!< TODO(Ranjit): When the filter functions are modified to use xd->lossless
+     *   add lossless as a member here. */
     MacroBlockD *xd;
 } LFWorkerData;
 

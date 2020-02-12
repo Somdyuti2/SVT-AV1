@@ -1,13 +1,11 @@
-/*
- * Copyright (c) 2016, Alliance for Open Media. All rights reserved
+/*!< Copyright (c) 2016, Alliance for Open Media. All rights reserved
  *
  * This source code is subject to the terms of the BSD 2 Clause License and
  * the Alliance for Open Media Patent License 1.0. If the BSD 2 Clause License
  * was not distributed with this source code in the LICENSE file, you can
  * obtain it at www.aomedia.org/license/software. If the Alliance for Open
  * Media Patent License 1.0 was not distributed with this source code in the
- * PATENTS file, you can obtain it at www.aomedia.org/license/patent.
- */
+ * PATENTS file, you can obtain it at www.aomedia.org/license/patent. */
 
 #include "EbDefinitions.h"
 #include <assert.h>
@@ -24,9 +22,8 @@ double eb_aom_sse_to_psnr(double samples, double peak, double sse) {
         return MAX_PSNR;
 }
 
-/* TODO(yaowu): The block_variance calls the unoptimized versions of variance()
- * and highbd_8_variance(). It should not.
- */
+/*!< TODO(yaowu): The block_variance calls the unoptimized versions
+ *   of variance() and highbd_8_variance(). It should not. */
 static int32_t encoder_variance(const uint8_t *a, int32_t a_stride, const uint8_t *b,
                                 int32_t b_stride, int32_t w, int32_t h) {
     int32_t i, j;

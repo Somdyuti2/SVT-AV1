@@ -1,18 +1,14 @@
-/*
-* Copyright(c) 2019 Intel Corporation
-* SPDX - License - Identifier: BSD - 2 - Clause - Patent
-*/
+/*!< Copyright(c) 2019 Intel Corporation
+ * SPDX - License - Identifier: BSD - 2 - Clause - Patent */
 
-/*
-* Copyright (c) 2016, Alliance for Open Media. All rights reserved
+/*!< Copyright (c) 2016, Alliance for Open Media. All rights reserved
 *
 * This source code is subject to the terms of the BSD 2 Clause License and
 * the Alliance for Open Media Patent License 1.0. If the BSD 2 Clause License
 * was not distributed with this source code in the LICENSE file, you can
 * obtain it at www.aomedia.org/license/software. If the Alliance for Open
 * Media Patent License 1.0 was not distributed with this source code in the
-* PATENTS file, you can obtain it at www.aomedia.org/license/patent.
-*/
+* PATENTS file, you can obtain it at www.aomedia.org/license/patent. */
 
 #include <stdlib.h>
 #include <stdbool.h>
@@ -46,9 +42,9 @@ static INLINE MV dec_clamp_mv_to_umv_border_sb(int32_t mb_to_left_edge, int32_t 
                                                int32_t mb_to_top_edge, int32_t mb_to_bottom_edge,
                                                const MV *src_mv, int32_t bw, int32_t bh,
                                                int32_t ss_x, int32_t ss_y) {
-    // If the MV points so far into the UMV border that no visible pixels
-    // are used for reconstruction, the subpel part of the MV can be
-    // discarded and the MV limited to 16 pixels with equivalent results.
+    /*!< If the MV points so far into the UMV border that no visible pixels
+     *   are used for reconstruction, the subpel part of the MV can be
+     *   discarded and the MV limited to 16 pixels with equivalent results. */
     const int32_t spel_left   = (AOM_INTERP_EXTEND + bw) << SUBPEL_BITS;
     const int32_t spel_right  = spel_left - SUBPEL_SHIFTS;
     const int32_t spel_top    = (AOM_INTERP_EXTEND + bh) << SUBPEL_BITS;
@@ -208,9 +204,9 @@ static void build_mc_border(const uint8_t *ref_row, int32_t src_stride,
     uint8_t *dst, int32_t dst_stride, int32_t x, int32_t y, int32_t b_w,
     int32_t b_h, int32_t w, int32_t h)
 {
-    //x,y = block start postion in ref frame
-    //b_w, b_h  = block size in ref frame
-    //w, h = ref frame width  & height
+    /*!< x,y = block start postion in ref frame
+     *   b_w, b_h  = block size in ref frame
+     *   w, h = ref frame width  & height */
 
 #if OPT_DYN_PAD
     int32_t x0 = x, y0 = y;
@@ -342,7 +338,7 @@ static INLINE int update_extend_mc_border_params(PadBlock *block,
     int frame_height = (ref_buf->frame_height + ss_y) >> ss_y;
 
 
-    // Skip border extension if block is inside the frame.
+    /*!< Skip border extension if block is inside the frame. */
     if (block->x0 < -(DYNIMIC_PAD_VALUE >> ss_x) ||
         block->x1 >((frame_width - 1) + (DYNIMIC_PAD_VALUE >> ss_x)) ||
         block->y0 < -(DYNIMIC_PAD_VALUE >> ss_y) ||
@@ -380,7 +376,7 @@ static INLINE void extend_mc_border(void *src, int32_t *src_stride,
         const int32_t b_w = block->x1 - block->x0;
         const int32_t b_h = block->y1 - block->y0;
 
-        // Extend the border.
+        /*!< Extend the border. */
         if (highbd) {
             highbd_build_mc_border((uint8_t*)src, buf_stride, mc_buf, b_w,
                 block->x0, block->y0, b_w, b_h,
@@ -413,7 +409,7 @@ void svt_make_inter_predictor(PartitionInfo *part_info, int32_t ref, void *src, 
     int32_t       bit_depth = ref_buf->ps_pic_buf->bit_depth;
     int32_t       highbd    = bit_depth > EB_8BIT;
 
-    /*ScaleFactor*/
+    /*!< ScaleFactor */
     const struct ScaleFactors *const sf =
         is_intrabc ? part_info->sf_identity : part_info->block_ref_sf[ref];
 
@@ -601,9 +597,9 @@ void svt_make_masked_inter_predictor(PartitionInfo *part_info, int32_t ref, void
     InterInterCompoundData *comp_data = &part_info->mi->inter_inter_compound;
     const BlockSize         bsize     = part_info->mi->sb_type;
     int32_t                 bit_depth = ref_buf->ps_pic_buf->bit_depth;
-    //We come here when we have a prediction done using regular path for the ref0 stored in conv_param.dst.
-    //use regular path to generate a prediction for ref1 into  a temporary buffer,
-    //then  blend that temporary buffer with that from  the first reference.
+    /*!< We come here when we have a prediction done using regular path for the ref0 stored in conv_param.dst.
+     *   use regular path to generate a prediction for ref1 into  a temporary buffer,
+     *   then  blend that temporary buffer with that from  the first reference. */
 
 #define INTER_PRED_BYTES_PER_PIXEL 2
     DECLARE_ALIGNED(32, uint8_t, tmp_buf[INTER_PRED_BYTES_PER_PIXEL * MAX_SB_SQUARE]);
@@ -611,7 +607,7 @@ void svt_make_masked_inter_predictor(PartitionInfo *part_info, int32_t ref, void
     //uint8_t *tmp_dst =  tmp_buf;
     const int tmp_buf_stride = MAX_SB_SIZE;
 
-    CONV_BUF_TYPE *org_dst        = conv_params->dst; //save the ref0 prediction pointer
+    CONV_BUF_TYPE *org_dst        = conv_params->dst; /*!< save the ref0 prediction pointer */
     int            org_dst_stride = conv_params->dst_stride;
     CONV_BUF_TYPE *tmp_buf16      = (CONV_BUF_TYPE *)tmp_buf;
     conv_params->dst              = tmp_buf16;
@@ -635,9 +631,9 @@ void svt_make_masked_inter_predictor(PartitionInfo *part_info, int32_t ref, void
                              do_warp);
 
     if (!plane && comp_data->type == COMPOUND_DIFFWTD) {
-        //CHKN  for DIFF: need to compute the mask  comp_data->seg_mask is
-        //the output computed from the two preds org_dst and tmp_buf16
-        //for WEDGE the mask is fixed from the table based on wedge_sign/index
+        /*!< CHKN  for DIFF: need to compute the mask  comp_data->seg_mask is
+         *   the output computed from the two preds org_dst and tmp_buf16
+         *   for WEDGE the mask is fixed from the table based on wedge_sign/index */
         av1_build_compound_diffwtd_mask_d16(seg_mask,
                                             comp_data->mask_type,
                                             org_dst,
@@ -674,12 +670,12 @@ void av1_combine_interintra(PartitionInfo *part_info, BlockSize bsize, int plane
     const BlockSize plane_bsize = get_plane_block_size(bsize, sub_x, sub_y);
 
     if (bit_depth > EB_8BIT) {
-        /*As per spec we r considering interitra_wedge_sign is always "zero"*/
-        /*Check buffers, Aom  2nd time inter_pred buffer plane is plane independent */
+        /*!< As per spec we r considering interitra_wedge_sign is always "zero" */
+        /*!< Check buffers, Aom  2nd time inter_pred buffer plane is plane independent */
         combine_interintra_highbd(mi->interintra_mode_params.interintra_mode,
                                   mi->interintra_mode_params.wedge_interintra,
                                   mi->interintra_mode_params.interintra_wedge_index,
-                                  0 /*interintra_wedgesign*/,
+                                  0 /*!< interintra_wedgesign */,
                                   bsize,
                                   plane_bsize,
                                   inter_pred,
@@ -692,11 +688,11 @@ void av1_combine_interintra(PartitionInfo *part_info, BlockSize bsize, int plane
         return;
     }
 
-    /*Check buffers, Aom  2nd time inter_pred buffer plane is plane independent */
+    /*!< Check buffers, Aom  2nd time inter_pred buffer plane is plane independent */
     combine_interintra(mi->interintra_mode_params.interintra_mode,
                        mi->interintra_mode_params.wedge_interintra,
                        mi->interintra_mode_params.interintra_wedge_index,
-                       0 /*interintra_wedgesign*/,
+                       0 /*!< interintra_wedgesign */,
                        bsize,
                        plane_bsize,
                        inter_pred,
@@ -729,13 +725,13 @@ void av1_build_intra_predictors_for_interintra(DecModCtxt *dec_mod_ctxt, Partiti
 
         pv_top_neighbor_array  = (void *)(buf - recon_stride);
         pv_left_neighbor_array = (void *)(buf - 1);
-    } else { //16bit
+    } else { /*!< 16bit */
         uint16_t *buf          = (uint16_t *)pv_blk_recon_buf;
         pv_top_neighbor_array  = (void *)(buf - recon_stride);
         pv_left_neighbor_array = (void *)(buf - 1);
     }
 
-    /*Calling Intra prediction */
+    /*!< Calling Intra prediction */
     svtav1_predict_intra_block(part_info,
                                plane,
                                max_txsize_rect_lookup[plane_bsize],
@@ -752,7 +748,7 @@ void av1_build_intra_predictors_for_interintra(DecModCtxt *dec_mod_ctxt, Partiti
                                bit_depth);
 }
 
-/* Build interintra_predictors */
+/*!< Build interintra_predictors */
 void av1_build_interintra_predictors(DecModCtxt *dec_mod_ctxt, PartitionInfo *part_info, void *pred,
                                      int32_t stride, int plane, BlockSize bsize,
                                      EbBitDepthEnum bit_depth) {
@@ -803,7 +799,7 @@ void svtav1_predict_inter_block_plane(DecModCtxt *dec_mod_ctx, EbDecHandle *dec_
     int32_t              ref;
     const int32_t        is_intrabc = is_intrabc_block(mi);
 
-    //temporary buffer for joint compound, move this to context if stack does not hold.
+    /*!< temporary buffer for joint compound, move this to context if stack does not hold. */
     DECLARE_ALIGNED(32, uint16_t, tmp_dst[128 * 128]);
 
     int32_t highbd = bit_depth > EB_8BIT;
@@ -815,10 +811,10 @@ void svtav1_predict_inter_block_plane(DecModCtxt *dec_mod_ctx, EbDecHandle *dec_
     int32_t         bh        = part_info->hpx[0] >> ss_y;
     int32_t         row_start = 0;
     int32_t         col_start = 0;
-    // For sub8x8 chroma blocks, we may be covering more than one luma block's
-    // worth of pixels. Thus (mi_x, mi_y) may not be the correct coordinates for
-    // the top-left corner of the prediction source - the correct top-left corner
-    // is at (pre_x, pre_y).
+    /*!< For sub8x8 chroma blocks, we may be covering more than one luma block's
+     *   worth of pixels. Thus (mi_x, mi_y) may not be the correct coordinates for
+     *   the top-left corner of the prediction source - the correct top-left corner
+     *   is at (pre_x, pre_y). */
     if (some_use_intra && plane && !build_for_obmc) {
         bool sub8_w = (block_size_wide[bsize] == 4) && ss_x;
         bool sub8_h = (block_size_high[bsize] == 4) && ss_y;
@@ -860,7 +856,7 @@ void svtav1_predict_inter_block_plane(DecModCtxt *dec_mod_ctx, EbDecHandle *dec_
         if (bck_buf != NULL) bck_frame_index = bck_buf->order_hint;
         if (fwd_buf != NULL) fwd_frame_index = fwd_buf->order_hint;
 
-        /*Distantance WTD compound inter prediction */
+        /*!< Distantance WTD compound inter prediction */
         av1_dist_wtd_comp_weight_assign(seq_header,
                                         cur_frame_index,
                                         bck_frame_index,
@@ -894,9 +890,9 @@ void svtav1_predict_inter_block_plane(DecModCtxt *dec_mod_ctx, EbDecHandle *dec_
             derive_blk_pointers(ps_ref_pic_buf, plane, 0, 0, &src, &src_stride, ss_x, ss_y);
 
             conv_params.do_average = ref;
-            /*support masked inter prediction based on WEDGE / DIFFWTD compound type */
+            /*!< support masked inter prediction based on WEDGE / DIFFWTD compound type */
             if (is_masked_compound_type(mi->inter_inter_compound.type)) {
-                // masked compound type has its own average mechanism
+                /*!< masked compound type has its own average mechanism */
                 conv_params.do_average = 0;
             }
 
@@ -946,7 +942,7 @@ void svtav1_predict_inter_block(DecModCtxt *dec_mod_ctxt, EbDecHandle *dec_hdl,
 
     EbPictureBufferDesc *recon_picture_buf = dec_hdl->cur_pic_buf[0]->ps_pic_buf;
 
-    /* scan through sub 8 blocks and see if anyof them is intra */
+    /*!< scan through sub 8 blocks and see if anyof them is intra */
     some_use_intra        = 0;
     const BlockSize bsize = part_info->mi->sb_type;
     sub_x                 = part_info->subsampling_x;
@@ -955,7 +951,7 @@ void svtav1_predict_inter_block(DecModCtxt *dec_mod_ctxt, EbDecHandle *dec_hdl,
     bool sub8_h           = (block_size_high[bsize] == 4) && sub_y;
     if (sub8_h || sub8_w) {
         int32_t i, j;
-        /* Floor and Ceil to nearest 8x8 blks */
+        /*!< Floor and Ceil to nearest 8x8 blks */
         const int row_start = sub8_h ? (mi_row & (~1)) : mi_row;
         const int row_end   = sub8_h ? (mi_row | (1)) : mi_row;
         const int col_start = sub8_w ? (mi_col & (~1)) : mi_col;
@@ -995,7 +991,7 @@ void svtav1_predict_inter_block(DecModCtxt *dec_mod_ctxt, EbDecHandle *dec_hdl,
                                          recon_picture_buf->bit_depth);
 
         if (is_interintra_pred(part_info->mi)) {
-            /*Inter prd is done in above function, In the below function Intra prd happens follwed by interintra blending */
+            /*!< Inter prd is done in above function, In the below function Intra prd happens follwed by interintra blending */
             av1_build_interintra_predictors(dec_mod_ctxt,
                                             part_info,
                                             blk_recon_buf,

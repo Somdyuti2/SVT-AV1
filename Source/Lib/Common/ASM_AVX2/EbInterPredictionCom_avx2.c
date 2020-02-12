@@ -1,13 +1,11 @@
-/*
- * Copyright (c) 2017, Alliance for Open Media. All rights reserved
+/*!< Copyright (c) 2017, Alliance for Open Media. All rights reserved
  *
  * This source code is subject to the terms of the BSD 2 Clause License and
  * the Alliance for Open Media Patent License 1.0. If the BSD 2 Clause License
  * was not distributed with this source code in the LICENSE file, you can
  * obtain it at www.aomedia.org/license/software. If the Alliance for Open
  * Media Patent License 1.0 was not distributed with this source code in the
- * PATENTS file, you can obtain it at www.aomedia.org/license/patent.
- */
+ * PATENTS file, you can obtain it at www.aomedia.org/license/patent. */
 #include <immintrin.h>
 #include "synonyms.h"
 #include "synonyms_avx2.h"
@@ -330,10 +328,10 @@ void av1_build_compound_diffwtd_mask_d16_avx2(uint8_t *mask, DIFFWTD_MASK_TYPE m
                                               const CONV_BUF_TYPE *src1, int src1_stride, int h,
                                               int w, ConvolveParams *conv_params, int bd) {
     const int shift = 2 * FILTER_BITS - conv_params->round_0 - conv_params->round_1 + (bd - 8);
-    // When rounding constant is added, there is a possibility of overflow.
-    // However that much precision is not required. Code should very well work for
-    // other values of DIFF_FACTOR_LOG2 and AOM_BLEND_A64_MAX_ALPHA as well. But
-    // there is a possibility of corner case bugs.
+    /*!< When rounding constant is added, there is a possibility of overflow.
+     *   However that much precision is not required. Code should very well work for
+     *   other values of DIFF_FACTOR_LOG2 and AOM_BLEND_A64_MAX_ALPHA as well. But
+     *   there is a possibility of corner case bugs. */
     assert(DIFF_FACTOR_LOG2 == 4);
     assert(AOM_BLEND_A64_MAX_ALPHA == 64);
 

@@ -1,13 +1,11 @@
-/*
- * Copyright (c) 2018, Alliance for Open Media. All rights reserved
+/*!< Copyright (c) 2018, Alliance for Open Media. All rights reserved
  *
  * This source code is subject to the terms of the BSD 2 Clause License and
  * the Alliance for Open Media Patent License 1.0. If the BSD 2 Clause License
  * was not distributed with this source code in the LICENSE file, you can
  * obtain it at www.aomedia.org/license/software. If the Alliance for Open
  * Media Patent License 1.0 was not distributed with this source code in the
- * PATENTS file, you can obtain it at www.aomedia.org/license/patent.
- */
+ * PATENTS file, you can obtain it at www.aomedia.org/license/patent. */
 
 #include "EbDefinitions.h"
 #include "common_dsp_rtcd.h"
@@ -17,9 +15,9 @@
 #include "av1_txfm_sse2.h"
 #include "transpose_sse2.h"
 
-// TODO(binpengsmail@gmail.com): replace some for loop with do {} while
+/*!< TODO(binpengsmail@gmail.com): replace some for loop with do {} while */
 
-// Sqrt2, Sqrt2^2, Sqrt2^3, Sqrt2^4, Sqrt2^5
+/*!< Sqrt2, Sqrt2^2, Sqrt2^3, Sqrt2^4, Sqrt2^5 */
 static int32_t new_sqrt2list[TX_SIZES] = {5793, 2 * 4096, 2 * 5793, 4 * 4096, 4 * 5793};
 
 static void idct4_new_sse2(const __m128i *input, __m128i *output, int8_t cos_bit) {
@@ -32,18 +30,18 @@ static void idct4_new_sse2(const __m128i *input, __m128i *output, int8_t cos_bit
     const __m128i cospi_p48_m16 = pair_set_epi16(cospi[48], -cospi[16]);
     const __m128i cospi_p16_p48 = pair_set_epi16(cospi[16], cospi[48]);
 
-    // stage 1
+    /*!< stage 1 */
     __m128i x[4];
     x[0] = input[0];
     x[1] = input[2];
     x[2] = input[1];
     x[3] = input[3];
 
-    // stage 2
+    /*!< stage 2 */
     btf_16_sse2(cospi_p32_p32, cospi_p32_m32, x[0], x[1], x[0], x[1]);
     btf_16_sse2(cospi_p48_m16, cospi_p16_p48, x[2], x[3], x[2], x[3]);
 
-    // stage 3
+    /*!< stage 3 */
     btf_16_adds_subs_out_sse2(output[0], output[3], x[0], x[3]);
     btf_16_adds_subs_out_sse2(output[1], output[2], x[1], x[2]);
 }
@@ -58,18 +56,18 @@ static void idct4_w4_new_sse2(const __m128i *input, __m128i *output, int8_t cos_
     const __m128i cospi_p48_m16 = pair_set_epi16(cospi[48], -cospi[16]);
     const __m128i cospi_p16_p48 = pair_set_epi16(cospi[16], cospi[48]);
 
-    // stage 1
+    /*!< stage 1 */
     __m128i x[4];
     x[0] = input[0];
     x[1] = input[2];
     x[2] = input[1];
     x[3] = input[3];
 
-    // stage 2
+    /*!< stage 2 */
     btf_16_4p_sse2(cospi_p32_p32, cospi_p32_m32, x[0], x[1], x[0], x[1]);
     btf_16_4p_sse2(cospi_p48_m16, cospi_p16_p48, x[2], x[3], x[2], x[3]);
 
-    // stage 3
+    /*!< stage 3 */
     btf_16_adds_subs_out_sse2(output[0], output[3], x[0], x[3]);
     btf_16_adds_subs_out_sse2(output[1], output[2], x[1], x[2]);
 }
@@ -78,16 +76,16 @@ static void idct8_low1_new_ssse3(const __m128i *input, __m128i *output, int8_t c
     (void)cos_bit;
     const int32_t *cospi = cospi_arr(INV_COS_BIT);
 
-    // stage 1
+    /*!< stage 1 */
     __m128i x[2];
     x[0] = input[0];
 
-    // stage 2
-    // stage 3
+    /*!< stage 2 */
+    /*!< stage 3 */
     btf_16_ssse3(cospi[32], cospi[32], x[0], x[0], x[1]);
 
-    // stage 4
-    // stage 5
+    /*!< stage 4 */
+    /*!< stage 5 */
     output[0] = x[0];
     output[7] = x[0];
     output[1] = x[1];
@@ -113,7 +111,7 @@ static void idct8_new_sse2(const __m128i *input, __m128i *output, int8_t cos_bit
     const __m128i cospi_p16_p48 = pair_set_epi16(cospi[16], cospi[48]);
     const __m128i cospi_m32_p32 = pair_set_epi16(-cospi[32], cospi[32]);
 
-    // stage 1
+    /*!< stage 1 */
     __m128i x[8];
     x[0] = input[0];
     x[1] = input[4];
@@ -124,22 +122,22 @@ static void idct8_new_sse2(const __m128i *input, __m128i *output, int8_t cos_bit
     x[6] = input[3];
     x[7] = input[7];
 
-    // stage 2
+    /*!< stage 2 */
     btf_16_sse2(cospi_p56_m08, cospi_p08_p56, x[4], x[7], x[4], x[7]);
     btf_16_sse2(cospi_p24_m40, cospi_p40_p24, x[5], x[6], x[5], x[6]);
 
-    // stage 3
+    /*!< stage 3 */
     btf_16_sse2(cospi_p32_p32, cospi_p32_m32, x[0], x[1], x[0], x[1]);
     btf_16_sse2(cospi_p48_m16, cospi_p16_p48, x[2], x[3], x[2], x[3]);
     btf_16_adds_subs_sse2(x[4], x[5]);
     btf_16_subs_adds_sse2(x[7], x[6]);
 
-    // stage 4
+    /*!< stage 4 */
     btf_16_adds_subs_sse2(x[0], x[3]);
     btf_16_adds_subs_sse2(x[1], x[2]);
     btf_16_sse2(cospi_m32_p32, cospi_p32_p32, x[5], x[6], x[5], x[6]);
 
-    // stage 5
+    /*!< stage 5 */
     btf_16_adds_subs_out_sse2(output[0], output[7], x[0], x[7]);
     btf_16_adds_subs_out_sse2(output[1], output[6], x[1], x[6]);
     btf_16_adds_subs_out_sse2(output[2], output[5], x[2], x[5]);
@@ -161,7 +159,7 @@ static void idct8_w4_new_sse2(const __m128i *input, __m128i *output, int8_t cos_
     const __m128i cospi_p16_p48 = pair_set_epi16(cospi[16], cospi[48]);
     const __m128i cospi_m32_p32 = pair_set_epi16(-cospi[32], cospi[32]);
 
-    // stage 1
+    /*!< stage 1 */
     __m128i x[8];
     x[0] = input[0];
     x[1] = input[4];
@@ -172,22 +170,22 @@ static void idct8_w4_new_sse2(const __m128i *input, __m128i *output, int8_t cos_
     x[6] = input[3];
     x[7] = input[7];
 
-    // stage 2
+    /*!< stage 2 */
     btf_16_4p_sse2(cospi_p56_m08, cospi_p08_p56, x[4], x[7], x[4], x[7]);
     btf_16_4p_sse2(cospi_p24_m40, cospi_p40_p24, x[5], x[6], x[5], x[6]);
 
-    // stage 3
+    /*!< stage 3 */
     btf_16_4p_sse2(cospi_p32_p32, cospi_p32_m32, x[0], x[1], x[0], x[1]);
     btf_16_4p_sse2(cospi_p48_m16, cospi_p16_p48, x[2], x[3], x[2], x[3]);
     btf_16_adds_subs_sse2(x[4], x[5]);
     btf_16_subs_adds_sse2(x[7], x[6]);
 
-    // stage 4
+    /*!< stage 4 */
     btf_16_adds_subs_sse2(x[0], x[3]);
     btf_16_adds_subs_sse2(x[1], x[2]);
     btf_16_4p_sse2(cospi_m32_p32, cospi_p32_p32, x[5], x[6], x[5], x[6]);
 
-    // stage 5
+    /*!< stage 5 */
     btf_16_adds_subs_out_sse2(output[0], output[7], x[0], x[7]);
     btf_16_adds_subs_out_sse2(output[1], output[6], x[1], x[6]);
     btf_16_adds_subs_out_sse2(output[2], output[5], x[2], x[5]);
@@ -234,18 +232,18 @@ static void idct16_low1_new_ssse3(const __m128i *input, __m128i *output, int8_t 
     (void)cos_bit;
     const int32_t *cospi = cospi_arr(INV_COS_BIT);
 
-    // stage 1
+    /*!< stage 1 */
     __m128i x[2];
     x[0] = input[0];
 
-    // stage 2
-    // stage 3
-    // stage 4
+    /*!< stage 2 */
+    /*!< stage 3 */
+    /*!< stage 4 */
     btf_16_ssse3(cospi[32], cospi[32], x[0], x[0], x[1]);
 
-    // stage 5
-    // stage 6
-    // stage 7
+    /*!< stage 5 */
+    /*!< stage 6 */
+    /*!< stage 7 */
     output[0]  = x[0];
     output[15] = x[0];
     output[1]  = x[1];
@@ -272,7 +270,7 @@ static void idct16_low8_new_ssse3(const __m128i *input, __m128i *output, int8_t 
     const __m128i  cospi_p48_p16 = pair_set_epi16(cospi[48], cospi[16]);
     const __m128i  cospi_m48_m16 = pair_set_epi16(-cospi[48], -cospi[16]);
 
-    // stage 1
+    /*!< stage 1 */
     __m128i x[16];
     x[0]  = input[0];
     x[2]  = input[4];
@@ -283,13 +281,13 @@ static void idct16_low8_new_ssse3(const __m128i *input, __m128i *output, int8_t 
     x[12] = input[3];
     x[14] = input[7];
 
-    // stage 2
+    /*!< stage 2 */
     btf_16_ssse3(cospi[60], cospi[4], x[8], x[8], x[15]);
     btf_16_ssse3(-cospi[36], cospi[28], x[14], x[9], x[14]);
     btf_16_ssse3(cospi[44], cospi[20], x[10], x[10], x[13]);
     btf_16_ssse3(-cospi[52], cospi[12], x[12], x[11], x[12]);
 
-    // stage 3
+    /*!< stage 3 */
     btf_16_ssse3(cospi[56], cospi[8], x[4], x[4], x[7]);
     btf_16_ssse3(-cospi[40], cospi[24], x[6], x[5], x[6]);
     btf_16_adds_subs_sse2(x[8], x[9]);
@@ -297,7 +295,7 @@ static void idct16_low8_new_ssse3(const __m128i *input, __m128i *output, int8_t 
     btf_16_adds_subs_sse2(x[12], x[13]);
     btf_16_subs_adds_sse2(x[15], x[14]);
 
-    // stage 4
+    /*!< stage 4 */
     btf_16_ssse3(cospi[32], cospi[32], x[0], x[0], x[1]);
     btf_16_ssse3(cospi[48], cospi[16], x[2], x[2], x[3]);
     btf_16_adds_subs_sse2(x[4], x[5]);
@@ -335,7 +333,7 @@ static void idct16_new_sse2(const __m128i *input, __m128i *output, int8_t cos_bi
     const __m128i cospi_p48_p16 = pair_set_epi16(cospi[48], cospi[16]);
     const __m128i cospi_m48_m16 = pair_set_epi16(-cospi[48], -cospi[16]);
 
-    // stage 1
+    /*!< stage 1 */
     __m128i x[16];
     x[0]  = input[0];
     x[1]  = input[8];
@@ -354,13 +352,13 @@ static void idct16_new_sse2(const __m128i *input, __m128i *output, int8_t cos_bi
     x[14] = input[7];
     x[15] = input[15];
 
-    // stage 2
+    /*!< stage 2 */
     btf_16_sse2(cospi_p60_m04, cospi_p04_p60, x[8], x[15], x[8], x[15]);
     btf_16_sse2(cospi_p28_m36, cospi_p36_p28, x[9], x[14], x[9], x[14]);
     btf_16_sse2(cospi_p44_m20, cospi_p20_p44, x[10], x[13], x[10], x[13]);
     btf_16_sse2(cospi_p12_m52, cospi_p52_p12, x[11], x[12], x[11], x[12]);
 
-    // stage 3
+    /*!< stage 3 */
     btf_16_sse2(cospi_p56_m08, cospi_p08_p56, x[4], x[7], x[4], x[7]);
     btf_16_sse2(cospi_p24_m40, cospi_p40_p24, x[5], x[6], x[5], x[6]);
     btf_16_adds_subs_sse2(x[8], x[9]);
@@ -368,7 +366,7 @@ static void idct16_new_sse2(const __m128i *input, __m128i *output, int8_t cos_bi
     btf_16_adds_subs_sse2(x[12], x[13]);
     btf_16_subs_adds_sse2(x[15], x[14]);
 
-    // stage 4
+    /*!< stage 4 */
     btf_16_sse2(cospi_p32_p32, cospi_p32_m32, x[0], x[1], x[0], x[1]);
     btf_16_sse2(cospi_p48_m16, cospi_p16_p48, x[2], x[3], x[2], x[3]);
     btf_16_adds_subs_sse2(x[4], x[5]);
@@ -376,7 +374,7 @@ static void idct16_new_sse2(const __m128i *input, __m128i *output, int8_t cos_bi
     btf_16_sse2(cospi_m16_p48, cospi_p48_p16, x[9], x[14], x[9], x[14]);
     btf_16_sse2(cospi_m48_m16, cospi_m16_p48, x[10], x[13], x[10], x[13]);
 
-    // stage 5~7
+    /*!< stage 5~7 */
     idct16_stage5_sse2(x, cospi, __rounding, cos_bit);
     idct16_stage6_sse2(x, cospi, __rounding, cos_bit);
     idct16_stage7_sse2(output, x);
@@ -408,7 +406,7 @@ static void idct16_w4_new_sse2(const __m128i *input, __m128i *output, int8_t cos
     const __m128i cospi_m48_m16 = pair_set_epi16(-cospi[48], -cospi[16]);
     const __m128i cospi_m32_p32 = pair_set_epi16(-cospi[32], cospi[32]);
 
-    // stage 1
+    /*!< stage 1 */
     __m128i x[16];
     x[0]  = input[0];
     x[1]  = input[8];
@@ -427,13 +425,13 @@ static void idct16_w4_new_sse2(const __m128i *input, __m128i *output, int8_t cos
     x[14] = input[7];
     x[15] = input[15];
 
-    // stage 2
+    /*!< stage 2 */
     btf_16_4p_sse2(cospi_p60_m04, cospi_p04_p60, x[8], x[15], x[8], x[15]);
     btf_16_4p_sse2(cospi_p28_m36, cospi_p36_p28, x[9], x[14], x[9], x[14]);
     btf_16_4p_sse2(cospi_p44_m20, cospi_p20_p44, x[10], x[13], x[10], x[13]);
     btf_16_4p_sse2(cospi_p12_m52, cospi_p52_p12, x[11], x[12], x[11], x[12]);
 
-    // stage 3
+    /*!< stage 3 */
     btf_16_4p_sse2(cospi_p56_m08, cospi_p08_p56, x[4], x[7], x[4], x[7]);
     btf_16_4p_sse2(cospi_p24_m40, cospi_p40_p24, x[5], x[6], x[5], x[6]);
     btf_16_adds_subs_sse2(x[8], x[9]);
@@ -441,7 +439,7 @@ static void idct16_w4_new_sse2(const __m128i *input, __m128i *output, int8_t cos
     btf_16_adds_subs_sse2(x[12], x[13]);
     btf_16_subs_adds_sse2(x[15], x[14]);
 
-    // stage 4
+    /*!< stage 4 */
     btf_16_4p_sse2(cospi_p32_p32, cospi_p32_m32, x[0], x[1], x[0], x[1]);
     btf_16_4p_sse2(cospi_p48_m16, cospi_p16_p48, x[2], x[3], x[2], x[3]);
     btf_16_adds_subs_sse2(x[4], x[5]);
@@ -449,7 +447,7 @@ static void idct16_w4_new_sse2(const __m128i *input, __m128i *output, int8_t cos
     btf_16_4p_sse2(cospi_m16_p48, cospi_p48_p16, x[9], x[14], x[9], x[14]);
     btf_16_4p_sse2(cospi_m48_m16, cospi_m16_p48, x[10], x[13], x[10], x[13]);
 
-    // stage 5
+    /*!< stage 5 */
     btf_16_adds_subs_sse2(x[0], x[3]);
     btf_16_adds_subs_sse2(x[1], x[2]);
     btf_16_4p_sse2(cospi_m32_p32, cospi_p32_p32, x[5], x[6], x[5], x[6]);
@@ -458,7 +456,7 @@ static void idct16_w4_new_sse2(const __m128i *input, __m128i *output, int8_t cos
     btf_16_subs_adds_sse2(x[15], x[12]);
     btf_16_subs_adds_sse2(x[14], x[13]);
 
-    // stage 6
+    /*!< stage 6 */
     btf_16_adds_subs_sse2(x[0], x[7]);
     btf_16_adds_subs_sse2(x[1], x[6]);
     btf_16_adds_subs_sse2(x[2], x[5]);
@@ -466,7 +464,7 @@ static void idct16_w4_new_sse2(const __m128i *input, __m128i *output, int8_t cos
     btf_16_4p_sse2(cospi_m32_p32, cospi_p32_p32, x[10], x[13], x[10], x[13]);
     btf_16_4p_sse2(cospi_m32_p32, cospi_p32_p32, x[11], x[12], x[11], x[12]);
 
-    // stage 7
+    /*!< stage 7 */
     idct16_stage7_sse2(output, x);
 }
 
@@ -591,20 +589,20 @@ static void idct32_low1_new_ssse3(const __m128i *input, __m128i *output, int8_t 
     (void)cos_bit;
     const int32_t *cospi = cospi_arr(INV_COS_BIT);
 
-    // stage 1
+    /*!< stage 1 */
     __m128i x[2];
     x[0] = input[0];
 
-    // stage 2
-    // stage 3
-    // stage 4
-    // stage 5
+    /*!< stage 2 */
+    /*!< stage 3 */
+    /*!< stage 4 */
+    /*!< stage 5 */
     btf_16_ssse3(cospi[32], cospi[32], x[0], x[0], x[1]);
 
-    // stage 6
-    // stage 7
-    // stage 8
-    // stage 9
+    /*!< stage 6 */
+    /*!< stage 7 */
+    /*!< stage 8 */
+    /*!< stage 9 */
     output[0]  = x[0];
     output[31] = x[0];
     output[1]  = x[1];
@@ -644,7 +642,7 @@ static void idct32_low8_new_ssse3(const __m128i *input, __m128i *output, int8_t 
     const int32_t *cospi      = cospi_arr(INV_COS_BIT);
     const __m128i  __rounding = _mm_set1_epi32(1 << (INV_COS_BIT - 1));
 
-    // stage 1
+    /*!< stage 1 */
     __m128i x[32];
     x[0]  = input[0];
     x[4]  = input[4];
@@ -655,13 +653,13 @@ static void idct32_low8_new_ssse3(const __m128i *input, __m128i *output, int8_t 
     x[24] = input[3];
     x[28] = input[7];
 
-    // stage 2
+    /*!< stage 2 */
     btf_16_ssse3(cospi[62], cospi[2], x[16], x[16], x[31]);
     btf_16_ssse3(-cospi[50], cospi[14], x[28], x[19], x[28]);
     btf_16_ssse3(cospi[54], cospi[10], x[20], x[20], x[27]);
     btf_16_ssse3(-cospi[58], cospi[6], x[24], x[23], x[24]);
 
-    // stage 3
+    /*!< stage 3 */
     btf_16_ssse3(cospi[60], cospi[4], x[8], x[8], x[15]);
     btf_16_ssse3(-cospi[52], cospi[12], x[12], x[11], x[12]);
     x[17] = x[16];
@@ -673,7 +671,7 @@ static void idct32_low8_new_ssse3(const __m128i *input, __m128i *output, int8_t 
     x[29] = x[28];
     x[30] = x[31];
 
-    // stage 4
+    /*!< stage 4 */
     btf_16_ssse3(cospi[56], cospi[8], x[4], x[4], x[7]);
     x[9]  = x[8];
     x[10] = x[11];
@@ -681,12 +679,12 @@ static void idct32_low8_new_ssse3(const __m128i *input, __m128i *output, int8_t 
     x[14] = x[15];
     idct32_high16_stage4_sse2(x, cospi, __rounding, cos_bit);
 
-    // stage 5
+    /*!< stage 5 */
     btf_16_ssse3(cospi[32], cospi[32], x[0], x[0], x[1]);
     x[5] = x[4];
     x[6] = x[7];
     idct32_high24_stage5_sse2(x, cospi, __rounding, cos_bit);
-    // stage 6
+    /*!< stage 6 */
     x[3] = x[0];
     x[2] = x[1];
     idct32_high28_stage6_sse2(x, cospi, __rounding, cos_bit);
@@ -701,7 +699,7 @@ static void idct32_low16_new_ssse3(const __m128i *input, __m128i *output, int8_t
     const int32_t *cospi      = cospi_arr(INV_COS_BIT);
     const __m128i  __rounding = _mm_set1_epi32(1 << (INV_COS_BIT - 1));
 
-    // stage 1
+    /*!< stage 1 */
     __m128i x[32];
     x[0]  = input[0];
     x[2]  = input[8];
@@ -720,7 +718,7 @@ static void idct32_low16_new_ssse3(const __m128i *input, __m128i *output, int8_t
     x[28] = input[7];
     x[30] = input[15];
 
-    // stage 2
+    /*!< stage 2 */
     btf_16_ssse3(cospi[62], cospi[2], x[16], x[16], x[31]);
     btf_16_ssse3(-cospi[34], cospi[30], x[30], x[17], x[30]);
     btf_16_ssse3(cospi[46], cospi[18], x[18], x[18], x[29]);
@@ -730,14 +728,14 @@ static void idct32_low16_new_ssse3(const __m128i *input, __m128i *output, int8_t
     btf_16_ssse3(cospi[38], cospi[26], x[22], x[22], x[25]);
     btf_16_ssse3(-cospi[58], cospi[6], x[24], x[23], x[24]);
 
-    // stage 3
+    /*!< stage 3 */
     btf_16_ssse3(cospi[60], cospi[4], x[8], x[8], x[15]);
     btf_16_ssse3(-cospi[36], cospi[28], x[14], x[9], x[14]);
     btf_16_ssse3(cospi[44], cospi[20], x[10], x[10], x[13]);
     btf_16_ssse3(-cospi[52], cospi[12], x[12], x[11], x[12]);
     idct32_high16_stage3_sse2(x);
 
-    // stage 4
+    /*!< stage 4 */
     btf_16_ssse3(cospi[56], cospi[8], x[4], x[4], x[7]);
     btf_16_ssse3(-cospi[40], cospi[24], x[6], x[5], x[6]);
     btf_16_adds_subs_sse2(x[8], x[9]);
@@ -746,7 +744,7 @@ static void idct32_low16_new_ssse3(const __m128i *input, __m128i *output, int8_t
     btf_16_subs_adds_sse2(x[15], x[14]);
     idct32_high16_stage4_sse2(x, cospi, __rounding, cos_bit);
 
-    // stage 5
+    /*!< stage 5 */
     btf_16_ssse3(cospi[32], cospi[32], x[0], x[0], x[1]);
     btf_16_ssse3(cospi[48], cospi[16], x[2], x[2], x[3]);
     btf_16_adds_subs_sse2(x[4], x[5]);
@@ -800,7 +798,7 @@ static void idct32_new_sse2(const __m128i *input, __m128i *output, int8_t cos_bi
     const __m128i cospi_p48_m16 = pair_set_epi16(cospi[48], -cospi[16]);
     const __m128i cospi_p16_p48 = pair_set_epi16(cospi[16], cospi[48]);
 
-    // stage 1
+    /*!< stage 1 */
     __m128i x[32];
     x[0]  = input[0];
     x[1]  = input[16];
@@ -835,7 +833,7 @@ static void idct32_new_sse2(const __m128i *input, __m128i *output, int8_t cos_bi
     x[30] = input[15];
     x[31] = input[31];
 
-    // stage 2
+    /*!< stage 2 */
     btf_16_sse2(cospi_p62_m02, cospi_p02_p62, x[16], x[31], x[16], x[31]);
     btf_16_sse2(cospi_p30_m34, cospi_p34_p30, x[17], x[30], x[17], x[30]);
     btf_16_sse2(cospi_p46_m18, cospi_p18_p46, x[18], x[29], x[18], x[29]);
@@ -845,14 +843,14 @@ static void idct32_new_sse2(const __m128i *input, __m128i *output, int8_t cos_bi
     btf_16_sse2(cospi_p38_m26, cospi_p26_p38, x[22], x[25], x[22], x[25]);
     btf_16_sse2(cospi_p06_m58, cospi_p58_p06, x[23], x[24], x[23], x[24]);
 
-    // stage 3
+    /*!< stage 3 */
     btf_16_sse2(cospi_p60_m04, cospi_p04_p60, x[8], x[15], x[8], x[15]);
     btf_16_sse2(cospi_p28_m36, cospi_p36_p28, x[9], x[14], x[9], x[14]);
     btf_16_sse2(cospi_p44_m20, cospi_p20_p44, x[10], x[13], x[10], x[13]);
     btf_16_sse2(cospi_p12_m52, cospi_p52_p12, x[11], x[12], x[11], x[12]);
     idct32_high16_stage3_sse2(x);
 
-    // stage 4
+    /*!< stage 4 */
     btf_16_sse2(cospi_p56_m08, cospi_p08_p56, x[4], x[7], x[4], x[7]);
     btf_16_sse2(cospi_p24_m40, cospi_p40_p24, x[5], x[6], x[5], x[6]);
     btf_16_adds_subs_sse2(x[8], x[9]);
@@ -861,19 +859,19 @@ static void idct32_new_sse2(const __m128i *input, __m128i *output, int8_t cos_bi
     btf_16_subs_adds_sse2(x[15], x[14]);
     idct32_high16_stage4_sse2(x, cospi, __rounding, cos_bit);
 
-    // stage 5
+    /*!< stage 5 */
     btf_16_sse2(cospi_p32_p32, cospi_p32_m32, x[0], x[1], x[0], x[1]);
     btf_16_sse2(cospi_p48_m16, cospi_p16_p48, x[2], x[3], x[2], x[3]);
     btf_16_adds_subs_sse2(x[4], x[5]);
     btf_16_adds_subs_sse2(x[7], x[6]);
     idct32_high24_stage5_sse2(x, cospi, __rounding, cos_bit);
 
-    // stage 6
+    /*!< stage 6 */
     btf_16_adds_subs_sse2(x[0], x[3]);
     btf_16_adds_subs_sse2(x[1], x[2]);
     idct32_high28_stage6_sse2(x, cospi, __rounding, cos_bit);
 
-    // stage 7~8
+    /*!< stage 7~8 */
     idct32_stage7_sse2(x, cospi, __rounding, cos_bit);
     idct32_stage8_sse2(x, cospi, __rounding, cos_bit);
     idct32_stage9_sse2(output, x);
@@ -1117,22 +1115,22 @@ static void idct64_low1_new_ssse3(const __m128i *input, __m128i *output, int8_t 
     (void)cos_bit;
     const int32_t *cospi = cospi_arr(INV_COS_BIT);
 
-    // stage 1
+    /*!< stage 1 */
     __m128i x[32];
     x[0] = input[0];
 
-    // stage 2
-    // stage 3
-    // stage 4
-    // stage 5
-    // stage 6
+    /*!< stage 2 */
+    /*!< stage 3 */
+    /*!< stage 4 */
+    /*!< stage 5 */
+    /*!< stage 6 */
     btf_16_ssse3(cospi[32], cospi[32], x[0], x[0], x[1]);
 
-    // stage 7
-    // stage 8
-    // stage 9
-    // stage 10
-    // stage 11
+    /*!< stage 7 */
+    /*!< stage 8 */
+    /*!< stage 9 */
+    /*!< stage 10 */
+    /*!< stage 11 */
     output[0]  = x[0];
     output[63] = x[0];
     output[1]  = x[1];
@@ -1220,7 +1218,7 @@ static void idct64_low8_new_ssse3(const __m128i *input, __m128i *output, int8_t 
     const __m128i  cospi_p48_p16 = pair_set_epi16(cospi[48], cospi[16]);
     const __m128i  cospi_m32_p32 = pair_set_epi16(-cospi[32], cospi[32]);
 
-    // stage 1
+    /*!< stage 1 */
     __m128i x[64];
     x[0]  = input[0];
     x[8]  = input[4];
@@ -1231,13 +1229,13 @@ static void idct64_low8_new_ssse3(const __m128i *input, __m128i *output, int8_t 
     x[48] = input[3];
     x[56] = input[7];
 
-    // stage 2
+    /*!< stage 2 */
     btf_16_ssse3(cospi[63], cospi[1], x[32], x[32], x[63]);
     btf_16_ssse3(-cospi[57], cospi[7], x[56], x[39], x[56]);
     btf_16_ssse3(cospi[59], cospi[5], x[40], x[40], x[55]);
     btf_16_ssse3(-cospi[61], cospi[3], x[48], x[47], x[48]);
 
-    // stage 3
+    /*!< stage 3 */
     btf_16_ssse3(cospi[62], cospi[2], x[16], x[16], x[31]);
     btf_16_ssse3(-cospi[58], cospi[6], x[24], x[23], x[24]);
     x[33] = x[32];
@@ -1249,7 +1247,7 @@ static void idct64_low8_new_ssse3(const __m128i *input, __m128i *output, int8_t 
     x[57] = x[56];
     x[62] = x[63];
 
-    // stage 4
+    /*!< stage 4 */
     btf_16_ssse3(cospi[60], cospi[4], x[8], x[8], x[15]);
     x[17] = x[16];
     x[22] = x[23];
@@ -1260,7 +1258,7 @@ static void idct64_low8_new_ssse3(const __m128i *input, __m128i *output, int8_t 
     btf_16_sse2(cospi_m20_p44, cospi_p44_p20, x[41], x[54], x[41], x[54]);
     btf_16_sse2(cospi_m12_m52, cospi_m52_p12, x[46], x[49], x[46], x[49]);
 
-    // stage 5
+    /*!< stage 5 */
     x[9]  = x[8];
     x[14] = x[15];
     btf_16_sse2(cospi_m08_p56, cospi_p56_p08, x[17], x[30], x[17], x[30]);
@@ -1282,7 +1280,7 @@ static void idct64_low8_new_ssse3(const __m128i *input, __m128i *output, int8_t 
     x[60] = x[63];
     x[61] = x[62];
 
-    // stage 6
+    /*!< stage 6 */
     btf_16_ssse3(cospi[32], cospi[32], x[0], x[0], x[1]);
     btf_16_sse2(cospi_m16_p48, cospi_p48_p16, x[9], x[14], x[9], x[14]);
     x[19] = x[16];
@@ -1295,7 +1293,7 @@ static void idct64_low8_new_ssse3(const __m128i *input, __m128i *output, int8_t 
     x[29] = x[30];
     idct64_stage6_high32_sse2(x, cospi, __rounding, cos_bit);
 
-    // stage 7
+    /*!< stage 7 */
     x[3]  = x[0];
     x[2]  = x[1];
     x[11] = x[8];
@@ -1304,7 +1302,7 @@ static void idct64_low8_new_ssse3(const __m128i *input, __m128i *output, int8_t 
     x[13] = x[14];
     idct64_stage7_high48_sse2(x, cospi, __rounding, cos_bit);
 
-    // stage 8
+    /*!< stage 8 */
     x[7] = x[0];
     x[6] = x[1];
     x[5] = x[2];
@@ -1330,7 +1328,7 @@ static void idct64_low16_new_ssse3(const __m128i *input, __m128i *output, int8_t
     const __m128i cospi_m48_m16 = pair_set_epi16(-cospi[48], -cospi[16]);
     const __m128i cospi_m32_p32 = pair_set_epi16(-cospi[32], cospi[32]);
 
-    // stage 1
+    /*!< stage 1 */
     __m128i x[64];
     x[0]  = input[0];
     x[4]  = input[8];
@@ -1349,7 +1347,7 @@ static void idct64_low16_new_ssse3(const __m128i *input, __m128i *output, int8_t
     x[56] = input[7];
     x[60] = input[15];
 
-    // stage 2
+    /*!< stage 2 */
     btf_16_ssse3(cospi[63], cospi[1], x[32], x[32], x[63]);
     btf_16_ssse3(-cospi[49], cospi[15], x[60], x[35], x[60]);
     btf_16_ssse3(cospi[55], cospi[9], x[36], x[36], x[59]);
@@ -1359,7 +1357,7 @@ static void idct64_low16_new_ssse3(const __m128i *input, __m128i *output, int8_t
     btf_16_ssse3(cospi[51], cospi[13], x[44], x[44], x[51]);
     btf_16_ssse3(-cospi[61], cospi[3], x[48], x[47], x[48]);
 
-    // stage 3
+    /*!< stage 3 */
     btf_16_ssse3(cospi[62], cospi[2], x[16], x[16], x[31]);
     btf_16_ssse3(-cospi[50], cospi[14], x[28], x[19], x[28]);
     btf_16_ssse3(cospi[54], cospi[10], x[20], x[20], x[27]);
@@ -1381,7 +1379,7 @@ static void idct64_low16_new_ssse3(const __m128i *input, __m128i *output, int8_t
     x[61] = x[60];
     x[62] = x[63];
 
-    // stage 4
+    /*!< stage 4 */
     btf_16_ssse3(cospi[60], cospi[4], x[8], x[8], x[15]);
     btf_16_ssse3(-cospi[52], cospi[12], x[12], x[11], x[12]);
     x[17] = x[16];
@@ -1394,7 +1392,7 @@ static void idct64_low16_new_ssse3(const __m128i *input, __m128i *output, int8_t
     x[30] = x[31];
     idct64_stage4_high32_sse2(x, cospi, __rounding, cos_bit);
 
-    // stage 5
+    /*!< stage 5 */
     btf_16_ssse3(cospi[56], cospi[8], x[4], x[4], x[7]);
     x[9]  = x[8];
     x[10] = x[11];
@@ -1402,7 +1400,7 @@ static void idct64_low16_new_ssse3(const __m128i *input, __m128i *output, int8_t
     x[14] = x[15];
     idct64_stage5_high48_sse2(x, cospi, __rounding, cos_bit);
 
-    // stage 6
+    /*!< stage 6 */
     btf_16_ssse3(cospi[32], cospi[32], x[0], x[0], x[1]);
     x[5] = x[4];
     x[6] = x[7];
@@ -1410,7 +1408,7 @@ static void idct64_low16_new_ssse3(const __m128i *input, __m128i *output, int8_t
     btf_16_sse2(cospi_m48_m16, cospi_m16_p48, x[10], x[13], x[10], x[13]);
     idct64_stage6_high48_sse2(x, cospi, __rounding, cos_bit);
 
-    // stage 7
+    /*!< stage 7 */
     x[3] = x[0];
     x[2] = x[1];
     btf_16_sse2(cospi_m32_p32, cospi_p32_p32, x[5], x[6], x[5], x[6]);
@@ -1420,7 +1418,7 @@ static void idct64_low16_new_ssse3(const __m128i *input, __m128i *output, int8_t
     btf_16_subs_adds_sse2(x[14], x[13]);
     idct64_stage7_high48_sse2(x, cospi, __rounding, cos_bit);
 
-    // stage 8
+    /*!< stage 8 */
     btf_16_adds_subs_sse2(x[0], x[7]);
     btf_16_adds_subs_sse2(x[1], x[6]);
     btf_16_adds_subs_sse2(x[2], x[5]);
@@ -1445,7 +1443,7 @@ static void idct64_low32_new_ssse3(const __m128i *input, __m128i *output, int8_t
     const __m128i cospi_m48_m16 = pair_set_epi16(-cospi[48], -cospi[16]);
     const __m128i cospi_m32_p32 = pair_set_epi16(-cospi[32], cospi[32]);
 
-    // stage 1
+    /*!< stage 1 */
     __m128i x[64];
     x[0]  = input[0];
     x[2]  = input[16];
@@ -1480,7 +1478,7 @@ static void idct64_low32_new_ssse3(const __m128i *input, __m128i *output, int8_t
     x[60] = input[15];
     x[62] = input[31];
 
-    // stage 2
+    /*!< stage 2 */
     btf_16_ssse3(cospi[63], cospi[1], x[32], x[32], x[63]);
     btf_16_ssse3(-cospi[33], cospi[31], x[62], x[33], x[62]);
     btf_16_ssse3(cospi[47], cospi[17], x[34], x[34], x[61]);
@@ -1498,7 +1496,7 @@ static void idct64_low32_new_ssse3(const __m128i *input, __m128i *output, int8_t
     btf_16_ssse3(cospi[35], cospi[29], x[46], x[46], x[49]);
     btf_16_ssse3(-cospi[61], cospi[3], x[48], x[47], x[48]);
 
-    // stage 3
+    /*!< stage 3 */
     btf_16_ssse3(cospi[62], cospi[2], x[16], x[16], x[31]);
     btf_16_ssse3(-cospi[34], cospi[30], x[30], x[17], x[30]);
     btf_16_ssse3(cospi[46], cospi[18], x[18], x[18], x[29]);
@@ -1524,7 +1522,7 @@ static void idct64_low32_new_ssse3(const __m128i *input, __m128i *output, int8_t
     btf_16_adds_subs_sse2(x[60], x[61]);
     btf_16_subs_adds_sse2(x[63], x[62]);
 
-    // stage 4
+    /*!< stage 4 */
     btf_16_ssse3(cospi[60], cospi[4], x[8], x[8], x[15]);
     btf_16_ssse3(-cospi[36], cospi[28], x[14], x[9], x[14]);
     btf_16_ssse3(cospi[44], cospi[20], x[10], x[10], x[13]);
@@ -1539,7 +1537,7 @@ static void idct64_low32_new_ssse3(const __m128i *input, __m128i *output, int8_t
     btf_16_subs_adds_sse2(x[31], x[30]);
     idct64_stage4_high32_sse2(x, cospi, __rounding, cos_bit);
 
-    // stage 5
+    /*!< stage 5 */
     btf_16_ssse3(cospi[56], cospi[8], x[4], x[4], x[7]);
     btf_16_ssse3(-cospi[40], cospi[24], x[6], x[5], x[6]);
     btf_16_adds_subs_sse2(x[8], x[9]);
@@ -1548,7 +1546,7 @@ static void idct64_low32_new_ssse3(const __m128i *input, __m128i *output, int8_t
     btf_16_subs_adds_sse2(x[15], x[14]);
     idct64_stage5_high48_sse2(x, cospi, __rounding, cos_bit);
 
-    // stage 6
+    /*!< stage 6 */
     btf_16_ssse3(cospi[32], cospi[32], x[0], x[0], x[1]);
     btf_16_ssse3(cospi[48], cospi[16], x[2], x[2], x[3]);
     btf_16_adds_subs_sse2(x[4], x[5]);
@@ -1557,7 +1555,7 @@ static void idct64_low32_new_ssse3(const __m128i *input, __m128i *output, int8_t
     btf_16_sse2(cospi_m48_m16, cospi_m16_p48, x[10], x[13], x[10], x[13]);
     idct64_stage6_high48_sse2(x, cospi, __rounding, cos_bit);
 
-    // stage 7
+    /*!< stage 7 */
     btf_16_adds_subs_sse2(x[0], x[3]);
     btf_16_adds_subs_sse2(x[1], x[2]);
     btf_16_sse2(cospi_m32_p32, cospi_p32_p32, x[5], x[6], x[5], x[6]);
@@ -1567,7 +1565,7 @@ static void idct64_low32_new_ssse3(const __m128i *input, __m128i *output, int8_t
     btf_16_subs_adds_sse2(x[14], x[13]);
     idct64_stage7_high48_sse2(x, cospi, __rounding, cos_bit);
 
-    // stage 8
+    /*!< stage 8 */
     btf_16_adds_subs_sse2(x[0], x[7]);
     btf_16_adds_subs_sse2(x[1], x[6]);
     btf_16_adds_subs_sse2(x[2], x[5]);
@@ -1576,7 +1574,7 @@ static void idct64_low32_new_ssse3(const __m128i *input, __m128i *output, int8_t
     btf_16_sse2(cospi_m32_p32, cospi_p32_p32, x[11], x[12], x[11], x[12]);
     idct64_stage8_high48_sse2(x, cospi, __rounding, cos_bit);
 
-    // stage 9~11
+    /*!< stage 9~11 */
     idct64_stage9_sse2(x, cospi, __rounding, cos_bit);
     idct64_stage10_sse2(x, cospi, __rounding, cos_bit);
     idct64_stage11_sse2(output, x);
@@ -1606,31 +1604,31 @@ static void iadst4_new_sse2(const __m128i *input, __m128i *output, int8_t cos_bi
     u[3] = _mm_unpackhi_epi16(x0[1], x0[3]);
 
     __m128i x1[16];
-    x1[0]  = _mm_madd_epi16(u[0], sinpi_p01_p04); // x0*sin1 + x2*sin4
+    x1[0]  = _mm_madd_epi16(u[0], sinpi_p01_p04); /*!< x0*sin1 + x2*sin4 */
     x1[1]  = _mm_madd_epi16(u[1], sinpi_p01_p04);
-    x1[2]  = _mm_madd_epi16(u[0], sinpi_p02_m01); // x0*sin2 - x2*sin1
+    x1[2]  = _mm_madd_epi16(u[0], sinpi_p02_m01); /*!< x0*sin2 - x2*sin1 */
     x1[3]  = _mm_madd_epi16(u[1], sinpi_p02_m01);
-    x1[4]  = _mm_madd_epi16(u[2], sinpi_p03_p02); // x1*sin3 + x3*sin2
+    x1[4]  = _mm_madd_epi16(u[2], sinpi_p03_p02); /*!< x1*sin3 + x3*sin2 */
     x1[5]  = _mm_madd_epi16(u[3], sinpi_p03_p02);
-    x1[6]  = _mm_madd_epi16(u[2], sinpi_p03_m04); // x1*sin3 - x3*sin4
+    x1[6]  = _mm_madd_epi16(u[2], sinpi_p03_m04); /*!< x1*sin3 - x3*sin4 */
     x1[7]  = _mm_madd_epi16(u[3], sinpi_p03_m04);
-    x1[8]  = _mm_madd_epi16(u[0], sinpi_p03_m03); // x0*sin3 - x2*sin3
+    x1[8]  = _mm_madd_epi16(u[0], sinpi_p03_m03); /*!< x0*sin3 - x2*sin3 */
     x1[9]  = _mm_madd_epi16(u[1], sinpi_p03_m03);
-    x1[10] = _mm_madd_epi16(u[2], sinpi_0_p03); // x2*sin3
+    x1[10] = _mm_madd_epi16(u[2], sinpi_0_p03); /*!< x2*sin3 */
     x1[11] = _mm_madd_epi16(u[3], sinpi_0_p03);
-    x1[12] = _mm_madd_epi16(u[0], sinpi_p04_p02); // x0*sin4 + x2*sin2
+    x1[12] = _mm_madd_epi16(u[0], sinpi_p04_p02); /*!< x0*sin4 + x2*sin2 */
     x1[13] = _mm_madd_epi16(u[1], sinpi_p04_p02);
-    x1[14] = _mm_madd_epi16(u[2], sinpi_m03_m01); // -x1*sin3 - x3*sin1
+    x1[14] = _mm_madd_epi16(u[2], sinpi_m03_m01); /*!< -x1*sin3 - x3*sin1 */
     x1[15] = _mm_madd_epi16(u[3], sinpi_m03_m01);
 
     __m128i x2[8];
-    x2[0] = _mm_add_epi32(x1[0], x1[4]); // x0*sin1 +x2*sin4 +x1*sin3 +x3*sin2
+    x2[0] = _mm_add_epi32(x1[0], x1[4]); /*!< x0*sin1 +x2*sin4 +x1*sin3 +x3*sin2 */
     x2[1] = _mm_add_epi32(x1[1], x1[5]);
-    x2[2] = _mm_add_epi32(x1[2], x1[6]); // x0*sin2 -x2*sin1 +x1*sin3 -x3*sin4
+    x2[2] = _mm_add_epi32(x1[2], x1[6]); /*!< x0*sin2 -x2*sin1 +x1*sin3 -x3*sin4 */
     x2[3] = _mm_add_epi32(x1[3], x1[7]);
-    x2[4] = _mm_add_epi32(x1[8], x1[10]); // x0*sin3 -x2*sin3 +x3*sin3
+    x2[4] = _mm_add_epi32(x1[8], x1[10]); /*!< x0*sin3 -x2*sin3 +x3*sin3 */
     x2[5] = _mm_add_epi32(x1[9], x1[11]);
-    x2[6] = _mm_add_epi32(x1[12], x1[14]); // x0*sin1 +x2*sin4 +x0*sin2 -x2*sin1
+    x2[6] = _mm_add_epi32(x1[12], x1[14]); /*!< x0*sin1 +x2*sin4 +x0*sin2 -x2*sin1 */
     x2[7] = _mm_add_epi32(x1[13], x1[15]);
 
     const __m128i rounding = _mm_set1_epi32(1 << (INV_COS_BIT - 1));
@@ -1643,9 +1641,9 @@ static void iadst4_new_sse2(const __m128i *input, __m128i *output, int8_t cos_bi
     }
 }
 
-// TODO(binpengsmail@gmail.com):
-// To explore the reuse of VP9 versions of corresponding SSE2 functions and
-// evaluate whether there is a possibility for further speedup.
+/*!< TODO(binpengsmail@gmail.com):
+ *   To explore the reuse of VP9 versions of corresponding SSE2 functions and
+ *   evaluate whether there is a possibility for further speedup. */
 static void iadst4_w4_new_sse2(const __m128i *input, __m128i *output, int8_t cos_bit) {
     (void)cos_bit;
     const int32_t *sinpi         = sinpi_arr(INV_COS_BIT);
@@ -1668,20 +1666,20 @@ static void iadst4_w4_new_sse2(const __m128i *input, __m128i *output, int8_t cos
     u[1] = _mm_unpacklo_epi16(x0[1], x0[3]);
 
     __m128i x1[8];
-    x1[0] = _mm_madd_epi16(u[0], sinpi_p01_p04); // x0*sin1 + x2*sin4
-    x1[1] = _mm_madd_epi16(u[0], sinpi_p02_m01); // x0*sin2 - x2*sin1
-    x1[2] = _mm_madd_epi16(u[1], sinpi_p03_p02); // x1*sin3 + x3*sin2
-    x1[3] = _mm_madd_epi16(u[1], sinpi_p03_m04); // x1*sin3 - x3*sin4
-    x1[4] = _mm_madd_epi16(u[0], sinpi_p03_m03); // x0*sin3 - x2*sin3
-    x1[5] = _mm_madd_epi16(u[1], sinpi_0_p03); // x2*sin3
-    x1[6] = _mm_madd_epi16(u[0], sinpi_p04_p02); // x0*sin4 + x2*sin2
-    x1[7] = _mm_madd_epi16(u[1], sinpi_m03_m01); // -x1*sin3 - x3*sin1
+    x1[0] = _mm_madd_epi16(u[0], sinpi_p01_p04); /*!< x0*sin1 + x2*sin4 */
+    x1[1] = _mm_madd_epi16(u[0], sinpi_p02_m01); /*!< x0*sin2 - x2*sin1 */
+    x1[2] = _mm_madd_epi16(u[1], sinpi_p03_p02); /*!< x1*sin3 + x3*sin2 */
+    x1[3] = _mm_madd_epi16(u[1], sinpi_p03_m04); /*!< x1*sin3 - x3*sin4 */
+    x1[4] = _mm_madd_epi16(u[0], sinpi_p03_m03); /*!< x0*sin3 - x2*sin3 */
+    x1[5] = _mm_madd_epi16(u[1], sinpi_0_p03); /*!< x2*sin3 */
+    x1[6] = _mm_madd_epi16(u[0], sinpi_p04_p02); /*!< x0*sin4 + x2*sin2 */
+    x1[7] = _mm_madd_epi16(u[1], sinpi_m03_m01); /*!< -x1*sin3 - x3*sin1 */
 
     __m128i x2[4];
-    x2[0] = _mm_add_epi32(x1[0], x1[2]); // x0*sin1 + x2*sin4 + x1*sin3 + x3*sin2
-    x2[1] = _mm_add_epi32(x1[1], x1[3]); // x0*sin2 - x2*sin1 + x1*sin3 - x3*sin4
-    x2[2] = _mm_add_epi32(x1[4], x1[5]); // x0*sin3 - x2*sin3 + x3*sin3
-    x2[3] = _mm_add_epi32(x1[6], x1[7]); // x0*sin4 + x2*sin2 - x1*sin3 - x3*sin1
+    x2[0] = _mm_add_epi32(x1[0], x1[2]); /*!< x0*sin1 + x2*sin4 + x1*sin3 + x3*sin2 */
+    x2[1] = _mm_add_epi32(x1[1], x1[3]); /*!< x0*sin2 - x2*sin1 + x1*sin3 - x3*sin4 */
+    x2[2] = _mm_add_epi32(x1[4], x1[5]); /*!< x0*sin3 - x2*sin3 + x3*sin3 */
+    x2[3] = _mm_add_epi32(x1[6], x1[7]); /*!< x0*sin4 + x2*sin2 - x1*sin3 - x3*sin1 */
 
     const __m128i rounding = _mm_set1_epi32(1 << (INV_COS_BIT - 1));
     for (int32_t i = 0; i < 4; ++i) {
@@ -1702,31 +1700,31 @@ static void iadst8_low1_new_ssse3(const __m128i *input, __m128i *output, int8_t 
     const __m128i cospi_p32_p32 = pair_set_epi16(cospi[32], cospi[32]);
     const __m128i cospi_p32_m32 = pair_set_epi16(cospi[32], -cospi[32]);
 
-    // stage 1
+    /*!< stage 1 */
     __m128i x[8];
     x[1] = input[0];
 
-    // stage 2
+    /*!< stage 2 */
     btf_16_ssse3(cospi[60], -cospi[4], x[1], x[0], x[1]);
 
-    // stage 3
+    /*!< stage 3 */
     x[4] = x[0];
     x[5] = x[1];
 
-    // stage 4
+    /*!< stage 4 */
     btf_16_sse2(cospi_p16_p48, cospi_p48_m16, x[4], x[5], x[4], x[5]);
 
-    // stage 5
+    /*!< stage 5 */
     x[2] = x[0];
     x[3] = x[1];
     x[6] = x[4];
     x[7] = x[5];
 
-    // stage 6
+    /*!< stage 6 */
     btf_16_sse2(cospi_p32_p32, cospi_p32_m32, x[2], x[3], x[2], x[3]);
     btf_16_sse2(cospi_p32_p32, cospi_p32_m32, x[6], x[7], x[6], x[7]);
 
-    // stage 7
+    /*!< stage 7 */
     output[0] = x[0];
     output[1] = _mm_subs_epi16(__zero, x[4]);
     output[2] = x[6];
@@ -1757,7 +1755,7 @@ static void iadst8_new_sse2(const __m128i *input, __m128i *output, int8_t cos_bi
     const __m128i cospi_p32_p32 = pair_set_epi16(cospi[32], cospi[32]);
     const __m128i cospi_p32_m32 = pair_set_epi16(cospi[32], -cospi[32]);
 
-    // stage 1
+    /*!< stage 1 */
     __m128i x[8];
     x[0] = input[7];
     x[1] = input[0];
@@ -1768,33 +1766,33 @@ static void iadst8_new_sse2(const __m128i *input, __m128i *output, int8_t cos_bi
     x[6] = input[1];
     x[7] = input[6];
 
-    // stage 2
+    /*!< stage 2 */
     btf_16_sse2(cospi_p04_p60, cospi_p60_m04, x[0], x[1], x[0], x[1]);
     btf_16_sse2(cospi_p20_p44, cospi_p44_m20, x[2], x[3], x[2], x[3]);
     btf_16_sse2(cospi_p36_p28, cospi_p28_m36, x[4], x[5], x[4], x[5]);
     btf_16_sse2(cospi_p52_p12, cospi_p12_m52, x[6], x[7], x[6], x[7]);
 
-    // stage 3
+    /*!< stage 3 */
     btf_16_adds_subs_sse2(x[0], x[4]);
     btf_16_adds_subs_sse2(x[1], x[5]);
     btf_16_adds_subs_sse2(x[2], x[6]);
     btf_16_adds_subs_sse2(x[3], x[7]);
 
-    // stage 4
+    /*!< stage 4 */
     btf_16_sse2(cospi_p16_p48, cospi_p48_m16, x[4], x[5], x[4], x[5]);
     btf_16_sse2(cospi_m48_p16, cospi_p16_p48, x[6], x[7], x[6], x[7]);
 
-    // stage 5
+    /*!< stage 5 */
     btf_16_adds_subs_sse2(x[0], x[2]);
     btf_16_adds_subs_sse2(x[1], x[3]);
     btf_16_adds_subs_sse2(x[4], x[6]);
     btf_16_adds_subs_sse2(x[5], x[7]);
 
-    // stage 6
+    /*!< stage 6 */
     btf_16_sse2(cospi_p32_p32, cospi_p32_m32, x[2], x[3], x[2], x[3]);
     btf_16_sse2(cospi_p32_p32, cospi_p32_m32, x[6], x[7], x[6], x[7]);
 
-    // stage 7
+    /*!< stage 7 */
     output[0] = x[0];
     output[1] = _mm_subs_epi16(__zero, x[4]);
     output[2] = x[6];
@@ -1825,7 +1823,7 @@ static void iadst8_w4_new_sse2(const __m128i *input, __m128i *output, int8_t cos
     const __m128i cospi_p32_p32 = pair_set_epi16(cospi[32], cospi[32]);
     const __m128i cospi_p32_m32 = pair_set_epi16(cospi[32], -cospi[32]);
 
-    // stage 1
+    /*!< stage 1 */
     __m128i x[8];
     x[0] = input[7];
     x[1] = input[0];
@@ -1836,33 +1834,33 @@ static void iadst8_w4_new_sse2(const __m128i *input, __m128i *output, int8_t cos
     x[6] = input[1];
     x[7] = input[6];
 
-    // stage 2
+    /*!< stage 2 */
     btf_16_4p_sse2(cospi_p04_p60, cospi_p60_m04, x[0], x[1], x[0], x[1]);
     btf_16_4p_sse2(cospi_p20_p44, cospi_p44_m20, x[2], x[3], x[2], x[3]);
     btf_16_4p_sse2(cospi_p36_p28, cospi_p28_m36, x[4], x[5], x[4], x[5]);
     btf_16_4p_sse2(cospi_p52_p12, cospi_p12_m52, x[6], x[7], x[6], x[7]);
 
-    // stage 3
+    /*!< stage 3 */
     btf_16_adds_subs_sse2(x[0], x[4]);
     btf_16_adds_subs_sse2(x[1], x[5]);
     btf_16_adds_subs_sse2(x[2], x[6]);
     btf_16_adds_subs_sse2(x[3], x[7]);
 
-    // stage 4
+    /*!< stage 4 */
     btf_16_4p_sse2(cospi_p16_p48, cospi_p48_m16, x[4], x[5], x[4], x[5]);
     btf_16_4p_sse2(cospi_m48_p16, cospi_p16_p48, x[6], x[7], x[6], x[7]);
 
-    // stage 5
+    /*!< stage 5 */
     btf_16_adds_subs_sse2(x[0], x[2]);
     btf_16_adds_subs_sse2(x[1], x[3]);
     btf_16_adds_subs_sse2(x[4], x[6]);
     btf_16_adds_subs_sse2(x[5], x[7]);
 
-    // stage 6
+    /*!< stage 6 */
     btf_16_4p_sse2(cospi_p32_p32, cospi_p32_m32, x[2], x[3], x[2], x[3]);
     btf_16_4p_sse2(cospi_p32_p32, cospi_p32_m32, x[6], x[7], x[6], x[7]);
 
-    // stage 7
+    /*!< stage 7 */
     output[0] = x[0];
     output[1] = _mm_subs_epi16(__zero, x[4]);
     output[2] = x[6];
@@ -1971,31 +1969,31 @@ static void iadst16_low1_new_ssse3(const __m128i *input, __m128i *output, int8_t
     const __m128i cospi_p16_p48 = pair_set_epi16(cospi[16], cospi[48]);
     const __m128i cospi_p48_m16 = pair_set_epi16(cospi[48], -cospi[16]);
 
-    // stage 1
+    /*!< stage 1 */
     __m128i x[16];
     x[1] = input[0];
 
-    // stage 2
+    /*!< stage 2 */
     btf_16_ssse3(cospi[62], -cospi[2], x[1], x[0], x[1]);
 
-    // stage 3
+    /*!< stage 3 */
     x[8] = x[0];
     x[9] = x[1];
 
-    // stage 4
+    /*!< stage 4 */
     btf_16_sse2(cospi_p08_p56, cospi_p56_m08, x[8], x[9], x[8], x[9]);
 
-    // stage 5
+    /*!< stage 5 */
     x[4]  = x[0];
     x[5]  = x[1];
     x[12] = x[8];
     x[13] = x[9];
 
-    // stage 6
+    /*!< stage 6 */
     btf_16_sse2(cospi_p16_p48, cospi_p48_m16, x[4], x[5], x[4], x[5]);
     btf_16_sse2(cospi_p16_p48, cospi_p48_m16, x[12], x[13], x[12], x[13]);
 
-    // stage 7
+    /*!< stage 7 */
     x[2]  = x[0];
     x[3]  = x[1];
     x[6]  = x[4];
@@ -2014,7 +2012,7 @@ static void iadst16_low8_new_ssse3(const __m128i *input, __m128i *output, int8_t
     const int32_t *cospi      = cospi_arr(INV_COS_BIT);
     const __m128i  __rounding = _mm_set1_epi32(1 << (INV_COS_BIT - 1));
 
-    // stage 1
+    /*!< stage 1 */
     __m128i x[16];
     x[1]  = input[0];
     x[3]  = input[2];
@@ -2025,7 +2023,7 @@ static void iadst16_low8_new_ssse3(const __m128i *input, __m128i *output, int8_t
     x[12] = input[3];
     x[14] = input[1];
 
-    // stage 2
+    /*!< stage 2 */
     btf_16_ssse3(cospi[62], -cospi[2], x[1], x[0], x[1]);
     btf_16_ssse3(cospi[54], -cospi[10], x[3], x[2], x[3]);
     btf_16_ssse3(cospi[46], -cospi[18], x[5], x[4], x[5]);
@@ -2035,7 +2033,7 @@ static void iadst16_low8_new_ssse3(const __m128i *input, __m128i *output, int8_t
     btf_16_ssse3(cospi[50], cospi[14], x[12], x[12], x[13]);
     btf_16_ssse3(cospi[58], cospi[6], x[14], x[14], x[15]);
 
-    // stage 3
+    /*!< stage 3 */
     iadst16_stage3_ssse3(x);
     iadst16_stage4_ssse3(x, cospi, __rounding, cos_bit);
     iadst16_stage5_ssse3(x);
@@ -2066,7 +2064,7 @@ static void iadst16_new_sse2(const __m128i *input, __m128i *output, int8_t cos_b
     const __m128i  cospi_p58_p06 = pair_set_epi16(cospi[58], cospi[6]);
     const __m128i  cospi_p06_m58 = pair_set_epi16(cospi[6], -cospi[58]);
 
-    // stage 1
+    /*!< stage 1 */
     __m128i x[16];
     x[0]  = input[15];
     x[1]  = input[0];
@@ -2085,7 +2083,7 @@ static void iadst16_new_sse2(const __m128i *input, __m128i *output, int8_t cos_b
     x[14] = input[1];
     x[15] = input[14];
 
-    // stage 2
+    /*!< stage 2 */
     btf_16_sse2(cospi_p02_p62, cospi_p62_m02, x[0], x[1], x[0], x[1]);
     btf_16_sse2(cospi_p10_p54, cospi_p54_m10, x[2], x[3], x[2], x[3]);
     btf_16_sse2(cospi_p18_p46, cospi_p46_m18, x[4], x[5], x[4], x[5]);
@@ -2095,7 +2093,7 @@ static void iadst16_new_sse2(const __m128i *input, __m128i *output, int8_t cos_b
     btf_16_sse2(cospi_p50_p14, cospi_p14_m50, x[12], x[13], x[12], x[13]);
     btf_16_sse2(cospi_p58_p06, cospi_p06_m58, x[14], x[15], x[14], x[15]);
 
-    // stage 3~9
+    /*!< stage 3~9 */
     iadst16_stage3_ssse3(x);
     iadst16_stage4_ssse3(x, cospi, __rounding, cos_bit);
     iadst16_stage5_ssse3(x);
@@ -2138,7 +2136,7 @@ static void iadst16_w4_new_sse2(const __m128i *input, __m128i *output, int8_t co
     const __m128i cospi_p32_p32 = pair_set_epi16(cospi[32], cospi[32]);
     const __m128i cospi_p32_m32 = pair_set_epi16(cospi[32], -cospi[32]);
 
-    // stage 1
+    /*!< stage 1 */
     __m128i x[16];
     x[0]  = input[15];
     x[1]  = input[0];
@@ -2157,7 +2155,7 @@ static void iadst16_w4_new_sse2(const __m128i *input, __m128i *output, int8_t co
     x[14] = input[1];
     x[15] = input[14];
 
-    // stage 2
+    /*!< stage 2 */
     btf_16_4p_sse2(cospi_p02_p62, cospi_p62_m02, x[0], x[1], x[0], x[1]);
     btf_16_4p_sse2(cospi_p10_p54, cospi_p54_m10, x[2], x[3], x[2], x[3]);
     btf_16_4p_sse2(cospi_p18_p46, cospi_p46_m18, x[4], x[5], x[4], x[5]);
@@ -2167,34 +2165,34 @@ static void iadst16_w4_new_sse2(const __m128i *input, __m128i *output, int8_t co
     btf_16_4p_sse2(cospi_p50_p14, cospi_p14_m50, x[12], x[13], x[12], x[13]);
     btf_16_4p_sse2(cospi_p58_p06, cospi_p06_m58, x[14], x[15], x[14], x[15]);
 
-    // stage 3
+    /*!< stage 3 */
     iadst16_stage3_ssse3(x);
 
-    // stage 4
+    /*!< stage 4 */
     btf_16_4p_sse2(cospi_p08_p56, cospi_p56_m08, x[8], x[9], x[8], x[9]);
     btf_16_4p_sse2(cospi_p40_p24, cospi_p24_m40, x[10], x[11], x[10], x[11]);
     btf_16_4p_sse2(cospi_m56_p08, cospi_p08_p56, x[12], x[13], x[12], x[13]);
     btf_16_4p_sse2(cospi_m24_p40, cospi_p40_p24, x[14], x[15], x[14], x[15]);
 
-    // stage 5
+    /*!< stage 5 */
     iadst16_stage5_ssse3(x);
 
-    // stage 6
+    /*!< stage 6 */
     btf_16_4p_sse2(cospi_p16_p48, cospi_p48_m16, x[4], x[5], x[4], x[5]);
     btf_16_4p_sse2(cospi_m48_p16, cospi_p16_p48, x[6], x[7], x[6], x[7]);
     btf_16_4p_sse2(cospi_p16_p48, cospi_p48_m16, x[12], x[13], x[12], x[13]);
     btf_16_4p_sse2(cospi_m48_p16, cospi_p16_p48, x[14], x[15], x[14], x[15]);
 
-    // stage 7
+    /*!< stage 7 */
     iadst16_stage7_ssse3(x);
 
-    // stage 8
+    /*!< stage 8 */
     btf_16_4p_sse2(cospi_p32_p32, cospi_p32_m32, x[2], x[3], x[2], x[3]);
     btf_16_4p_sse2(cospi_p32_p32, cospi_p32_m32, x[6], x[7], x[6], x[7]);
     btf_16_4p_sse2(cospi_p32_p32, cospi_p32_m32, x[10], x[11], x[10], x[11]);
     btf_16_4p_sse2(cospi_p32_p32, cospi_p32_m32, x[14], x[15], x[14], x[15]);
 
-    // stage 9
+    /*!< stage 9 */
     iadst16_stage9_ssse3(output, x);
 }
 
@@ -2256,7 +2254,7 @@ static INLINE void lowbd_write_buffer_8xn_sse2(__m128i *in, uint8_t *output_r, i
     }
 }
 
-// 1D functions process process 8 pixels at one time.
+/*!< 1D functions process process 8 pixels at one time. */
 static const Transform1dSsse3 lowbd_txfm_all_1d_w8_arr[TX_SIZES][ITX_TYPES_1D] = {
     {idct4_new_sse2, iadst4_new_sse2, iidentity4_new_ssse3},
     {idct8_new_sse2, iadst8_new_sse2, iidentity8_new_sse2},
@@ -2265,8 +2263,7 @@ static const Transform1dSsse3 lowbd_txfm_all_1d_w8_arr[TX_SIZES][ITX_TYPES_1D] =
     {idct64_low32_new_ssse3, NULL, NULL},
 };
 
-// functions for blocks with eob at DC and within
-// topleft 8x8, 16x16, 32x32 corner
+/*!< functions for blocks with eob at DC and within topleft 8x8, 16x16, 32x32 corner */
 static const Transform1dSsse3 lowbd_txfm_all_1d_zeros_w8_arr[TX_SIZES][ITX_TYPES_1D][4] = {
     {
         {idct4_new_sse2, idct4_new_sse2, NULL, NULL},
@@ -2288,8 +2285,8 @@ static const Transform1dSsse3 lowbd_txfm_all_1d_zeros_w8_arr[TX_SIZES][ITX_TYPES
      {NULL, NULL, NULL, NULL},
      {NULL, NULL, NULL, NULL}}};
 
-// 1D functions process process 4 pixels at one time.
-// used in 4x4, 4x8, 4x16, 8x4, 16x4
+/*!< 1D functions process process 4 pixels at one time. */
+/*!< used in 4x4, 4x8, 4x16, 8x4, 16x4 */
 static const Transform1dSsse3 lowbd_txfm_all_1d_w4_arr[TX_SIZES][ITX_TYPES_1D] = {
     {idct4_w4_new_sse2, iadst4_w4_new_sse2, iidentity4_new_ssse3},
     {idct8_w4_new_sse2, iadst8_w4_new_sse2, iidentity8_new_sse2},
@@ -2496,7 +2493,7 @@ static INLINE void lowbd_inv_txfm2d_add_no_identity_ssse3(const int32_t *input, 
             transpose_16bit_8x8(buf0_cur, buf0_cur);
         }
         if (rect_type == 1 || rect_type == -1)
-            round_shift_ssse3(buf0, buf0, input_stride); // rect special code
+            round_shift_ssse3(buf0, buf0, input_stride); /*!< rect special code */
         row_txfm(buf0, buf0, cos_bit_row);
         round_shift_16bit_ssse3(buf0, txfm_size_col, shift[0]);
         __m128i *_buf1 = buf1 + i * 8;
@@ -2612,7 +2609,7 @@ static INLINE void lowbd_inv_txfm2d_add_v_identity_ssse3(const int32_t *input, u
             transpose_16bit_8x8(buf0_cur, buf0_cur);
         }
         if (rect_type == 1 || rect_type == -1)
-            round_shift_ssse3(buf0, buf0, input_stride); // rect special code
+            round_shift_ssse3(buf0, buf0, input_stride); /*!< rect special code */
         row_txfm(buf0, buf0, cos_bit_row);
         round_shift_16bit_ssse3(buf0, txfm_size_col, shift[0]);
         __m128i *_buf1 = buf1;
@@ -2640,7 +2637,7 @@ static INLINE void lowbd_inv_txfm2d_add_v_identity_ssse3(const int32_t *input, u
     }
 }
 
-// for 32x32,32x64,64x32,64x64,32x8,8x32,16x32,32x16,64x16,16x64
+/*!< for 32x32,32x64,64x32,64x64,32x8,8x32,16x32,32x16,64x16,16x64 */
 static INLINE void lowbd_inv_txfm2d_add_universe_ssse3(const int32_t *input, uint8_t *output_r,
                                                        int32_t stride_r, uint8_t *output_w,
                                                        int32_t stride_w, TxType tx_type,
@@ -2694,9 +2691,9 @@ static void lowbd_inv_txfm2d_add_4x8_ssse3(const int32_t *input, uint8_t *output
     get_flip_cfg(tx_type, &ud_flip, &lr_flip);
     load_buffer_32bit_to_16bit_w4(input, txfm_size_col, buf, txfm_size_row);
     transpose_16bit_4x8(buf, buf);
-    round_shift_ssse3(buf, buf, txfm_size_col); // rect special code
+    round_shift_ssse3(buf, buf, txfm_size_col); /*!< rect special code */
     row_txfm(buf, buf, cos_bit_row);
-    // round_shift_16bit_ssse3(buf, txfm_size_col, shift[0]);// shift[0] is 0
+    // round_shift_16bit_ssse3(buf, txfm_size_col, shift[0]); /*!< shift[0] is 0 */
     if (lr_flip) {
         __m128i temp[4];
         flip_buf_sse2(buf, temp, txfm_size_col);
@@ -2731,9 +2728,9 @@ static void lowbd_inv_txfm2d_add_8x4_ssse3(const int32_t *input, uint8_t *output
     get_flip_cfg(tx_type, &ud_flip, &lr_flip);
     load_buffer_32bit_to_16bit(input, txfm_size_col, buf, txfm_size_row);
     transpose_16bit_8x4(buf, buf);
-    round_shift_ssse3(buf, buf, txfm_size_col); // rect special code
+    round_shift_ssse3(buf, buf, txfm_size_col); /*!< rect special code */
     row_txfm(buf, buf, cos_bit_row);
-    // round_shift_16bit_ssse3(buf, txfm_size_col, shift[0]); // shift[0] is 0
+    // round_shift_16bit_ssse3(buf, txfm_size_col, shift[0]); /*!< shift[0] is 0 */
     if (lr_flip) {
         __m128i temp[8];
         flip_buf_sse2(buf, temp, txfm_size_col);

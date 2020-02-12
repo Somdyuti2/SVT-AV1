@@ -1,24 +1,22 @@
-/*
-* Copyright(c) 2019 Intel Corporation
-* SPDX - License - Identifier: BSD - 2 - Clause - Patent
-*/
+/*!< Copyright(c) 2019 Intel Corporation
+ * SPDX - License - Identifier: BSD - 2 - Clause - Patent */
 
 //#include "EbUtility.h"
 #include "EbDefinitions.h"
 
 void av1_upsample_intra_edge_high_c_old(uint8_t *p, int32_t sz, int32_t bd) {
-    // interpolate half-sample positions
+    /*!< interpolate half-sample positions */
     assert(sz <= MAX_UPSAMPLE_SZ);
 
     uint8_t in[MAX_UPSAMPLE_SZ + 3];
-    // copy p[-1..(sz-1)] and extend first and last samples
+    /*!< copy p[-1..(sz-1)] and extend first and last samples */
     in[0] = p[-1];
     in[1] = p[-1];
     for (int32_t i = 0; i < sz; i++)
         in[i + 2] = p[i];
     in[sz + 2] = p[sz - 1];
 
-    // interpolate half-sample edge positions
+    /*!< interpolate half-sample edge positions */
     p[-2] = in[0];
     for (int32_t i = 0; i < sz; i++) {
         int32_t s = -in[i] + (9 * in[i + 1]) + (9 * in[i + 2]) - in[i + 3];
@@ -31,18 +29,18 @@ void av1_upsample_intra_edge_high_c_old(uint8_t *p, int32_t sz, int32_t bd) {
 
 
 void eb_av1_upsample_intra_edge_high_c(uint16_t *p, int32_t sz, int32_t bd) {
-    // interpolate half-sample positions
+    /*!< interpolate half-sample positions */
     assert(sz <= MAX_UPSAMPLE_SZ);
 
     uint16_t in[MAX_UPSAMPLE_SZ + 3];
-    // copy p[-1..(sz-1)] and extend first and last samples
+    /*!< copy p[-1..(sz-1)] and extend first and last samples */
     in[0] = p[-1];
     in[1] = p[-1];
     for (int32_t i = 0; i < sz; i++)
         in[i + 2] = p[i];
     in[sz + 2] = p[sz - 1];
 
-    // interpolate half-sample edge positions
+    /*!< interpolate half-sample edge positions */
     p[-2] = in[0];
     for (int32_t i = 0; i < sz; i++) {
         int32_t s = -in[i] + (9 * in[i + 1]) + (9 * in[i + 2]) - in[i + 3];
@@ -54,18 +52,18 @@ void eb_av1_upsample_intra_edge_high_c(uint16_t *p, int32_t sz, int32_t bd) {
 }
 
 void eb_av1_upsample_intra_edge_c(uint8_t *p, int32_t sz) {
-    // interpolate half-sample positions
+    /*!< interpolate half-sample positions */
     assert(sz <= MAX_UPSAMPLE_SZ);
 
     uint8_t in[MAX_UPSAMPLE_SZ + 3];
-    // copy p[-1..(sz-1)] and extend first and last samples
+    /*!< copy p[-1..(sz-1)] and extend first and last samples */
     in[0] = p[-1];
     in[1] = p[-1];
     for (int32_t i = 0; i < sz; i++)
         in[i + 2] = p[i];
     in[sz + 2] = p[sz - 1];
 
-    // interpolate half-sample edge positions
+    /*!< interpolate half-sample edge positions */
     p[-2] = in[0];
     for (int32_t i = 0; i < sz; i++) {
         int32_t s = -in[i] + (9 * in[i + 1]) + (9 * in[i + 2]) - in[i + 3];
@@ -75,7 +73,7 @@ void eb_av1_upsample_intra_edge_c(uint8_t *p, int32_t sz) {
     }
 }
 
-// Directional prediction, zone 3: 180 < angle < 270
+/*!< Directional prediction, zone 3: 180 < angle < 270 */
 void eb_av1_highbd_dr_prediction_z3_c(uint16_t *dst, ptrdiff_t stride, int32_t bw,
                                       int32_t bh, const uint16_t *above,
                                       const uint16_t *left, int32_t upsample_left,

@@ -1,10 +1,7 @@
-/*
-* Copyright(c) 2019 Netflix, Inc.
-* SPDX - License - Identifier: BSD - 2 - Clause - Patent
-*/
+/*!< Copyright(c) 2019 Netflix, Inc.
+ * SPDX - License - Identifier: BSD - 2 - Clause - Patent */
 
-/*
- * This is the header file for the MD5 message-digest algorithm.
+/*!< This is the header file for the MD5 message-digest algorithm.
  * The algorithm is due to Ron Rivest.  This code was
  * written by Colin Plumb in 1993, no copyright is claimed.
  * This code is in the public domain; do with it what you wish.
@@ -22,8 +19,7 @@
  * Changed so as no longer to depend on Colin Plumb's `usual.h'
  * header definitions
  *  - Ian Jackson <ian@chiark.greenend.org.uk>.
- * Still in the public domain.
-*/
+ * Still in the public domain. */
 
 #ifndef EbMD_Utility_h
 #define EbMD_Utility_h

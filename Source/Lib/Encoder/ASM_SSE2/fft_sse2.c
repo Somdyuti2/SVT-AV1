@@ -1,13 +1,11 @@
-/*
- * Copyright (c) 2018, Alliance for Open Media. All rights reserved
+/*!< Copyright (c) 2018, Alliance for Open Media. All rights reserved
  *
  * This source code is subject to the terms of the BSD 2 Clause License and
  * the Alliance for Open Media Patent License 1.0. If the BSD 2 Clause License
  * was not distributed with this source code in the LICENSE file, you can
  * obtain it at www.aomedia.org/license/software. If the Alliance for Open
  * Media Patent License 1.0 was not distributed with this source code in the
-s * PATENTS file, you can obtain it at www.aomedia.org/license/patent.
- */
+ * PATENTS file, you can obtain it at www.aomedia.org/license/patent. */
 
 #include <xmmintrin.h>
 
@@ -95,7 +93,7 @@ void eb_aom_fft_unpack_2d_output_sse2(const float *packed, float *output, int32_
     }
 }
 
-// Generate definitions for 1d transforms using float and __mm128
+/*!< Generate definitions for 1d transforms using float and __mm128 */
 GEN_FFT_4(static INLINE void, sse2, float, __m128, _mm_load_ps, _mm_store_ps, _mm_set1_ps,
           _mm_add_ps, _mm_sub_ps);
 
@@ -110,7 +108,7 @@ void eb_aom_fft4x4_float_sse2(const float *input, float *temp, float *output) {
                       4);
 }
 
-// Generate definitions for 1d inverse transforms using float and mm128
+/*!< Generate definitions for 1d inverse transforms using float and mm128 */
 GEN_IFFT_4(static INLINE void, sse2, float, __m128, _mm_load_ps, _mm_store_ps, _mm_set1_ps,
            _mm_add_ps, _mm_sub_ps);
 

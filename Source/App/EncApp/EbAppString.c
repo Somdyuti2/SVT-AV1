@@ -1,51 +1,49 @@
-/*-----------------------------------------------------------------
-* strncpy_s.c / strcpy_s.c / strnlen_s.c
-*
-* October 2008, Bo Berry
-*
-* Copyright � 2008-2011 by Cisco Systems, Inc
-* All rights reserved.
+/*!< strncpy_s.c / strcpy_s.c / strnlen_s.c
+ *
+ * October 2008, Bo Berry
+ *
+ * Copyright � 2008-2011 by Cisco Systems, Inc
+ * All rights reserved.
+ *
+ * safe_str_constraint.c
+ *
+ * October 2008, Bo Berry
+ * 2012, Jonathan Toppins <jtoppins@users.sourceforge.net>
+ *
+ * Copyright � 2008, 2009, 2012 Cisco Systems
+ * All rights reserved.
+ *
+ * ignore_handler_s.c
+ *
+ * 2012, Jonathan Toppins <jtoppins@users.sourceforge.net>
+ *
+ * Copyright � 2012 Cisco Systems
+ * All rights reserved.
+ *
+ * Permission is hereby granted, free of charge, to any person
+ * obtaining a copy of this software and associated documentation
+ * files (the "Software"), to deal in the Software without
+ * restriction, including without limitation the rights to use,
+ * copy, modify, merge, publish, distribute, sublicense, and/or
+ * sell copies of the Software, and to permit persons to whom the
+ * Software is furnished to do so, subject to the following
+ * conditions:
+ *
+ * The above copyright notice and this permission notice shall be
+ * included in all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+ * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
+ * OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+ * NONINFRINGEMENT.  IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
+ * HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+ * WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+ * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+ * OTHER DEALINGS IN THE SOFTWARE. */
 
-* safe_str_constraint.c
-*
-* October 2008, Bo Berry
-* 2012, Jonathan Toppins <jtoppins@users.sourceforge.net>
-*
-* Copyright � 2008, 2009, 2012 Cisco Systems
-* All rights reserved.
-
-* ignore_handler_s.c
-*
-* 2012, Jonathan Toppins <jtoppins@users.sourceforge.net>
-*
-* Copyright � 2012 Cisco Systems
-* All rights reserved.
-*
-* Permission is hereby granted, free of charge, to any person
-* obtaining a copy of this software and associated documentation
-* files (the "Software"), to deal in the Software without
-* restriction, including without limitation the rights to use,
-* copy, modify, merge, publish, distribute, sublicense, and/or
-* sell copies of the Software, and to permit persons to whom the
-* Software is furnished to do so, subject to the following
-* conditions:
-*
-* The above copyright notice and this permission notice shall be
-* included in all copies or substantial portions of the Software.
-*
-* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
-* EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
-* OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
-* NONINFRINGEMENT.  IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
-* HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
-* WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
-* FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
-* OTHER DEALINGS IN THE SOFTWARE.
-*------------------------------------------------------------------
-*/
 #include "EbAppString.h"
 
-/* SAFE STRING LIBRARY */
+/*!< SAFE STRING LIBRARY */
 
 static constraint_handler_t str_handler = NULL;
 
@@ -84,7 +82,7 @@ errno_t strncpy_ss(char *dest, rsize_t dmax, const char *src, rsize_t slen) {
         return RCNEGATE(ESLEMAX);
     }
 
-    /* hold base in case src was not copied */
+    /*!< hold base in case src was not copied */
     orig_dmax = dmax;
     orig_dest = dest;
 
@@ -129,10 +127,8 @@ errno_t strncpy_ss(char *dest, rsize_t dmax, const char *src, rsize_t slen) {
             }
 
             if (slen == 0) {
-                /*
-                * Copying truncated to slen chars.  Note that the TR says to
-                * copy slen chars plus the null char.  We null the slack.
-                */
+                /*!< Copying truncated to slen chars.  Note that the TR says to
+                 * copy slen chars plus the null char.  We null the slack. */
                 *dest = '\0';
                 return RCNEGATE(EOK);
             }
@@ -158,10 +154,8 @@ errno_t strncpy_ss(char *dest, rsize_t dmax, const char *src, rsize_t slen) {
             }
 
             if (slen == 0) {
-                /*
-                * Copying truncated to slen chars.  Note that the TR says to
-                * copy slen chars plus the null char.  We null the slack.
-                */
+                /*!< Copying truncated to slen chars.  Note that the TR says to
+                 *   copy slen chars plus the null char.  We null the slack. */
                 *dest = '\0';
                 return RCNEGATE(EOK);
             }
@@ -175,9 +169,7 @@ errno_t strncpy_ss(char *dest, rsize_t dmax, const char *src, rsize_t slen) {
         }
     }
 
-    /*
-    * the entire src was not copied, so zero the string
-    */
+    /*!< the entire src was not copied, so zero the string */
     handle_error(orig_dest,
                  orig_dmax,
                  (char *)("strncpy_ss: not enough "
@@ -213,7 +205,7 @@ errno_t strcpy_ss(char *dest, rsize_t dmax, const char *src) {
     }
 
     if (dest == src) return RCNEGATE(EOK);
-    /* hold base of dest in case src was not copied */
+    /*!< hold base of dest in case src was not copied */
     orig_dmax = dmax;
     orig_dest = dest;
 
@@ -257,10 +249,8 @@ errno_t strcpy_ss(char *dest, rsize_t dmax, const char *src) {
         }
     }
 
-    /*
-    * the entire src must have been copied, if not reset dest
-    * to null the string.
-    */
+    /*!< the entire src must have been copied, if not reset dest
+     *   to null the string. */
     handle_error(orig_dest,
                  orig_dmax,
                  (char *)("strcpy_ss: not "
@@ -293,4 +283,4 @@ rsize_t strnlen_ss(const char *dest, rsize_t dmax) {
     return RCNEGATE(count);
 }
 
-/* SAFE STRING LIBRARY */
+/*!< SAFE STRING LIBRARY */

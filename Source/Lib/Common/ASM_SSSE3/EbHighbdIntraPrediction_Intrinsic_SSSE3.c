@@ -1,33 +1,31 @@
-/*
-* Copyright(c) 2019 Intel Corporation
-* SPDX - License - Identifier: BSD - 2 - Clause - Patent
-*/
+/*!< Copyright(c) 2019 Intel Corporation
+ * SPDX - License - Identifier: BSD - 2 - Clause - Patent */
 #include <tmmintrin.h>
 #include "EbDefinitions.h"
 #include "common_dsp_rtcd.h"
 
 static const int32_t sm_weight_log2_scale = 8;
 
-// =============================================================================
+/****************************************************************************/
 
-// SMOOTH_PRED
+/*!< SMOOTH_PRED */
 
-// bs = 4
+/*!< bs = 4 */
 EB_ALIGN(16) static const uint16_t sm_weights_4[8] = {255, 1, 149, 107, 85, 171, 64, 192};
 
-// bs = 8
+/*!< bs = 8 */
 EB_ALIGN(32)
 static const uint16_t sm_weights_8[16] = {
     255, 1, 197, 59, 146, 110, 105, 151, 73, 183, 50, 206, 37, 219, 32, 224};
 
-// bs = 16
+/*!< bs = 16 */
 EB_ALIGN(32)
 static const uint16_t sm_weights_16[32] = {
     255, 1,   225, 31,  196, 60,  170, 86,  145, 111, 123, 133, 102, 154, 84, 172,
     68,  188, 54,  202, 43,  213, 33,  223, 26,  230, 20,  236, 17,  239, 16, 240,
 };
 
-// 4xN
+/*!< 4xN */
 
 static INLINE void load_right_weights_4(const uint16_t *const above, __m128i *const r,
                                         __m128i *const weights) {
@@ -51,8 +49,8 @@ static INLINE void init_4(const uint16_t *const above, const uint16_t *const lef
 
 static INLINE void load_left_8(const uint16_t *const left, const __m128i r, __m128i *const lr) {
     const __m128i l = _mm_load_si128((const __m128i *)left);
-    lr[0]           = _mm_unpacklo_epi16(l, r); // 0 1 2 3
-    lr[1]           = _mm_unpackhi_epi16(l, r); // 4 5 6 7
+    lr[0]           = _mm_unpacklo_epi16(l, r); /*!< 0 1 2 3 */
+    lr[1]           = _mm_unpackhi_epi16(l, r); /*!< 4 5 6 7 */
 }
 
 static INLINE __m128i smooth_pred_4(const __m128i weights_w, const __m128i weights_h,
@@ -89,7 +87,7 @@ static INLINE void smooth_pred_4x4(const __m128i weights_w, const __m128i weight
     smooth_pred_4x2(weights_w, weights_h, rep + 2, ab, lr, dst, stride);
 }
 
-// 4x4
+/*!< 4x4 */
 
 void eb_aom_highbd_smooth_predictor_4x4_ssse3(uint16_t *dst, ptrdiff_t stride,
                                               const uint16_t *above, const uint16_t *left,
@@ -103,7 +101,7 @@ void eb_aom_highbd_smooth_predictor_4x4_ssse3(uint16_t *dst, ptrdiff_t stride,
     smooth_pred_4x4(weights_w, weights_w, rep, ab, lr, &dst, stride);
 }
 
-// 4x8
+/*!< 4x8 */
 
 void eb_aom_highbd_smooth_predictor_4x8_ssse3(uint16_t *dst, ptrdiff_t stride,
                                               const uint16_t *above, const uint16_t *left,
@@ -119,7 +117,7 @@ void eb_aom_highbd_smooth_predictor_4x8_ssse3(uint16_t *dst, ptrdiff_t stride,
     smooth_pred_4x4(weights_w, weights_h, rep, ab, lr[1], &dst, stride);
 }
 
-// 4x16
+/*!< 4x16 */
 
 void eb_aom_highbd_smooth_predictor_4x16_ssse3(uint16_t *dst, ptrdiff_t stride,
                                                const uint16_t *above, const uint16_t *left,
@@ -142,11 +140,11 @@ void eb_aom_highbd_smooth_predictor_4x16_ssse3(uint16_t *dst, ptrdiff_t stride,
     smooth_pred_4x4(weights_w, weights_h, rep, ab, lr[1], &dst, stride);
 }
 
-// =============================================================================
+/*********************************************************************************/
 
-// SMOOTH_H_PRED
+/*!< SMOOTH_H_PRED */
 
-// 4xN
+/*!< 4xN */
 
 static INLINE __m128i smooth_h_pred_4(const __m128i weights, __m128i *const lr) {
     const __m128i round = _mm_set1_epi32((1 << (sm_weight_log2_scale - 1)));
@@ -176,7 +174,7 @@ static INLINE void smooth_h_pred_4x4(const __m128i weights, __m128i *const lr, u
     smooth_h_pred_4x2(weights, lr, dst, stride);
 }
 
-// 4x4
+/*!< 4x4 */
 
 void eb_aom_highbd_smooth_h_predictor_4x4_ssse3(uint16_t *dst, ptrdiff_t stride,
                                                 const uint16_t *above, const uint16_t *left,
@@ -190,7 +188,7 @@ void eb_aom_highbd_smooth_h_predictor_4x4_ssse3(uint16_t *dst, ptrdiff_t stride,
     smooth_h_pred_4x4(weights, &lr, &dst, stride);
 }
 
-// 4x8
+/*!< 4x8 */
 
 void eb_aom_highbd_smooth_h_predictor_4x8_ssse3(uint16_t *dst, ptrdiff_t stride,
                                                 const uint16_t *above, const uint16_t *left,
@@ -204,7 +202,7 @@ void eb_aom_highbd_smooth_h_predictor_4x8_ssse3(uint16_t *dst, ptrdiff_t stride,
     smooth_h_pred_4x4(weights, &lr[1], &dst, stride);
 }
 
-// 4x16
+/*!< 4x16 */
 
 void eb_aom_highbd_smooth_h_predictor_4x16_ssse3(uint16_t *dst, ptrdiff_t stride,
                                                  const uint16_t *above, const uint16_t *left,
@@ -221,11 +219,11 @@ void eb_aom_highbd_smooth_h_predictor_4x16_ssse3(uint16_t *dst, ptrdiff_t stride
     smooth_h_pred_4x4(weights, &lr[1], &dst, stride);
 }
 
-// =============================================================================
+/*********************************************************************************/
 
-// SMOOTH_V_PRED
+/*!< SMOOTH_V_PRED */
 
-// 4xN
+/*!< 4xN */
 
 static INLINE void smooth_v_init_4(const uint16_t *const above, const uint16_t *const left,
                                    const int32_t h, __m128i *const ab, __m128i *const rep) {
@@ -269,7 +267,7 @@ static INLINE void smooth_v_pred_4x4(const __m128i weights, const __m128i *const
     smooth_v_pred_4x2(weights, rep + 2, ab, dst, stride);
 }
 
-// 4x4
+/*!< 4x4 */
 
 void eb_aom_highbd_smooth_v_predictor_4x4_ssse3(uint16_t *dst, ptrdiff_t stride,
                                                 const uint16_t *above, const uint16_t *left,
@@ -282,7 +280,7 @@ void eb_aom_highbd_smooth_v_predictor_4x4_ssse3(uint16_t *dst, ptrdiff_t stride,
     smooth_v_pred_4x4(weights, rep, ab, &dst, stride);
 }
 
-// 4x8
+/*!< 4x8 */
 
 void eb_aom_highbd_smooth_v_predictor_4x8_ssse3(uint16_t *dst, ptrdiff_t stride,
                                                 const uint16_t *above, const uint16_t *left,
@@ -297,7 +295,7 @@ void eb_aom_highbd_smooth_v_predictor_4x8_ssse3(uint16_t *dst, ptrdiff_t stride,
     smooth_v_pred_4x4(weights, rep, ab, &dst, stride);
 }
 
-// 4x16
+/*!< 4x16 */
 
 void eb_aom_highbd_smooth_v_predictor_4x16_ssse3(uint16_t *dst, ptrdiff_t stride,
                                                  const uint16_t *above, const uint16_t *left,
@@ -318,7 +316,7 @@ void eb_aom_highbd_smooth_v_predictor_4x16_ssse3(uint16_t *dst, ptrdiff_t stride
     smooth_v_pred_4x4(weights, rep, ab, &dst, stride);
 }
 
-// Return 8 16-bit pixels in one row
+/*!< Return 8 16-bit pixels in one row */
 static INLINE __m128i paeth_8x1_pred(const __m128i *left, const __m128i *top,
                                      const __m128i *topleft) {
     const __m128i base = _mm_sub_epi16(_mm_add_epi16(*top, *left), *topleft);
@@ -488,7 +486,7 @@ void eb_aom_paeth_predictor_8x32_ssse3(uint8_t *dst, ptrdiff_t stride, const uin
     }
 }
 
-// Return 16 8-bit pixels in one row
+/*!< Return 16 8-bit pixels in one row */
 static INLINE __m128i paeth_16x1_pred(const __m128i *left, const __m128i *top0, const __m128i *top1,
                                       const __m128i *topleft) {
     const __m128i p0 = paeth_8x1_pred(left, top0, topleft);

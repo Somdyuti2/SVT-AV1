@@ -1,23 +1,21 @@
-/*
- * Copyright (c) 2016, Alliance for Open Media. All rights reserved
+/*!< Copyright (c) 2016, Alliance for Open Media. All rights reserved
  *
  * This source code is subject to the terms of the BSD 2 Clause License and
  * the Alliance for Open Media Patent License 1.0. If the BSD 2 Clause License
  * was not distributed with this source code in the LICENSE file, you can
  * obtain it at www.aomedia.org/license/software. If the Alliance for Open
  * Media Patent License 1.0 was not distributed with this source code in the
- * PATENTS file, you can obtain it at www.aomedia.org/license/patent.
- */
+ * PATENTS file, you can obtain it at www.aomedia.org/license/patent. */
 
 #include "EbDefinitions.h"
 #include <immintrin.h>
 #include "aom_dsp_rtcd.h"
 #include "EbVariance_SSE2.h"
 
-// Alpha blending with alpha values from the range [0, 256], where 256
-// means use the first input and 0 means use the second input.
+/*!< Alpha blending with alpha values from the range [0, 256], where 256
+ *   means use the first input and 0 means use the second input. */
 #define AOM_BLEND_A256_ROUND_BITS 8
-#define AOM_BLEND_A256_MAX_ALPHA (1 << AOM_BLEND_A256_ROUND_BITS) // 256
+#define AOM_BLEND_A256_MAX_ALPHA (1 << AOM_BLEND_A256_ROUND_BITS) /*!< 256 */
 
 #define AOM_BLEND_A256(a, v0, v1)                                            \
     ROUND_POWER_OF_TWO((a) * (v0) + (AOM_BLEND_A256_MAX_ALPHA - (a)) * (v1), \
@@ -33,40 +31,40 @@ static INLINE __m128i mm256_add_hi_lo_epi32(const __m256i val) {
 
 static INLINE void variance_kernel_no_sum_avx2(const __m256i src, const __m256i ref,
                                                __m256i *const sse) {
-    const __m256i adj_sub = _mm256_set1_epi16((short)0xff01); // (1,-1)
+    const __m256i adj_sub = _mm256_set1_epi16((short)0xff01); /*!< (1,-1) */
 
-    // unpack into pairs of source and reference values
+    /*!< unpack into pairs of source and reference values */
     const __m256i src_ref0 = _mm256_unpacklo_epi8(src, ref);
     const __m256i src_ref1 = _mm256_unpackhi_epi8(src, ref);
 
-    // subtract adjacent elements using src*1 + ref*-1
+    /*!< subtract adjacent elements using src*1 + ref*-1 */
     const __m256i diff0 = _mm256_maddubs_epi16(src_ref0, adj_sub);
     const __m256i diff1 = _mm256_maddubs_epi16(src_ref1, adj_sub);
     const __m256i madd0 = _mm256_madd_epi16(diff0, diff0);
     const __m256i madd1 = _mm256_madd_epi16(diff1, diff1);
 
-    // add to the running totals
+    /*!< add to the running totals */
     *sse = _mm256_add_epi32(*sse, _mm256_add_epi32(madd0, madd1));
 }
 
 static INLINE void variance_final_from_32bit_no_sum_avx2(__m256i vsse, uint32_t *const sse) {
-    // extract the low lane and add it to the high lane
+    /*!< extract the low lane and add it to the high lane */
     const __m128i sse_reg_128 = mm256_add_hi_lo_epi32(vsse);
     const __m128i zero        = _mm_setzero_si128();
 
-    // unpack sse and sum registers and add
+    /*!< unpack sse and sum registers and add */
     const __m128i sse_sum_lo = _mm_unpacklo_epi32(sse_reg_128, zero);
     const __m128i sse_sum_hi = _mm_unpackhi_epi32(sse_reg_128, zero);
     const __m128i sse_sum    = _mm_add_epi32(sse_sum_lo, sse_sum_hi);
 
-    // perform the final summation and extract the results
+    /*!< perform the final summation and extract the results */
     const __m128i res = _mm_add_epi32(sse_sum, _mm_srli_si128(sse_sum, 8));
     *((int32_t *)sse) = _mm_cvtsi128_si32(res);
 }
 
-// handle pixels (<= 512)
+/*!< handle pixels (<= 512) */
 static INLINE void variance_final_512_no_sum_avx2(__m256i vsse, uint32_t *const sse) {
-    // extract the low lane and add it to the high lane
+    /*!< extract the low lane and add it to the high lane */
     variance_final_from_32bit_no_sum_avx2(vsse, sse);
 }
 
@@ -117,32 +115,32 @@ uint32_t eb_aom_mse16x16_avx2(const uint8_t *src, int32_t src_stride, const uint
 
 static INLINE int variance_final_from_32bit_sum_avx2(__m256i vsse, __m128i vsum,
                                                      unsigned int *const sse) {
-    // extract the low lane and add it to the high lane
+    /*!< extract the low lane and add it to the high lane */
     const __m128i sse_reg_128 = mm256_add_hi_lo_epi32(vsse);
 
-    // unpack sse and sum registers and add
+    /*!< unpack sse and sum registers and add */
     const __m128i sse_sum_lo = _mm_unpacklo_epi32(sse_reg_128, vsum);
     const __m128i sse_sum_hi = _mm_unpackhi_epi32(sse_reg_128, vsum);
     const __m128i sse_sum    = _mm_add_epi32(sse_sum_lo, sse_sum_hi);
 
-    // perform the final summation and extract the results
+    /*!< perform the final summation and extract the results */
     const __m128i res = _mm_add_epi32(sse_sum, _mm_srli_si128(sse_sum, 8));
     *((int *)sse)     = _mm_cvtsi128_si32(res);
     return _mm_extract_epi32(res, 1);
 }
 
-// handle pixels (<= 512)
+/*!< handle pixels (<= 512) */
 static INLINE int variance_final_512_avx2(__m256i vsse, __m256i vsum, unsigned int *const sse) {
-    // extract the low lane and add it to the high lane
+    /*!< extract the low lane and add it to the high lane */
     const __m128i vsum_128  = mm256_add_hi_lo_epi16(vsum);
     const __m128i vsum_64   = _mm_add_epi16(vsum_128, _mm_srli_si128(vsum_128, 8));
     const __m128i sum_int32 = _mm_cvtepi16_epi32(vsum_64);
     return variance_final_from_32bit_sum_avx2(vsse, sum_int32, sse);
 }
 
-// handle 1024 pixels (32x32, 16x64, 64x16)
+/*!< handle 1024 pixels (32x32, 16x64, 64x16) */
 static INLINE int variance_final_1024_avx2(__m256i vsse, __m256i vsum, unsigned int *const sse) {
-    // extract the low lane and add it to the high lane
+    /*!< extract the low lane and add it to the high lane */
     const __m128i vsum_128 = mm256_add_hi_lo_epi16(vsum);
     const __m128i vsum_64  = _mm_add_epi32(_mm_cvtepi16_epi32(vsum_128),
                                           _mm_cvtepi16_epi32(_mm_srli_si128(vsum_128, 8)));
@@ -157,19 +155,19 @@ static INLINE int variance_final_2048_avx2(__m256i vsse, __m256i vsum, unsigned 
 
 static INLINE void variance_kernel_avx2(const __m256i src, const __m256i ref, __m256i *const sse,
                                         __m256i *const sum) {
-    const __m256i adj_sub = _mm256_set1_epi16(0xff01); // (1,-1)
+    const __m256i adj_sub = _mm256_set1_epi16(0xff01); /*!< (1,-1) */
 
-    // unpack into pairs of source and reference values
+    /*!< unpack into pairs of source and reference values */
     const __m256i src_ref0 = _mm256_unpacklo_epi8(src, ref);
     const __m256i src_ref1 = _mm256_unpackhi_epi8(src, ref);
 
-    // subtract adjacent elements using src*1 + ref*-1
+    /*!< subtract adjacent elements using src*1 + ref*-1 */
     const __m256i diff0 = _mm256_maddubs_epi16(src_ref0, adj_sub);
     const __m256i diff1 = _mm256_maddubs_epi16(src_ref1, adj_sub);
     const __m256i madd0 = _mm256_madd_epi16(diff0, diff0);
     const __m256i madd1 = _mm256_madd_epi16(diff1, diff1);
 
-    // add to the running totals
+    /*!< add to the running totals */
     *sum = _mm256_add_epi16(*sum, _mm256_add_epi16(diff0, diff1));
     *sse = _mm256_add_epi32(*sse, _mm256_add_epi32(madd0, madd1));
 }
@@ -292,7 +290,7 @@ AOM_VAR_NO_LOOP_AVX2(64, 32, 11, 2048);
         return *sse - (unsigned int)(((int64_t)sum * sum) >> bits);                       \
     }
 
-AOM_VAR_LOOP_AVX2(64, 64, 12, 32); // 64x32 * ( 64/32)
-AOM_VAR_LOOP_AVX2(64, 128, 13, 32); // 64x32 * (128/32)
-AOM_VAR_LOOP_AVX2(128, 64, 13, 16); // 128x16 * ( 64/16)
-AOM_VAR_LOOP_AVX2(128, 128, 14, 16); // 128x16 * (128/16)
+AOM_VAR_LOOP_AVX2(64, 64, 12, 32); /*!< 64x32 * ( 64/32) */
+AOM_VAR_LOOP_AVX2(64, 128, 13, 32); /*!< 64x32 * (128/32) */
+AOM_VAR_LOOP_AVX2(128, 64, 13, 16); /*!< 128x16 * ( 64/16) */
+AOM_VAR_LOOP_AVX2(128, 128, 14, 16); /*!< 128x16 * (128/16) */

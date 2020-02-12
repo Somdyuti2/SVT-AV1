@@ -1,7 +1,5 @@
-/*
-* Copyright(c) 2019 Intel Corporation
-* SPDX - License - Identifier: BSD - 2 - Clause - Patent
-*/
+/*!< Copyright(c) 2019 Intel Corporation
+ * SPDX - License - Identifier: BSD - 2 - Clause - Patent */
 
 #ifndef EbPictureOperators_h
 #define EbPictureOperators_h
@@ -25,7 +23,7 @@ extern EbErrorType picture_full_distortion32_bits(
     uint64_t cr_distortion[DIST_CALC_TOTAL], uint32_t y_count_non_zero_coeffs,
     uint32_t cb_count_non_zero_coeffs, uint32_t cr_count_non_zero_coeffs,
     COMPONENT_TYPE component_type);
-//Residual Data
+/*!< Residual Data */
 
 void compressed_pack_sb(uint8_t *in8_bit_buffer, uint32_t in8_stride, uint8_t *inn_bit_buffer,
                         uint32_t inn_stride, uint16_t *out16_bit_buffer, uint32_t out_stride,

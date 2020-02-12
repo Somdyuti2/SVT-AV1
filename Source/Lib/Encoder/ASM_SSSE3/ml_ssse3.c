@@ -1,13 +1,11 @@
-/*
- * Copyright (c) 2018, Alliance for Open Media. All rights reserved
+/*!< Copyright (c) 2018, Alliance for Open Media. All rights reserved
  *
  * This source code is subject to the terms of the BSD 2 Clause License and
  * the Alliance for Open Media Patent License 1.0. If the BSD 2 Clause License
  * was not distributed with this source code in the LICENSE file, you can
  * obtain it at www.aomedia.org/license/software. If the Alliance for Open
  * Media Patent License 1.0 was not distributed with this source code in the
- * PATENTS file, you can obtain it at www.aomedia.org/license/patent.
- */
+ * PATENTS file, you can obtain it at www.aomedia.org/license/patent. */
 
 #include <stdbool.h>
 #include <assert.h>
@@ -15,9 +13,9 @@
 
 #include "ml.h"
 
-// In order to avoid the high-latency of swapping between FPU and SIMD
-// operations, we keep the result in a 128-bit register even though we only
-// care about a single value.
+/*!< In order to avoid the high-latency of swapping between FPU and SIMD
+ *   operations, we keep the result in a 128-bit register even though we only
+ *   care about a single value. */
 static void nn_propagate_8to1(const float *const inputs, const float *const weights,
                               __m128 *const output) {
     const __m128 inputs_h = _mm_loadu_ps(&inputs[4]);
@@ -28,14 +26,14 @@ static void nn_propagate_8to1(const float *const inputs, const float *const weig
 
     const __m128 mul_h = _mm_mul_ps(inputs_h, weights_h);
     const __m128 mul_l = _mm_mul_ps(inputs_l, weights_l);
-    // [7 6 5 4] [3 2 1 0] (weight and input indices)
+    /*!< [7 6 5 4] [3 2 1 0] (weight and input indices) */
 
     const __m128 vadd = _mm_add_ps(mul_l, mul_h);
-    // [7+3 6+2 5+1 4+0]
+    /*!< [7+3 6+2 5+1 4+0] */
     const __m128 hadd1 = _mm_hadd_ps(vadd, vadd);
-    // [7+6+3+2 5+4+1+0 7+6+3+2 5+4+1+0]
+    /*!< [7+6+3+2 5+4+1+0 7+6+3+2 5+4+1+0] */
     const __m128 hadd2 = _mm_hadd_ps(hadd1, hadd1);
-    // [7+6+5+4+3+2+1+0 7+6+5+4+3+2+1+0 7+6+5+4+3+2+1+0 7+6+5+4+3+2+1+0]
+    /*!< [7+6+5+4+3+2+1+0 7+6+5+4+3+2+1+0 7+6+5+4+3+2+1+0 7+6+5+4+3+2+1+0] */
     *output = _mm_add_ps(*output, hadd2);
 }
 
@@ -46,12 +44,12 @@ static void nn_propagate_4to1(const float *const inputs, const float *const weig
     const __m128 weights128 = _mm_loadu_ps(weights);
 
     const __m128 mul = _mm_mul_ps(inputs128, weights128);
-    // [3 2 1 0] (weight and input indices)
+    /*!< [3 2 1 0] (weight and input indices) */
 
     const __m128 hadd1 = _mm_hadd_ps(mul, mul);
-    // [3+2 1+0 3+2 1+0]
+    /*!< [3+2 1+0 3+2 1+0] */
     const __m128 hadd2 = _mm_hadd_ps(hadd1, hadd1);
-    // [3+2+1+0 3+2+1+0 3+2+1+0 3+2+1+0]
+    /*!< [3+2+1+0 3+2+1+0 3+2+1+0 3+2+1+0] */
     *output = _mm_add_ps(*output, hadd2);
 }
 
@@ -60,18 +58,18 @@ static void nn_propagate_4to4(const float *const inputs, const float *const weig
     const __m128 inputs128 = _mm_loadu_ps(inputs);
 
     __m128 hadd[2];
-    for (int i = 0; i < 2; i++) { // For each pair of outputs
+    for (int i = 0; i < 2; i++) { /*!< For each pair of outputs */
         const __m128 weight0 = _mm_loadu_ps(&weights[2 * i * num_inputs]);
         const __m128 mul0    = _mm_mul_ps(weight0, inputs128);
         const __m128 weight1 = _mm_loadu_ps(&weights[(2 * i + 1) * num_inputs]);
         const __m128 mul1    = _mm_mul_ps(weight1, inputs128);
         hadd[i]              = _mm_hadd_ps(mul0, mul1);
     }
-    // hadd[0] = [7+6 5+4 3+2 1+0] (weight indices)
-    // hadd[1] = [15+14 13+12 11+10 9+8]
+    /*!< hadd[0] = [7+6 5+4 3+2 1+0] (weight indices)
+     *   hadd[1] = [15+14 13+12 11+10 9+8] */
 
     const __m128 hh = _mm_hadd_ps(hadd[0], hadd[1]);
-    // [15+14+13+12 11+10+9+8 7+6+5+4 3+2+1+0]
+    /*!< [15+14+13+12 11+10+9+8 7+6+5+4 3+2+1+0] */
 
     *outputs = _mm_add_ps(*outputs, hh);
 }
@@ -81,22 +79,22 @@ static void nn_propagate_4to8(const float *const inputs, const float *const weig
     const __m128 inputs128 = _mm_loadu_ps(inputs);
 
     __m128 hadd[4];
-    for (int i = 0; i < 4; i++) { // For each pair of outputs
+    for (int i = 0; i < 4; i++) { /*!< For each pair of outputs */
         const __m128 weight0 = _mm_loadu_ps(&weights[2 * i * num_inputs]);
         const __m128 weight1 = _mm_loadu_ps(&weights[(2 * i + 1) * num_inputs]);
         const __m128 mul0    = _mm_mul_ps(inputs128, weight0);
         const __m128 mul1    = _mm_mul_ps(inputs128, weight1);
         hadd[i]              = _mm_hadd_ps(mul0, mul1);
     }
-    // hadd[0] = [7+6 5+4 3+2 1+0] (weight indices)
-    // hadd[1] = [15+14 13+12 11+10 9+8]
-    // hadd[2] = [23+22 21+20 19+18 17+16]
-    // hadd[3] = [31+30 29+28 27+26 25+24]
+    /*!< hadd[0] = [7+6 5+4 3+2 1+0] (weight indices)
+     *   hadd[1] = [15+14 13+12 11+10 9+8]
+     *   hadd[2] = [23+22 21+20 19+18 17+16]
+     *   hadd[3] = [31+30 29+28 27+26 25+24] */
 
     const __m128 hh0 = _mm_hadd_ps(hadd[0], hadd[1]);
-    // [15+14+13+12 11+10+9+8 7+6+5+4 3+2+1+0]
+    /*!< [15+14+13+12 11+10+9+8 7+6+5+4 3+2+1+0] */
     const __m128 hh1 = _mm_hadd_ps(hadd[2], hadd[3]);
-    // [31+30+29+28 27+26+25+24 23+22+21+20 19+18+17+16]
+    /*!< [31+30+29+28 27+26+25+24 23+22+21+20 19+18+17+16] */
 
     *out_h = _mm_add_ps(*out_h, hh1);
     *out_l = _mm_add_ps(*out_l, hh0);
@@ -106,29 +104,29 @@ static void nn_propagate_8to4(const float *const inputs, const float *const weig
                               __m128 *const outputs, const int num_inputs) {
     const __m128 inputs_h = _mm_loadu_ps(inputs + 4);
     const __m128 inputs_l = _mm_loadu_ps(inputs);
-    // [7 6 5 4] [3 2 1 0] (input indices)
+    /*!< [7 6 5 4] [3 2 1 0] (input indices) */
 
     __m128 add[4];
-    for (int i = 0; i < 4; i++) { // For each output:
+    for (int i = 0; i < 4; i++) { /*!< For each output: */
         const __m128 weight_h = _mm_loadu_ps(&weights[i * num_inputs + 4]);
         const __m128 weight_l = _mm_loadu_ps(&weights[i * num_inputs]);
         const __m128 mul_h    = _mm_mul_ps(inputs_h, weight_h);
         const __m128 mul_l    = _mm_mul_ps(inputs_l, weight_l);
         add[i]                = _mm_add_ps(mul_l, mul_h);
     }
-    // add[0] = [7+3 6+2 5+1 4+0]
-    // add[1] = [15+11 14+10 13+9 12+8]
-    // add[2] = [23+19 22+18 21+17 20+16]
-    // add[3] = [31+27 30+26 29+25 28+24]
+    /*!< add[0] = [7+3 6+2 5+1 4+0]
+     *   add[1] = [15+11 14+10 13+9 12+8]
+     *   add[2] = [23+19 22+18 21+17 20+16]
+     *   add[3] = [31+27 30+26 29+25 28+24] */
 
     const __m128 hadd_h = _mm_hadd_ps(add[2], add[3]);
-    // [31+30+27+26 29+28+25+24 23+22+19+18 21+20+17+16]
+    /*!< [31+30+27+26 29+28+25+24 23+22+19+18 21+20+17+16] */
     const __m128 hadd_l = _mm_hadd_ps(add[0], add[1]);
-    // [15+14+11+10 13+12+9+8 7+6+3+2 5+4+1+0]
+    /*!< [15+14+11+10 13+12+9+8 7+6+3+2 5+4+1+0] */
 
     const __m128 haddhadd = _mm_hadd_ps(hadd_l, hadd_h);
-    // [31+30+29+28+27+26+25+24 23+22+21+20+19+18+17+16
-    //  15+14+13+12+11+10+9+8 7+6+5+4+3+2+1+0]
+    /*!< [31+30+29+28+27+26+25+24 23+22+21+20+19+18+17+16
+     *    15+14+13+12+11+10+9+8 7+6+5+4+3+2+1+0] */
 
     *outputs = _mm_add_ps(*outputs, haddhadd);
 }
@@ -141,16 +139,15 @@ static void nn_activate8(__m128 *out_h, __m128 *out_l) {
 
 static void nn_activate4(__m128 *x) { *x = _mm_max_ps(*x, _mm_setzero_ps()); }
 
-// Calculate prediction based on the given input features and neural net config.
-// Assume there are no more than NN_MAX_NODES_PER_LAYER nodes in each hidden
-// layer.
+/*!< Calculate prediction based on the given input features and neural net config.
+ *   Assume there are no more than NN_MAX_NODES_PER_LAYER nodes in each hidden layer. */
 void av1_nn_predict_sse3(const float *input_nodes, const NnConfig *const nn_config, int reduce_prec,
                          float *const output) {
     float buf[2][NN_MAX_NODES_PER_LAYER];
     int   buf_index  = 0;
     int   num_inputs = nn_config->num_inputs;
 
-    // Hidden layers, except the final iteration is the output layer.
+    /*!< Hidden layers, except the final iteration is the output layer. */
     for (int layer = 0; layer <= nn_config->num_hidden_layers; layer++) {
         const float *layer_weights = nn_config->weights[layer];
         const float *layer_bias    = nn_config->bias[layer];
@@ -219,8 +216,8 @@ void av1_nn_predict_sse3(const float *input_nodes, const NnConfig *const nn_conf
                 output_nodes[out] = _mm_cvtss_f32(total);
             }
         } else {
-            // Use SSE instructions for scalar operations to avoid the latency of
-            // swapping between SIMD and FPU modes.
+            /*!< Use SSE instructions for scalar operations to avoid the latency of
+             *   swapping between SIMD and FPU modes. */
             for (int out = 0; out < num_outputs; out++) {
                 __m128 total = _mm_load1_ps(&layer_bias[out]);
                 for (int in_node = 0; in_node < num_inputs; in_node++) {

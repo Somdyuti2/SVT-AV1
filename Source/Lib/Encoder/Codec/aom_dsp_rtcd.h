@@ -1,21 +1,17 @@
-// clang-format off
-/*
-* Copyright(c) 2019 Intel Corporation
-* SPDX - License - Identifier: BSD - 2 - Clause - Patent
-*/
+/* clang-format off */
+/*!< Copyright(c) 2019 Intel Corporation
+ * SPDX - License - Identifier: BSD - 2 - Clause - Patent */
 
-/*
-* Copyright (c) 2016, Alliance for Open Media. All rights reserved
-*
-* This source code is subject to the terms of the BSD 2 Clause License and
-* the Alliance for Open Media Patent License 1.0. If the BSD 2 Clause License
-* was not distributed with this source code in the LICENSE file, you can
-* obtain it at www.aomedia.org/license/software. If the Alliance for Open
-* Media Patent License 1.0 was not distributed with this source code in the
-* PATENTS file, you can obtain it at www.aomedia.org/license/patent.
-*/
+/*!< Copyright (c) 2016, Alliance for Open Media. All rights reserved
+ *
+ * This source code is subject to the terms of the BSD 2 Clause License and
+ * the Alliance for Open Media Patent License 1.0. If the BSD 2 Clause License
+ * was not distributed with this source code in the LICENSE file, you can
+ * obtain it at www.aomedia.org/license/software. If the Alliance for Open
+ * Media Patent License 1.0 was not distributed with this source code in the
+ * PATENTS file, you can obtain it at www.aomedia.org/license/patent. */
 
-// This file is generated. Do not edit.
+/*!< This file is generated. Do not edit. */
 #ifndef AOM_DSP_RTCD_H_
 #define AOM_DSP_RTCD_H_
 
@@ -24,9 +20,9 @@
 #include "EbCodingUnit.h"
 # include "ml.h"
 #ifdef RTCD_C
-#define RTCD_EXTERN                //CHKN RTCD call in effect. declare the function pointers in  encHandle.
+#define RTCD_EXTERN                /*!< CHKN RTCD call in effect. declare the function pointers in  encHandle. */
 #else
-#define RTCD_EXTERN extern         //CHKN run time externing the fucntion pointers.
+#define RTCD_EXTERN extern         /*!< CHKN run time externing the fucntion pointers. */
 #endif
 
 #ifdef __GNUC__
@@ -37,9 +33,9 @@
 #define UNLIKELY(v) (v)
 #endif
 
- /**************************************
- * Instruction Set Support
- **************************************/
+ /**************************************/
+ /*!< Instruction Set Support */
+ /**************************************/
 
 #ifdef _WIN32
 # include <intrin.h>
@@ -50,12 +46,12 @@
 extern "C" {
 #endif
 
-//    // Helper Functions
-//    CPU_FLAGS get_cpu_flags();
-//    CPU_FLAGS get_cpu_flags_to_use();
+    /*!< Helper Functions */
+    CPU_FLAGS get_cpu_flags();
+    CPU_FLAGS get_cpu_flags_to_use();
     void setup_rtcd_internal(CPU_FLAGS flags);
 
-    //to not include convolve.h, just forward declare what's needed.
+    /*!< to not include convolve.h, just forward declare what's needed. */
     struct ConvolveParams;
     struct InterpFilterParams;
 
@@ -303,7 +299,7 @@ extern "C" {
     void eb_aom_highbd_8_mse16x16_sse2(const uint8_t *src_ptr, int32_t  source_stride, const uint8_t *ref_ptr, int32_t  recon_stride, uint32_t *sse);
     RTCD_EXTERN void(*eb_aom_highbd_8_mse16x16)(const uint8_t *src_ptr, int32_t  source_stride, const uint8_t *ref_ptr, int32_t  recon_stride, uint32_t *sse);
 
-/* DC_PRED top */
+/*!< DC_PRED top */
 
     uint32_t eb_aom_sad128x128_c(const uint8_t *src_ptr, int src_stride, const uint8_t *ref_ptr, int ref_stride);
     uint32_t eb_aom_sad128x128_avx2(const uint8_t *src_ptr, int src_stride, const uint8_t *ref_ptr, int ref_stride);
@@ -1045,15 +1041,14 @@ extern "C" {
     RTCD_EXTERN void(*avc_style_luma_interpolation_filter)(EbByte ref_pic, uint32_t src_stride, EbByte dst, uint32_t dst_stride, uint32_t pu_width, uint32_t pu_height, EbByte temp_buf, EbBool skip, uint32_t frac_pos, uint8_t fractional_position);
     RTCD_EXTERN uint64_t(*compute_mean_8x8)(uint8_t *input_samples, uint32_t input_stride, uint32_t input_area_width, uint32_t input_area_height);
     RTCD_EXTERN uint64_t(*compute_mean_square_values_8x8)(uint8_t *input_samples, uint32_t input_stride, uint32_t input_area_width, uint32_t input_area_height);
-     RTCD_EXTERN void(*compute_interm_var_four8x8)(uint8_t *input_samples, uint16_t input_stride, uint64_t *mean_of8x8_blocks, uint64_t *mean_of_squared8x8_blocks);
+    RTCD_EXTERN void(*compute_interm_var_four8x8)(uint8_t *input_samples, uint16_t input_stride, uint64_t *mean_of8x8_blocks, uint64_t *mean_of_squared8x8_blocks);
     RTCD_EXTERN uint32_t(*sad_16b_kernel)(uint16_t *src, uint32_t src_stride, uint16_t *ref, uint32_t ref_stride, uint32_t height, uint32_t width);
     void av1_nn_predict_c(const float *input_nodes, const NnConfig *const nn_config, int reduce_prec, float *const output);
     void av1_nn_predict_sse3(const float *input_nodes, const NnConfig *const nn_config, int reduce_prec, float *const output);
     RTCD_EXTERN void(*av1_nn_predict)(const float *input_nodes, const NnConfig *const nn_config, int reduce_prec, float *const output);
 
-    /* Moved to aom_dsp_rtcd.c file:
-    static void setup_rtcd_internal(EbAsm asm_type)
-    */
+    /*!< Moved to aom_dsp_rtcd.c file:
+     *   static void setup_rtcd_internal(EbAsm asm_type) */
 
 
 #ifdef __cplusplus

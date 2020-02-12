@@ -1,16 +1,14 @@
-/*
-* Copyright(c) 2019 Netflix, Inc.
-* SPDX - License - Identifier: BSD - 2 - Clause - Patent
-*/
+/*!< Copyright(c) 2019 Netflix, Inc.
+ * SPDX - License - Identifier: BSD - 2 - Clause - Patent */
 
-// Command line argument parsing
+/*!< Command line argument parsing */
 
 #ifndef EbDecParamParser_h
 #define EbDecParamParser_h
 
-/***************************************
- * Includes
- ***************************************/
+/**************/
+/*!< Includes */
+/**************/
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -24,9 +22,9 @@
 #define FOPEN(f, s, m) f = fopen(s, m)
 #endif
 
-/**********************************
-  * CLI options
-  **********************************/
+/*****************/
+/*!< CLI options */
+/*****************/
 #define HELP_TOKEN "-help"
 #define COMMAND_LINE_MAX_SIZE 2048
 #define INPUT_FILE_TOKEN "-i"
@@ -48,9 +46,9 @@
 
 #define EB_STRCMP(target, token) strcmp(target, token)
 
-/**********************************
- * Config Entry Struct
- **********************************/
+/*************************/
+/*!< Config Entry Struct */
+/*************************/
 typedef struct ConfigEntry {
     const char *token;
     const char *name;

@@ -1,16 +1,14 @@
-/*
-* Copyright(c) 2019 Intel Corporation
-* SPDX - License - Identifier: BSD - 2 - Clause - Patent
-*/
+/*!< Copyright(c) 2019 Intel Corporation
+ * SPDX - License - Identifier: BSD - 2 - Clause - Patent */
 
 #include "EbPackUnPack_SSE2.h"
 
 #include <emmintrin.h>
 #include <stdint.h>
 
-/****************************************************************************************
-eb_enc_msb_un_pack2d_sse2_intrin
-******************************************************************************************/
+/****************************************************************************************/
+/*!< eb_enc_msb_un_pack2d_sse2_intrin */
+/******************************************************************************************/
 
 void eb_enc_msb_un_pack2d_sse2_intrin(uint16_t *in16_bit_buffer, uint32_t in_stride,
                                       uint8_t *out8_bit_buffer, uint8_t *outn_bit_buffer,
@@ -442,41 +440,41 @@ void unpack_avg_sse2_intrin(uint16_t *ref16_l0, uint32_t ref_l0_stride, uint16_t
         __m128i avg8_0_u8;
 
         for (y = 0; y < height; y += 2) {
-            //--------
-            //Line One
-            //--------
+            /********/
+            /*!< Line One */
+            /********/
 
-            //List0
+            /*!< List0 */
             in_pixel0    = _mm_loadl_epi64((__m128i *)ref16_l0);
             in_pixel1    = _mm_srli_epi16(in_pixel0, 2);
             out8_0_u8_l0 = _mm_packus_epi16(in_pixel1, in_pixel1);
 
-            //List1
+            /*!< List1 */
             in_pixel0    = _mm_loadl_epi64((__m128i *)ref16_l1);
             in_pixel1    = _mm_srli_epi16(in_pixel0, 2);
             out8_0_u8_l1 = _mm_packus_epi16(in_pixel1, in_pixel1);
 
-            //AVG
+            /*!< AVG */
             avg8_0_u8 = _mm_avg_epu8(out8_0_u8_l0, out8_0_u8_l1);
 
             *(uint32_t *)dst_ptr = _mm_cvtsi128_si32(avg8_0_u8);
 
-            //--------
-            //Line Two
-            //--------
+            /********/
+            /*!< Line Two */
+            /********/
 
-            //List0
+            /*!< List0 */
             in_pixel0    = _mm_loadl_epi64((__m128i *)(ref16_l0 + ref_l0_stride));
             in_pixel1    = _mm_srli_epi16(in_pixel0, 2);
             out8_0_u8_l0 = _mm_packus_epi16(in_pixel1, in_pixel1);
 
-            //List1
+            /*!< List1 */
 
             in_pixel0    = _mm_loadl_epi64((__m128i *)(ref16_l1 + ref_l1_stride));
             in_pixel1    = _mm_srli_epi16(in_pixel0, 2);
             out8_0_u8_l1 = _mm_packus_epi16(in_pixel1, in_pixel1);
 
-            //AVG
+            /*!< AVG */
             avg8_0_u8 = _mm_avg_epu8(out8_0_u8_l0, out8_0_u8_l1);
 
             *(uint32_t *)(dst_ptr + dst_stride) = _mm_cvtsi128_si32(avg8_0_u8);
@@ -490,48 +488,48 @@ void unpack_avg_sse2_intrin(uint16_t *ref16_l0, uint32_t ref_l0_stride, uint16_t
         __m128i avg8_0_u8, avg8_2_u8;
 
         for (y = 0; y < height; y += 2) {
-            //--------
-            //Line One
-            //--------
+            /********/
+            /*!< Line One */
+            /********/
 
-            //List0
+            /*!< List0 */
 
             in_pixel0 = _mm_loadu_si128((__m128i *)ref16_l0);
 
             in_pixel1    = _mm_srli_epi16(in_pixel0, 2);
             out8_0_u8_l0 = _mm_packus_epi16(in_pixel1, in_pixel1);
 
-            //List1
+            /*!< List1 */
 
             in_pixel0 = _mm_loadu_si128((__m128i *)ref16_l1);
 
             in_pixel1    = _mm_srli_epi16(in_pixel0, 2);
             out8_0_u8_l1 = _mm_packus_epi16(in_pixel1, in_pixel1);
 
-            //AVG
+            /*!< AVG*/
             avg8_0_u8 = _mm_avg_epu8(out8_0_u8_l0, out8_0_u8_l1);
 
             _mm_storel_epi64((__m128i *)dst_ptr, avg8_0_u8);
 
-            //--------
-            //Line Two
-            //--------
+            /********/
+            /*!< Line Two */
+            /********/
 
-            //List0
+            /*!< List0 */
 
             in_pixel0 = _mm_loadu_si128((__m128i *)(ref16_l0 + ref_l0_stride));
 
             in_pixel1    = _mm_srli_epi16(in_pixel0, 2);
             out8_2_u8_l0 = _mm_packus_epi16(in_pixel1, in_pixel1);
 
-            //List1
+            /*!< List1 */
 
             in_pixel0 = _mm_loadu_si128((__m128i *)(ref16_l1 + ref_l1_stride));
 
             in_pixel1    = _mm_srli_epi16(in_pixel0, 2);
             out8_2_u8_l1 = _mm_packus_epi16(in_pixel1, in_pixel1);
 
-            //AVG
+            /*!< AVG */
             avg8_2_u8 = _mm_avg_epu8(out8_2_u8_l0, out8_2_u8_l1);
 
             _mm_storel_epi64((__m128i *)(dst_ptr + dst_stride), avg8_2_u8);
@@ -546,11 +544,11 @@ void unpack_avg_sse2_intrin(uint16_t *ref16_l0, uint32_t ref_l0_stride, uint16_t
         __m128i avg8_0_u8, avg8_2_u8;
 
         for (y = 0; y < height; y += 2) {
-            //--------
-            //Line One
-            //--------
+            /********/
+            /*!< Line One */
+            /********/
 
-            //List0
+            /*!< List0 */
 
             in_pixel0 = _mm_loadu_si128((__m128i *)ref16_l0);
             in_pixel1 = _mm_loadu_si128((__m128i *)(ref16_l0 + 8));
@@ -558,7 +556,7 @@ void unpack_avg_sse2_intrin(uint16_t *ref16_l0, uint32_t ref_l0_stride, uint16_t
             out8_0_u8_l0 =
                 _mm_packus_epi16(_mm_srli_epi16(in_pixel0, 2), _mm_srli_epi16(in_pixel1, 2));
 
-            //List1
+            /*!< List1 */
 
             in_pixel0 = _mm_loadu_si128((__m128i *)ref16_l1);
             in_pixel1 = _mm_loadu_si128((__m128i *)(ref16_l1 + 8));
@@ -566,16 +564,16 @@ void unpack_avg_sse2_intrin(uint16_t *ref16_l0, uint32_t ref_l0_stride, uint16_t
             out8_0_u8_l1 =
                 _mm_packus_epi16(_mm_srli_epi16(in_pixel0, 2), _mm_srli_epi16(in_pixel1, 2));
 
-            //AVG
+            /*!< AVG */
             avg8_0_u8 = _mm_avg_epu8(out8_0_u8_l0, out8_0_u8_l1);
 
             _mm_storeu_si128((__m128i *)dst_ptr, avg8_0_u8);
 
-            //--------
-            //Line Two
-            //--------
+            /********/
+            /*!< Line Two */
+            /********/
 
-            //List0
+            /*!< List0 */
 
             in_pixel4 = _mm_loadu_si128((__m128i *)(ref16_l0 + ref_l0_stride));
             in_pixel5 = _mm_loadu_si128((__m128i *)(ref16_l0 + ref_l0_stride + 8));
@@ -583,7 +581,7 @@ void unpack_avg_sse2_intrin(uint16_t *ref16_l0, uint32_t ref_l0_stride, uint16_t
             out8_2_u8_l0 =
                 _mm_packus_epi16(_mm_srli_epi16(in_pixel4, 2), _mm_srli_epi16(in_pixel5, 2));
 
-            //List1
+            /*!< List1 */
 
             in_pixel4 = _mm_loadu_si128((__m128i *)(ref16_l1 + ref_l1_stride));
             in_pixel5 = _mm_loadu_si128((__m128i *)(ref16_l1 + ref_l1_stride + 8));
@@ -591,7 +589,7 @@ void unpack_avg_sse2_intrin(uint16_t *ref16_l0, uint32_t ref_l0_stride, uint16_t
             out8_2_u8_l1 =
                 _mm_packus_epi16(_mm_srli_epi16(in_pixel4, 2), _mm_srli_epi16(in_pixel5, 2));
 
-            //AVG
+            /*!< AVG */
             avg8_2_u8 = _mm_avg_epu8(out8_2_u8_l0, out8_2_u8_l1);
 
             _mm_storeu_si128((__m128i *)(dst_ptr + dst_stride), avg8_2_u8);
@@ -607,11 +605,11 @@ void unpack_avg_sse2_intrin(uint16_t *ref16_l0, uint32_t ref_l0_stride, uint16_t
         __m128i avg8_0_u8, avg8_1_u8, avg8_2_u8, avg8_3_u8;
 
         for (y = 0; y < height; y += 2) {
-            //--------
-            //Line One
-            //--------
+            /********/
+            /*!< Line One */
+            /********/
 
-            //List0
+            /*!< List0 */
 
             in_pixel0 = _mm_loadu_si128((__m128i *)ref16_l0);
             in_pixel1 = _mm_loadu_si128((__m128i *)(ref16_l0 + 8));
@@ -623,7 +621,7 @@ void unpack_avg_sse2_intrin(uint16_t *ref16_l0, uint32_t ref_l0_stride, uint16_t
             out8_1_u8_l0 =
                 _mm_packus_epi16(_mm_srli_epi16(in_pixel2, 2), _mm_srli_epi16(in_pixel3, 2));
 
-            //List1
+            /*!< List1 */
 
             in_pixel0 = _mm_loadu_si128((__m128i *)ref16_l1);
             in_pixel1 = _mm_loadu_si128((__m128i *)(ref16_l1 + 8));
@@ -635,18 +633,18 @@ void unpack_avg_sse2_intrin(uint16_t *ref16_l0, uint32_t ref_l0_stride, uint16_t
             out8_1_u8_l1 =
                 _mm_packus_epi16(_mm_srli_epi16(in_pixel2, 2), _mm_srli_epi16(in_pixel3, 2));
 
-            //AVG
+            /*!< AVG */
             avg8_0_u8 = _mm_avg_epu8(out8_0_u8_l0, out8_0_u8_l1);
             avg8_1_u8 = _mm_avg_epu8(out8_1_u8_l0, out8_1_u8_l1);
 
             _mm_storeu_si128((__m128i *)dst_ptr, avg8_0_u8);
             _mm_storeu_si128((__m128i *)(dst_ptr + 16), avg8_1_u8);
 
-            //--------
-            //Line Two
-            //--------
+            /********/
+            /*!< Line Two */
+            /********/
 
-            //List0
+            /*!< List0 */
 
             in_pixel4 = _mm_loadu_si128((__m128i *)(ref16_l0 + ref_l0_stride));
             in_pixel5 = _mm_loadu_si128((__m128i *)(ref16_l0 + ref_l0_stride + 8));
@@ -658,7 +656,7 @@ void unpack_avg_sse2_intrin(uint16_t *ref16_l0, uint32_t ref_l0_stride, uint16_t
             out8_3_u8_l0 =
                 _mm_packus_epi16(_mm_srli_epi16(in_pixel6, 2), _mm_srli_epi16(in_pixel7, 2));
 
-            //List1
+            /*!< List1 */
 
             in_pixel4 = _mm_loadu_si128((__m128i *)(ref16_l1 + ref_l1_stride));
             in_pixel5 = _mm_loadu_si128((__m128i *)(ref16_l1 + ref_l1_stride + 8));
@@ -670,7 +668,7 @@ void unpack_avg_sse2_intrin(uint16_t *ref16_l0, uint32_t ref_l0_stride, uint16_t
             out8_3_u8_l1 =
                 _mm_packus_epi16(_mm_srli_epi16(in_pixel6, 2), _mm_srli_epi16(in_pixel7, 2));
 
-            //AVG
+            /*!< AVG */
             avg8_2_u8 = _mm_avg_epu8(out8_2_u8_l0, out8_2_u8_l1);
             avg8_3_u8 = _mm_avg_epu8(out8_3_u8_l0, out8_3_u8_l1);
 
@@ -688,7 +686,7 @@ void unpack_avg_sse2_intrin(uint16_t *ref16_l0, uint32_t ref_l0_stride, uint16_t
         __m128i avg8_0_u8, avg8_1_u8, avg8_2_u8, avg8_3_u8;
 
         for (y = 0; y < height; ++y) {
-            //List0
+            /*!< List0 */
 
             in_pixel0 = _mm_loadu_si128((__m128i *)ref16_l0);
             in_pixel1 = _mm_loadu_si128((__m128i *)(ref16_l0 + 8));
@@ -708,7 +706,7 @@ void unpack_avg_sse2_intrin(uint16_t *ref16_l0, uint32_t ref_l0_stride, uint16_t
             out8_3_u8_l0 =
                 _mm_packus_epi16(_mm_srli_epi16(in_pixel6, 2), _mm_srli_epi16(in_pixel7, 2));
 
-            //List1
+            /*!< List1 */
 
             in_pixel0 = _mm_loadu_si128((__m128i *)ref16_l1);
             in_pixel1 = _mm_loadu_si128((__m128i *)(ref16_l1 + 8));
@@ -719,7 +717,7 @@ void unpack_avg_sse2_intrin(uint16_t *ref16_l0, uint32_t ref_l0_stride, uint16_t
             in_pixel6 = _mm_loadu_si128((__m128i *)(ref16_l1 + 48));
             in_pixel7 = _mm_loadu_si128((__m128i *)(ref16_l1 + 56));
 
-            //Note: old Version used to use _mm_and_si128 to mask the MSB bits of the pixels
+            /*!< Note: old Version used to use _mm_and_si128 to mask the MSB bits of the pixels */
             out8_0_u8_l1 =
                 _mm_packus_epi16(_mm_srli_epi16(in_pixel0, 2), _mm_srli_epi16(in_pixel1, 2));
             out8_1_u8_l1 =
@@ -729,7 +727,7 @@ void unpack_avg_sse2_intrin(uint16_t *ref16_l0, uint32_t ref_l0_stride, uint16_t
             out8_3_u8_l1 =
                 _mm_packus_epi16(_mm_srli_epi16(in_pixel6, 2), _mm_srli_epi16(in_pixel7, 2));
 
-            //AVG
+            /*!< AVG */
             avg8_0_u8 = _mm_avg_epu8(out8_0_u8_l0, out8_0_u8_l1);
             avg8_1_u8 = _mm_avg_epu8(out8_1_u8_l0, out8_1_u8_l1);
             avg8_2_u8 = _mm_avg_epu8(out8_2_u8_l0, out8_2_u8_l1);
@@ -748,9 +746,9 @@ void unpack_avg_sse2_intrin(uint16_t *ref16_l0, uint32_t ref_l0_stride, uint16_t
 
     return;
 }
-/********************************************************************************************************************
-eb_enc_msb_pack2d_sse2_intrin
-*********************************************************************************************************************/
+/********************************************************************************************************************/
+/*!< eb_enc_msb_pack2d_sse2_intrin */
+/*********************************************************************************************************************/
 void eb_enc_msb_pack2d_sse2_intrin(uint8_t *in8_bit_buffer, uint32_t in8_stride,
                                    uint8_t *inn_bit_buffer, uint16_t *out16_bit_buffer,
                                    uint32_t inn_stride, uint32_t out_stride, uint32_t width,

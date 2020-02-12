@@ -1,7 +1,5 @@
-/*
-* Copyright(c) 2019 Intel Corporation
-* SPDX - License - Identifier: BSD - 2 - Clause - Patent
-*/
+/*!< Copyright(c) 2019 Intel Corporation
+ * SPDX - License - Identifier: BSD - 2 - Clause - Patent */
 
 #include <stdlib.h>
 #include "EbInitialRateControlReorderQueue.h"
@@ -25,7 +23,7 @@ EbErrorType hl_rate_control_histogram_entry_ctor(HlRateControlHistogramEntry *en
     entry_ptr->dctor          = hl_rate_control_histogram_entry_dctor;
     entry_ptr->picture_number = picture_number;
 
-    // ME and OIS Distortion Histograms
+    /*!< ME and OIS Distortion Histograms */
     EB_MALLOC_ARRAY(entry_ptr->me_distortion_histogram, NUMBER_OF_SAD_INTERVALS);
 
     EB_MALLOC_ARRAY(entry_ptr->ois_distortion_histogram, NUMBER_OF_INTRA_SAD_INTERVALS);

@@ -1,18 +1,14 @@
-/*
-* Copyright(c) 2019 Intel Corporation
-* SPDX - License - Identifier: BSD - 2 - Clause - Patent
-*/
+/*!< Copyright(c) 2019 Intel Corporation
+ * SPDX - License - Identifier: BSD - 2 - Clause - Patent */
 
-/*
-* Copyright (c) 2016, Alliance for Open Media. All rights reserved
-*
-* This source code is subject to the terms of the BSD 2 Clause License and
-* the Alliance for Open Media Patent License 1.0. If the BSD 2 Clause License
-* was not distributed with this source code in the LICENSE file, you can
-* obtain it at www.aomedia.org/license/software. If the Alliance for Open
-* Media Patent License 1.0 was not distributed with this source code in the
-* PATENTS file, you can obtain it at www.aomedia.org/license/patent.
-*/
+/*!< Copyright (c) 2016, Alliance for Open Media. All rights reserved
+ *
+ * This source code is subject to the terms of the BSD 2 Clause License and
+ * the Alliance for Open Media Patent License 1.0. If the BSD 2 Clause License
+ * was not distributed with this source code in the LICENSE file, you can
+ * obtain it at www.aomedia.org/license/software. If the Alliance for Open
+ * Media Patent License 1.0 was not distributed with this source code in the
+ * PATENTS file, you can obtain it at www.aomedia.org/license/patent. */
 
 #include <stdlib.h>
 
@@ -38,7 +34,7 @@ int16_t eb_av1_dc_quant_q3(int32_t qindex, int32_t delta, AomBitDepth bit_depth)
 int16_t eb_av1_ac_quant_q3(int32_t qindex, int32_t delta, AomBitDepth bit_depth);
 int16_t eb_av1_dc_quant_qtx(int32_t qindex, int32_t delta, AomBitDepth bit_depth);
 
-#define MAX_MESH_SPEED 5 // Max speed setting for mesh motion method
+#define MAX_MESH_SPEED 5 /*!< Max speed setting for mesh motion method */
 static MeshPattern good_quality_mesh_patterns[MAX_MESH_SPEED + 1][MAX_MESH_STEP] = {
     {{64, 8}, {28, 4}, {15, 1}, {7, 1}},
     {{64, 8}, {28, 4}, {15, 1}, {7, 1}},
@@ -48,8 +44,7 @@ static MeshPattern good_quality_mesh_patterns[MAX_MESH_SPEED + 1][MAX_MESH_STEP]
     {{64, 16}, {24, 8}, {12, 4}, {7, 1}},
 };
 static unsigned char good_quality_max_mesh_pct[MAX_MESH_SPEED + 1] = {50, 50, 25, 15, 5, 1};
-// TODO: These settings are pretty relaxed, tune them for
-// each speed setting
+/*!< TODO: These settings are pretty relaxed, tune them for each speed setting */
 static MeshPattern intrabc_mesh_patterns[MAX_MESH_SPEED + 1][MAX_MESH_STEP] = {
     {{256, 1}, {256, 1}, {0, 0}, {0, 0}},
     {{256, 1}, {256, 1}, {0, 0}, {0, 0}},
@@ -60,13 +55,13 @@ static MeshPattern intrabc_mesh_patterns[MAX_MESH_SPEED + 1][MAX_MESH_STEP] = {
 };
 static uint8_t intrabc_max_mesh_pct[MAX_MESH_SPEED + 1] = {100, 100, 100, 25, 25, 10};
 
-// Adaptive Depth Partitioning
-// Shooting states
+/*!< Adaptive Depth Partitioning */
+/*!< Shooting states */
 #define UNDER_SHOOTING 0
 #define OVER_SHOOTING 1
 #define TBD_SHOOTING 2
 
-#define SB_PRED_OPEN_LOOP_COST 100 // Let's assume PRED_OPEN_LOOP_COST costs ~100 U
+#define SB_PRED_OPEN_LOOP_COST 100 /*!< Let's assume PRED_OPEN_LOOP_COST costs ~100 U */
 #define U_101 101
 #define U_102 102
 #define U_103 103
@@ -75,7 +70,7 @@ static uint8_t intrabc_max_mesh_pct[MAX_MESH_SPEED + 1] = {100, 100, 100, 25, 25
 #define U_107 107
 #define SB_FAST_OPEN_LOOP_COST 108
 #define U_109 109
-#define SB_OPEN_LOOP_COST 110 // F_MDC is ~10% slower than PRED_OPEN_LOOP_COST
+#define SB_OPEN_LOOP_COST 110 /*!< F_MDC is ~10% slower than PRED_OPEN_LOOP_COST */
 #define U_111 111
 #define U_112 112
 #define U_113 113
@@ -111,7 +106,7 @@ static INLINE int32_t aom_get_qmlevel(int32_t qindex, int32_t first, int32_t las
 }
 
 void set_global_motion_field(PictureControlSet *pcs_ptr) {
-    // Init Global Motion Vector
+    /*!< Init Global Motion Vector */
     uint8_t frame_index;
     for (frame_index = INTRA_FRAME; frame_index <= ALTREF_FRAME; ++frame_index) {
         pcs_ptr->parent_pcs_ptr->global_motion[frame_index].wmtype   = IDENTITY;
@@ -130,7 +125,7 @@ void set_global_motion_field(PictureControlSet *pcs_ptr) {
         pcs_ptr->parent_pcs_ptr->global_motion[frame_index].wmmat[7] = 0;
     }
 
-    //Update MV
+    /*!< Update MV */
 #if GLOBAL_WARPED_MOTION
     PictureParentControlSet *parent_pcs_ptr = pcs_ptr->parent_pcs_ptr;
 #if GLOBAL_WARPED_MOTION
@@ -147,8 +142,8 @@ void set_global_motion_field(PictureControlSet *pcs_ptr) {
                 parent_pcs_ptr->global_motion_estimation[get_list_idx(BWDREF_FRAME)]
                                                         [get_ref_frame_idx(BWDREF_FRAME)];
 #if GLOBAL_WARPED_MOTION
-        // Upscale the translation parameters by 2, because the search is done on a down-sampled
-        // version of the source picture (with a down-sampling factor of 2 in each dimension).
+        /*!< Upscale the translation parameters by 2, because the search is done on a down-sampled
+         *   version of the source picture (with a down-sampling factor of 2 in each dimension). */
         if (parent_pcs_ptr->gm_level == GM_DOWN) {
             parent_pcs_ptr->global_motion[LAST_FRAME].wmmat[0] *= 2;
             parent_pcs_ptr->global_motion[LAST_FRAME].wmmat[1] *= 2;
@@ -208,8 +203,7 @@ void set_global_motion_field(PictureControlSet *pcs_ptr) {
 }
 
 void eb_av1_set_quantizer(PictureParentControlSet *pcs_ptr, int32_t q) {
-    // quantizer has to be reinitialized with av1_init_quantizer() if any
-    // delta_q changes.
+    /*!< quantizer has to be reinitialized with av1_init_quantizer() if any delta_q changes. */
     FrameHeader *frm_hdr = &pcs_ptr->frm_hdr;
 
     frm_hdr->quantization_params.using_qmatrix = 0;
@@ -252,10 +246,10 @@ void eb_av1_build_quantizer(AomBitDepth bit_depth, int32_t y_dc_delta_q, int32_t
 
         for (i = 0; i < 2; ++i) {
             int32_t qrounding_factor_fp = 64;
-            // y quantizer setup with original coeff shift of Q3
+            /*!< y quantizer setup with original coeff shift of Q3 */
             quant_q3 = i == 0 ? eb_av1_dc_quant_q3(q, y_dc_delta_q, bit_depth)
                               : eb_av1_ac_quant_q3(q, 0, bit_depth);
-            // y quantizer with TX scale
+            /*!< y quantizer with TX scale */
             quant_qtx = i == 0 ? eb_av1_dc_quant_qtx(q, y_dc_delta_q, bit_depth)
                                : eb_av1_ac_quant_qtx(q, 0, bit_depth);
             invert_quant(&quants->y_quant[q][i], &quants->y_quant_shift[q][i], quant_qtx);
@@ -266,10 +260,10 @@ void eb_av1_build_quantizer(AomBitDepth bit_depth, int32_t y_dc_delta_q, int32_t
             deq->y_dequant_qtx[q][i] = (int16_t)quant_qtx;
             deq->y_dequant_q3[q][i]  = (int16_t)quant_q3;
 
-            // u quantizer setup with original coeff shift of Q3
+            /*!< u quantizer setup with original coeff shift of Q3 */
             quant_q3 = i == 0 ? eb_av1_dc_quant_q3(q, u_dc_delta_q, bit_depth)
                               : eb_av1_ac_quant_q3(q, u_ac_delta_q, bit_depth);
-            // u quantizer with TX scale
+            /*!< u quantizer with TX scale */
             quant_qtx = i == 0 ? eb_av1_dc_quant_qtx(q, u_dc_delta_q, bit_depth)
                                : eb_av1_ac_quant_qtx(q, u_ac_delta_q, bit_depth);
             invert_quant(&quants->u_quant[q][i], &quants->u_quant_shift[q][i], quant_qtx);
@@ -280,10 +274,10 @@ void eb_av1_build_quantizer(AomBitDepth bit_depth, int32_t y_dc_delta_q, int32_t
             deq->u_dequant_qtx[q][i] = (int16_t)quant_qtx;
             deq->u_dequant_q3[q][i]  = (int16_t)quant_q3;
 
-            // v quantizer setup with original coeff shift of Q3
+            /*!< v quantizer setup with original coeff shift of Q3 */
             quant_q3 = i == 0 ? eb_av1_dc_quant_q3(q, v_dc_delta_q, bit_depth)
                               : eb_av1_ac_quant_q3(q, v_ac_delta_q, bit_depth);
-            // v quantizer with TX scale
+            /*!< v quantizer with TX scale */
             quant_qtx = i == 0 ? eb_av1_dc_quant_qtx(q, v_dc_delta_q, bit_depth)
                                : eb_av1_ac_quant_qtx(q, v_ac_delta_q, bit_depth);
             invert_quant(&quants->v_quant[q][i], &quants->v_quant_shift[q][i], quant_qtx);
@@ -295,7 +289,7 @@ void eb_av1_build_quantizer(AomBitDepth bit_depth, int32_t y_dc_delta_q, int32_t
             deq->v_dequant_q3[q][i]  = (int16_t)quant_q3;
         }
 
-        for (i = 2; i < 8; i++) { // 8: SIMD width
+        for (i = 2; i < 8; i++) { /*!< 8: SIMD width */
             quants->y_quant[q][i]       = quants->y_quant[q][1];
             quants->y_quant_fp[q][i]    = quants->y_quant_fp[q][1];
             quants->y_round_fp[q][i]    = quants->y_round_fp[q][1];
@@ -326,7 +320,7 @@ void eb_av1_build_quantizer(AomBitDepth bit_depth, int32_t y_dc_delta_q, int32_t
 }
 
 void eb_av1_qm_init(PictureParentControlSet *pcs_ptr) {
-    const uint8_t num_planes = 3; // MAX_MB_PLANE;// NM- No monochroma
+    const uint8_t num_planes = 3; // MAX_MB_PLANE; /*!< NM- No monochroma */
     uint8_t       q, c, t;
     int32_t       current;
     for (q = 0; q < NUM_QM_LEVELS; ++q) {
@@ -338,7 +332,7 @@ void eb_av1_qm_init(PictureParentControlSet *pcs_ptr) {
                 if (q == NUM_QM_LEVELS - 1) {
                     pcs_ptr->gqmatrix[q][c][t]  = NULL;
                     pcs_ptr->giqmatrix[q][c][t] = NULL;
-                } else if (t != qm_tx_size) { // Reuse matrices for 'qm_tx_size'
+                } else if (t != qm_tx_size) { /*!< Reuse matrices for 'qm_tx_size' */
                     pcs_ptr->gqmatrix[q][c][t]  = pcs_ptr->gqmatrix[q][c][qm_tx_size];
                     pcs_ptr->giqmatrix[q][c][t] = pcs_ptr->giqmatrix[q][c][qm_tx_size];
                 } else {
@@ -352,20 +346,20 @@ void eb_av1_qm_init(PictureParentControlSet *pcs_ptr) {
     }
 }
 
-/******************************************************
-* Compute picture and slice level chroma QP offsets
-******************************************************/
+/******************************************************/
+/*!< Compute picture and slice level chroma QP offsets */
+/******************************************************/
 void set_slice_and_picture_chroma_qp_offsets(PictureControlSet *pcs_ptr) {
-    // This is a picture level chroma QP offset and is sent in the PPS
+    /*!< This is a picture level chroma QP offset and is sent in the PPS */
     pcs_ptr->cb_qp_offset = 0;
     pcs_ptr->cr_qp_offset = 0;
 
-    //In order to have QP offsets for chroma at a slice level set slice_level_chroma_qp_flag flag in pcs_ptr (can be done in the PCS Ctor)
+    /*!< In order to have QP offsets for chroma at a slice level set slice_level_chroma_qp_flag flag in pcs_ptr (can be done in the PCS Ctor) */
 
-    // The below are slice level chroma QP offsets and is sent for each slice when slice_level_chroma_qp_flag is set
+    /*!< The below are slice level chroma QP offsets and is sent for each slice when slice_level_chroma_qp_flag is set */
 
-    // IMPORTANT: Lambda tables assume that the cb and cr have the same QP offsets.
-    // However the offsets for each component can be very different for ENC DEC and we are conformant.
+    /*!< IMPORTANT: Lambda tables assume that the cb and cr have the same QP offsets.
+     *   However the offsets for each component can be very different for ENC DEC and we are conformant. */
     pcs_ptr->slice_cb_qp_offset = 0;
     pcs_ptr->slice_cr_qp_offset = 0;
 
@@ -386,16 +380,16 @@ void set_slice_and_picture_chroma_qp_offsets(PictureControlSet *pcs_ptr) {
     }
 }
 
-/******************************************************
-* Set the reference sg ep for a given picture
-******************************************************/
+/******************************************************/
+/*!< Set the reference sg ep for a given picture */
+/******************************************************/
 void set_reference_sg_ep(PictureControlSet *pcs_ptr) {
     Av1Common *        cm = pcs_ptr->parent_pcs_ptr->av1_cm;
     EbReferenceObject *ref_obj_l0, *ref_obj_l1;
     memset(cm->sg_frame_ep_cnt, 0, SGRPROJ_PARAMS * sizeof(int32_t));
     cm->sg_frame_ep = 0;
 
-    // NADER: set cm->sg_ref_frame_ep[0] = cm->sg_ref_frame_ep[1] = -1 to perform all iterations
+    /*!< NADER: set cm->sg_ref_frame_ep[0] = cm->sg_ref_frame_ep[1] = -1 to perform all iterations */
     switch (pcs_ptr->slice_type) {
     case I_SLICE:
         cm->sg_ref_frame_ep[0] = -1;
@@ -416,13 +410,13 @@ void set_reference_sg_ep(PictureControlSet *pcs_ptr) {
     }
 }
 
-/******************************************************
-* Set the reference cdef strength for a given picture
-******************************************************/
+/******************************************************/
+/*!< Set the reference cdef strength for a given picture */
+/******************************************************/
 void set_reference_cdef_strength(PictureControlSet *pcs_ptr) {
     EbReferenceObject *ref_obj_l0, *ref_obj_l1;
     int32_t            strength;
-    // NADER: set pcs_ptr->parent_pcs_ptr->use_ref_frame_cdef_strength 0 to test all strengths
+    /*!< NADER: set pcs_ptr->parent_pcs_ptr->use_ref_frame_cdef_strength 0 to test all strengths */
     switch (pcs_ptr->slice_type) {
     case I_SLICE:
         pcs_ptr->parent_pcs_ptr->use_ref_frame_cdef_strength = 0;
@@ -445,9 +439,9 @@ void set_reference_cdef_strength(PictureControlSet *pcs_ptr) {
     }
 }
 
-/******************************************************
-* Compute Tc, and Beta offsets for a given picture
-******************************************************/
+/******************************************************/
+/*!< Compute Tc, and Beta offsets for a given picture */
+/******************************************************/
 
 static void mode_decision_configuration_context_dctor(EbPtr p) {
     EbThreadContext *                 thread_context_ptr = (EbThreadContext *)p;
@@ -463,9 +457,9 @@ static void mode_decision_configuration_context_dctor(EbPtr p) {
     EB_FREE_ARRAY(obj->mdc_blk_ptr);
     EB_FREE_ARRAY(obj);
 }
-/******************************************************
- * Mode Decision Configuration Context Constructor
- ******************************************************/
+/******************************************************/
+/*!< Mode Decision Configuration Context Constructor */
+/******************************************************/
 EbErrorType mode_decision_configuration_context_ctor(EbThreadContext *  thread_context_ptr,
                                                      const EbEncHandle *enc_handle_ptr,
                                                      int input_index, int output_index) {
@@ -479,20 +473,20 @@ EbErrorType mode_decision_configuration_context_ctor(EbThreadContext *  thread_c
     thread_context_ptr->priv  = context_ptr;
     thread_context_ptr->dctor = mode_decision_configuration_context_dctor;
 
-    // Input/Output System Resource Manager FIFOs
+    /*!< Input/Output System Resource Manager FIFOs */
     context_ptr->rate_control_input_fifo_ptr = eb_system_resource_get_consumer_fifo(
         enc_handle_ptr->rate_control_results_resource_ptr, input_index);
     context_ptr->mode_decision_configuration_output_fifo_ptr = eb_system_resource_get_producer_fifo(
         enc_handle_ptr->enc_dec_tasks_resource_ptr, output_index);
-    // Rate estimation
+    /*!< Rate estimation */
     EB_MALLOC_ARRAY(context_ptr->md_rate_estimation_ptr, 1);
     context_ptr->is_md_rate_estimation_ptr_owner = EB_TRUE;
 
-    // Adaptive Depth Partitioning
+    /*!< Adaptive Depth Partitioning */
     EB_MALLOC_ARRAY(context_ptr->sb_score_array, sb_total_count);
     EB_MALLOC_ARRAY(context_ptr->sb_cost_array, sb_total_count);
 
-    // Open Loop Partitioning
+    /*!< Open Loop Partitioning */
     EB_MALLOC_ARRAY(context_ptr->mdc_candidate_ptr, 1);
     EB_MALLOC_ARRAY(context_ptr->mdc_ref_mv_stack, 1);
     EB_MALLOC_ARRAY(context_ptr->mdc_blk_ptr, 1);
@@ -501,20 +495,20 @@ EbErrorType mode_decision_configuration_context_ctor(EbThreadContext *  thread_c
     return EB_ErrorNone;
 }
 
-/******************************************************
-* Predict the SB partitionning
-******************************************************/
+/******************************************************/
+/*!< Predict the SB partitionning */
+/******************************************************/
 void perform_early_sb_partitionning(ModeDecisionConfigurationContext *context_ptr,
                                     SequenceControlSet *scs_ptr, PictureControlSet *pcs_ptr) {
     SuperBlock *sb_ptr;
     uint32_t    sb_index;
     pcs_ptr->parent_pcs_ptr->average_qp = (uint8_t)pcs_ptr->parent_pcs_ptr->picture_qp;
 
-    // SB Loop : Partitionnig Decision
+    /*!< SB Loop : Partitionnig Decision */
     for (sb_index = 0; sb_index < pcs_ptr->sb_total_count; ++sb_index) {
         sb_ptr = pcs_ptr->sb_ptr_array[sb_index];
         early_mode_decision_sb(scs_ptr, pcs_ptr, sb_ptr, sb_index, context_ptr);
-    } // End of SB Loop
+    } /*!< End of SB Loop */
 }
 
 void perform_early_sb_partitionning_sb(ModeDecisionConfigurationContext *context_ptr,
@@ -522,7 +516,7 @@ void perform_early_sb_partitionning_sb(ModeDecisionConfigurationContext *context
                                        uint32_t sb_index) {
     SuperBlock *sb_ptr;
 
-    // SB Loop : Partitionnig Decision
+    /*!< SB Loop : Partitionnig Decision */
     sb_ptr = pcs_ptr->sb_ptr_array[sb_index];
     early_mode_decision_sb(scs_ptr, pcs_ptr, sb_ptr, sb_index, context_ptr);
 }
@@ -533,7 +527,7 @@ void forward_all_blocks_to_md(SequenceControlSet *scs_ptr, PictureControlSet *pc
 
     UNUSED(split_flag);
 
-    for (sb_index = 0; sb_index < pcs_ptr->sb_total_count_pix; ++sb_index) {
+    for (sb_index = 0; sb_index < scs_ptr->sb_tot_cnt; ++sb_index) {
         MdcSbData *results_ptr = &pcs_ptr->mdc_sb_array[sb_index];
 
         results_ptr->leaf_count = 0;
@@ -545,11 +539,11 @@ void forward_all_blocks_to_md(SequenceControlSet *scs_ptr, PictureControlSet *pc
 
             const BlockGeom *blk_geom = get_blk_geom_mds(blk_index);
 
-            //if the parentSq is inside inject this block
+            /*!< if the parentSq is inside inject this block */
             uint8_t is_blk_allowed =
                 pcs_ptr->slice_type != I_SLICE ? 1 : (blk_geom->sq_size < 128) ? 1 : 0;
 
-            if (pcs_ptr->parent_pcs_ptr->sb_geom[sb_index].block_is_inside_md_scan[blk_index] && is_blk_allowed)
+            if (scs_ptr->sb_geom[sb_index].block_is_inside_md_scan[blk_index] && is_blk_allowed)
 
             {
                 results_ptr->leaf_data_array[results_ptr->leaf_count].tot_d1_blocks =
@@ -559,7 +553,7 @@ void forward_all_blocks_to_md(SequenceControlSet *scs_ptr, PictureControlSet *pc
                         : blk_geom->sq_size > 8 ? 25 : blk_geom->sq_size == 8 ? 5 : 1;
 
                 results_ptr->leaf_data_array[results_ptr->leaf_count].leaf_index =
-                    0; //valid only for square 85 world. will be removed.
+                    0; /*!< valid only for square 85 world. will be removed. */
                 results_ptr->leaf_data_array[results_ptr->leaf_count].mds_idx = blk_index;
                 if (blk_geom->sq_size > 4) {
                     results_ptr->leaf_data_array[results_ptr->leaf_count++].split_flag = EB_TRUE;
@@ -581,7 +575,7 @@ void forward_sq_blocks_to_md(SequenceControlSet *scs_ptr, PictureControlSet *pcs
     uint32_t sb_index;
     EbBool   split_flag;
 
-    for (sb_index = 0; sb_index < pcs_ptr->sb_total_count_pix; ++sb_index) {
+    for (sb_index = 0; sb_index < scs_ptr->sb_tot_cnt; ++sb_index) {
         MdcSbData *results_ptr = &pcs_ptr->mdc_sb_array[sb_index];
 
         results_ptr->leaf_count = 0;
@@ -594,19 +588,19 @@ void forward_sq_blocks_to_md(SequenceControlSet *scs_ptr, PictureControlSet *pcs
 
             const BlockGeom *blk_geom = get_blk_geom_mds(blk_index);
 
-            //if the parentSq is inside inject this block
-            if (pcs_ptr->parent_pcs_ptr->sb_geom[sb_index].block_is_inside_md_scan[blk_index])
+            /*!< if the parentSq is inside inject this block */
+            if (scs_ptr->sb_geom[sb_index].block_is_inside_md_scan[blk_index])
 
             {
-                //int32_t offset_d1 = ns_blk_offset[(int32_t)from_shape_to_part[blk_geom->shape]]; //blk_ptr->best_d1_blk; // TOCKECK
-                //int32_t num_d1_block = ns_blk_num[(int32_t)from_shape_to_part[blk_geom->shape]]; // context_ptr->blk_geom->totns; // TOCKECK
+                //int32_t offset_d1 = ns_blk_offset[(int32_t)from_shape_to_part[blk_geom->shape]]; //blk_ptr->best_d1_blk; /*!< TOCKECK */
+                //int32_t num_d1_block = ns_blk_num[(int32_t)from_shape_to_part[blk_geom->shape]]; // context_ptr->blk_geom->totns; /*!< TOCKECK */
                 //
                 //                                                  // for (int32_t d1_itr = blk_it; d1_itr < blk_it + num_d1_block; d1_itr++) {
                 // for (int32_t d1_itr = (int32_t)blk_index ; d1_itr < (int32_t)blk_index +  num_d1_block ; d1_itr++) {
                 results_ptr->leaf_data_array[results_ptr->leaf_count].tot_d1_blocks = 1;
 
                 results_ptr->leaf_data_array[results_ptr->leaf_count].leaf_index =
-                    0; //valid only for square 85 world. will be removed.
+                    0; /*!< valid only for square 85 world. will be removed. */
                 results_ptr->leaf_data_array[results_ptr->leaf_count].mds_idx = blk_index;
 
                 if (blk_geom->sq_size > 4) {
@@ -641,10 +635,10 @@ void sb_forward_sq_blocks_to_md(SequenceControlSet *scs_ptr, PictureControlSet *
 
         const BlockGeom *blk_geom = get_blk_geom_mds(blk_index);
 
-        if (pcs_ptr->parent_pcs_ptr->sb_geom[sb_index].block_is_inside_md_scan[blk_index]) {
+        if (scs_ptr->sb_geom[sb_index].block_is_inside_md_scan[blk_index]) {
             results_ptr->leaf_data_array[results_ptr->leaf_count].tot_d1_blocks = 1;
             results_ptr->leaf_data_array[results_ptr->leaf_count].leaf_index =
-                0; //valid only for square 85 world. will be removed.
+                0; /*!< valid only for square 85 world. will be removed. */
             results_ptr->leaf_data_array[results_ptr->leaf_count].mds_idx = blk_index;
 
             if (blk_geom->sq_size > 4) {
@@ -663,13 +657,13 @@ void sb_forward_sq_blocks_to_md(SequenceControlSet *scs_ptr, PictureControlSet *
     pcs_ptr->parent_pcs_ptr->average_qp = (uint8_t)pcs_ptr->parent_pcs_ptr->picture_qp;
 }
 
-/******************************************************
-* Derive MD parameters
-******************************************************/
+/******************************************************/
+/*!< Derive MD parameters */
+/******************************************************/
 void set_md_settings(SequenceControlSet *scs_ptr, PictureControlSet *pcs_ptr) {
-    // Initialize the homogeneous area threshold
-    // Set the MD Open Loop Flag
-    // HG - to clean up the intra_md_open_loop_flag derivation
+    /*!< Initialize the homogeneous area threshold
+     *   Set the MD Open Loop Flag
+     *   HG - to clean up the intra_md_open_loop_flag derivation */
 
     pcs_ptr->intra_md_open_loop_flag = pcs_ptr->temporal_layer_index == 0 ? EB_FALSE : EB_TRUE;
 
@@ -680,11 +674,11 @@ void set_md_settings(SequenceControlSet *scs_ptr, PictureControlSet *pcs_ptr) {
     pcs_ptr->limit_intra             = EB_FALSE;
     pcs_ptr->intra_md_open_loop_flag = EB_FALSE;
 }
-/******************************************************
-* Load the cost of the different partitioning method into a local array and derive sensitive picture flag
-    Input   : the offline derived cost per search method, detection signals
-    Output  : valid cost_depth_mode and valid sensitivePicture
-******************************************************/
+/******************************************************/
+/*!< Load the cost of the different partitioning method into a local array and derive sensitive picture flag
+ *     Input   : the offline derived cost per search method, detection signals
+ *     Output  : valid cost_depth_mode and valid sensitivePicture */
+/******************************************************/
 void configure_adp(PictureControlSet *pcs_ptr, ModeDecisionConfigurationContext *context_ptr) {
     UNUSED(pcs_ptr);
     context_ptr->cost_depth_mode[SB_SQ_BLOCKS_DEPTH_MODE - 1]      = SQ_BLOCKS_SEARCH_COST;
@@ -693,7 +687,7 @@ void configure_adp(PictureControlSet *pcs_ptr, ModeDecisionConfigurationContext 
     context_ptr->cost_depth_mode[SB_FAST_OPEN_LOOP_DEPTH_MODE - 1] = SB_FAST_OPEN_LOOP_COST;
     context_ptr->cost_depth_mode[SB_PRED_OPEN_LOOP_DEPTH_MODE - 1] = SB_PRED_OPEN_LOOP_COST;
 
-    // Initialize the score based TH
+    /*!< Initialize the score based TH */
     context_ptr->score_th[0] = ~0;
     context_ptr->score_th[1] = ~0;
     context_ptr->score_th[2] = ~0;
@@ -702,20 +696,20 @@ void configure_adp(PictureControlSet *pcs_ptr, ModeDecisionConfigurationContext 
     context_ptr->score_th[5] = ~0;
     context_ptr->score_th[6] = ~0;
 
-    // Initialize the predicted budget
+    /*!< Initialize the predicted budget */
     context_ptr->predicted_cost = (uint32_t)~0;
 }
 
-/******************************************************
-* Assign a search method based on the allocated cost
-    Input   : allocated budget per SB
-    Output  : search method per SB
-******************************************************/
+/******************************************************/
+/*!< Assign a search method based on the allocated cost
+ *     Input   : allocated budget per SB
+ *     Output  : search method per SB */
+/******************************************************/
 void derive_search_method(PictureControlSet *               pcs_ptr,
                           ModeDecisionConfigurationContext *context_ptr) {
     uint32_t sb_index;
 
-    for (sb_index = 0; sb_index < pcs_ptr->sb_total_count_pix; sb_index++) {
+    for (sb_index = 0; sb_index < pcs_ptr->parent_pcs_ptr->scs_ptr->sb_tot_cnt; sb_index++) {
         if (context_ptr->sb_cost_array[sb_index] ==
             context_ptr->cost_depth_mode[SB_PRED_OPEN_LOOP_DEPTH_MODE - 1])
             pcs_ptr->parent_pcs_ptr->sb_depth_mode_array[sb_index] = SB_PRED_OPEN_LOOP_DEPTH_MODE;
@@ -733,11 +727,11 @@ void derive_search_method(PictureControlSet *               pcs_ptr,
     }
 }
 
-/******************************************************
-* Set SB budget
-    Input   : SB score, detection signals, iteration
-    Output  : predicted budget for the SB
-******************************************************/
+/******************************************************/
+/*!< Set SB budget
+ *     Input   : SB score, detection signals, iteration
+ *     Output  : predicted budget for the SB */
+/******************************************************/
 void set_sb_budget(SequenceControlSet *scs_ptr, PictureControlSet *pcs_ptr, SuperBlock *sb_ptr,
                    ModeDecisionConfigurationContext *context_ptr) {
     const uint32_t sb_index = sb_ptr->index;
@@ -788,21 +782,21 @@ void set_sb_budget(SequenceControlSet *scs_ptr, PictureControlSet *pcs_ptr, Supe
     }
 }
 
-/******************************************************
-* Loop multiple times over the SBs in order to derive the optimal budget per SB
-    Input   : budget per picture, ditortion, detection signals, iteration
-    Output  : optimal budget for each SB
-******************************************************/
+/******************************************************/
+/*!< Loop multiple times over the SBs in order to derive the optimal budget per SB
+ *     Input   : budget per picture, ditortion, detection signals, iteration
+ *     Output  : optimal budget for each SB */
+/******************************************************/
 void derive_optimal_budget_per_sb(SequenceControlSet *scs_ptr, PictureControlSet *pcs_ptr,
                                   ModeDecisionConfigurationContext *context_ptr) {
     uint32_t sb_index;
-    // Initialize the deviation between the picture predicted cost & the target budget to 100,
+    /*!< Initialize the deviation between the picture predicted cost & the target budget to 100, */
     uint32_t deviation_to_target = 1000;
 
-    // Set the adjustment step to 1 (could be increased for faster convergence),
+    /*!< Set the adjustment step to 1 (could be increased for faster convergence), */
     int8_t adjustement_step = 1;
 
-    // Set the initial shooting state & the final shooting state to TBD
+    /*!< Set the initial shooting state & the final shooting state to TBD */
     uint32_t initial_shooting = TBD_SHOOTING;
     uint32_t final_shooting   = TBD_SHOOTING;
 
@@ -815,20 +809,20 @@ void derive_optimal_budget_per_sb(SequenceControlSet *scs_ptr, PictureControlSet
             initial_shooting = UNDER_SHOOTING;
         else
             initial_shooting = OVER_SHOOTING;
-        // reset running cost
+        /*!< reset running cost */
         context_ptr->predicted_cost = 0;
 
-        for (sb_index = 0; sb_index < pcs_ptr->sb_total_count_pix; sb_index++) {
+        for (sb_index = 0; sb_index < pcs_ptr->parent_pcs_ptr->scs_ptr->sb_tot_cnt; sb_index++) {
             SuperBlock *sb_ptr = pcs_ptr->sb_ptr_array[sb_index];
 
             set_sb_budget(scs_ptr, pcs_ptr, sb_ptr, context_ptr);
         }
 
-        // Compute the deviation between the predicted budget & the target budget
+        /*!< Compute the deviation between the predicted budget & the target budget */
         deviation_to_target =
             (ABS((int32_t)(context_ptr->predicted_cost - context_ptr->budget)) * 1000) /
             context_ptr->budget;
-        // Derive shooting status
+        /*!< Derive shooting status */
         if (context_ptr->predicted_cost < context_ptr->budget) {
             context_ptr->score_th[0] = MAX((context_ptr->score_th[0] - adjustement_step), 0);
             context_ptr->score_th[1] = MAX((context_ptr->score_th[1] - adjustement_step), 0);
@@ -906,11 +900,11 @@ EbErrorType derive_default_segments(SequenceControlSet *              scs_ptr,
 
     return return_error;
 }
-/******************************************************
-* Compute the score of each SB
-    Input   : distortion, detection signals
-    Output  : SB score
-******************************************************/
+/******************************************************/
+/*!< * Compute the score of each SB
+ *   Input   : distortion, detection signals
+ *   Output  : SB score */
+/******************************************************/
 void derive_sb_score(PictureControlSet *pcs_ptr,
                      ModeDecisionConfigurationContext *context_ptr) {
     uint32_t sb_index;
@@ -941,18 +935,18 @@ void derive_sb_score(PictureControlSet *pcs_ptr,
                 }
                 if (valid_blk_8x8_count > 0) distortion = (distortion / valid_blk_8x8_count) * 64;
 
-                // Do not perform SB score manipulation for incomplete SBs as not valid signals
+                /*!< Do not perform SB score manipulation for incomplete SBs as not valid signals */
                 sb_score = distortion;
             } else {
                 distortion = pcs_ptr->parent_pcs_ptr->me_results[sb_index]
                                  ->me_candidate[RASTER_SCAN_CU_INDEX_64x64][0]
                                  .distortion;
-                // Perform SB score manipulation for incomplete SBs for SQ mode
+                /*!< Perform SB score manipulation for incomplete SBs for SQ mode */
                 sb_score = distortion;
             }
         }
         context_ptr->sb_score_array[sb_index] = sb_score;
-        // Track MIN and MAX SB scores
+        /*!< Track MIN and MAX SB scores */
         context_ptr->sb_min_score = MIN(sb_score, context_ptr->sb_min_score);
         context_ptr->sb_max_score = MAX(sb_score, context_ptr->sb_max_score);
         sb_tot_score += sb_score;
@@ -960,16 +954,16 @@ void derive_sb_score(PictureControlSet *pcs_ptr,
     context_ptr->sb_average_score = (uint32_t)(sb_tot_score / pcs_ptr->sb_total_count_pix);
 }
 
-/******************************************************
-* Set the target budget
-Input   : cost per depth
-Output  : budget per picture
-******************************************************/
+/******************************************************/
+/*!< * Set the target budget
+ *  Input   : cost per depth
+ *  Output  : budget per picture */
+/******************************************************/
 void set_target_budget_oq(PictureControlSet *pcs_ptr,
                           ModeDecisionConfigurationContext *context_ptr) {
     uint32_t budget;
 
-    // Luminosity-based budget boost - if P or b only; add 1 U for each 1 current-to-ref diff
+    /*!< Luminosity-based budget boost - if P or b only; add 1 U for each 1 current-to-ref diff */
     uint32_t luminosity_change_boost = 0;
     if (pcs_ptr->slice_type != I_SLICE) {
         if (pcs_ptr->parent_pcs_ptr->is_used_as_reference_flag) {
@@ -989,8 +983,10 @@ void set_target_budget_oq(PictureControlSet *pcs_ptr,
             luminosity_change_boost = MAX(MAX_LUMINOSITY_BOOST, luminosity_change_boost);
         }
     }
-    // Hsan: cross multiplication to derive budget_per_sb from sb_average_score; budget_per_sb range is [SB_PRED_OPEN_LOOP_COST,U_150], and sb_average_score range [0,HIGH_SB_SCORE]
-    // Hsan: 3 segments [0,LOW_SB_SCORE], [LOW_SB_SCORE,MEDIUM_SB_SCORE] and [MEDIUM_SB_SCORE,U_150]
+    /*!< Hsan: cross multiplication to derive budget_per_sb from sb_average_score;
+     *         budget_per_sb range is [SB_PRED_OPEN_LOOP_COST,U_150], and
+     *         sb_average_score range [0,HIGH_SB_SCORE] */
+    /*!< Hsan: 3 segments [0,LOW_SB_SCORE], [LOW_SB_SCORE,MEDIUM_SB_SCORE] and [MEDIUM_SB_SCORE,U_150] */
     uint32_t budget_per_sb;
     if (context_ptr->sb_average_score <= LOW_SB_SCORE)
         budget_per_sb =
@@ -1017,36 +1013,36 @@ void set_target_budget_oq(PictureControlSet *pcs_ptr,
     context_ptr->budget = budget;
 }
 
-/******************************************************
-* Assign a search method for each SB
-    Input   : SB score, detection signals
-    Output  : search method for each SB
-******************************************************/
+/******************************************************/
+/*!< Assign a search method for each SB
+ *      Input   : SB score, detection signals
+ *      Output  : search method for each SB */
+/******************************************************/
 void derive_sb_md_mode(SequenceControlSet *scs_ptr, PictureControlSet *pcs_ptr,
                        ModeDecisionConfigurationContext *context_ptr) {
-    // Configure ADP
+    /*!< Configure ADP */
     configure_adp(pcs_ptr, context_ptr);
 
-    // Derive SB score
+    /*!< Derive SB score */
     derive_sb_score(pcs_ptr, context_ptr);
 
-    // Set the target budget
-    set_target_budget_oq(pcs_ptr, context_ptr);
+    /*!< Set the target budget */
+        set_target_budget_oq(pcs_ptr, context_ptr);
 
-    // Set the percentage based thresholds
+    /*!< Set the percentage based thresholds */
     derive_default_segments(scs_ptr, context_ptr);
-    // Perform Budgetting
+    /*!< Perform Budgetting */
     derive_optimal_budget_per_sb(scs_ptr, pcs_ptr, context_ptr);
 
-    // Set the search method using the SB cost (mapping)
+    /*!< Set the search method using the SB cost (mapping) */
     derive_search_method(pcs_ptr, context_ptr);
 }
 
-/******************************************************
-* Derive Mode Decision Config Settings for OQ
-Input   : encoder mode and tune
-Output  : EncDec Kernel signal(s)
-******************************************************/
+/******************************************************/
+/*!< * Derive Mode Decision Config Settings for OQ
+ *  Input   : encoder mode and tune
+ *  Output  : EncDec Kernel signal(s) */
+/******************************************************/
 EbErrorType signal_derivation_mode_decision_config_kernel_oq(
     SequenceControlSet *scs_ptr, PictureControlSet *pcs_ptr,
     ModeDecisionConfigurationContext *context_ptr) {
@@ -1063,7 +1059,7 @@ EbErrorType signal_derivation_mode_decision_config_kernel_oq(
     else
         pcs_ptr->update_cdf = (pcs_ptr->parent_pcs_ptr->enc_mode <= ENC_M5) ? 1 : 0;
     if (pcs_ptr->update_cdf) assert(scs_ptr->cdf_mode == 0 && "use cdf_mode 0");
-    //Filter Intra Mode : 0: OFF  1: ON
+    /*!< Filter Intra Mode : 0: OFF  1: ON */
     if (scs_ptr->seq_header.enable_filter_intra)
         pcs_ptr->pic_filter_intra_mode =
             pcs_ptr->parent_pcs_ptr->sc_content_detected == 0 && pcs_ptr->temporal_layer_index == 0
@@ -1096,12 +1092,12 @@ EbErrorType signal_derivation_mode_decision_config_kernel_oq(
         !(frm_hdr->frame_type == KEY_FRAME || frm_hdr->frame_type == INTRA_ONLY_FRAME) &&
         !frm_hdr->error_resilient_mode;
     frm_hdr->is_motion_mode_switchable = frm_hdr->allow_warped_motion;
-    // OBMC Level                                   Settings
-    // 0                                            OFF
-    // 1                                            OBMC @(MVP, PME and ME) + 16 NICs
-    // 2                                            OBMC @(MVP, PME and ME) + Opt NICs
-    // 3                                            OBMC @(MVP, PME ) + Opt NICs
-    // 4                                            OBMC @(MVP, PME ) + Opt2 NICs
+    /*!< OBMC Level                                   Settings
+     *   0                                            OFF
+     *   1                                            OBMC @(MVP, PME and ME) + 16 NICs
+     *   2                                            OBMC @(MVP, PME and ME) + Opt NICs
+     *   3                                            OBMC @(MVP, PME ) + Opt NICs
+     *   4                                            OBMC @(MVP, PME ) + Opt2 NICs     */
     if (scs_ptr->static_config.enable_obmc) {
         if (pcs_ptr->parent_pcs_ptr->enc_mode == ENC_M0)
             pcs_ptr->parent_pcs_ptr->pic_obmc_mode = pcs_ptr->slice_type != I_SLICE ? 2 : 0;
@@ -1144,19 +1140,19 @@ void forward_sq_non4_blocks_to_md(SequenceControlSet *scs_ptr, PictureControlSet
 
             const BlockGeom *blk_geom = get_blk_geom_mds(blk_index);
 
-            //if the parentSq is inside inject this block
+            /*!< if the parentSq is inside inject this block */
             if (pcs_ptr->parent_pcs_ptr->sb_geom[sb_index].block_is_inside_md_scan[blk_index])
 
             {
-                //int32_t offset_d1 = ns_blk_offset[(int32_t)from_shape_to_part[blk_geom->shape]]; //blk_ptr->best_d1_blk; // TOCKECK
-                //int32_t num_d1_block = ns_blk_num[(int32_t)from_shape_to_part[blk_geom->shape]]; // context_ptr->blk_geom->totns; // TOCKECK
+                //int32_t offset_d1 = ns_blk_offset[(int32_t)from_shape_to_part[blk_geom->shape]]; //blk_ptr->best_d1_blk; /*!< TOCKECK
+                //int32_t num_d1_block = ns_blk_num[(int32_t)from_shape_to_part[blk_geom->shape]]; // context_ptr->blk_geom->totns; /*!< TOCKECK
                 //
                 //                                                  // for (int32_t d1_itr = blk_it; d1_itr < blk_it + num_d1_block; d1_itr++) {
                 // for (int32_t d1_itr = (int32_t)blk_index ; d1_itr < (int32_t)blk_index +  num_d1_block ; d1_itr++) {
                 results_ptr->leaf_data_array[results_ptr->leaf_count].tot_d1_blocks = 1;
 
                 results_ptr->leaf_data_array[results_ptr->leaf_count].leaf_index =
-                    0; //valid only for square 85 world. will be removed.
+                    0; /*!< valid only for square 85 world. will be removed. */
                 results_ptr->leaf_data_array[results_ptr->leaf_count].mds_idx = blk_index;
 
                 if (blk_geom->sq_size > 8) {
@@ -1194,7 +1190,7 @@ void sb_forward_sq_non4_blocks_to_md(SequenceControlSet *scs_ptr, PictureControl
             results_ptr->leaf_data_array[results_ptr->leaf_count].tot_d1_blocks = 1;
 
             results_ptr->leaf_data_array[results_ptr->leaf_count].leaf_index =
-                0; //valid only for square 85 world. will be removed.
+                0; /*!< valid only for square 85 world. will be removed. */
             results_ptr->leaf_data_array[results_ptr->leaf_count].mds_idx = blk_index;
 
             if (blk_geom->sq_size > 8) {
@@ -1225,7 +1221,7 @@ void forward_all_c_blocks_to_md(SequenceControlSet *scs_ptr, PictureControlSet *
             tot_d1_blocks             = 0;
             const BlockGeom *blk_geom = get_blk_geom_mds(blk_index);
 
-            //if the parentSq is inside inject this block
+            /*!< if the parentSq is inside inject this block */
             uint8_t is_blk_allowed =
                 pcs_ptr->slice_type != I_SLICE ? 1 : (blk_geom->sq_size < 128) ? 1 : 0;
 
@@ -1242,10 +1238,10 @@ void forward_all_c_blocks_to_md(SequenceControlSet *scs_ptr, PictureControlSet *
                 for (uint32_t idx = 0; idx < tot_d1_blocks; ++idx) {
                     blk_geom = get_blk_geom_mds(blk_index);
 
-                    //if the parentSq is inside inject this block
+                    /*!< if the parentSq is inside inject this block */
                     if (pcs_ptr->parent_pcs_ptr->sb_geom[sb_index].block_is_inside_md_scan[blk_index]) {
                         results_ptr->leaf_data_array[results_ptr->leaf_count].leaf_index =
-                            0; //valid only for square 85 world. will be removed.
+                            0; /*!< valid only for square 85 world. will be removed. */
                         results_ptr->leaf_data_array[results_ptr->leaf_count].mds_idx = blk_index;
                         if (blk_geom->sq_size > 4)
                             results_ptr->leaf_data_array[results_ptr->leaf_count++].split_flag =
@@ -1312,12 +1308,12 @@ static int get_block_position(Av1Common *cm, int *mi_r, int *mi_c, int blk_row, 
 
 #define MFMV_STACK_SIZE 3
 
-// Note: motion_filed_projection finds motion vectors of current frame's
-// reference frame, and projects them to current frame. To make it clear,
-// let's call current frame's reference frame as start frame.
-// Call Start frame's reference frames as reference frames.
-// Call ref_offset as frame distances between start frame and its reference
-// frames.
+/*!< Note: motion_filed_projection finds motion vectors of current frame's
+ *   reference frame, and projects them to current frame. To make it clear,
+ *   let's call current frame's reference frame as start frame.
+ *   Call Start frame's reference frames as reference frames.
+ *   Call ref_offset as frame distances between start frame and its reference
+ *   frames. */
 static int motion_field_projection(Av1Common *cm, PictureControlSet *pcs_ptr,
                                    MvReferenceFrame start_frame, int dir) {
     TPL_MV_REF *tpl_mvs_base           = pcs_ptr->tpl_mvs;
@@ -1458,27 +1454,27 @@ void av1_setup_motion_field(Av1Common *cm, PictureControlSet *pcs_ptr) {
 
     if (ref_stamp >= 0) motion_field_projection(cm, pcs_ptr, LAST2_FRAME, 2);
 }
-/******************************************************
- * Mode Decision Configuration Kernel
- ******************************************************/
+/******************************************************/
+/*!< Mode Decision Configuration Kernel */
+/******************************************************/
 void *mode_decision_configuration_kernel(void *input_ptr) {
-    // Context & SCS & PCS
+    /*!< Context & SCS & PCS */
     EbThreadContext *                 thread_context_ptr = (EbThreadContext *)input_ptr;
     ModeDecisionConfigurationContext *context_ptr =
         (ModeDecisionConfigurationContext *)thread_context_ptr->priv;
     PictureControlSet * pcs_ptr;
     SequenceControlSet *scs_ptr;
     FrameHeader *       frm_hdr;
-    // Input
+    /*!< Input */
     EbObjectWrapper *   rate_control_results_wrapper_ptr;
     RateControlResults *rate_control_results_ptr;
 
-    // Output
+    /*!< Output */
     EbObjectWrapper *enc_dec_tasks_wrapper_ptr;
     EncDecTasks *    enc_dec_tasks_ptr;
 
     for (;;) {
-        // Get RateControl Results
+        /*!< Get RateControl Results */
         eb_get_full_object(context_ptr->rate_control_input_fifo_ptr,
                            &rate_control_results_wrapper_ptr);
 
@@ -1491,22 +1487,22 @@ void *mode_decision_configuration_kernel(void *input_ptr) {
 
         frm_hdr = &pcs_ptr->parent_pcs_ptr->frm_hdr;
 
-        // Mode Decision Configuration Kernel Signal(s) derivation
+        /*!< Mode Decision Configuration Kernel Signal(s) derivation */
         signal_derivation_mode_decision_config_kernel_oq(scs_ptr, pcs_ptr, context_ptr);
 
         context_ptr->qp = pcs_ptr->picture_qp;
 
         pcs_ptr->parent_pcs_ptr->average_qp = 0;
         pcs_ptr->intra_coded_area           = 0;
-        // Compute picture and slice level chroma QP offsets
-        set_slice_and_picture_chroma_qp_offsets( // HT done
+        /*!< Compute picture and slice level chroma QP offsets */
+        set_slice_and_picture_chroma_qp_offsets( /*!< HT done */
             pcs_ptr);
 
-        // Compute Tc, and Beta offsets for a given picture
-        // Set reference cdef strength
+        /*!< Compute Tc, and Beta offsets for a given picture */
+        /*!< Set reference cdef strength */
         set_reference_cdef_strength(pcs_ptr);
 
-        // Set reference sg ep
+        /*!< Set reference sg ep */
         set_reference_sg_ep(pcs_ptr);
         set_global_motion_field(pcs_ptr);
 
@@ -1537,17 +1533,17 @@ void *mode_decision_configuration_kernel(void *input_ptr) {
                                quants_md,
                                dequants_md);
 
-        // Hsan: collapse spare code
+        /*!< Hsan: collapse spare code */
         MdRateEstimationContext *md_rate_estimation_array;
         uint32_t                 entropy_coding_qp;
 
-        // QP
+        /*!< QP */
         context_ptr->qp = pcs_ptr->picture_qp;
 
-        // QP Index
+        /*!< QP Index */
         context_ptr->qp_index = (uint8_t)frm_hdr->quantization_params.base_q_idx;
 
-        // Lambda Assignement
+        /*!< Lambda Assignement */
         uint32_t lambda_sse;
         uint32_t lambdasad_;
         (*av1_lambda_assignment_function_table[pcs_ptr->parent_pcs_ptr->pred_structure])(
@@ -1560,7 +1556,7 @@ void *mode_decision_configuration_kernel(void *input_ptr) {
             pcs_ptr->hbd_mode_decision);
         context_ptr->lambda      = (uint64_t)lambdasad_;
         md_rate_estimation_array = pcs_ptr->md_rate_estimation_array;
-        // Reset MD rate Estimation table to initial values by copying from md_rate_estimation_array
+        /*!< Reset MD rate Estimation table to initial values by copying from md_rate_estimation_array */
         if (context_ptr->is_md_rate_estimation_ptr_owner) {
             EB_FREE_ARRAY(context_ptr->md_rate_estimation_ptr);
             context_ptr->is_md_rate_estimation_ptr_owner = EB_FALSE;
@@ -1578,14 +1574,14 @@ void *mode_decision_configuration_kernel(void *input_ptr) {
                                 entropy_coding_qp,
                                 pcs_ptr->slice_type);
 
-        // Initial Rate Estimation of the syntax elements
+        /*!< Initial Rate Estimation of the syntax elements */
         av1_estimate_syntax_rate(md_rate_estimation_array,
                                  pcs_ptr->slice_type == I_SLICE ? EB_TRUE : EB_FALSE,
                                  pcs_ptr->coeff_est_entropy_coder_ptr->fc);
-        // Initial Rate Estimation of the Motion vectors
+        /*!< Initial Rate Estimation of the Motion vectors */
         av1_estimate_mv_rate(
             pcs_ptr, md_rate_estimation_array, pcs_ptr->coeff_est_entropy_coder_ptr->fc);
-        // Initial Rate Estimation of the quantized coefficients
+        /*!< Initial Rate Estimation of the quantized coefficients */
         av1_estimate_coefficients_rate(md_rate_estimation_array,
                                        pcs_ptr->coeff_est_entropy_coder_ptr->fc);
         if (pcs_ptr->parent_pcs_ptr->pic_depth_mode == PIC_SB_SWITCH_DEPTH_MODE) {
@@ -1615,8 +1611,8 @@ void *mode_decision_configuration_kernel(void *input_ptr) {
         } else if (pcs_ptr->parent_pcs_ptr->pic_depth_mode == PIC_SQ_NON4_DEPTH_MODE) {
             forward_sq_non4_blocks_to_md(scs_ptr, pcs_ptr);
         } else if (pcs_ptr->parent_pcs_ptr->pic_depth_mode >= PIC_OPEN_LOOP_DEPTH_MODE) {
-            // Predict the SB partitionning
-            perform_early_sb_partitionning( // HT done
+            /*!< Predict the SB partitionning */
+            perform_early_sb_partitionning( /*!< HT done */
                 context_ptr,
                 scs_ptr,
                 pcs_ptr);
@@ -1653,7 +1649,7 @@ void *mode_decision_configuration_kernel(void *input_ptr) {
             }
 
             {
-                // add to hash table
+                /*!< add to hash table */
                 const int pic_width = pcs_ptr->parent_pcs_ptr->aligned_width;
                 const int pic_height = pcs_ptr->parent_pcs_ptr->aligned_height;
 
@@ -1770,12 +1766,12 @@ void *mode_decision_configuration_kernel(void *input_ptr) {
                 &pcs_ptr->ss_cfg, pcs_ptr->parent_pcs_ptr->enhanced_picture_ptr->stride_y);
         }
 
-        // Derive MD parameters
-        set_md_settings( // HT Done
+        /*!< Derive MD parameters */
+        set_md_settings( /*!< HT Done */
             scs_ptr,
             pcs_ptr);
 
-        // Post the results to the MD processes
+        /*!< Post the results to the MD processes */
 #if TILES_PARALLEL
 
         uint16_t tg_count =
@@ -1800,11 +1796,11 @@ void *mode_decision_configuration_kernel(void *input_ptr) {
         enc_dec_tasks_ptr->pcs_wrapper_ptr = rate_control_results_ptr->pcs_wrapper_ptr;
         enc_dec_tasks_ptr->input_type      = ENCDEC_TASKS_MDC_INPUT;
 
-        // Post the Full Results Object
+        /*!< Post the Full Results Object */
         eb_post_full_object(enc_dec_tasks_wrapper_ptr);
 #endif
 
-        // Release Rate Control Results
+        /*!< Release Rate Control Results */
         eb_release_object(rate_control_results_wrapper_ptr);
     }
 

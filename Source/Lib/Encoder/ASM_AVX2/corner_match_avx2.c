@@ -1,13 +1,11 @@
-/*
- * Copyright (c) 2018, Alliance for Open Media. All rights reserved
+/*!< Copyright (c) 2018, Alliance for Open Media. All rights reserved
  *
  * This source code is subject to the terms of the BSD 2 Clause License and
  * the Alliance for Open Media Patent License 1.0. If the BSD 2 Clause License
  * was not distributed with this source code in the LICENSE file, you can
  * obtain it at www.aomedia.org/license/software. If the Alliance for Open
  * Media Patent License 1.0 was not distributed with this source code in the
- * PATENTS file, you can obtain it at www.aomedia.org/license/patent.
- */
+ * PATENTS file, you can obtain it at www.aomedia.org/license/patent. */
 
 #include <math.h>
 #include <immintrin.h>
@@ -20,10 +18,9 @@ DECLARE_ALIGNED(16, static const uint8_t, byte_mask[16]) = {
 #error "Need to change byte_mask in corner_match_sse4.c if MATCH_SZ != 13"
 #endif
 
-/* Compute corr(im1, im2) * MATCH_SZ * stddev(im1), where the
-correlation/standard deviation are taken over MATCH_SZ by MATCH_SZ windows
-of each image, centered at (x1, y1) and (x2, y2) respectively.
-*/
+/*!< Compute corr(im1, im2) * MATCH_SZ * stddev(im1), where the
+ *   correlation/standard deviation are taken over MATCH_SZ by MATCH_SZ windows
+ *   of each image, centered at (x1, y1) and (x2, y2) respectively. */
 double av1_compute_cross_correlation_avx2(unsigned char *im1, int stride1, int x1, int y1,
                                           unsigned char *im2, int stride2, int x2, int y2) {
     int           i, stride1_i = 0, stride2_i = 0;

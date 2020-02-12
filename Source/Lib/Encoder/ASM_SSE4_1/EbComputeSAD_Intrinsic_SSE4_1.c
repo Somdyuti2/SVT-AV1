@@ -1,7 +1,5 @@
-/*
-* Copyright(c) 2019 Intel Corporation
-* SPDX - License - Identifier: BSD - 2 - Clause - Patent
-*/
+/*!< Copyright(c) 2019 Intel Corporation
+ * SPDX - License - Identifier: BSD - 2 - Clause - Patent */
 
 #include <assert.h>
 
@@ -61,7 +59,7 @@ void ext_sad_calculation_32x32_64x64_sse4_intrin(uint32_t *p_sad16x16, uint32_t 
         xmm_p_best_sad_32x32, xmm_sad64x64); // _mm_cmplt_epi32(xmm_p_best_sad_32x32, xmm_sad64x64);
 
     xmm_n1 =
-        _mm_cmpeq_epi8(xmm_mv, xmm_mv); // anything compared to itself is equal (get 0xFFFFFFFF)
+        _mm_cmpeq_epi8(xmm_mv, xmm_mv); /*!< anything compared to itself is equal (get 0xFFFFFFFF) */
     sad32x32_less_than_or_eq_bitmask = _mm_sub_epi32(xmm_n1, sad32x32_greater_than_bitmask);
 
     best_sad32x32 =
@@ -81,20 +79,20 @@ void ext_sad_calculation_32x32_64x64_sse4_intrin(uint32_t *p_sad16x16, uint32_t 
     }
 }
 
-/*******************************************************************************
- * Requirement: width   = 4, 8, 16, 24, 32, 48 or 64
- * Requirement: block_height <= 64
- * Requirement: block_height % 2 = 0 when width = 4 or 8
-*******************************************************************************/
+/*******************************************************************************/
+ /*!< * Requirement: width   = 4, 8, 16, 24, 32, 48 or 64
+  *   * Requirement: block_height <= 64
+  *   * Requirement: block_height % 2 = 0 when width = 4 or 8 */
+/*******************************************************************************/
 void sad_loop_kernel_sse4_1_intrin(
-    uint8_t * src, // input parameter, source samples Ptr
-    uint32_t  src_stride, // input parameter, source stride
-    uint8_t * ref, // input parameter, reference samples Ptr
-    uint32_t  ref_stride, // input parameter, reference stride
-    uint32_t  block_height, // input parameter, block height (M)
-    uint32_t  block_width, // input parameter, block width (N)
+    uint8_t * src, /*! input parameter, source samples Ptr */
+    uint32_t  src_stride, /*! input parameter, source stride */
+    uint8_t * ref, /*! input parameter, reference samples Ptr */
+    uint32_t  ref_stride, /*! input parameter, reference stride */
+    uint32_t  block_height, /*! input parameter, block height (M) */
+    uint32_t  block_width, /*! input parameter, block width (N) */
     uint64_t *best_sad, int16_t *x_search_center, int16_t *y_search_center,
-    uint32_t src_stride_raw, // input parameter, source stride (no line skipping)
+    uint32_t src_stride_raw, /*! input parameter, source stride (no line skipping) */
     int16_t search_area_width, int16_t search_area_height) {
     int16_t        x_best = *x_search_center, y_best = *y_search_center;
     uint32_t       low_sum = 0xffffff;
@@ -379,7 +377,7 @@ void sad_loop_kernel_sse4_1_intrin(
                     s0      = _mm_minpos_epu16(s0);
                     tem_sum = _mm_extract_epi16(s0, 0);
                     if (tem_sum < low_sum) {
-                        if (tem_sum != 0xFFFF) { // no overflow
+                        if (tem_sum != 0xFFFF) { /*!< no overflow */
                             low_sum = tem_sum;
                             x_best  = (int16_t)(j + _mm_extract_epi16(s0, 1));
                             y_best  = i;
@@ -426,7 +424,7 @@ void sad_loop_kernel_sse4_1_intrin(
                     s0      = _mm_minpos_epu16(s0);
                     tem_sum = _mm_extract_epi16(s0, 0);
                     if (tem_sum < low_sum) {
-                        if (tem_sum != 0xFFFF) { // no overflow
+                        if (tem_sum != 0xFFFF) { /*!< no overflow */
                             low_sum = tem_sum;
                             x_best  = (int16_t)(j + _mm_extract_epi16(s0, 1));
                             y_best  = i;
@@ -579,7 +577,7 @@ void sad_loop_kernel_sse4_1_intrin(
                     s0      = _mm_minpos_epu16(s0);
                     tem_sum = _mm_extract_epi16(s0, 0);
                     if (tem_sum < low_sum) {
-                        if (tem_sum != 0xFFFF) { // no overflow
+                        if (tem_sum != 0xFFFF) { /*!< no overflow */
                             low_sum = tem_sum;
                             x_best  = (int16_t)(j + _mm_extract_epi16(s0, 1));
                             y_best  = i;
@@ -630,7 +628,7 @@ void sad_loop_kernel_sse4_1_intrin(
                     s0      = _mm_minpos_epu16(s0);
                     tem_sum = _mm_extract_epi16(s0, 0);
                     if (tem_sum < low_sum) {
-                        if (tem_sum != 0xFFFF) { // no overflow
+                        if (tem_sum != 0xFFFF) { /*!< no overflow */
                             low_sum = tem_sum;
                             x_best  = (int16_t)(j + _mm_extract_epi16(s0, 1));
                             y_best  = i;
@@ -696,7 +694,7 @@ void sad_loop_kernel_sse4_1_intrin(
                     tem_sum = _mm_extract_epi16(s0, 0);
                     tem_sum &= 0x0000FFFF;
                     if (tem_sum < low_sum) {
-                        if (tem_sum != 0xFFFF) { // no overflow
+                        if (tem_sum != 0xFFFF) { /*!< no overflow */
                             low_sum = tem_sum;
                             x_best  = (int16_t)(j + _mm_extract_epi16(s0, 1));
                             y_best  = i;
@@ -751,7 +749,7 @@ void sad_loop_kernel_sse4_1_intrin(
                     tem_sum = _mm_extract_epi16(s0, 0);
                     tem_sum &= 0x0000FFFF;
                     if (tem_sum < low_sum) {
-                        if (tem_sum != 0xFFFF) { // no overflow
+                        if (tem_sum != 0xFFFF) { /*!< no overflow */
                             low_sum = tem_sum;
                             x_best  = (int16_t)(j + _mm_extract_epi16(s0, 1));
                             y_best  = i;
@@ -835,7 +833,7 @@ void sad_loop_kernel_sse4_1_intrin(
                     tem_sum = _mm_extract_epi16(s0, 0);
                     tem_sum &= 0x0000FFFF;
                     if (tem_sum < low_sum) {
-                        if (tem_sum != 0xFFFF) { // no overflow
+                        if (tem_sum != 0xFFFF) { /*!< no overflow */
                             low_sum = tem_sum;
                             x_best  = (int16_t)(j + _mm_extract_epi16(s0, 1));
                             y_best  = i;
@@ -923,7 +921,7 @@ void sad_loop_kernel_sse4_1_intrin(
                     tem_sum = _mm_extract_epi16(s0, 0);
                     tem_sum &= 0x0000FFFF;
                     if (tem_sum < low_sum) {
-                        if (tem_sum != 0xFFFF) { // no overflow
+                        if (tem_sum != 0xFFFF) { /*!< no overflow */
                             low_sum = tem_sum;
                             x_best  = (int16_t)(j + _mm_extract_epi16(s0, 1));
                             y_best  = i;
@@ -1037,7 +1035,7 @@ void sad_loop_kernel_sse4_1_intrin(
                     tem_sum = _mm_extract_epi16(s0, 0);
                     tem_sum &= 0x0000FFFF;
                     if (tem_sum < low_sum) {
-                        if (tem_sum != 0xFFFF) { // no overflow
+                        if (tem_sum != 0xFFFF) { /*!< no overflow */
                             low_sum = tem_sum;
                             x_best  = (int16_t)(j + _mm_extract_epi16(s0, 1));
                             y_best  = i;
@@ -1139,7 +1137,7 @@ void sad_loop_kernel_sse4_1_intrin(
                     tem_sum = _mm_extract_epi16(s0, 0);
                     tem_sum &= 0x0000FFFF;
                     if (tem_sum < low_sum) {
-                        if (tem_sum != 0xFFFF) { // no overflow
+                        if (tem_sum != 0xFFFF) { /*!< no overflow */
                             low_sum = tem_sum;
                             x_best  = (int16_t)(j + _mm_extract_epi16(s0, 1));
                             y_best  = i;
@@ -1237,7 +1235,7 @@ void sad_loop_kernel_sse4_1_intrin(
                     tem_sum = _mm_extract_epi16(s0, 0);
                     tem_sum &= 0x0000FFFF;
                     if (tem_sum < low_sum) {
-                        if (tem_sum != 0xFFFF) { // no overflow
+                        if (tem_sum != 0xFFFF) { /*!< no overflow */
                             low_sum = tem_sum;
                             x_best  = (int16_t)(j + _mm_extract_epi16(s0, 1));
                             y_best  = i;
@@ -1305,7 +1303,7 @@ void sad_loop_kernel_sse4_1_intrin(
                     tem_sum = _mm_extract_epi16(s0, 0);
                     tem_sum &= 0x0000FFFF;
                     if (tem_sum < low_sum) {
-                        if (tem_sum != 0xFFFF) { // no overflow
+                        if (tem_sum != 0xFFFF) { /*!< no overflow */
                             low_sum = tem_sum;
                             x_best  = (int16_t)(j + _mm_extract_epi16(s0, 1));
                             y_best  = i;
@@ -1411,7 +1409,7 @@ void sad_loop_kernel_sse4_1_intrin(
                     tem_sum = _mm_extract_epi16(s0, 0);
                     tem_sum &= 0x0000FFFF;
                     if (tem_sum < low_sum) {
-                        if (tem_sum != 0xFFFF) { // no overflow
+                        if (tem_sum != 0xFFFF) { /*!< no overflow */
                             low_sum = tem_sum;
                             x_best  = (int16_t)(j + _mm_extract_epi16(s0, 1));
                             y_best  = i;
@@ -1527,7 +1525,7 @@ void sad_loop_kernel_sse4_1_intrin(
                     tem_sum = _mm_extract_epi16(s0, 0);
                     tem_sum &= 0x0000FFFF;
                     if (tem_sum < low_sum) {
-                        if (tem_sum != 0xFFFF) { // no overflow
+                        if (tem_sum != 0xFFFF) { /*!< no overflow */
                             low_sum = tem_sum;
                             x_best  = (int16_t)(j + _mm_extract_epi16(s0, 1));
                             y_best  = i;
@@ -1632,7 +1630,7 @@ void sad_loop_kernel_sse4_1_intrin(
                     tem_sum = _mm_extract_epi16(s0, 0);
                     tem_sum &= 0x0000FFFF;
                     if (tem_sum < low_sum) {
-                        if (tem_sum != 0xFFFF) { // no overflow
+                        if (tem_sum != 0xFFFF) { /*!< no overflow */
                             low_sum = tem_sum;
                             x_best  = (int16_t)(j + _mm_extract_epi16(s0, 1));
                             y_best  = i;
@@ -1707,7 +1705,7 @@ void sad_loop_kernel_sse4_1_intrin(
                     tem_sum = _mm_extract_epi16(s0, 0);
                     tem_sum &= 0x0000FFFF;
                     if (tem_sum < low_sum) {
-                        if (tem_sum != 0xFFFF) { // no overflow
+                        if (tem_sum != 0xFFFF) { /*!< no overflow */
                             low_sum = tem_sum;
                             x_best  = (int16_t)(j + _mm_extract_epi16(s0, 1));
                             y_best  = i;
@@ -1742,14 +1740,14 @@ void sad_loop_kernel_sse4_1_intrin(
 }
 
 void sad_loop_kernel_sparse_sse4_1_intrin(
-    uint8_t * src, // input parameter, source samples Ptr
-    uint32_t  src_stride, // input parameter, source stride
-    uint8_t * ref, // input parameter, reference samples Ptr
-    uint32_t  ref_stride, // input parameter, reference stride
-    uint32_t  block_height, // input parameter, block height (M)
-    uint32_t  block_width, // input parameter, block width (N)
+    uint8_t * src, /*! input parameter, source samples Ptr */
+    uint32_t  src_stride, /*! input parameter, source stride */
+    uint8_t * ref, /*! input parameter, reference samples Ptr */
+    uint32_t  ref_stride, /*! input parameter, reference stride */
+    uint32_t  block_height, /*! input parameter, block height (M) */
+    uint32_t  block_width, /*! input parameter, block width (N) */
     uint64_t *best_sad, int16_t *x_search_center, int16_t *y_search_center,
-    uint32_t src_stride_raw, // input parameter, source stride (no line skipping)
+    uint32_t src_stride_raw, /*! input parameter, source stride (no line skipping) */
     int16_t search_area_width, int16_t search_area_height) {
     int16_t        x_best = *x_search_center, y_best = *y_search_center;
     uint32_t       low_sum = 0xffffff;
@@ -2039,7 +2037,7 @@ void sad_loop_kernel_sparse_sse4_1_intrin(
                     s0      = _mm_minpos_epu16(s0);
                     tem_sum = _mm_extract_epi16(s0, 0);
                     if (tem_sum < low_sum) {
-                        if (tem_sum != 0xFFFF) { // no overflow
+                        if (tem_sum != 0xFFFF) { /*!< no overflow */
                             low_sum = tem_sum;
                             x_best  = (int16_t)(j + _mm_extract_epi16(s0, 1));
                             y_best  = i;
@@ -2086,7 +2084,7 @@ void sad_loop_kernel_sparse_sse4_1_intrin(
                     s0      = _mm_minpos_epu16(s0);
                     tem_sum = _mm_extract_epi16(s0, 0);
                     if (tem_sum < low_sum) {
-                        if (tem_sum != 0xFFFF) { // no overflow
+                        if (tem_sum != 0xFFFF) { /*!< no overflow */
                             low_sum = tem_sum;
                             x_best  = (int16_t)(j + _mm_extract_epi16(s0, 1));
                             y_best  = i;
@@ -2241,7 +2239,7 @@ void sad_loop_kernel_sparse_sse4_1_intrin(
                     s0      = _mm_minpos_epu16(s0);
                     tem_sum = _mm_extract_epi16(s0, 0);
                     if (tem_sum < low_sum) {
-                        if (tem_sum != 0xFFFF) { // no overflow
+                        if (tem_sum != 0xFFFF) { /*!< no overflow */
                             low_sum = tem_sum;
                             x_best  = (int16_t)(j + _mm_extract_epi16(s0, 1));
                             y_best  = i;
@@ -2292,7 +2290,7 @@ void sad_loop_kernel_sparse_sse4_1_intrin(
                     s0      = _mm_minpos_epu16(s0);
                     tem_sum = _mm_extract_epi16(s0, 0);
                     if (tem_sum < low_sum) {
-                        if (tem_sum != 0xFFFF) { // no overflow
+                        if (tem_sum != 0xFFFF) { /*!< no overflow */
                             low_sum = tem_sum;
                             x_best  = (int16_t)(j + _mm_extract_epi16(s0, 1));
                             y_best  = i;
@@ -2359,7 +2357,7 @@ void sad_loop_kernel_sparse_sse4_1_intrin(
                     tem_sum = _mm_extract_epi16(s0, 0);
                     tem_sum &= 0x0000FFFF;
                     if (tem_sum < low_sum) {
-                        if (tem_sum != 0xFFFF) { // no overflow
+                        if (tem_sum != 0xFFFF) { /*!< no overflow */
                             low_sum = tem_sum;
                             x_best  = (int16_t)(j + _mm_extract_epi16(s0, 1));
                             y_best  = i;
@@ -2414,7 +2412,7 @@ void sad_loop_kernel_sparse_sse4_1_intrin(
                     tem_sum = _mm_extract_epi16(s0, 0);
                     tem_sum &= 0x0000FFFF;
                     if (tem_sum < low_sum) {
-                        if (tem_sum != 0xFFFF) { // no overflow
+                        if (tem_sum != 0xFFFF) { /*!< no overflow */
                             low_sum = tem_sum;
                             x_best  = (int16_t)(j + _mm_extract_epi16(s0, 1));
                             y_best  = i;
@@ -2499,7 +2497,7 @@ void sad_loop_kernel_sparse_sse4_1_intrin(
                     tem_sum = _mm_extract_epi16(s0, 0);
                     tem_sum &= 0x0000FFFF;
                     if (tem_sum < low_sum) {
-                        if (tem_sum != 0xFFFF) { // no overflow
+                        if (tem_sum != 0xFFFF) { /*!< no overflow */
                             low_sum = tem_sum;
                             x_best  = (int16_t)(j + _mm_extract_epi16(s0, 1));
                             y_best  = i;
@@ -2587,7 +2585,7 @@ void sad_loop_kernel_sparse_sse4_1_intrin(
                     tem_sum = _mm_extract_epi16(s0, 0);
                     tem_sum &= 0x0000FFFF;
                     if (tem_sum < low_sum) {
-                        if (tem_sum != 0xFFFF) { // no overflow
+                        if (tem_sum != 0xFFFF) { /*!< no overflow */
                             low_sum = tem_sum;
                             x_best  = (int16_t)(j + _mm_extract_epi16(s0, 1));
                             y_best  = i;
@@ -2702,7 +2700,7 @@ void sad_loop_kernel_sparse_sse4_1_intrin(
                     tem_sum = _mm_extract_epi16(s0, 0);
                     tem_sum &= 0x0000FFFF;
                     if (tem_sum < low_sum) {
-                        if (tem_sum != 0xFFFF) { // no overflow
+                        if (tem_sum != 0xFFFF) { /*!< no overflow */
                             low_sum = tem_sum;
                             x_best  = (int16_t)(j + _mm_extract_epi16(s0, 1));
                             y_best  = i;
@@ -2804,7 +2802,7 @@ void sad_loop_kernel_sparse_sse4_1_intrin(
                     tem_sum = _mm_extract_epi16(s0, 0);
                     tem_sum &= 0x0000FFFF;
                     if (tem_sum < low_sum) {
-                        if (tem_sum != 0xFFFF) { // no overflow
+                        if (tem_sum != 0xFFFF) { /*!< no overflow */
                             low_sum = tem_sum;
                             x_best  = (int16_t)(j + _mm_extract_epi16(s0, 1));
                             y_best  = i;
@@ -2903,7 +2901,7 @@ void sad_loop_kernel_sparse_sse4_1_intrin(
                     tem_sum = _mm_extract_epi16(s0, 0);
                     tem_sum &= 0x0000FFFF;
                     if (tem_sum < low_sum) {
-                        if (tem_sum != 0xFFFF) { // no overflow
+                        if (tem_sum != 0xFFFF) { /*!< no overflow */
                             low_sum = tem_sum;
                             x_best  = (int16_t)(j + _mm_extract_epi16(s0, 1));
                             y_best  = i;
@@ -2971,7 +2969,7 @@ void sad_loop_kernel_sparse_sse4_1_intrin(
                     tem_sum = _mm_extract_epi16(s0, 0);
                     tem_sum &= 0x0000FFFF;
                     if (tem_sum < low_sum) {
-                        if (tem_sum != 0xFFFF) { // no overflow
+                        if (tem_sum != 0xFFFF) { /*!< no overflow */
                             low_sum = tem_sum;
                             x_best  = (int16_t)(j + _mm_extract_epi16(s0, 1));
                             y_best  = i;
@@ -3078,7 +3076,7 @@ void sad_loop_kernel_sparse_sse4_1_intrin(
                     tem_sum = _mm_extract_epi16(s0, 0);
                     tem_sum &= 0x0000FFFF;
                     if (tem_sum < low_sum) {
-                        if (tem_sum != 0xFFFF) { // no overflow
+                        if (tem_sum != 0xFFFF) { /*!< no overflow */
                             low_sum = tem_sum;
                             x_best  = (int16_t)(j + _mm_extract_epi16(s0, 1));
                             y_best  = i;
@@ -3194,7 +3192,7 @@ void sad_loop_kernel_sparse_sse4_1_intrin(
                     tem_sum = _mm_extract_epi16(s0, 0);
                     tem_sum &= 0x0000FFFF;
                     if (tem_sum < low_sum) {
-                        if (tem_sum != 0xFFFF) { // no overflow
+                        if (tem_sum != 0xFFFF) { /*!< no overflow */
                             low_sum = tem_sum;
                             x_best  = (int16_t)(j + _mm_extract_epi16(s0, 1));
                             y_best  = i;
@@ -3300,7 +3298,7 @@ void sad_loop_kernel_sparse_sse4_1_intrin(
                     tem_sum = _mm_extract_epi16(s0, 0);
                     tem_sum &= 0x0000FFFF;
                     if (tem_sum < low_sum) {
-                        if (tem_sum != 0xFFFF) { // no overflow
+                        if (tem_sum != 0xFFFF) { /*!< no overflow */
                             low_sum = tem_sum;
                             x_best  = (int16_t)(j + _mm_extract_epi16(s0, 1));
                             y_best  = i;
@@ -3375,7 +3373,7 @@ void sad_loop_kernel_sparse_sse4_1_intrin(
                     tem_sum = _mm_extract_epi16(s0, 0);
                     tem_sum &= 0x0000FFFF;
                     if (tem_sum < low_sum) {
-                        if (tem_sum != 0xFFFF) { // no overflow
+                        if (tem_sum != 0xFFFF) { /*!< no overflow */
                             low_sum = tem_sum;
                             x_best  = (int16_t)(j + _mm_extract_epi16(s0, 1));
                             y_best  = i;
@@ -3409,20 +3407,20 @@ void sad_loop_kernel_sparse_sse4_1_intrin(
     *y_search_center = y_best;
 }
 
-/*******************************************************************************
-* Requirement: width   = 4, 8, 16, 24, 32, 48 or 64
-* Requirement: block_height <= 64
-* Requirement: block_height % 2 = 0 when width = 4 or 8
-*******************************************************************************/
+/*******************************************************************************/
+/*!< * Requirement: width   = 4, 8, 16, 24, 32, 48 or 64
+ *   * Requirement: block_height <= 64
+ *   * Requirement: block_height % 2 = 0 when width = 4 or 8 */
+/*******************************************************************************/
 void sad_loop_kernel_sse4_1_hme_l0_intrin(
-    uint8_t * src, // input parameter, source samples Ptr
-    uint32_t  src_stride, // input parameter, source stride
-    uint8_t * ref, // input parameter, reference samples Ptr
-    uint32_t  ref_stride, // input parameter, reference stride
-    uint32_t  block_height, // input parameter, block height (M)
-    uint32_t  block_width, // input parameter, block width (N)
+    uint8_t * src, /*! input parameter, source samples Ptr */
+    uint32_t  src_stride, /*! input parameter, source stride */
+    uint8_t * ref, /*! input parameter, reference samples Ptr */
+    uint32_t  ref_stride, /*! input parameter, reference stride */
+    uint32_t  block_height, /*! input parameter, block height (M) */
+    uint32_t  block_width, /*! input parameter, block width (N) */
     uint64_t *best_sad, int16_t *x_search_center, int16_t *y_search_center,
-    uint32_t src_stride_raw, // input parameter, source stride (no line skipping)
+    uint32_t src_stride_raw, /*! input parameter, source stride (no line skipping) */
     int16_t search_area_width, int16_t search_area_height) {
     int16_t        x_best = *x_search_center, y_best = *y_search_center;
     uint32_t       low_sum = 0xffffff;
@@ -3602,7 +3600,7 @@ void sad_loop_kernel_sse4_1_hme_l0_intrin(
                     s0      = _mm_minpos_epu16(s0);
                     tem_sum = _mm_extract_epi16(s0, 0);
                     if (tem_sum < low_sum) {
-                        if (tem_sum != 0xFFFF) { // no overflow
+                        if (tem_sum != 0xFFFF) { /*!< no overflow */
                             low_sum = tem_sum;
                             x_best  = (int16_t)(j + _mm_extract_epi16(s0, 1));
                             y_best  = i;
@@ -3705,7 +3703,7 @@ void sad_loop_kernel_sse4_1_hme_l0_intrin(
                     s0      = _mm_minpos_epu16(s0);
                     tem_sum = _mm_extract_epi16(s0, 0);
                     if (tem_sum < low_sum) {
-                        if (tem_sum != 0xFFFF) { // no overflow
+                        if (tem_sum != 0xFFFF) { /*!< no overflow */
                             low_sum = tem_sum;
                             x_best  = (int16_t)(j + _mm_extract_epi16(s0, 1));
                             y_best  = i;
@@ -3818,7 +3816,7 @@ void sad_loop_kernel_sse4_1_hme_l0_intrin(
                     tem_sum = _mm_extract_epi16(s0, 0);
                     tem_sum &= 0x0000FFFF;
                     if (tem_sum < low_sum) {
-                        if (tem_sum != 0xFFFF) { // no overflow
+                        if (tem_sum != 0xFFFF) { /*!< no overflow */
                             low_sum = tem_sum;
                             x_best  = (int16_t)(j + _mm_extract_epi16(s0, 1));
                             y_best  = i;
@@ -3897,7 +3895,7 @@ void sad_loop_kernel_sse4_1_hme_l0_intrin(
                     tem_sum = _mm_extract_epi16(s0, 0);
                     tem_sum &= 0x0000FFFF;
                     if (tem_sum < low_sum) {
-                        if (tem_sum != 0xFFFF) { // no overflow
+                        if (tem_sum != 0xFFFF) { /*!< no overflow */
                             low_sum = tem_sum;
                             x_best  = (int16_t)(j + _mm_extract_epi16(s0, 1));
                             y_best  = i;
@@ -4007,7 +4005,7 @@ void sad_loop_kernel_sse4_1_hme_l0_intrin(
                     tem_sum = _mm_extract_epi16(s0, 0);
                     tem_sum &= 0x0000FFFF;
                     if (tem_sum < low_sum) {
-                        if (tem_sum != 0xFFFF) { // no overflow
+                        if (tem_sum != 0xFFFF) { /*!< no overflow */
                             low_sum = tem_sum;
                             x_best  = (int16_t)(j + _mm_extract_epi16(s0, 1));
                             y_best  = i;
@@ -4101,7 +4099,7 @@ void sad_loop_kernel_sse4_1_hme_l0_intrin(
                     tem_sum = _mm_extract_epi16(s0, 0);
                     tem_sum &= 0x0000FFFF;
                     if (tem_sum < low_sum) {
-                        if (tem_sum != 0xFFFF) { // no overflow
+                        if (tem_sum != 0xFFFF) { /*!< no overflow */
                             low_sum = tem_sum;
                             x_best  = (int16_t)(j + _mm_extract_epi16(s0, 1));
                             y_best  = i;
@@ -4203,7 +4201,7 @@ void sad_loop_kernel_sse4_1_hme_l0_intrin(
                     tem_sum = _mm_extract_epi16(s0, 0);
                     tem_sum &= 0x0000FFFF;
                     if (tem_sum < low_sum) {
-                        if (tem_sum != 0xFFFF) { // no overflow
+                        if (tem_sum != 0xFFFF) { /*!< no overflow */
                             low_sum = tem_sum;
                             x_best  = (int16_t)(j + _mm_extract_epi16(s0, 1));
                             y_best  = i;
@@ -4304,7 +4302,7 @@ void sad_loop_kernel_sse4_1_hme_l0_intrin(
                     tem_sum = _mm_extract_epi16(s0, 0);
                     tem_sum &= 0x0000FFFF;
                     if (tem_sum < low_sum) {
-                        if (tem_sum != 0xFFFF) { // no overflow
+                        if (tem_sum != 0xFFFF) { /*!< no overflow */
                             low_sum = tem_sum;
                             x_best  = (int16_t)(j + _mm_extract_epi16(s0, 1));
                             y_best  = i;
@@ -4374,41 +4372,39 @@ void get_eight_horizontal_search_point_results_8x8_16x16_pu_sse41_intrin(
 
     sad[0] = sad[1] = sad[2] = sad[3] = _mm_setzero_si128();
 
-    /*
-   -------------------------------------   -----------------------------------
-   | 8x8_00 | 8x8_01 | 8x8_04 | 8x8_05 |   8x8_16 | 8x8_17 | 8x8_20 | 8x8_21 |
-   -------------------------------------   -----------------------------------
-   | 8x8_02 | 8x8_03 | 8x8_06 | 8x8_07 |   8x8_18 | 8x8_19 | 8x8_22 | 8x8_23 |
-   -----------------------   -----------   ----------------------   ----------
-   | 8x8_08 | 8x8_09 | 8x8_12 | 8x8_13 |   8x8_24 | 8x8_25 | 8x8_29 | 8x8_29 |
-   ----------------------    -----------   ---------------------    ----------
-   | 8x8_10 | 8x8_11 | 8x8_14 | 8x8_15 |   8x8_26 | 8x8_27 | 8x8_30 | 8x8_31 |
-   -------------------------------------   -----------------------------------
+    /*!<
+     *  -------------------------------------   -----------------------------------
+     *  | 8x8_00 | 8x8_01 | 8x8_04 | 8x8_05 |   8x8_16 | 8x8_17 | 8x8_20 | 8x8_21 |
+     *  -------------------------------------   -----------------------------------
+     *  | 8x8_02 | 8x8_03 | 8x8_06 | 8x8_07 |   8x8_18 | 8x8_19 | 8x8_22 | 8x8_23 |
+     *  -----------------------   -----------   ----------------------   ----------
+     *  | 8x8_08 | 8x8_09 | 8x8_12 | 8x8_13 |   8x8_24 | 8x8_25 | 8x8_29 | 8x8_29 |
+     *  ----------------------    -----------   ---------------------    ----------
+     *  | 8x8_10 | 8x8_11 | 8x8_14 | 8x8_15 |   8x8_26 | 8x8_27 | 8x8_30 | 8x8_31 |
+     *  -------------------------------------   -----------------------------------
+     *
+     *  -------------------------------------   -----------------------------------
+     *  | 8x8_32 | 8x8_33 | 8x8_36 | 8x8_37 |   8x8_48 | 8x8_49 | 8x8_52 | 8x8_53 |
+     *  -------------------------------------   -----------------------------------
+     *  | 8x8_34 | 8x8_35 | 8x8_38 | 8x8_39 |   8x8_50 | 8x8_51 | 8x8_54 | 8x8_55 |
+     *  -----------------------   -----------   ----------------------   ----------
+     *  | 8x8_40 | 8x8_41 | 8x8_44 | 8x8_45 |   8x8_56 | 8x8_57 | 8x8_60 | 8x8_61 |
+     *  ----------------------    -----------   ---------------------    ----------
+     *  | 8x8_42 | 8x8_43 | 8x8_46 | 8x8_48 |   8x8_58 | 8x8_59 | 8x8_62 | 8x8_63 |
+     *  -------------------------------------   -----------------------------------   */
 
-   -------------------------------------   -----------------------------------
-   | 8x8_32 | 8x8_33 | 8x8_36 | 8x8_37 |   8x8_48 | 8x8_49 | 8x8_52 | 8x8_53 |
-   -------------------------------------   -----------------------------------
-   | 8x8_34 | 8x8_35 | 8x8_38 | 8x8_39 |   8x8_50 | 8x8_51 | 8x8_54 | 8x8_55 |
-   -----------------------   -----------   ----------------------   ----------
-   | 8x8_40 | 8x8_41 | 8x8_44 | 8x8_45 |   8x8_56 | 8x8_57 | 8x8_60 | 8x8_61 |
-   ----------------------    -----------   ---------------------    ----------
-   | 8x8_42 | 8x8_43 | 8x8_46 | 8x8_48 |   8x8_58 | 8x8_59 | 8x8_62 | 8x8_63 |
-   -------------------------------------   -----------------------------------
-   */
+    /*!<
+     *  ----------------------    ----------------------
+     *  |  16x16_0  |  16x16_1  |  16x16_4  |  16x16_5  |
+     *  ----------------------    ----------------------
+     *  |  16x16_2  |  16x16_3  |  16x16_6  |  16x16_7  |
+     *  -----------------------   -----------------------
+     *  |  16x16_8  |  16x16_9  |  16x16_12 |  16x16_13 |
+     *  ----------------------    ----------------------
+     *  |  16x16_10 |  16x16_11 |  16x16_14 |  16x16_15 |
+     *  -----------------------   -----------------------   */
 
-    /*
-   ----------------------    ----------------------
-   |  16x16_0  |  16x16_1  |  16x16_4  |  16x16_5  |
-   ----------------------    ----------------------
-   |  16x16_2  |  16x16_3  |  16x16_6  |  16x16_7  |
-   -----------------------   -----------------------
-   |  16x16_8  |  16x16_9  |  16x16_12 |  16x16_13 |
-   ----------------------    ----------------------
-   |  16x16_10 |  16x16_11 |  16x16_14 |  16x16_15 |
-   -----------------------   -----------------------
-   */
-
-    //8x8_0
+    /*! 8x8_0 */
     sad_eight_8x4_sse41_intrin(
         src + 0 * src_stride + 0, src_stride, ref + 0 * ref_stride + 0, ref_stride, &sad[0]);
     sad_eight_8x4_sse41_intrin(
@@ -4434,7 +4430,7 @@ void get_eight_horizontal_search_point_results_8x8_16x16_pu_sse41_intrin(
             src + 9 * src_stride + 8, src_stride, ref + 9 * ref_stride + 8, ref_stride, &sad[3]);
     }
 
-    //find the best for 8x8_0
+    /*! find the best for 8x8_0 */
     s3      = _mm_minpos_epu16(sad[0]);
     tem_sum = _mm_extract_epi16(s3, 0);
     if (tem_sum < p_best_sad_8x8[0]) {
@@ -4444,7 +4440,7 @@ void get_eight_horizontal_search_point_results_8x8_16x16_pu_sse41_intrin(
         p_best_mv8x8[0]   = ((uint16_t)y_mv << 16) | ((uint16_t)x_mv);
     }
 
-    //find the best for 8x8_1
+    /*! find the best for 8x8_1 */
     s3      = _mm_minpos_epu16(sad[1]);
     tem_sum = _mm_extract_epi16(s3, 0);
     if (tem_sum < p_best_sad_8x8[1]) {
@@ -4454,7 +4450,7 @@ void get_eight_horizontal_search_point_results_8x8_16x16_pu_sse41_intrin(
         p_best_mv8x8[1]   = ((uint16_t)y_mv << 16) | ((uint16_t)x_mv);
     }
 
-    //find the best for 8x8_2
+    /*! find the best for 8x8_2 */
     s3      = _mm_minpos_epu16(sad[2]);
     tem_sum = _mm_extract_epi16(s3, 0);
     if (tem_sum < p_best_sad_8x8[2]) {
@@ -4464,7 +4460,7 @@ void get_eight_horizontal_search_point_results_8x8_16x16_pu_sse41_intrin(
         p_best_mv8x8[2]   = ((uint16_t)y_mv << 16) | ((uint16_t)x_mv);
     }
 
-    //find the best for 8x8_3
+    /*! find the best for 8x8_3 */
     s3      = _mm_minpos_epu16(sad[3]);
     tem_sum = _mm_extract_epi16(s3, 0);
     if (tem_sum < p_best_sad_8x8[3]) {
@@ -4474,14 +4470,14 @@ void get_eight_horizontal_search_point_results_8x8_16x16_pu_sse41_intrin(
         p_best_mv8x8[3]   = ((uint16_t)y_mv << 16) | ((uint16_t)x_mv);
     }
 
-    //16x16
+    /*! 16x16 */
     {
         s0 = _mm_adds_epu16(sad[0], sad[1]);
         s1 = _mm_adds_epu16(sad[2], sad[3]);
         s3 = _mm_adds_epu16(s0, s1);
-        //sotore the 8 SADs(16x16 SADs)
+        /*! sotore the 8 SADs(16x16 SADs) */
         _mm_store_si128((__m128i *)p_sad16x16, s3);
-        //find the best for 16x16
+        /*! find the best for 16x16 */
         s3      = _mm_minpos_epu16(s3);
         tem_sum = _mm_extract_epi16(s3, 0);
         if (tem_sum < p_best_sad_16x16[0]) {
@@ -4493,11 +4489,11 @@ void get_eight_horizontal_search_point_results_8x8_16x16_pu_sse41_intrin(
     }
 }
 
-/*******************************************
- Calculate SAD for 32x32,64x64 from 16x16
- and check if there is improvement, if yes keep
- the best SAD+MV
- *******************************************/
+/*!< ******************************************
+ *  Calculate SAD for 32x32,64x64 from 16x16
+ *  and check if there is improvement, if yes keep
+ *  the best SAD+MV
+ ****************************************** */
 void get_eight_horizontal_search_point_results_32x32_64x64_pu_sse41_intrin(
     uint16_t *p_sad16x16, uint32_t *p_best_sad_32x32, uint32_t *p_best_sad_64x64,
     uint32_t *p_best_mv32x32, uint32_t *p_best_mv64x64, uint32_t mv) {
@@ -4508,29 +4504,28 @@ void get_eight_horizontal_search_point_results_32x32_64x64_pu_sse41_intrin(
     __m128i  sad_00, sad_01, sad_10, sad_11, sad_20, sad_21, sad_30, sad_31;
     __m128i  zero = _mm_setzero_si128();
 
-    /*--------------------
-    |  32x32_0  |  32x32_1
-    ----------------------
-    |  32x32_2  |  32x32_3
-    ----------------------*/
+    /*!< --------------------
+     *  |  32x32_0  |  32x32_1
+     *  ----------------------
+     *  |  32x32_2  |  32x32_3
+     *  ---------------------- */
 
-    /*  data ordering in p_sad16x16 buffer
+    /*!<  data ordering in p_sad16x16 buffer
+     *
+     *               Search    Search            Search
+     *               Point 0   Point 1           Point 7
+     *             ---------------------------------------
+     *  16x16_0    |    x    |    x    | ...... |    x    |
+     *             ---------------------------------------
+     *  16x16_1    |    x    |    x    | ...... |    x    |
+     *
+     *  16x16_n    |    x    |    x    | ...... |    x    |
+     *
+     *             ---------------------------------------
+     *  16x16_15   |    x    |    x    | ...... |    x    |
+     *             ---------------------------------------    */
 
-                  Search    Search            Search
-                  Point 0   Point 1           Point 7
-                ---------------------------------------
-     16x16_0    |    x    |    x    | ...... |    x    |
-                ---------------------------------------
-     16x16_1    |    x    |    x    | ...... |    x    |
-
-     16x16_n    |    x    |    x    | ...... |    x    |
-
-                ---------------------------------------
-     16x16_15   |    x    |    x    | ...... |    x    |
-                ---------------------------------------
-    */
-
-    //32x32_0
+    /*! 32x32_0 */
     s0 = _mm_loadu_si128((__m128i *)(p_sad16x16 + 0 * 8));
     s1 = _mm_loadu_si128((__m128i *)(p_sad16x16 + 1 * 8));
     s2 = _mm_loadu_si128((__m128i *)(p_sad16x16 + 2 * 8));
@@ -4553,7 +4548,7 @@ void get_eight_horizontal_search_point_results_32x32_64x64_pu_sse41_intrin(
     sad_01 = _mm_add_epi32(s0, s2);
     sad_00 = _mm_add_epi32(s1, s3);
 
-    //sad_00
+    /*! sad_00 */
     tem_sum = _mm_extract_epi32(sad_00, 0);
     if (tem_sum < p_best_sad_32x32[0]) {
         p_best_sad_32x32[0] = tem_sum;
@@ -4583,7 +4578,7 @@ void get_eight_horizontal_search_point_results_32x32_64x64_pu_sse41_intrin(
         p_best_mv32x32[0]   = ((uint16_t)y_mv << 16) | ((uint16_t)x_mv);
     }
 
-    //sad_01
+    /*! sad_01 */
     tem_sum = _mm_extract_epi32(sad_01, 0);
     if (tem_sum < p_best_sad_32x32[0]) {
         p_best_sad_32x32[0] = tem_sum;
@@ -4613,7 +4608,7 @@ void get_eight_horizontal_search_point_results_32x32_64x64_pu_sse41_intrin(
         p_best_mv32x32[0]   = ((uint16_t)y_mv << 16) | ((uint16_t)x_mv);
     }
 
-    //32x32_1
+    /*! 32x32_1 */
     s0 = _mm_loadu_si128((__m128i *)(p_sad16x16 + 4 * 8));
     s1 = _mm_loadu_si128((__m128i *)(p_sad16x16 + 5 * 8));
     s2 = _mm_loadu_si128((__m128i *)(p_sad16x16 + 6 * 8));
@@ -4636,7 +4631,7 @@ void get_eight_horizontal_search_point_results_32x32_64x64_pu_sse41_intrin(
     sad_11 = _mm_add_epi32(s0, s2);
     sad_10 = _mm_add_epi32(s1, s3);
 
-    //sad_10
+    /*! sad_10 */
     tem_sum = _mm_extract_epi32(sad_10, 0);
     if (tem_sum < p_best_sad_32x32[1]) {
         p_best_sad_32x32[1] = tem_sum;
@@ -4666,7 +4661,7 @@ void get_eight_horizontal_search_point_results_32x32_64x64_pu_sse41_intrin(
         p_best_mv32x32[1]   = ((uint16_t)y_mv << 16) | ((uint16_t)x_mv);
     }
 
-    //sad_11
+    /*! sad_11 */
     tem_sum = _mm_extract_epi32(sad_11, 0);
     if (tem_sum < p_best_sad_32x32[1]) {
         p_best_sad_32x32[1] = tem_sum;
@@ -4696,7 +4691,7 @@ void get_eight_horizontal_search_point_results_32x32_64x64_pu_sse41_intrin(
         p_best_mv32x32[1]   = ((uint16_t)y_mv << 16) | ((uint16_t)x_mv);
     }
 
-    //32x32_2
+    /*! 32x32_2 */
     s0 = _mm_loadu_si128((__m128i *)(p_sad16x16 + 8 * 8));
     s1 = _mm_loadu_si128((__m128i *)(p_sad16x16 + 9 * 8));
     s2 = _mm_loadu_si128((__m128i *)(p_sad16x16 + 10 * 8));
@@ -4719,7 +4714,7 @@ void get_eight_horizontal_search_point_results_32x32_64x64_pu_sse41_intrin(
     sad_21 = _mm_add_epi32(s0, s2);
     sad_20 = _mm_add_epi32(s1, s3);
 
-    //sad_20
+    /*! sad_20 */
     tem_sum = _mm_extract_epi32(sad_20, 0);
     if (tem_sum < p_best_sad_32x32[2]) {
         p_best_sad_32x32[2] = tem_sum;
@@ -4749,7 +4744,7 @@ void get_eight_horizontal_search_point_results_32x32_64x64_pu_sse41_intrin(
         p_best_mv32x32[2]   = ((uint16_t)y_mv << 16) | ((uint16_t)x_mv);
     }
 
-    //sad_21
+    /*! sad_21 */
     tem_sum = _mm_extract_epi32(sad_21, 0);
     if (tem_sum < p_best_sad_32x32[2]) {
         p_best_sad_32x32[2] = tem_sum;
@@ -4779,7 +4774,7 @@ void get_eight_horizontal_search_point_results_32x32_64x64_pu_sse41_intrin(
         p_best_mv32x32[2]   = ((uint16_t)y_mv << 16) | ((uint16_t)x_mv);
     }
 
-    //32x32_3
+    /*! 32x32_3 */
     s0 = _mm_loadu_si128((__m128i *)(p_sad16x16 + 12 * 8));
     s1 = _mm_loadu_si128((__m128i *)(p_sad16x16 + 13 * 8));
     s2 = _mm_loadu_si128((__m128i *)(p_sad16x16 + 14 * 8));
@@ -4802,7 +4797,7 @@ void get_eight_horizontal_search_point_results_32x32_64x64_pu_sse41_intrin(
     sad_31 = _mm_add_epi32(s0, s2);
     sad_30 = _mm_add_epi32(s1, s3);
 
-    //sad_30
+    /*! sad_30 */
     tem_sum = _mm_extract_epi32(sad_30, 0);
     if (tem_sum < p_best_sad_32x32[3]) {
         p_best_sad_32x32[3] = tem_sum;
@@ -4832,7 +4827,7 @@ void get_eight_horizontal_search_point_results_32x32_64x64_pu_sse41_intrin(
         p_best_mv32x32[3]   = ((uint16_t)y_mv << 16) | ((uint16_t)x_mv);
     }
 
-    //sad_31
+    /*! sad_31 */
     tem_sum = _mm_extract_epi32(sad_31, 0);
     if (tem_sum < p_best_sad_32x32[3]) {
         p_best_sad_32x32[3] = tem_sum;
@@ -4865,7 +4860,7 @@ void get_eight_horizontal_search_point_results_32x32_64x64_pu_sse41_intrin(
     sad_0 = _mm_add_epi32(_mm_add_epi32(sad_00, sad_10), _mm_add_epi32(sad_20, sad_30));
     sad_1 = _mm_add_epi32(_mm_add_epi32(sad_01, sad_11), _mm_add_epi32(sad_21, sad_31));
 
-    //sad_0
+    /*! sad_0 */
     tem_sum = _mm_extract_epi32(sad_0, 0);
     if (tem_sum < p_best_sad_64x64[0]) {
         p_best_sad_64x64[0] = tem_sum;
@@ -4895,7 +4890,7 @@ void get_eight_horizontal_search_point_results_32x32_64x64_pu_sse41_intrin(
         p_best_mv64x64[0]   = ((uint16_t)y_mv << 16) | ((uint16_t)x_mv);
     }
 
-    //sad_1
+    /*! sad_1 */
     tem_sum = _mm_extract_epi32(sad_1, 0);
     if (tem_sum < p_best_sad_64x64[0]) {
         p_best_sad_64x64[0] = tem_sum;

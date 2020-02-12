@@ -1,7 +1,5 @@
-/*
-* Copyright(c) 2019 Intel Corporation
-* SPDX - License - Identifier: BSD - 2 - Clause - Patent
-*/
+/*!< Copyright(c) 2019 Intel Corporation
+ * SPDX - License - Identifier: BSD - 2 - Clause - Patent */
 
 #ifndef EbCodingLoop_h
 #define EbCodingLoop_h
@@ -14,10 +12,10 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
-/*******************************************
-     * ModeDecisionSb
-     *   performs CL (SB)
-     *******************************************/
+/*!< ******************************************
+ * ModeDecisionSb
+ *   performs CL (SB)
+ * ***************************************** */
 extern EbErrorType mode_decision_sb(SequenceControlSet *scs_ptr, PictureControlSet *pcs_ptr,
                                     const MdcSbData *const mdcResultTbPtr, SuperBlock *sb_ptr,
                                     uint16_t sb_origin_x, uint16_t sb_origin_y, uint32_t sb_addr,

@@ -1,13 +1,11 @@
-/*
-* Copyright(c) 2019 Netflix, Inc.
-* SPDX - License - Identifier: BSD - 2 - Clause - Patent
-*/
+/* Copyright(c) 2019 Netflix, Inc.
+ * SPDX - License - Identifier: BSD - 2 - Clause - Patent */
 
 #ifndef EbDecObuParser_h
 #define EbDecObuParser_h
 
 #include "assert.h"
-#include "EbCabacContextModel.h" //for ENTROPY_CONTEXT
+#include "EbCabacContextModel.h" /*!< for ENTROPY_CONTEXT */
 #include "EbDecBitstream.h"
 #include "EbDecBitReader.h"
 

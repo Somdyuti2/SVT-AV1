@@ -1,7 +1,5 @@
-/*
-* Copyright(c) 2019 Intel Corporation
-* SPDX - License - Identifier: BSD - 2 - Clause - Patent
-*/
+/*!< Copyright(c) 2019 Intel Corporation
+ * SPDX - License - Identifier: BSD - 2 - Clause - Patent */
 #include "EbEncHandle.h"
 #include "EbPictureControlSet.h"
 #include "EbSequenceControlSet.h"
@@ -13,17 +11,17 @@
 #include "EbReferenceObject.h"
 #include "EbResize.h"
 
-/**************************************
- * Context
- **************************************/
+/**************************************/
+/*!< Context */
+/**************************************/
 typedef struct InitialRateControlContext {
     EbFifo *motion_estimation_results_input_fifo_ptr;
     EbFifo *initialrate_control_results_output_fifo_ptr;
 } InitialRateControlContext;
 
-/**************************************
-* Macros
-**************************************/
+/**************************************/
+/*!< Macros */
+/**************************************/
 #define PAN_SB_PERCENTAGE 75
 #define LOW_AMPLITUDE_TH 16
 
@@ -45,12 +43,12 @@ static void eb_get_mv(PictureParentControlSet *pcs_ptr, uint32_t sb_index, int32
 EbBool check_mv_for_pan_high_amp(uint32_t hierarchical_levels, uint32_t temporal_layer_index,
                                  int32_t *x_current_mv, int32_t *x_candidate_mv) {
     if (*x_current_mv * *x_candidate_mv >
-            0 // both negative or both positives and both different than 0 i.e. same direction and non Stationary)
+            0 /*!< both negative or both positives and both different than 0 i.e. same direction and non Stationary) */
         && ABS(*x_current_mv) >=
-               global_motion_threshold[hierarchical_levels][temporal_layer_index] // high amplitude
+               global_motion_threshold[hierarchical_levels][temporal_layer_index] /*!< high amplitude */
         && ABS(*x_candidate_mv) >=
-               global_motion_threshold[hierarchical_levels][temporal_layer_index] // high amplitude
-        && ABS(*x_current_mv - *x_candidate_mv) < LOW_AMPLITUDE_TH) { // close amplitude
+               global_motion_threshold[hierarchical_levels][temporal_layer_index] /*!< high amplitude */
+        && ABS(*x_current_mv - *x_candidate_mv) < LOW_AMPLITUDE_TH) { /*!< close amplitude */
 
         return (EB_TRUE);
     }
@@ -62,12 +60,12 @@ EbBool check_mv_for_pan_high_amp(uint32_t hierarchical_levels, uint32_t temporal
 EbBool check_mv_for_tilt_high_amp(uint32_t hierarchical_levels, uint32_t temporal_layer_index,
                                   int32_t *y_current_mv, int32_t *y_candidate_mv) {
     if (*y_current_mv * *y_candidate_mv >
-            0 // both negative or both positives and both different than 0 i.e. same direction and non Stationary)
+            0 /*!< both negative or both positives and both different than 0 i.e. same direction and non Stationary) */
         && ABS(*y_current_mv) >=
-               global_motion_threshold[hierarchical_levels][temporal_layer_index] // high amplitude
+               global_motion_threshold[hierarchical_levels][temporal_layer_index] /*!< high amplitude */
         && ABS(*y_candidate_mv) >=
-               global_motion_threshold[hierarchical_levels][temporal_layer_index] // high amplitude
-        && ABS(*y_current_mv - *y_candidate_mv) < LOW_AMPLITUDE_TH) { // close amplitude
+               global_motion_threshold[hierarchical_levels][temporal_layer_index] /*!< high amplitude */
+        && ABS(*y_current_mv - *y_candidate_mv) < LOW_AMPLITUDE_TH) { /*!< close amplitude */
 
         return (EB_TRUE);
     }
@@ -82,12 +80,12 @@ EbBool check_mv_for_pan(uint32_t hierarchical_levels, uint32_t temporal_layer_in
     if (*y_current_mv < LOW_AMPLITUDE_TH &&
         *y_candidate_mv<
             LOW_AMPLITUDE_TH && * x_current_mv * *
-            x_candidate_mv > 0 // both negative or both positives and both different than 0 i.e. same direction and non Stationary)
+            x_candidate_mv > 0 /*!< both negative or both positives and both different than 0 i.e. same direction and non Stationary) */
         && ABS(*x_current_mv) >=
-               global_motion_threshold[hierarchical_levels][temporal_layer_index] // high amplitude
+               global_motion_threshold[hierarchical_levels][temporal_layer_index] /*!< high amplitude */
         && ABS(*x_candidate_mv) >=
-               global_motion_threshold[hierarchical_levels][temporal_layer_index] // high amplitude
-        && ABS(*x_current_mv - *x_candidate_mv) < LOW_AMPLITUDE_TH) { // close amplitude
+               global_motion_threshold[hierarchical_levels][temporal_layer_index] /*!< high amplitude */
+        && ABS(*x_current_mv - *x_candidate_mv) < LOW_AMPLITUDE_TH) { /*!< close amplitude */
 
         return (EB_TRUE);
     }
@@ -102,12 +100,12 @@ EbBool check_mv_for_tilt(uint32_t hierarchical_levels, uint32_t temporal_layer_i
     if (*x_current_mv < LOW_AMPLITUDE_TH &&
         *x_candidate_mv<
             LOW_AMPLITUDE_TH && * y_current_mv * *
-            y_candidate_mv > 0 // both negative or both positives and both different than 0 i.e. same direction and non Stationary)
+            y_candidate_mv > 0 /*!< both negative or both positives and both different than 0 i.e. same direction and non Stationary) */
         && ABS(*y_current_mv) >=
-               global_motion_threshold[hierarchical_levels][temporal_layer_index] // high amplitude
+               global_motion_threshold[hierarchical_levels][temporal_layer_index] /*!< high amplitude */
         && ABS(*y_candidate_mv) >=
-               global_motion_threshold[hierarchical_levels][temporal_layer_index] // high amplitude
-        && ABS(*y_current_mv - *y_candidate_mv) < LOW_AMPLITUDE_TH) { // close amplitude
+               global_motion_threshold[hierarchical_levels][temporal_layer_index] /*!< high amplitude */
+        && ABS(*y_current_mv - *y_candidate_mv) < LOW_AMPLITUDE_TH) { /*!< close amplitude */
 
         return (EB_TRUE);
     }
@@ -119,7 +117,7 @@ EbBool check_mv_for_tilt(uint32_t hierarchical_levels, uint32_t temporal_layer_i
 EbBool check_mv_for_non_uniform_motion(int32_t *x_current_mv, int32_t *y_current_mv,
                                        int32_t *x_candidate_mv, int32_t *y_candidate_mv) {
     int32_t mv_threshold = 40; //LOW_AMPLITUDE_TH + 18;
-    // Either the x or the y direction is greater than threshold
+    /*!< Either the x or the y direction is greater than threshold */
     if ((ABS(*x_current_mv - *x_candidate_mv) > mv_threshold) ||
         (ABS(*y_current_mv - *y_candidate_mv) > mv_threshold))
         return (EB_TRUE);
@@ -154,10 +152,10 @@ void check_for_non_uniform_motion_vector_field(PictureParentControlSet *pcs_ptr)
 
         if (((sb_origin_x + BLOCK_SIZE_64) <= pcs_ptr->enhanced_picture_ptr->width) &&
             ((sb_origin_y + BLOCK_SIZE_64) <= pcs_ptr->enhanced_picture_ptr->height)) {
-            // Current MV
+            /*!< Current MV */
             eb_get_mv(pcs_ptr, sb_count, &x_current_mv, &y_current_mv);
 
-            // Left MV
+            /*!< Left MV */
             if (sb_origin_x == 0) {
                 x_left_mv = 0;
                 y_left_mv = 0;
@@ -166,7 +164,7 @@ void check_for_non_uniform_motion_vector_field(PictureParentControlSet *pcs_ptr)
             count_of_non_uniform_neighbors += check_mv_for_non_uniform_motion(
                 &x_current_mv, &y_current_mv, &x_left_mv, &y_left_mv);
 
-            // Top MV
+            /*!< Top MV */
             if (sb_origin_y == 0) {
                 x_top_mv = 0;
                 y_top_mv = 0;
@@ -175,7 +173,7 @@ void check_for_non_uniform_motion_vector_field(PictureParentControlSet *pcs_ptr)
             count_of_non_uniform_neighbors +=
                 check_mv_for_non_uniform_motion(&x_current_mv, &y_current_mv, &x_top_mv, &y_top_mv);
 
-            // Right MV
+            /*!< Right MV */
             if ((sb_origin_x + (BLOCK_SIZE_64 << 1)) > pcs_ptr->enhanced_picture_ptr->width) {
                 x_right_mv = 0;
                 y_right_mv   = 0;
@@ -184,7 +182,7 @@ void check_for_non_uniform_motion_vector_field(PictureParentControlSet *pcs_ptr)
             count_of_non_uniform_neighbors += check_mv_for_non_uniform_motion(
                 &x_current_mv, &y_current_mv, &x_right_mv, &y_right_mv);
 
-            // Bottom MV
+            /*!< Bottom MV */
             if ((sb_origin_y + (BLOCK_SIZE_64 << 1)) > pcs_ptr->enhanced_picture_ptr->height) {
                 x_bottom_mv = 0;
                 y_bottom_mv = 0;
@@ -198,7 +196,7 @@ void check_for_non_uniform_motion_vector_field(PictureParentControlSet *pcs_ptr)
 
 void detect_global_motion(PictureParentControlSet *pcs_ptr) {
 #if GLOBAL_WARPED_MOTION
-    //initilize global motion to be OFF for all references frames.
+    /*!< initilize global motion to be OFF for all references frames. */
     memset(pcs_ptr->is_global_motion, EB_FALSE, MAX_NUM_OF_REF_PIC_LIST * REF_LIST_MAX_DEPTH);
 #endif
 
@@ -220,7 +218,7 @@ void detect_global_motion(PictureParentControlSet *pcs_ptr) {
                                                      ? pcs_ptr->ref_list0_count
                                                      : pcs_ptr->ref_list1_count;
 
-            // Ref Picture Loop
+            /*!< Ref Picture Loop */
             for (uint32_t ref_pic_index = 0; ref_pic_index < num_of_ref_pic_to_search;
                  ++ref_pic_index) {
                 pcs_ptr->is_global_motion[list_index][ref_pic_index] = EB_FALSE;
@@ -267,28 +265,28 @@ void detect_global_motion(PictureParentControlSet *pcs_ptr) {
             sb_origin_y = (sb_count / pic_width_in_sb) * BLOCK_SIZE_64;
             if (((sb_origin_x + BLOCK_SIZE_64) <= pcs_ptr->enhanced_picture_ptr->width) &&
                 ((sb_origin_y + BLOCK_SIZE_64) <= pcs_ptr->enhanced_picture_ptr->height)) {
-                // Current MV
+                /*!< Current MV */
                 eb_get_mv(pcs_ptr, sb_count, &x_current_mv, &y_current_mv);
 
-                // Left MV
+                /*!< Left MV */
                 if (sb_origin_x == 0) {
                     x_left_mv = 0;
                     y_left_mv = 0;
                 } else
                     eb_get_mv(pcs_ptr, sb_count - 1, &x_left_mv, &y_left_mv);
-                // Top MV
+                /*!< Top MV */
                 if (sb_origin_y == 0) {
                     x_top_mv = 0;
                     y_top_mv = 0;
                 } else
                     eb_get_mv(pcs_ptr, sb_count - pic_width_in_sb, &x_top_mv, &y_top_mv);
-                // Right MV
+                /*!< Right MV */
                 if ((sb_origin_x + (BLOCK_SIZE_64 << 1)) > pcs_ptr->enhanced_picture_ptr->width) {
                     x_right_mv = 0;
                     y_right_mv   = 0;
                 } else
                     eb_get_mv(pcs_ptr, sb_count + 1, &x_right_mv, &y_right_mv);
-                // Bottom MV
+                /*!< Bottom MV */
                 if ((sb_origin_y + (BLOCK_SIZE_64 << 1)) > pcs_ptr->enhanced_picture_ptr->height) {
                     x_bottom_mv = 0;
                     y_bottom_mv = 0;
@@ -403,7 +401,7 @@ void detect_global_motion(PictureParentControlSet *pcs_ptr) {
         pcs_ptr->tilt_mvx = 0;
         pcs_ptr->tilt_mvy = 0;
 
-        // If more than PAN_SB_PERCENTAGE % of SBs are PAN
+        /*!< If more than PAN_SB_PERCENTAGE % of SBs are PAN */
         if ((total_checked_sbs > 0) &&
             ((total_pan_sbs * 100 / total_checked_sbs) > PAN_SB_PERCENTAGE)) {
             pcs_ptr->is_pan = EB_TRUE;
@@ -433,9 +431,9 @@ static void initial_rate_control_context_dctor(EbPtr p) {
     EB_FREE_ARRAY(obj);
 }
 
-/************************************************
-* Initial Rate Control Context Constructor
-************************************************/
+/************************************************/
+/*!< Initial Rate Control Context Constructor */
+/************************************************/
 EbErrorType initial_rate_control_context_ctor(EbThreadContext *  thread_context_ptr,
                                               const EbEncHandle *enc_handle_ptr) {
     InitialRateControlContext *context_ptr;
@@ -451,22 +449,22 @@ EbErrorType initial_rate_control_context_ctor(EbThreadContext *  thread_context_
     return EB_ErrorNone;
 }
 
-/************************************************
-* Release Pa Reference Objects
-** Check if reference pictures are needed
-** release them when appropriate
-************************************************/
+/************************************************/
+/*!< * Release Pa Reference Objects
+ *   ** Check if reference pictures are needed
+ *   ** release them when appropriate */
+/************************************************/
 void release_pa_reference_objects(SequenceControlSet *scs_ptr, PictureParentControlSet *pcs_ptr) {
-    // PA Reference Pictures
+    /*!< PA Reference Pictures */
     uint32_t num_of_list_to_search;
     uint32_t list_index;
     uint32_t ref_pic_index;
     if (pcs_ptr->slice_type != I_SLICE) {
         num_of_list_to_search = (pcs_ptr->slice_type == P_SLICE) ? REF_LIST_0 : REF_LIST_1;
 
-        // List Loop
+        /*!< List Loop */
         for (list_index = REF_LIST_0; list_index <= num_of_list_to_search; ++list_index) {
-            // Release PA Reference Pictures
+            /*!< Release PA Reference Pictures */
             uint8_t num_of_ref_pic_to_search =
                 (pcs_ptr->slice_type == P_SLICE)
                     ? MIN(pcs_ptr->ref_list0_count, scs_ptr->reference_count)
@@ -489,29 +487,30 @@ void release_pa_reference_objects(SequenceControlSet *scs_ptr, PictureParentCont
     return;
 }
 
-/************************************************
-* Global Motion Detection Based on ME information
-** Mark pictures for pan
-** Mark pictures for tilt
-** No lookahead information used in this function
-************************************************/
+/************************************************/
+/*!<
+ *  * Global Motion Detection Based on ME information
+ *  ** Mark pictures for pan
+ *  ** Mark pictures for tilt
+ *  ** No lookahead information used in this function */
+/************************************************/
 void me_based_global_motion_detection(PictureParentControlSet *pcs_ptr) {
-    // PAN Generation
+    /*!< PAN Generation */
     pcs_ptr->is_pan  = EB_FALSE;
     pcs_ptr->is_tilt = EB_FALSE;
 
     if (pcs_ptr->slice_type != I_SLICE) detect_global_motion(pcs_ptr);
-    // Check if the motion vector field for temporal layer 0 pictures
+    /*!< Check if the motion vector field for temporal layer 0 pictures */
     if (pcs_ptr->slice_type != I_SLICE && pcs_ptr->temporal_layer_index == 0)
         check_for_non_uniform_motion_vector_field(pcs_ptr);
     return;
 }
-/************************************************
-* Global Motion Detection Based on Lookahead
-** Mark pictures for pan
-** Mark pictures for tilt
-** LAD Window: min (8 or sliding window size)
-************************************************/
+/************************************************/
+/*!< * Global Motion Detection Based on Lookahead
+*    ** Mark pictures for pan
+*    ** Mark pictures for tilt
+*    ** LAD Window: min (8 or sliding window size) */
+/************************************************/
 void update_global_motion_detection_over_time(EncodeContext *          encode_context_ptr,
                                               SequenceControlSet *     scs_ptr,
                                               PictureParentControlSet *pcs_ptr) {
@@ -527,10 +526,10 @@ void update_global_motion_detection_over_time(EncodeContext *          encode_co
 
     (void)scs_ptr;
 
-    // Determine number of frames to check (8 frames)
+    /*!< Determine number of frames to check (8 frames) */
     update_is_pan_frames_to_check = MIN(8, pcs_ptr->frames_in_sw);
 
-    // Walk the first N entries in the sliding window
+    /*!< Walk the first N entries in the sliding window */
     input_queue_index = encode_context_ptr->initial_rate_control_reorder_queue_head_index;
     uint32_t update_frames_to_check = update_is_pan_frames_to_check;
     for (frames_to_check_index = 0; frames_to_check_index < update_frames_to_check;
@@ -545,11 +544,11 @@ void update_global_motion_detection_over_time(EncodeContext *          encode_co
 
             total_tilt_pictures += (temp_pcs_ptr->is_tilt == EB_TRUE);
 
-            // Keep track of checked pictures
+            /*!< Keep track of checked pictures */
             total_checked_pictures++;
         }
 
-        // Increment the input_queue_index Iterator
+        /*!< Increment the input_queue_index Iterator */
         input_queue_index = (input_queue_index == INITIAL_RATE_CONTROL_REORDER_QUEUE_MAX_DEPTH - 1)
                                 ? 0
                                 : input_queue_index + 1;
@@ -566,12 +565,12 @@ void update_global_motion_detection_over_time(EncodeContext *          encode_co
     return;
 }
 
-/************************************************
-* Update BEA Information Based on Lookahead
-** Average zzCost of Collocated SB throughout lookahead frames
-** Set isMostOfPictureNonMoving based on number of non moving SBs
-** LAD Window: min (2xmgpos+1 or sliding window size)
-************************************************/
+/************************************************/
+/*!< * Update BEA Information Based on Lookahead
+ *   ** Average zzCost of Collocated SB throughout lookahead frames
+ *   ** Set isMostOfPictureNonMoving based on number of non moving SBs
+ *   ** LAD Window: min (2xmgpos+1 or sliding window size) */
+/************************************************/
 
 void update_bea_info_over_time(EncodeContext *          encode_context_ptr,
                                PictureParentControlSet *pcs_ptr) {
@@ -584,18 +583,18 @@ void update_bea_info_over_time(EncodeContext *          encode_context_ptr,
     uint32_t                        input_queue_index;
 
     SequenceControlSet *scs_ptr = (SequenceControlSet *)pcs_ptr->scs_wrapper_ptr->object_ptr;
-    // Update motionIndexArray of the current picture by averaging the motionIndexArray of the N future pictures
-    // Determine number of frames to check N
+    /*!< Update motionIndexArray of the current picture by averaging the motionIndexArray of the N future pictures
+     *   Determine number of frames to check N */
     update_non_moving_index_array_frames_to_check =
         MIN(MIN(((pcs_ptr->pred_struct_ptr->pred_struct_period << 1) + 1), pcs_ptr->frames_in_sw),
             scs_ptr->static_config.look_ahead_distance);
     uint64_t me_dist           = 0;
     uint8_t  me_dist_pic_count = 0;
-    // SB Loop
+    /*!< SB Loop */
     for (sb_idx = 0; sb_idx < pcs_ptr->sb_total_count; ++sb_idx) {
         uint16_t non_moving_index_over_sliding_window = pcs_ptr->non_moving_index_array[sb_idx];
 
-        // Walk the first N entries in the sliding window starting picture + 1
+        /*!< Walk the first N entries in the sliding window starting picture + 1 */
         input_queue_index =
             (encode_context_ptr->initial_rate_control_reorder_queue_head_index ==
              INITIAL_RATE_CONTROL_REORDER_QUEUE_MAX_DEPTH - 1)
@@ -611,7 +610,8 @@ void update_bea_info_over_time(EncodeContext *          encode_context_ptr,
                      ->object_ptr);
 
             if (temp_pcs_ptr->slice_type == I_SLICE || temp_pcs_ptr->end_of_sequence_flag) break;
-            // Limit the distortion to lower layers 0, 1 and 2 only. Higher layers have close temporal distance and lower distortion that might contaminate the data
+            /*!< Limit the distortion to lower layers 0, 1 and 2 only.
+             *   Higher layers have close temporal distance and lower distortion that might contaminate the data */
             if (temp_pcs_ptr->temporal_layer_index <
                 MAX((int8_t)pcs_ptr->hierarchical_levels - 1, 2)) {
                 if (sb_idx == 0) me_dist_pic_count++;
@@ -619,7 +619,7 @@ void update_bea_info_over_time(EncodeContext *          encode_context_ptr,
                                ? 0
                                : (uint64_t)temp_pcs_ptr->rc_me_distortion[sb_idx];
             }
-            // Store the filtered_sse of next ALT_REF picture in the I slice to be used in QP Scaling
+            /*!< Store the filtered_sse of next ALT_REF picture in the I slice to be used in QP Scaling */
             if (pcs_ptr->slice_type == I_SLICE && pcs_ptr->filtered_sse == 0 && sb_idx == 0 &&
                 temp_pcs_ptr->temporal_layer_index == 0) {
                 pcs_ptr->filtered_sse    = temp_pcs_ptr->filtered_sse;
@@ -627,7 +627,7 @@ void update_bea_info_over_time(EncodeContext *          encode_context_ptr,
             }
             non_moving_index_over_sliding_window += temp_pcs_ptr->non_moving_index_array[sb_idx];
 
-            // Increment the input_queue_index Iterator
+            /*!< Increment the input_queue_index Iterator */
             input_queue_index =
                 (input_queue_index == INITIAL_RATE_CONTROL_REORDER_QUEUE_MAX_DEPTH - 1)
                     ? 0
@@ -646,26 +646,26 @@ void update_bea_info_over_time(EncodeContext *          encode_context_ptr,
     return;
 }
 
-/****************************************
-* Init ZZ Cost array to default values
-** Used when no Lookahead is available
-****************************************/
+/****************************************/
+/*!< * Init ZZ Cost array to default values
+ *   ** Used when no Lookahead is available */
+/****************************************/
 void init_zz_cost_info(PictureParentControlSet *pcs_ptr) {
     uint16_t sb_idx;
     pcs_ptr->non_moving_index_average = INVALID_ZZ_COST;
 
-    // SB Loop
+    /*!< SB Loop */
     for (sb_idx = 0; sb_idx < pcs_ptr->sb_total_count; ++sb_idx)
         pcs_ptr->non_moving_index_array[sb_idx] = INVALID_ZZ_COST;
     return;
 }
 
-/************************************************
-* Update uniform motion field
-** Update Uniformly moving SBs using
-** collocated SBs infor in lookahead pictures
-** LAD Window: min (2xmgpos+1 or sliding window size)
-************************************************/
+/************************************************/
+/*!< * Update uniform motion field
+*    ** Update Uniformly moving SBs using
+*    ** collocated SBs infor in lookahead pictures
+*    ** LAD Window: min (2xmgpos+1 or sliding window size) */
+/************************************************/
 void update_motion_field_uniformity_over_time(EncodeContext *          encode_context_ptr,
                                               SequenceControlSet *     scs_ptr,
                                               PictureParentControlSet *pcs_ptr) {
@@ -675,12 +675,12 @@ void update_motion_field_uniformity_over_time(EncodeContext *          encode_co
     uint32_t                        no_frames_to_check;
     uint32_t                        frames_to_check_index;
     //SVT_LOG("To update POC %d\tframesInSw = %d\n", pcs_ptr->picture_number, pcs_ptr->frames_in_sw);
-    // Determine number of frames to check N
+    /*!< Determine number of frames to check N */
     no_frames_to_check =
         MIN(MIN(((pcs_ptr->pred_struct_ptr->pred_struct_period << 1) + 1), pcs_ptr->frames_in_sw),
             scs_ptr->static_config.look_ahead_distance);
 
-    // Walk the first N entries in the sliding window starting picture + 1
+    /*!< Walk the first N entries in the sliding window starting picture + 1 */
     input_queue_index = (encode_context_ptr->initial_rate_control_reorder_queue_head_index ==
                          INITIAL_RATE_CONTROL_REORDER_QUEUE_MAX_DEPTH - 1)
                             ? 0
@@ -693,7 +693,7 @@ void update_motion_field_uniformity_over_time(EncodeContext *          encode_co
             ((PictureParentControlSet *)(temp_queue_entry_ptr->parent_pcs_wrapper_ptr)->object_ptr);
 
         if (temp_pcs_ptr->end_of_sequence_flag) break;
-        // Increment the input_queue_index Iterator
+        /*!< Increment the input_queue_index Iterator */
         input_queue_index = (input_queue_index == INITIAL_RATE_CONTROL_REORDER_QUEUE_MAX_DEPTH - 1)
                                 ? 0
                                 : input_queue_index + 1;
@@ -728,7 +728,7 @@ void get_histogram_queue_data(SequenceControlSet *scs_ptr, EncodeContext *encode
     HlRateControlHistogramEntry *histogram_queue_entry_ptr;
     int32_t                      histogram_queue_entry_index;
 
-    // Determine offset from the Head Ptr for HLRC histogram queue
+    /*!< Determine offset from the Head Ptr for HLRC histogram queue */
     eb_block_on_mutex(scs_ptr->encode_context_ptr->hl_rate_control_historgram_queue_mutex);
     histogram_queue_entry_index = (int32_t)(
         pcs_ptr->picture_number -
@@ -798,7 +798,7 @@ void update_histogram_queue_entry(SequenceControlSet *scs_ptr, EncodeContext *en
     if (scs_ptr->static_config.rate_control_mode == 2)
         histogram_queue_entry_ptr->life_count +=
             (int16_t)(scs_ptr->static_config.intra_period_length + 1) -
-            3; // FramelevelRC does not decrease the life count for first picture in each temporal layer
+            3; /*!< FramelevelRC does not decrease the life count for first picture in each temporal layer */
     else
         histogram_queue_entry_ptr->life_count += pcs_ptr->historgram_life_count;
 
@@ -808,17 +808,17 @@ void update_histogram_queue_entry(SequenceControlSet *scs_ptr, EncodeContext *en
     return;
 }
 
-/************************************************
-* Initial Rate Control Kernel
-* The Initial Rate Control Process determines the initial bit budget for each
-* picture depending on the data gathered in the Picture Analysis and Motion
-* Analysis processes as well as the settings determined in the Picture Decision process.
-* The Initial Rate Control process also employs a sliding window buffer to analyze multiple
-* pictures if the delay is allowed.  Note that through this process, until the subsequent
-* Picture Manager process, no reference picture data has been used.
-* P.S. Temporal noise reduction is now performed in Initial Rate Control Process.
-* In future we might decide to move it to Motion Analysis Process.
-************************************************/
+/************************************************/
+/*!< * Initial Rate Control Kernel
+ *   * The Initial Rate Control Process determines the initial bit budget for each
+ *   * picture depending on the data gathered in the Picture Analysis and Motion
+ *   * Analysis processes as well as the settings determined in the Picture Decision process.
+ *   * The Initial Rate Control process also employs a sliding window buffer to analyze multiple
+ *   * pictures if the delay is allowed.  Note that through this process, until the subsequent
+ *   * Picture Manager process, no reference picture data has been used.
+ *   * P.S. Temporal noise reduction is now performed in Initial Rate Control Process.
+ *   * In future we might decide to move it to Motion Analysis Process. */
+/************************************************/
 void *initial_rate_control_kernel(void *input_ptr) {
     EbThreadContext *          thread_context_ptr = (EbThreadContext *)input_ptr;
     InitialRateControlContext *context_ptr = (InitialRateControlContext *)thread_context_ptr->priv;
@@ -833,7 +833,7 @@ void *initial_rate_control_kernel(void *input_ptr) {
     EbObjectWrapper *          out_results_wrapper_ptr;
     InitialRateControlResults *out_results_ptr;
 
-    // Queue variables
+    /*!< Queue variables */
     uint32_t                        queue_entry_index_temp;
     uint32_t                        queue_entry_index_temp2;
     InitialRateControlReorderEntry *queue_entry_ptr;
@@ -844,10 +844,10 @@ void *initial_rate_control_kernel(void *input_ptr) {
     uint8_t          temporal_layer_index;
     EbObjectWrapper *reference_picture_wrapper_ptr;
 
-    // Segments
+    /*!< Segments */
     uint32_t segment_index;
     for (;;) {
-        // Get Input Full Object
+        /*!< Get Input Full Object */
         eb_get_full_object(context_ptr->motion_estimation_results_input_fifo_ptr,
                            &in_results_wrapper_ptr);
 
@@ -856,22 +856,22 @@ void *initial_rate_control_kernel(void *input_ptr) {
 
         segment_index = in_results_ptr->segment_index;
 
-        // Set the segment mask
+        /*!< Set the segment mask */
         SEGMENT_COMPLETION_MASK_SET(pcs_ptr->me_segments_completion_mask, segment_index);
 
-        // If the picture is complete, proceed
+        /*!< If the picture is complete, proceed */
         if (SEGMENT_COMPLETION_MASK_TEST(pcs_ptr->me_segments_completion_mask,
                                          pcs_ptr->me_segments_total_count)) {
             scs_ptr            = (SequenceControlSet *)pcs_ptr->scs_wrapper_ptr->object_ptr;
             encode_context_ptr = (EncodeContext *)scs_ptr->encode_context_ptr;
-            // Mark picture when global motion is detected using ME results
-            //reset intra_coded_estimation_sb
+            /*!< Mark picture when global motion is detected using ME results */
+            /*!< reset intra_coded_estimation_sb */
             me_based_global_motion_detection(pcs_ptr);
-            // Release Pa Ref pictures when not needed
+            /*!< Release Pa Ref pictures when not needed */
             release_pa_reference_objects(scs_ptr, pcs_ptr);
 
             //****************************************************
-            // Picture resizing for super-res tool
+            /*!< Picture resizing for super-res tool */
             //****************************************************
 
             // Scale picture if super-res is used
@@ -880,18 +880,18 @@ void *initial_rate_control_kernel(void *input_ptr) {
                                     pcs_ptr);
             }
 
-            //****************************************************
-            // Input Motion Analysis Results into Reordering Queue
-            //****************************************************
+            /****************************************************/
+            /*!< Input Motion Analysis Results into Reordering Queue */
+            /****************************************************/
 
             if (!pcs_ptr->is_overlay)
-                // Determine offset from the Head Ptr
+                /*!< Determine offset from the Head Ptr */
                 queue_entry_ptr =
                     determine_picture_offset_in_queue(encode_context_ptr, pcs_ptr, in_results_ptr);
 
             if (scs_ptr->static_config.rate_control_mode) {
                 if (scs_ptr->static_config.look_ahead_distance != 0) {
-                    // Getting the Histogram Queue Data
+                    /*!< Getting the Histogram Queue Data */
                     get_histogram_queue_data(scs_ptr, encode_context_ptr, pcs_ptr);
                 }
             }
@@ -904,7 +904,7 @@ void *initial_rate_control_kernel(void *input_ptr) {
             pcs_ptr->scene_change_in_gop   = EB_FALSE;
             move_slide_window_flag = EB_TRUE;
             while (move_slide_window_flag) {
-                // Check if the sliding window condition is valid
+                /*!< Check if the sliding window condition is valid */
                 queue_entry_index_temp =
                     encode_context_ptr->initial_rate_control_reorder_queue_head_index;
                 if (encode_context_ptr->initial_rate_control_reorder_queue[queue_entry_index_temp]
@@ -939,7 +939,8 @@ void *initial_rate_control_kernel(void *input_ptr) {
                     if (encode_context_ptr
                             ->initial_rate_control_reorder_queue[queue_entry_index_temp2]
                             ->parent_pcs_wrapper_ptr != EB_NULL) {
-                        // check if it is the last frame. If we have reached the last frame, we would output the buffered frames in the Queue.
+                        /*!< check if it is the last frame. If we have reached the last frame,
+                         *   we would output the buffered frames in the Queue. */
                         end_of_sequence_flag =
                             ((PictureParentControlSet *)(encode_context_ptr
                                                              ->initial_rate_control_reorder_queue
@@ -953,14 +954,16 @@ void *initial_rate_control_kernel(void *input_ptr) {
                 }
 
                 if (move_slide_window_flag) {
-                    //get a new entry spot
+                    /*!< get a new entry spot */
                     queue_entry_ptr =
                         encode_context_ptr->initial_rate_control_reorder_queue
                             [encode_context_ptr->initial_rate_control_reorder_queue_head_index];
                     pcs_ptr = ((PictureParentControlSet *)(queue_entry_ptr->parent_pcs_wrapper_ptr)
                                    ->object_ptr);
                     scs_ptr = (SequenceControlSet *)pcs_ptr->scs_wrapper_ptr->object_ptr;
-                    // overlay picture was not added to the queue. For the alt_ref picture with an overlay picture, it loops on both alt ref and overlay pictures
+                    /*!< overlay picture was not added to the queue.
+                     *   For the alt_ref picture with an overlay picture,
+                     *   it loops on both alt ref and overlay pictures */
                     uint8_t has_overlay = pcs_ptr->is_alt_ref ? 1 : 0;
                     for (uint8_t loop_index = 0; loop_index <= has_overlay; loop_index++) {
                         if (loop_index) pcs_ptr = pcs_ptr->overlay_ppcs_ptr;
@@ -968,7 +971,7 @@ void *initial_rate_control_kernel(void *input_ptr) {
                         queue_entry_index_temp =
                             encode_context_ptr->initial_rate_control_reorder_queue_head_index;
                         end_of_sequence_flag = EB_FALSE;
-                        // find the frames_in_interval for the peroid I frames
+                        /*!< find the frames_in_interval for the peroid I frames */
                         while (
                             !end_of_sequence_flag &&
                             queue_entry_index_temp <=
@@ -1009,55 +1012,57 @@ void *initial_rate_control_kernel(void *input_ptr) {
                             pcs_ptr->end_of_sequence_region = EB_FALSE;
 
                         if (scs_ptr->static_config.rate_control_mode) {
-                            // Determine offset from the Head Ptr for HLRC histogram queue and set the life count
+                            /*!< Determine offset from the Head Ptr for HLRC histogram queue and set the life count */
                             if (scs_ptr->static_config.look_ahead_distance != 0) {
-                                // Update Histogram Queue Entry Life count
+                                /*!< Update Histogram Queue Entry Life count */
                                 update_histogram_queue_entry(
                                     scs_ptr, encode_context_ptr, pcs_ptr, frames_in_sw);
                             }
                         }
 
-                        // Mark each input picture as PAN or not
-                        // If a lookahead is present then check PAN for a period of time
+                        /*!< Mark each input picture as PAN or not */
+                        /*!< If a lookahead is present then check PAN for a period of time */
                         if (!pcs_ptr->end_of_sequence_flag &&
                             scs_ptr->static_config.look_ahead_distance != 0) {
-                            // Check for Pan,Tilt, Zoom and other global motion detectors over the future pictures in the lookahead
+                            /*!< Check for Pan,Tilt, Zoom and other global motion detectors
+                             *   over the future pictures in the lookahead */
                             update_global_motion_detection_over_time(
                                 encode_context_ptr, scs_ptr, pcs_ptr);
                         } else {
                             if (pcs_ptr->slice_type != I_SLICE) detect_global_motion(pcs_ptr);
                         }
 
-                        // BACKGROUND ENHANCEMENT Part II
+                        /*!< BACKGROUND ENHANCEMENT Part II */
                         if (!pcs_ptr->end_of_sequence_flag &&
                             scs_ptr->static_config.look_ahead_distance != 0) {
-                            // Update BEA information based on Lookahead information
+                            /*!< Update BEA information based on Lookahead information */
                             update_bea_info_over_time(encode_context_ptr, pcs_ptr);
                         } else {
-                            // Reset zzCost information to default When there's no lookahead available
+                            /*!< Reset zzCost information to default When there's no lookahead available */
                             init_zz_cost_info(pcs_ptr);
                         }
 
-                        // Use the temporal layer 0 is_sb_motion_field_non_uniform array for all the other layer pictures in the mini GOP
+                        /*!< Use the temporal layer 0 is_sb_motion_field_non_uniform array
+                         *   for all the other layer pictures in the mini GOP */
                         if (!pcs_ptr->end_of_sequence_flag &&
                             scs_ptr->static_config.look_ahead_distance != 0) {
-                            // Updat uniformly moving SBs based on Collocated SBs in LookAhead window
+                            /*!< Update uniformly moving SBs based on Collocated SBs in LookAhead window */
                             update_motion_field_uniformity_over_time(
                                 encode_context_ptr, scs_ptr, pcs_ptr);
                         }
-                        // Get Empty Reference Picture Object
+                        /*!< Get Empty Reference Picture Object */
                         eb_get_empty_object(
                             scs_ptr->encode_context_ptr->reference_picture_pool_fifo_ptr,
                             &reference_picture_wrapper_ptr);
                         if (loop_index) {
                             pcs_ptr->reference_picture_wrapper_ptr = reference_picture_wrapper_ptr;
-                            // Give the new Reference a nominal live_count of 1
+                            /*!< Give the new Reference a nominal live_count of 1 */
                             eb_object_inc_live_count(pcs_ptr->reference_picture_wrapper_ptr, 1);
                         } else {
                             ((PictureParentControlSet *)(queue_entry_ptr->parent_pcs_wrapper_ptr
                                                              ->object_ptr))
                                 ->reference_picture_wrapper_ptr = reference_picture_wrapper_ptr;
-                            // Give the new Reference a nominal live_count of 1
+                            /*!< Give the new Reference a nominal live_count of 1 */
                             eb_object_inc_live_count(
                                 ((PictureParentControlSet *)(queue_entry_ptr->parent_pcs_wrapper_ptr
                                                                  ->object_ptr))
@@ -1072,7 +1077,7 @@ void *initial_rate_control_kernel(void *input_ptr) {
                                 : &pcs_ptr->stat_struct;
                         if (scs_ptr->use_output_stat_file)
                             memset(pcs_ptr->stat_struct_first_pass_ptr, 0, sizeof(StatStruct));
-                        // Get Empty Results Object
+                        /*!< Get Empty Results Object */
                         eb_get_empty_object(
                             context_ptr->initialrate_control_results_output_fifo_ptr,
                             &out_results_wrapper_ptr);
@@ -1085,14 +1090,14 @@ void *initial_rate_control_kernel(void *input_ptr) {
                         else
                             out_results_ptr->pcs_wrapper_ptr =
                                 queue_entry_ptr->parent_pcs_wrapper_ptr;
-                        // Post the Full Results Object
+                        /*!< Post the Full Results Object */
                         eb_post_full_object(out_results_wrapper_ptr);
                     }
-                    // Reset the Reorder Queue Entry
+                    /*!< Reset the Reorder Queue Entry */
                     queue_entry_ptr->picture_number += INITIAL_RATE_CONTROL_REORDER_QUEUE_MAX_DEPTH;
                     queue_entry_ptr->parent_pcs_wrapper_ptr = (EbObjectWrapper *)EB_NULL;
 
-                    // Increment the Reorder Queue head Ptr
+                    /*!< Increment the Reorder Queue head Ptr */
                     encode_context_ptr->initial_rate_control_reorder_queue_head_index =
                         (encode_context_ptr->initial_rate_control_reorder_queue_head_index ==
                          INITIAL_RATE_CONTROL_REORDER_QUEUE_MAX_DEPTH - 1)
@@ -1106,7 +1111,7 @@ void *initial_rate_control_kernel(void *input_ptr) {
             }
         }
 
-        // Release the Input Results
+        /*!< Release the Input Results */
         eb_release_object(in_results_wrapper_ptr);
     }
     return EB_NULL;

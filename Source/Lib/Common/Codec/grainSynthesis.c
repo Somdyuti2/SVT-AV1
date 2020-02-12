@@ -1,18 +1,14 @@
-/*
- * Copyright (c) 2016, Alliance for Open Media. All rights reserved
+/*!< Copyright (c) 2016, Alliance for Open Media. All rights reserved
  *
  * This source code is subject to the terms of the BSD 2 Clause License and
  * the Alliance for Open Media Patent License 1.0. If the BSD 2 Clause License
  * was not distributed with this source code in the LICENSE file, you can
  * obtain it at www.aomedia.org/license/software. If the Alliance for Open
  * Media Patent License 1.0 was not distributed with this source code in the
- * PATENTS file, you can obtain it at www.aomedia.org/license/patent.
- */
+ * PATENTS file, you can obtain it at www.aomedia.org/license/patent. */
 
-/*!\file
-  * \brief Describes film grain parameters and film grain synthesis
-  *
-  */
+/*!< file
+  *  brief Describes film grain parameters and film grain synthesis */
 
 #include <stdio.h>
 #include <string.h>
@@ -20,9 +16,9 @@
 #include "grainSynthesis.h"
 #include "EbLog.h"
 
-// Samples with Gaussian distribution in the range of [-2048, 2047] (12 bits)
-// with zero mean and standard deviation of about 512.
-// should be divided by 4 for 10-bit range and 16 for 8-bit range.
+/*!< Samples with Gaussian distribution in the range of [-2048, 2047] (12 bits)
+ *   with zero mean and standard deviation of about 512.
+ *   should be divided by 4 for 10-bit range and 16 for 8-bit range. */
 static const int32_t gaussian_sequence[2048] = {
     56,    568,   -180, 172,   124,   -84,   172,   -64,   -900,  24,    820,   224,   1248,
     996,   272,   -8,   -916,  -388,  -732,  -104,  -188,  800,   112,   -652,  -320,  -376,
@@ -205,10 +201,10 @@ static int32_t grain_center;
 static int32_t grain_min;
 static int32_t grain_max;
 
-static uint16_t random_register = 0; // random number generator register
+static uint16_t random_register = 0; /*!< random number generator register */
 
-//----------------------------------------------------------------------
-// todo: aomlib memory functions (to be replaced by Eb functions)
+/*********************************************************************/
+/*!< todo: aomlib memory functions (to be replaced by Eb functions) */
 /*
 #define ADDRESS_STORAGE_SIZE sizeof(size_t)
 #define DEFAULT_ALIGNMENT (2 * sizeof(void *))
@@ -391,7 +387,7 @@ static void dealloc_arrays(AomFilmGrain *params, int32_t ***pred_pos_luma,
     free(*cr_grain_block);
 }
 
-// get a number between 0 and 2^bits - 1
+/*!< get a number between 0 and 2^bits - 1 */
 static INLINE int32_t get_random_number(int32_t bits) {
     uint16_t bit;
     bit = ((random_register >> 0) ^ (random_register >> 1) ^ (random_register >> 3) ^
@@ -402,14 +398,14 @@ static INLINE int32_t get_random_number(int32_t bits) {
 }
 
 static void init_random_generator(int32_t luma_line, uint16_t seed) {
-    // same for the picture
+    /*!< same for the picture */
 
     uint16_t msb = (seed >> 8) & 255;
     uint16_t lsb = seed & 255;
 
     random_register = (msb << 8) + lsb;
 
-    //  changes for each row
+    /*!< changes for each row */
     int32_t luma_num = luma_line >> 5;
 
     random_register ^= ((luma_num * 37 + 178) & 255) << 8;
@@ -561,8 +557,8 @@ static void init_scaling_function(int32_t scaling_points[][2], int32_t num_point
         scaling_lut[i] = scaling_points[num_points - 1][1];
 }
 
-// function that extracts samples from a lut (and interpolates intemediate
-// frames for 10- and 12-bit video)
+/*!< function that extracts samples from a lut (and interpolates intemediate
+ *   frames for 10- and 12-bit video) */
 static int32_t scale_lut(int32_t *scaling_lut, int32_t index, int32_t bit_depth) {
     int32_t x = index >> (bit_depth - 8);
 
@@ -581,12 +577,12 @@ static void add_noise_to_block(AomFilmGrain *params, uint8_t *luma, uint8_t *cb,
                                int32_t chroma_grain_stride, int32_t half_luma_height,
                                int32_t half_luma_width, int32_t bit_depth, int32_t chroma_subsamp_y,
                                int32_t chroma_subsamp_x) {
-    int32_t cb_mult      = params->cb_mult - 128; // fixed scale
-    int32_t cb_luma_mult = params->cb_luma_mult - 128; // fixed scale
+    int32_t cb_mult      = params->cb_mult - 128; /*!< fixed scale */
+    int32_t cb_luma_mult = params->cb_luma_mult - 128; /*!< fixed scale */
     int32_t cb_offset    = params->cb_offset - 256;
 
-    int32_t cr_mult      = params->cr_mult - 128; // fixed scale
-    int32_t cr_luma_mult = params->cr_luma_mult - 128; // fixed scale
+    int32_t cr_mult      = params->cr_mult - 128; /*!< fixed scale */
+    int32_t cr_luma_mult = params->cr_luma_mult - 128; /*!< fixed scale */
     int32_t cr_offset    = params->cr_offset - 256;
 
     int32_t rounding_offset = (1 << (params->scaling_shift - 1));
@@ -596,12 +592,12 @@ static void add_noise_to_block(AomFilmGrain *params, uint8_t *luma, uint8_t *cb,
     int32_t apply_cr = params->num_cr_points > 0 ? 1 : 0;
 
     if (params->chroma_scaling_from_luma) {
-        cb_mult      = 0; // fixed scale
-        cb_luma_mult = 64; // fixed scale
+        cb_mult      = 0; /*!< fixed scale */
+        cb_luma_mult = 64; /*!< fixed scale */
         cb_offset    = 0;
 
-        cr_mult      = 0; // fixed scale
-        cr_luma_mult = 64; // fixed scale
+        cr_mult      = 0; /*!< fixed scale */
+        cr_luma_mult = 64; /*!< fixed scale */
         cr_offset    = 0;
     }
 
@@ -689,14 +685,14 @@ static void add_noise_to_block_hbd(AomFilmGrain *params, uint16_t *luma, uint16_
                                    int32_t chroma_grain_stride, int32_t half_luma_height,
                                    int32_t half_luma_width, int32_t bit_depth,
                                    int32_t chroma_subsamp_y, int32_t chroma_subsamp_x) {
-    int32_t cb_mult      = params->cb_mult - 128; // fixed scale
-    int32_t cb_luma_mult = params->cb_luma_mult - 128; // fixed scale
-    // offset value depends on the bit depth
+    int32_t cb_mult      = params->cb_mult - 128; /*!< fixed scale */
+    int32_t cb_luma_mult = params->cb_luma_mult - 128; /*!< fixed scale */
+    /*!< offset value depends on the bit depth */
     int32_t cb_offset = (params->cb_offset << (bit_depth - 8)) - (1 << bit_depth);
 
-    int32_t cr_mult      = params->cr_mult - 128; // fixed scale
-    int32_t cr_luma_mult = params->cr_luma_mult - 128; // fixed scale
-    // offset value depends on the bit depth
+    int32_t cr_mult      = params->cr_mult - 128; /*!< fixed scale */
+    int32_t cr_luma_mult = params->cr_luma_mult - 128; /*!< fixed scale */
+    /*!< offset value depends on the bit depth */
     int32_t cr_offset = (params->cr_offset << (bit_depth - 8)) - (1 << bit_depth);
 
     int32_t rounding_offset = (1 << (params->scaling_shift - 1));
@@ -706,12 +702,12 @@ static void add_noise_to_block_hbd(AomFilmGrain *params, uint16_t *luma, uint16_
     int32_t apply_cr = params->num_cr_points > 0 ? 1 : 0;
 
     if (params->chroma_scaling_from_luma) {
-        cb_mult      = 0; // fixed scale
-        cb_luma_mult = 64; // fixed scale
+        cb_mult      = 0; /*!< fixed scale */
+        cb_luma_mult = 64; /*!< fixed scale */
         cb_offset    = 0;
 
-        cr_mult      = 0; // fixed scale
-        cr_luma_mult = 64; // fixed scale
+        cr_mult      = 0; /*!< fixed scale */
+        cr_luma_mult = 64; /*!< fixed scale */
         cr_offset    = 0;
     }
 
@@ -940,11 +936,11 @@ void eb_av1_add_film_grain_run(AomFilmGrain *params, uint8_t *luma, uint8_t *cb,
     random_register = params->random_seed;
 
     int32_t left_pad   = 3;
-    int32_t right_pad  = 3; // padding to offset for AR coefficients
+    int32_t right_pad  = 3; /*!< padding to offset for AR coefficients */
     int32_t top_pad    = 3;
     int32_t bottom_pad = 0;
 
-    int32_t ar_padding = 3; // maximum lag used for stabilization of AR coefficients
+    int32_t ar_padding = 3; /*!< maximum lag used for stabilization of AR coefficients */
 
     luma_subblock_size_y = 32;
     luma_subblock_size_x = 32;
@@ -952,10 +948,10 @@ void eb_av1_add_film_grain_run(AomFilmGrain *params, uint8_t *luma, uint8_t *cb,
     chroma_subblock_size_y = luma_subblock_size_y >> chroma_subsamp_y;
     chroma_subblock_size_x = luma_subblock_size_x >> chroma_subsamp_x;
 
-    // Initial padding is only needed for generation of
-    // film grain templates (to stabilize the AR process)
-    // Only a 64x64 luma and 32x32 chroma part of a template
-    // is used later for adding grain, padding can be discarded
+    /*!< Initial padding is only needed for generation of
+     *   film grain templates (to stabilize the AR process)
+     *   Only a 64x64 luma and 32x32 chroma part of a template
+     *   is used later for adding grain, padding can be discarded */
 
     int32_t luma_block_size_y = top_pad + 2 * ar_padding + luma_subblock_size_y * 2 + bottom_pad;
     int32_t luma_block_size_x =
@@ -1008,7 +1004,7 @@ void eb_av1_add_film_grain_run(AomFilmGrain *params, uint8_t *luma, uint8_t *cb,
                               bottom_pad);
 
     generate_chroma_grain_blocks(params,
-                                 //                               pred_pos_luma,
+                                 /*!<                               pred_pos_luma,*/
                                  pred_pos_chroma,
                                  luma_grain_block,
                                  cb_grain_block,
@@ -1292,7 +1288,7 @@ void eb_av1_add_film_grain_run(AomFilmGrain *params, uint8_t *luma, uint8_t *cb,
 
             if (overlap) {
                 if (x) {
-                    // Copy overlapped column bufer to line buffer
+                    /*!< Copy overlapped column bufer to line buffer */
                     copy_area(y_col_buf + (luma_subblock_size_y << 1),
                               2,
                               y_line_buf + (x << 1),
@@ -1315,7 +1311,7 @@ void eb_av1_add_film_grain_run(AomFilmGrain *params, uint8_t *luma, uint8_t *cb,
                               2 >> chroma_subsamp_y);
                 }
 
-                // Copy grain to the line buffer for overlap with a bottom block
+                /*!< Copy grain to the line buffer for overlap with a bottom block */
                 copy_area(luma_grain_block +
                               (luma_offset_y + luma_subblock_size_y) * luma_grain_stride +
                               luma_offset_x + ((x ? 2 : 0)),
@@ -1345,8 +1341,7 @@ void eb_av1_add_film_grain_run(AomFilmGrain *params, uint8_t *luma, uint8_t *cb,
                               (x ? 2 >> chroma_subsamp_x : 0),
                           2 >> chroma_subsamp_y);
 
-                // Copy grain to the column buffer for overlap with the next block to
-                // the right
+                /*!< Copy grain to the column buffer for overlap with the next block to the right */
 
                 copy_area(luma_grain_block + luma_offset_y * luma_grain_stride + luma_offset_x +
                               luma_subblock_size_x,

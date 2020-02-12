@@ -1,7 +1,5 @@
-/*
-* Copyright(c) 2019 Intel Corporation
-* SPDX - License - Identifier: BSD - 2 - Clause - Patent
-*/
+/*!< Copyright(c) 2019 Intel Corporation
+* SPDX - License - Identifier: BSD - 2 - Clause - Patent */
 
 #ifndef EbHighbdIntraPrediction_SSE2_h
 #define EbHighbdIntraPrediction_SSE2_h
@@ -29,7 +27,7 @@ static INLINE __m128i dc_sum_4x16bit(const __m128i src) {
 }
 
 static INLINE __m128i dc_sum_4x16bit_large(const __m128i src) {
-    // Unpack to avoid 12-bit overflow.
+    /*!< Unpack to avoid 12-bit overflow. */
     const __m128i src_32 = _mm_unpacklo_epi16(src, _mm_setzero_si128());
     return dc_sum_4x32bit(src_32);
 }

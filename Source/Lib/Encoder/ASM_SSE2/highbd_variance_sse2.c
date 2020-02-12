@@ -1,13 +1,11 @@
-/*
- * Copyright (c) 2016, Alliance for Open Media. All rights reserved
+/*!< Copyright (c) 2016, Alliance for Open Media. All rights reserved
  *
  * This source code is subject to the terms of the BSD 2 Clause License and
  * the Alliance for Open Media Patent License 1.0. If the BSD 2 Clause License
  * was not distributed with this source code in the LICENSE file, you can
  * obtain it at www.aomedia.org/license/software. If the Alliance for Open
  * Media Patent License 1.0 was not distributed with this source code in the
- * PATENTS file, you can obtain it at www.aomedia.org/license/patent.
- */
+ * PATENTS file, you can obtain it at www.aomedia.org/license/patent. */
 
 #include "EbDefinitions.h"
 #include "aom_dsp_rtcd.h"
@@ -239,7 +237,7 @@ void eb_aom_highbd_8_mse16x16_sse2(const uint8_t *src8, int32_t src_stride, cons
     uint16_t *src = CONVERT_TO_SHORTPTR(src8);
     uint16_t *ref = CONVERT_TO_SHORTPTR(ref8);
 
-    /*TODO: Remove calculate unused sum.*/
+    /*!< TODO: Remove calculate unused sum. */
     highbd_8_variance_sse2(
         src, src_stride, ref, ref_stride, 16, 16, sse, &sum, aom_highbd_calc16x16var_sse2, 16);
 }

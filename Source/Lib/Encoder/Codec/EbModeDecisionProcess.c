@@ -1,7 +1,5 @@
-/*
-* Copyright(c) 2019 Intel Corporation
-* SPDX - License - Identifier: BSD - 2 - Clause - Patent
-*/
+/*!< Copyright(c) 2019 Intel Corporation
+ * SPDX - License - Identifier: BSD - 2 - Clause - Patent */
 
 #include <stdlib.h>
 
@@ -26,7 +24,7 @@ static void mode_decision_context_dctor(EbPtr p) {
     EB_FREE_ARRAY(obj->ref_best_cost_sq_table);
     EB_FREE_ARRAY(obj->above_txfm_context);
     EB_FREE_ARRAY(obj->left_txfm_context);
-#if NO_ENCDEC //SB128_TODO to upgrade
+#if NO_ENCDEC /*!< SB128_TODO to upgrade */
     int coded_leaf_index;
     for (coded_leaf_index = 0; coded_leaf_index < BLOCK_MAX_COUNT_SB_128; ++coded_leaf_index) {
         EB_DELETE(obj->md_blk_arr_nsq[coded_leaf_index].recon_tmp);
@@ -65,9 +63,9 @@ static void mode_decision_context_dctor(EbPtr p) {
     EB_FREE_ARRAY(obj->md_ep_pipe_sb);
 }
 
-/******************************************************
- * Mode Decision Context Constructor
- ******************************************************/
+/******************************************************/
+/*!< Mode Decision Context Constructor */
+/******************************************************/
 EbErrorType mode_decision_context_ctor(ModeDecisionContext *context_ptr, EbColorFormat color_format,
                                        EbFifo *mode_decision_configuration_input_fifo_ptr,
                                        EbFifo *mode_decision_output_fifo_ptr,
@@ -80,17 +78,17 @@ EbErrorType mode_decision_context_ctor(ModeDecisionContext *context_ptr, EbColor
     context_ptr->dctor             = mode_decision_context_dctor;
     context_ptr->hbd_mode_decision = enable_hbd_mode_decision;
 
-    // Input/Output System Resource Manager FIFOs
+    /*!< Input/Output System Resource Manager FIFOs */
     context_ptr->mode_decision_configuration_input_fifo_ptr =
         mode_decision_configuration_input_fifo_ptr;
     context_ptr->mode_decision_output_fifo_ptr = mode_decision_output_fifo_ptr;
 
-    // Cfl scratch memory
+    /*!< Cfl scratch memory */
     if (context_ptr->hbd_mode_decision > EB_8_BIT_MD)
         EB_MALLOC_ALIGNED(context_ptr->cfl_temp_luma_recon16bit, sizeof(uint16_t) * 128 * 128);
     if (context_ptr->hbd_mode_decision != EB_10_BIT_MD)
         EB_MALLOC_ALIGNED(context_ptr->cfl_temp_luma_recon, sizeof(uint8_t) * 128 * 128);
-    // MD rate Estimation tables
+    /*!< MD rate Estimation tables */
     EB_MALLOC_ARRAY(context_ptr->md_rate_estimation_ptr, 1);
     context_ptr->is_md_rate_estimation_ptr_owner = EB_TRUE;
 
@@ -98,7 +96,7 @@ EbErrorType mode_decision_context_ctor(ModeDecisionContext *context_ptr, EbColor
     EB_MALLOC_ARRAY(context_ptr->md_blk_arr_nsq, BLOCK_MAX_COUNT_SB_128);
     EB_MALLOC_ARRAY(context_ptr->md_ep_pipe_sb, BLOCK_MAX_COUNT_SB_128);
 
-    // Fast Candidate Array
+    /*!< Fast Candidate Array */
     EB_MALLOC_ARRAY(context_ptr->fast_candidate_array, MODE_DECISION_CANDIDATE_MAX_COUNT);
 
     EB_MALLOC_ARRAY(context_ptr->fast_candidate_ptr_array, MODE_DECISION_CANDIDATE_MAX_COUNT);
@@ -120,15 +118,15 @@ EbErrorType mode_decision_context_ctor(ModeDecisionContext *context_ptr, EbColor
             EB_MALLOC_ARRAY(context_ptr->palette_cand_array[cd].color_idx_map, MAX_PALETTE_SQUARE);
         else
             context_ptr->palette_cand_array[cd].color_idx_map = NULL;
-    // Transform and Quantization Buffers
+    /*!< Transform and Quantization Buffers */
     EB_NEW(context_ptr->trans_quant_buffers_ptr, eb_trans_quant_buffers_ctor);
 
-    // Cost Arrays
+    /*!< Cost Arrays */
     EB_MALLOC_ARRAY(context_ptr->fast_cost_array, MAX_NFL_BUFF);
     EB_MALLOC_ARRAY(context_ptr->full_cost_array, MAX_NFL_BUFF);
     EB_MALLOC_ARRAY(context_ptr->full_cost_skip_ptr, MAX_NFL_BUFF);
     EB_MALLOC_ARRAY(context_ptr->full_cost_merge_ptr, MAX_NFL_BUFF);
-    // Candidate Buffers
+    /*!< Candidate Buffers */
     EB_ALLOC_PTR_ARRAY(context_ptr->candidate_buffer_ptr_array, MAX_NFL_BUFF);
     for (buffer_index = 0; buffer_index < MAX_NFL_BUFF; ++buffer_index) {
         EB_NEW(context_ptr->candidate_buffer_ptr_array[buffer_index],
@@ -194,7 +192,7 @@ EbErrorType mode_decision_context_ctor(ModeDecisionContext *context_ptr, EbColor
                 MAX_PALETTE_SQUARE);
         else
             context_ptr->md_blk_arr_nsq[coded_leaf_index].palette_info.color_idx_map = NULL;
-#if NO_ENCDEC //SB128_TODO to upgrade
+#if NO_ENCDEC /*!< SB128_TODO to upgrade */
         {
             EbPictureBufferDescInitData init_data;
 
@@ -237,9 +235,9 @@ EbErrorType mode_decision_context_ctor(ModeDecisionContext *context_ptr, EbColor
     return EB_ErrorNone;
 }
 
-/**************************************************
- * Reset Mode Decision Neighbor Arrays
- *************************************************/
+/**************************************************/
+/*!< Reset Mode Decision Neighbor Arrays */
+/*************************************************/
 #if TILES_PARALLEL
 void reset_mode_decision_neighbor_arrays(PictureControlSet *pcs_ptr, uint16_t tile_idx) {
     uint8_t depth;
@@ -337,7 +335,7 @@ extern void lambda_assign_low_delay(uint32_t *fast_lambda, uint32_t *full_lambda
         *full_lambda            = lambda_mode_decision_ld_sse[qp];
         *full_chroma_lambda     = lambda_mode_decision_ld_sse[qp];
         *full_chroma_lambda_sao = lambda_mode_decision_ld_sse[chroma_qp];
-    } else { // Hierarchical postions 1, 2, 3, 4, 5
+    } else { /*!< Hierarchical postions 1, 2, 3, 4, 5 */
         *fast_lambda            = lambda_mode_decision_ld_sad_qp_scaling[qp];
         *fast_chroma_lambda     = lambda_mode_decision_ld_sad_qp_scaling[qp];
         *full_lambda            = lambda_mode_decision_ld_sse_qp_scaling[qp];
@@ -358,14 +356,14 @@ void lambda_assign_random_access(uint32_t *fast_lambda, uint32_t *full_lambda,
         *full_lambda            = lambda_mode_decision_ra_sse[qp];
         *full_chroma_lambda     = lambda_mode_decision_ra_sse[qp];
         *full_chroma_lambda_sao = lambda_mode_decision_ra_sse[chroma_qp];
-    } else if (qp_hierarchical_position < 3) { // Hierarchical postions 1, 2
+    } else if (qp_hierarchical_position < 3) { /*!< Hierarchical postions 1, 2 */
 
         *fast_lambda            = lambda_mode_decision_ra_sad_qp_scaling_l1[qp];
         *fast_chroma_lambda     = lambda_mode_decision_ra_sad_qp_scaling_l1[qp];
         *full_lambda            = lambda_mode_decision_ra_sse_qp_scaling_l1[qp];
         *full_chroma_lambda     = lambda_mode_decision_ra_sse_qp_scaling_l1[qp];
         *full_chroma_lambda_sao = lambda_mode_decision_ra_sse_qp_scaling_l1[chroma_qp];
-    } else { // Hierarchical postions 3, 4, 5
+    } else { /*!< Hierarchical postions 3, 4, 5 */
         *fast_lambda            = lambda_mode_decision_ra_sad_qp_scaling_l3[qp];
         *fast_chroma_lambda     = lambda_mode_decision_ra_sad_qp_scaling_l3[qp];
         *full_lambda            = lambda_mode_decision_ra_sse_qp_scaling_l3[qp];
@@ -389,10 +387,10 @@ void lambda_assign_i_slice(uint32_t *fast_lambda, uint32_t *full_lambda,
     }
 }
 const EbLambdaAssignFunc lambda_assignment_function_table[4] = {
-    lambda_assign_low_delay, // low delay P
-    lambda_assign_low_delay, // low delay b
-    lambda_assign_random_access, // Random Access
-    lambda_assign_i_slice // I_SLICE
+    lambda_assign_low_delay, /*!< low delay P */
+    lambda_assign_low_delay, /*!< low delay b */
+    lambda_assign_random_access, /*!< Random Access */
+    lambda_assign_i_slice /*!< I_SLICE */
 };
 
 void av1_lambda_assign(uint32_t *fast_lambda, uint32_t *full_lambda, uint32_t *fast_chroma_lambda,
@@ -416,12 +414,12 @@ void av1_lambda_assign(uint32_t *fast_lambda, uint32_t *full_lambda, uint32_t *f
         assert(bit_depth <= 12);
     }
 
-    //*full_lambda = 0; //-------------Nader
+    //*full_lambda = 0; /*!< -------------Nader */
     //*fast_lambda = 0;
     *fast_chroma_lambda = *fast_lambda;
     *full_chroma_lambda = *full_lambda;
 
-    // NM: To be done: tune lambda based on the picture type and layer.
+    /*!< NM: To be done: tune lambda based on the picture type and layer. */
 }
 const EbAv1LambdaAssignFunc av1_lambda_assignment_function_table[4] = {
     av1_lambda_assign,
@@ -439,11 +437,11 @@ void reset_mode_decision(SequenceControlSet *scs_ptr, ModeDecisionContext *conte
                          PictureControlSet *pcs_ptr, uint32_t segment_index) {
 #endif
     FrameHeader *frm_hdr = &pcs_ptr->parent_pcs_ptr->frm_hdr;
-    // QP
+    /*!< QP */
     uint16_t picture_qp   = pcs_ptr->parent_pcs_ptr->frm_hdr.quantization_params.base_q_idx;
     context_ptr->qp       = picture_qp;
     context_ptr->qp_index = context_ptr->qp;
-    // Asuming cb and cr offset to be the same for chroma QP in both slice and pps for lambda computation
+    /*!< Asuming cb and cr offset to be the same for chroma QP in both slice and pps for lambda computation */
     context_ptr->chroma_qp = (uint8_t)context_ptr->qp;
     context_ptr->qp_index  = (uint8_t)frm_hdr->quantization_params.base_q_idx;
     (*av1_lambda_assignment_function_table[pcs_ptr->parent_pcs_ptr->pred_structure])(
@@ -454,7 +452,7 @@ void reset_mode_decision(SequenceControlSet *scs_ptr, ModeDecisionContext *conte
         (uint8_t)pcs_ptr->parent_pcs_ptr->enhanced_picture_ptr->bit_depth,
         context_ptr->qp_index,
         context_ptr->hbd_mode_decision);
-    // Reset MD rate Estimation table to initial values by copying from md_rate_estimation_array
+    /*!< Reset MD rate Estimation table to initial values by copying from md_rate_estimation_array */
     if (context_ptr->is_md_rate_estimation_ptr_owner) {
         context_ptr->is_md_rate_estimation_ptr_owner = EB_FALSE;
         EB_FREE_ARRAY(context_ptr->md_rate_estimation_ptr);
@@ -465,10 +463,10 @@ void reset_mode_decision(SequenceControlSet *scs_ptr, ModeDecisionContext *conte
         context_ptr->fast_candidate_ptr_array[cand_index]->md_rate_estimation_ptr =
             context_ptr->md_rate_estimation_ptr;
 
-    // Reset CABAC Contexts
+    /*!< Reset CABAC Contexts */
     context_ptr->coeff_est_entropy_coder_ptr = pcs_ptr->coeff_est_entropy_coder_ptr;
 
-    // Reset Neighbor Arrays at start of new Segment / Picture
+    /*!< Reset Neighbor Arrays at start of new Segment / Picture */
     if (segment_index == 0) {
 #if TILES_PARALLEL
         for (uint16_t r =
@@ -491,21 +489,22 @@ void reset_mode_decision(SequenceControlSet *scs_ptr, ModeDecisionContext *conte
     return;
 }
 
-/******************************************************
- * Mode Decision Configure SB
- ******************************************************/
+/******************************************************/
+/* Mode Decision Configure SB */
+/******************************************************/
 void mode_decision_configure_sb(ModeDecisionContext *context_ptr, PictureControlSet *pcs_ptr,
                                 uint8_t sb_qp) {
     (void)pcs_ptr;
-    //Disable Lambda update per SB
+    /*!< Disable Lambda update per SB */
     context_ptr->qp = sb_qp;
-    // Asuming cb and cr offset to be the same for chroma QP in both slice and pps for lambda computation
+    /*!< Asuming cb and cr offset to be the same for chroma QP in both slice and pps for lambda computation */
 
     context_ptr->chroma_qp = (uint8_t)context_ptr->qp;
 
-    /* Note(CHKN) : when Qp modulation varies QP on a sub-SB(CU) basis,  Lamda has to change based on Cu->QP , and then this code has to move inside the CU loop in MD */
+    /*!< Note(CHKN) : when Qp modulation varies QP on a sub-SB(CU) basis,
+     *   Lamda has to change based on Cu->QP , and then this code has to move inside the CU loop in MD */
 
-    // Lambda Assignement
+    /*!< Lambda Assignement */
     context_ptr->qp_index =
         pcs_ptr->parent_pcs_ptr->frm_hdr.delta_q_params.delta_q_present
             ? (uint8_t)quantizer_to_qindex[sb_qp]

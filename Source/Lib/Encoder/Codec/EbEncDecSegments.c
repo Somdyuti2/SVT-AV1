@@ -1,7 +1,5 @@
-/*
-* Copyright(c) 2019 Intel Corporation
-* SPDX - License - Identifier: BSD - 2 - Clause - Patent
-*/
+/*!< Copyright(c) 2019 Intel Corporation
+ * SPDX - License - Identifier: BSD - 2 - Clause - Patent */
 
 #include <stdlib.h>
 #include <string.h>
@@ -33,19 +31,19 @@ EbErrorType enc_dec_segments_ctor(EncDecSegments *segments_ptr, uint32_t segment
     segments_ptr->segment_max_total_count =
         segments_ptr->segment_max_row_count * segments_ptr->segment_max_band_count;
 
-    // Start Arrays
+    /*!< Start Arrays */
     EB_MALLOC_ARRAY(segments_ptr->x_start_array, segments_ptr->segment_max_total_count);
 
     EB_MALLOC_ARRAY(segments_ptr->y_start_array, segments_ptr->segment_max_total_count);
 
     EB_MALLOC_ARRAY(segments_ptr->valid_sb_count_array, segments_ptr->segment_max_total_count);
 
-    // Dependency map
+    /*!< Dependency map */
     EB_MALLOC_ARRAY(segments_ptr->dep_map.dependency_map, segments_ptr->segment_max_total_count);
 
     EB_CREATE_MUTEX(segments_ptr->dep_map.update_mutex);
 
-    // Segment rows
+    /*!< Segment rows */
     EB_MALLOC_ARRAY(segments_ptr->row_array, segments_ptr->segment_max_row_count);
     for (row_index = 0; row_index < segments_ptr->segment_max_row_count; ++row_index) {
         segments_ptr->row_array[row_index].assignment_mutex = NULL;
@@ -83,7 +81,7 @@ void enc_dec_segments_init(EncDecSegments *segments_ptr, uint32_t segColCount, u
     EB_MEMSET(segments_ptr->x_start_array, -1, sizeof(uint16_t) * segments_ptr->segment_ttl_count);
     EB_MEMSET(segments_ptr->y_start_array, -1, sizeof(uint16_t) * segments_ptr->segment_ttl_count);
 
-    // Initialize the per-SB input availability map & Start Arrays
+    /*!< Initialize the per-SB input availability map & Start Arrays */
     for (y = 0; y < pic_height_sb; ++y) {
         for (x = 0; x < pic_width_sb; ++x) {
             band_index =
@@ -104,7 +102,7 @@ void enc_dec_segments_init(EncDecSegments *segments_ptr, uint32_t segColCount, u
         }
     }
 
-    // Initialize the row-based controls
+    /*!< Initialize the row-based controls */
     for (row_index = 0; row_index < segments_ptr->segment_row_count; ++row_index) {
         y = ((row_index * segments_ptr->sb_row_count) + (segments_ptr->segment_row_count - 1)) /
             segments_ptr->segment_row_count;
@@ -127,19 +125,19 @@ void enc_dec_segments_init(EncDecSegments *segments_ptr, uint32_t segColCount, u
             segments_ptr->row_array[row_index].starting_seg_index;
     }
 
-    // Initialize the per-segment dependency map
+    /*!< Initialize the per-segment dependency map */
     EB_MEMSET(
         segments_ptr->dep_map.dependency_map, 0, sizeof(uint8_t) * segments_ptr->segment_ttl_count);
     for (row_index = 0; row_index < segments_ptr->segment_row_count; ++row_index) {
         for (segment_index = segments_ptr->row_array[row_index].starting_seg_index;
              segment_index <= segments_ptr->row_array[row_index].ending_seg_index;
              ++segment_index) {
-            // Check that segment is valid
+            /*!< Check that segment is valid */
             if (segments_ptr->valid_sb_count_array[segment_index]) {
-                // Right Neighbor
+                /*!< Right Neighbor */
                 if (segment_index < segments_ptr->row_array[row_index].ending_seg_index)
                     ++segments_ptr->dep_map.dependency_map[segment_index + 1];
-                // Bottom Neighbor
+                /*!< Bottom Neighbor */
                 if (row_index < segments_ptr->segment_row_count - 1 &&
                     segment_index + segments_ptr->segment_band_count >=
                         segments_ptr->row_array[row_index + 1].starting_seg_index)

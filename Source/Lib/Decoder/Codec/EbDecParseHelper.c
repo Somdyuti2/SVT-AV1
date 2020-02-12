@@ -1,18 +1,14 @@
-/*
-* Copyright(c) 2019 Netflix, Inc.
-* SPDX - License - Identifier: BSD - 2 - Clause - Patent
-*/
+/*!< Copyright(c) 2019 Netflix, Inc.
+ * SPDX - License - Identifier: BSD - 2 - Clause - Patent */
 
-/*
-* Copyright (c) 2016, Alliance for Open Media. All rights reserved
-*
-* This source code is subject to the terms of the BSD 2 Clause License and
-* the Alliance for Open Media Patent License 1.0. If the BSD 2 Clause License
-* was not distributed with this source code in the LICENSE file, you can
-* obtain it at www.aomedia.org/license/software. If the Alliance for Open
-* Media Patent License 1.0 was not distributed with this source code in the
-* PATENTS file, you can obtain it at www.aomedia.org/license/patent.
-*/
+/* Copyright (c) 2016, Alliance for Open Media. All rights reserved
+ *
+ * This source code is subject to the terms of the BSD 2 Clause License and
+ * the Alliance for Open Media Patent License 1.0. If the BSD 2 Clause License
+ * was not distributed with this source code in the LICENSE file, you can
+ * obtain it at www.aomedia.org/license/software. If the Alliance for Open
+ * Media Patent License 1.0 was not distributed with this source code in the
+ * PATENTS file, you can obtain it at www.aomedia.org/license/patent. */
 
 #include "EbDefinitions.h"
 #include "EbSvtAv1Dec.h"
@@ -121,7 +117,7 @@ TxSize read_selected_tx_size(PartitionInfo *xd, ParseCtxt *parse_ctxt) {
     const int32_t   tx_size_cat  = bsize_to_tx_size_cat(bsize);
     const int       max_tx_depth = bsize_to_max_depth(bsize);
     const int       ctx          = get_tx_size_context(xd, parse_ctxt);
-    /*TODO : Change idx */
+    /*!< TODO : Change idx */
     const int depth = svt_read_symbol(
         r, parse_ctxt->cur_tile_ctx.tx_size_cdf[tx_size_cat][ctx], max_tx_depth + 1, ACCT_STR);
     assert(depth >= 0 && depth <= max_tx_depth);
@@ -135,11 +131,11 @@ int get_intra_inter_context(PartitionInfo *xd) {
     const int                  has_above  = xd->up_available;
     const int                  has_left   = xd->left_available;
 
-    if (has_above && has_left) { // both edges available
+    if (has_above && has_left) { /*!< both edges available */
         const int above_intra = !is_inter_block(above_mbmi);
         const int left_intra  = !is_inter_block(left_mbmi);
         return left_intra && above_intra ? 3 : left_intra || above_intra;
-    } else if (has_above || has_left) { // one edge available
+    } else if (has_above || has_left) { /*!< one edge available */
         return 2 * !is_inter_block(has_above ? above_mbmi : left_mbmi);
     } else
         return 0;
@@ -225,61 +221,61 @@ int get_comp_reference_type_context(const PartitionInfo *xd) {
     const int                  above_in_image = xd->up_available;
     const int                  left_in_image  = xd->left_available;
 
-    if (above_in_image && left_in_image) { // both edges available
+    if (above_in_image && left_in_image) { /*!< both edges available */
         const int above_intra = !is_inter_block(above_mbmi);
         const int left_intra  = !is_inter_block(left_mbmi);
 
-        if (above_intra && left_intra) { // intra/intra
+        if (above_intra && left_intra) { /*!< intra/intra */
             pred_context = 2;
-        } else if (above_intra || left_intra) { // intra/inter
+        } else if (above_intra || left_intra) { /*!< intra/inter */
             const BlockModeInfo *inter_mbmi = above_intra ? left_mbmi : above_mbmi;
 
-            if (!has_second_ref(inter_mbmi)) // single pred
+            if (!has_second_ref(inter_mbmi)) /*!< single pred */
                 pred_context = 2;
-            else // comp pred
+            else /*!< comp pred */
                 pred_context = 1 + 2 * has_uni_comp_refs(inter_mbmi);
-        } else { // inter/inter
+        } else { /*!< inter/inter */
             const int              a_sg = !has_second_ref(above_mbmi);
             const int              l_sg = !has_second_ref(left_mbmi);
             const MvReferenceFrame frfa = above_mbmi->ref_frame[0];
             const MvReferenceFrame frfl = left_mbmi->ref_frame[0];
 
-            if (a_sg && l_sg) { // single/single
+            if (a_sg && l_sg) { /*!< single/single */
                 pred_context =
                     1 + 2 * (!(IS_BACKWARD_REF_FRAME(frfa) ^ IS_BACKWARD_REF_FRAME(frfl)));
-            } else if (l_sg || a_sg) { // single/comp
+            } else if (l_sg || a_sg) { /*!< single/comp */
                 const int uni_rfc =
                     a_sg ? has_uni_comp_refs(left_mbmi) : has_uni_comp_refs(above_mbmi);
 
-                if (!uni_rfc) // comp bidir
+                if (!uni_rfc) /*!< comp bidir */
                     pred_context = 1;
-                else // comp unidir
+                else /*!< comp unidir */
                     pred_context =
                         3 + (!(IS_BACKWARD_REF_FRAME(frfa) ^ IS_BACKWARD_REF_FRAME(frfl)));
-            } else { // comp/comp
+            } else { /*!< comp/comp */
                 const int a_uni_rfc = has_uni_comp_refs(above_mbmi);
                 const int l_uni_rfc = has_uni_comp_refs(left_mbmi);
 
-                if (!a_uni_rfc && !l_uni_rfc) // bidir/bidir
+                if (!a_uni_rfc && !l_uni_rfc) /*!< bidir/bidir */
                     pred_context = 0;
-                else if (!a_uni_rfc || !l_uni_rfc) // unidir/bidir
+                else if (!a_uni_rfc || !l_uni_rfc) /*!< unidir/bidir */
                     pred_context = 2;
-                else // unidir/unidir
+                else /*!< unidir/unidir */
                     pred_context = 3 + (!((frfa == BWDREF_FRAME) ^ (frfl == BWDREF_FRAME)));
             }
         }
-    } else if (above_in_image || left_in_image) { // one edge available
+    } else if (above_in_image || left_in_image) { /*!< one edge available */
         const BlockModeInfo *edge_mbmi = above_in_image ? above_mbmi : left_mbmi;
 
-        if (!is_inter_block(edge_mbmi)) { // intra
+        if (!is_inter_block(edge_mbmi)) { /*!< intra */
             pred_context = 2;
-        } else { // inter
-            if (!has_second_ref(edge_mbmi)) // single pred
+        } else { /*!< inter */
+            if (!has_second_ref(edge_mbmi)) /*!< single pred */
                 pred_context = 2;
-            else // comp pred
+            else /*!< comp pred */
                 pred_context = 4 * has_uni_comp_refs(edge_mbmi);
         }
-    } else { // no edges available
+    } else { /*!< no edges available */
         pred_context = 2;
     }
 

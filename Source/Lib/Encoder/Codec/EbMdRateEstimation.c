@@ -1,18 +1,14 @@
-/*
-* Copyright(c) 2019 Intel Corporation
-* SPDX - License - Identifier: BSD - 2 - Clause - Patent
-*/
+/*!< Copyright(c) 2019 Intel Corporation
+ * SPDX - License - Identifier: BSD - 2 - Clause - Patent */
 
-/*
-* Copyright (c) 2016, Alliance for Open Media. All rights reserved
-*
-* This source code is subject to the terms of the BSD 2 Clause License and
-* the Alliance for Open Media Patent License 1.0. If the BSD 2 Clause License
-* was not distributed with this source code in the LICENSE file, you can
-* obtain it at www.aomedia.org/license/software. If the Alliance for Open
-* Media Patent License 1.0 was not distributed with this source code in the
-* PATENTS file, you can obtain it at www.aomedia.org/license/patent.
-*/
+/*!< Copyright (c) 2016, Alliance for Open Media. All rights reserved
+ *
+ * This source code is subject to the terms of the BSD 2 Clause License and
+ * the Alliance for Open Media Patent License 1.0. If the BSD 2 Clause License
+ * was not distributed with this source code in the LICENSE file, you can
+ * obtain it at www.aomedia.org/license/software. If the Alliance for Open
+ * Media Patent License 1.0 was not distributed with this source code in the
+ * PATENTS file, you can obtain it at www.aomedia.org/license/patent. */
 
 #include <stdlib.h>
 
@@ -27,11 +23,11 @@ static INLINE int32_t get_interinter_wedge_bits(BlockSize sb_type) {
     return (wbits > 0) ? wbits + 1 : 0;
 }
 
-/**************************************************************
-* AV1GetCostSymbold
-* Calculate the cost of a symbol with
-* probability p15 / 2^15
-***************************************************************/
+/**************************************************************/
+/*!< * AV1GetCostSymbold
+ *   * Calculate the cost of a symbol with
+ *   * probability p15 / 2^15 */
+/***************************************************************/
 static INLINE int32_t av1_cost_symbol(AomCdfProb p15) {
     assert(0 < p15 && p15 < CDF_PROB_TOP);
     const int32_t shift = CDF_PROB_BITS - 1 - get_msb(p15);
@@ -40,9 +36,9 @@ static INLINE int32_t av1_cost_symbol(AomCdfProb p15) {
     return av1_prob_cost[prob - 128] + av1_cost_literal(shift);
 }
 
-/*************************************************************
-* av1_get_syntax_rate_from_cdf
-**************************************************************/
+/*************************************************************/
+/*!< av1_get_syntax_rate_from_cdf */
+/**************************************************************/
 void av1_get_syntax_rate_from_cdf(int32_t *costs, const AomCdfProb *cdf, const int32_t *inv_map) {
     int32_t    i;
     AomCdfProb prev_cdf = 0;
@@ -56,17 +52,17 @@ void av1_get_syntax_rate_from_cdf(int32_t *costs, const AomCdfProb *cdf, const i
         else
             costs[i] = av1_cost_symbol(p15);
 
-        // Stop once we reach the end of the CDF
+        /*!< Stop once we reach the end of the CDF */
         if (cdf[i] == AOM_ICDF(CDF_PROB_TOP)) break;
     }
 }
 int av1_filter_intra_allowed_bsize(uint8_t enable_filter_intra, BlockSize bs);
 
-/*************************************************************
-* av1_estimate_syntax_rate()
-* Estimate the rate for each syntax elements and for
-* all scenarios based on the frame CDF
-**************************************************************/
+/*************************************************************/
+/*!< * av1_estimate_syntax_rate()
+ *   * Estimate the rate for each syntax elements and for
+ *   * all scenarios based on the frame CDF */
+/**************************************************************/
 void av1_estimate_syntax_rate(MdRateEstimationContext *md_rate_estimation_array, EbBool is_i_slice,
                               FRAME_CONTEXT *fc) {
     int32_t i, j;
@@ -77,7 +73,7 @@ void av1_estimate_syntax_rate(MdRateEstimationContext *md_rate_estimation_array,
         av1_get_syntax_rate_from_cdf(
             md_rate_estimation_array->partition_fac_bits[i], fc->partition_cdf[i], NULL);
 
-    //if (cm->skip_mode_flag) { // NM - Hardcoded to true
+    //if (cm->skip_mode_flag) { /*!< NM - Hardcoded to true */
     for (i = 0; i < SKIP_CONTEXTS; ++i)
         av1_get_syntax_rate_from_cdf(
             md_rate_estimation_array->skip_mode_fac_bits[i], fc->skip_mode_cdfs[i], NULL);
@@ -203,7 +199,7 @@ void av1_estimate_syntax_rate(MdRateEstimationContext *md_rate_estimation_array,
         md_rate_estimation_array->sgrproj_restore_fac_bits, fc->sgrproj_restore_cdf, NULL);
     av1_get_syntax_rate_from_cdf(md_rate_estimation_array->intrabc_fac_bits, fc->intrabc_cdf, NULL);
 
-    if (!is_i_slice) { // NM - Hardcoded to true
+    if (!is_i_slice) { /*!< NM - Hardcoded to true */
         for (i = 0; i < COMP_INTER_CONTEXTS; ++i)
             av1_get_syntax_rate_from_cdf(
                 md_rate_estimation_array->comp_inter_fac_bits[i], fc->comp_inter_cdf[i], NULL);
@@ -345,11 +341,11 @@ MvClassType av1_get_mv_class(int32_t z, int32_t *offset) {
 void eb_av1_build_nmv_cost_table(int32_t *mvjoint, int32_t *mvcost[2], const NmvContext *ctx,
                                  MvSubpelPrecision precision);
 
-/**************************************************************************
-* av1_estimate_mv_rate()
-* Estimate the rate of motion vectors
-* based on the frame CDF
-***************************************************************************/
+/**************************************************************************/
+/*!< * av1_estimate_mv_rate()
+ *   * Estimate the rate of motion vectors
+ *   * based on the frame CDF */
+/***************************************************************************/
 void av1_estimate_mv_rate(PictureControlSet *      pcs_ptr,
                           MdRateEstimationContext *md_rate_estimation_array, FRAME_CONTEXT *fc)
 
@@ -363,8 +359,8 @@ void av1_estimate_mv_rate(PictureControlSet *      pcs_ptr,
     nmvcost_hp[0] = &md_rate_estimation_array->nmv_costs_hp[0][MV_MAX];
     nmvcost_hp[1] = &md_rate_estimation_array->nmv_costs_hp[1][MV_MAX];
 
-    eb_av1_build_nmv_cost_table(md_rate_estimation_array->nmv_vec_cost, //out
-                                frm_hdr->allow_high_precision_mv ? nmvcost_hp : nmvcost, //out
+    eb_av1_build_nmv_cost_table(md_rate_estimation_array->nmv_vec_cost, /*!< out */
+                                frm_hdr->allow_high_precision_mv ? nmvcost_hp : nmvcost, /*!< out */
                                 &fc->nmvc,
                                 frm_hdr->allow_high_precision_mv);
     md_rate_estimation_array->nmvcoststack[0] =
@@ -380,14 +376,14 @@ void av1_estimate_mv_rate(PictureControlSet *      pcs_ptr,
             md_rate_estimation_array->dv_joint_cost, dvcost, &fc->ndvc, MV_SUBPEL_NONE);
     }
 }
-/**************************************************************************
-* av1_estimate_coefficients_rate()
-* Estimate the rate of the quantised coefficient
-* based on the frame CDF
-***************************************************************************/
+/**************************************************************************/
+/*!< * av1_estimate_coefficients_rate()
+ *   * Estimate the rate of the quantised coefficient
+ *   * based on the frame CDF */
+/***************************************************************************/
 void av1_estimate_coefficients_rate(MdRateEstimationContext *md_rate_estimation_array,
                                     FRAME_CONTEXT *          fc) {
-    int32_t       num_planes     = 3; // NM - Hardcoded to 3
+    int32_t       num_planes     = 3; /*!< NM - Hardcoded to 3 */
     const int32_t nplanes        = AOMMIN(num_planes, PLANE_TYPES);
     int32_t       eob_multi_size = 0;
     int32_t       plane          = 0;
@@ -528,7 +524,7 @@ int32_t is_nontrans_global_motion_ec(MvReferenceFrame rf0, MvReferenceFrame rf1,
 uint8_t av1_drl_ctx(const CandidateMv *ref_mv_stack, int32_t ref_idx);
 
 int32_t have_newmv_in_inter_mode(PredictionMode mode);
-//Returns a context number for the given MB prediction signal
+/*!< Returns a context number for the given MB prediction signal */
 static InterpFilter get_ref_filter_type(const BlockModeInfo *ref_mbmi, int dir,
                                         MvReferenceFrame ref_frame) {
     return ((ref_mbmi->ref_frame[0] == ref_frame || ref_mbmi->ref_frame[1] == ref_frame)
@@ -536,6 +532,7 @@ static InterpFilter get_ref_filter_type(const BlockModeInfo *ref_mbmi, int dir,
                 : SWITCHABLE_FILTERS);
 }
 extern int av1_allow_intrabc(const FrameHeader *frm_hdr, EB_SLICE slice_type);
+
 
 int av1_filter_intra_allowed(uint8_t enable_filter_intra, BlockSize bsize, uint8_t palette_size,
                              uint32_t mode);
@@ -555,26 +552,26 @@ extern void av1_set_ref_frame(MvReferenceFrame *rf, int8_t ref_frame_type);
 
 static INLINE InterpFilter av1_extract_interp_filter(InterpFilters filters, int32_t x_filter);
 
-/*******************************************************************************
-* The mode info data structure has a one element border above and to the
-* left of the entries corresponding to real macroblocks.
-* The prediction flags in these dummy entries are initialized to 0.
-* 0 - inter/inter, inter/--, --/inter, --/--
-* 1 - intra/inter, inter/intra
-* 2 - intra/--, --/intra
-* 3 - intra/intra
- ******************************************************************************/
+/*******************************************************************************/
+/*!< * The mode info data structure has a one element border above and to the
+ *   * left of the entries corresponding to real macroblocks.
+ *   * The prediction flags in these dummy entries are initialized to 0.
+ *   * 0 - inter/inter, inter/--, --/inter, --/--
+ *   * 1 - intra/inter, inter/intra
+ *   * 2 - intra/--, --/intra
+ *   * 3 - intra/intra */
+/******************************************************************************/
 int av1_get_intra_inter_context(const MacroBlockD *xd) {
     const MbModeInfo *const above_mbmi = xd->above_mbmi;
     const MbModeInfo *const left_mbmi  = xd->left_mbmi;
     const int               has_above  = xd->up_available;
     const int               has_left   = xd->left_available;
 
-    if (has_above && has_left) { // both edges available
+    if (has_above && has_left) { /*!< both edges available */
         const int above_intra = !is_inter_block(&above_mbmi->block_mi);
         const int left_intra  = !is_inter_block(&left_mbmi->block_mi);
         return left_intra && above_intra ? 3 : left_intra || above_intra;
-    } else if (has_above || has_left) { // one edge available
+    } else if (has_above || has_left) { /*!< one edge available */
         return 2 * !is_inter_block(has_above ? &above_mbmi->block_mi : &left_mbmi->block_mi);
     } else {
         return 0;
@@ -605,10 +602,10 @@ static int av1_get_pred_context_switchable_interp(const MacroBlockD *xd, int dir
     const int ctx_offset = (mbmi->block_mi.ref_frame[1] > INTRA_FRAME) * INTER_FILTER_COMP_OFFSET;
     assert(dir == 0 || dir == 1);
     const MvReferenceFrame ref_frame = mbmi->block_mi.ref_frame[0];
-    // Note:
-    // The mode info data structure has a one element border above and to the
-    // left of the entries corresponding to real macroblocks.
-    // The prediction flags in these dummy entries are initialized to 0.
+    /*!< Note:
+     *   The mode info data structure has a one element border above and to the
+     *   left of the entries corresponding to real macroblocks.
+     *   The prediction flags in these dummy entries are initialized to 0. */
     int filter_type_ctx = ctx_offset + (dir & 0x01) * INTER_FILTER_DIR_OFFSET;
     int left_type       = SWITCHABLE_FILTERS;
     int above_type      = SWITCHABLE_FILTERS;
@@ -632,9 +629,9 @@ static int av1_get_pred_context_switchable_interp(const MacroBlockD *xd, int dir
     }
     return filter_type_ctx;
 }
-/*******************************************************************************
- * Updates all the filter type stats/CDF for the current block
- ******************************************************************************/
+/*******************************************************************************/
+/*!< Updates all the filter type stats/CDF for the current block */
+/*******************************************************************************/
 static AOM_INLINE void update_filter_type_cdf(MacroBlockD *xd, const MbModeInfo *const mbmi) {
     int dir;
     for (dir = 0; dir < 2; ++dir) {
@@ -645,38 +642,38 @@ static AOM_INLINE void update_filter_type_cdf(MacroBlockD *xd, const MbModeInfo 
     }
 }
 MvClassType av1_get_mv_class(int32_t z, int32_t *offset);
-/*******************************************************************************
- * Updates all the mv component stats/CDF for the current block
- ******************************************************************************/
+/*******************************************************************************/
+/*!< Updates all the mv component stats/CDF for the current block */
+/*******************************************************************************/
 static void update_mv_component_stats(int comp, NmvComponent *mvcomp, MvSubpelPrecision precision) {
     assert(comp != 0);
     int       offset;
     const int sign     = comp < 0;
     const int mag      = sign ? -comp : comp;
     const int mv_class = av1_get_mv_class(mag - 1, &offset);
-    const int d        = offset >> 3; // int mv data
-    const int fr       = (offset >> 1) & 3; // fractional mv data
-    const int hp       = offset & 1; // high precision mv data
+    const int d        = offset >> 3; /*!< int mv data */
+    const int fr       = (offset >> 1) & 3; /*!< fractional mv data */
+    const int hp       = offset & 1; /*!< high precision mv data */
 
-    // Sign
+    /*!< Sign */
     update_cdf(mvcomp->sign_cdf, sign, 2);
 
-    // Class
+    /*!< Class */
     update_cdf(mvcomp->classes_cdf, mv_class, MV_CLASSES);
 
-    // Integer bits
+    /*!< Integer bits */
     if (mv_class == MV_CLASS_0) {
         update_cdf(mvcomp->class0_cdf, d, CLASS0_SIZE);
     } else {
-        const int n = mv_class + CLASS0_BITS - 1; // number of bits
+        const int n = mv_class + CLASS0_BITS - 1; /*!< number of bits */
         for (int i = 0; i < n; ++i) update_cdf(mvcomp->bits_cdf[i], (d >> i) & 1, 2);
     }
-    // Fractional bits
+    /*!< Fractional bits */
     if (precision > MV_SUBPEL_NONE) {
         AomCdfProb *fp_cdf = mv_class == MV_CLASS_0 ? mvcomp->class0_fp_cdf[d] : mvcomp->fp_cdf;
         update_cdf(fp_cdf, fr, MV_FP_SIZE);
     }
-    // High precision bit
+    /*!< High precision bit */
     if (precision > MV_SUBPEL_LOW_PRECISION) {
         AomCdfProb *hp_cdf = mv_class == MV_CLASS_0 ? mvcomp->class0_hp_cdf : mvcomp->hp_cdf;
         update_cdf(hp_cdf, hp, 2);
@@ -684,9 +681,9 @@ static void update_mv_component_stats(int comp, NmvComponent *mvcomp, MvSubpelPr
 }
 
 MvJointType av1_get_mv_joint(const MV *mv);
-/*******************************************************************************
- * Updates all the mv stats/CDF for the current block
- ******************************************************************************/
+/*******************************************************************************/
+/*!< Updates all the mv stats/CDF for the current block */
+/*******************************************************************************/
 void av1_update_mv_stats(const MV *mv, const MV *ref, NmvContext *mvctx,
                          MvSubpelPrecision precision) {
     const MV          diff = {mv->row - ref->row, mv->col - ref->col};
@@ -698,9 +695,9 @@ void av1_update_mv_stats(const MV *mv, const MV *ref, NmvContext *mvctx,
 
     if (mv_joint_horizontal(j)) update_mv_component_stats(diff.col, &mvctx->comps[1], precision);
 }
-/*******************************************************************************
- * Updates all the Inter mode stats/CDF for the current block
- ******************************************************************************/
+/*******************************************************************************/
+/*!< Updates all the Inter mode stats/CDF for the current block */
+/*******************************************************************************/
 static AOM_INLINE void update_inter_mode_stats(FRAME_CONTEXT *fc, PredictionMode mode,
                                                int16_t mode_context) {
     int16_t mode_ctx = mode_context & NEWMV_CTX_MASK;
@@ -720,9 +717,9 @@ static AOM_INLINE void update_inter_mode_stats(FRAME_CONTEXT *fc, PredictionMode
     mode_ctx = (mode_context >> REFMV_OFFSET) & REFMV_CTX_MASK;
     update_cdf(fc->refmv_cdf[mode_ctx], mode != NEARESTMV, 2);
 }
-/*******************************************************************************
- * Updates all the palette stats/CDF for the current block
- ******************************************************************************/
+/*******************************************************************************/
+/*!< Updates all the palette stats/CDF for the current block */
+/*******************************************************************************/
 static AOM_INLINE void update_palette_cdf(MacroBlockD *xd, const MbModeInfo *const mbmi,
                                           BlkStruct *blk_ptr, const int mi_row, const int mi_col) {
     FRAME_CONTEXT *              fc                = xd->tile_ctx;
@@ -755,9 +752,9 @@ static AOM_INLINE void update_palette_cdf(MacroBlockD *xd, const MbModeInfo *con
                 fc->palette_uv_size_cdf[palette_bsize_ctx], n - PALETTE_MIN_SIZE, PALETTE_SIZES);
     }
 }
-/*******************************************************************************
- * Updates all the Intra stats/CDF for the current block
- ******************************************************************************/
+/*******************************************************************************/
+/*!< Updates all the Intra stats/CDF for the current block */
+/*******************************************************************************/
 static AOM_INLINE void sum_intra_stats(PictureControlSet *pcs_ptr, BlkStruct *blk_ptr,
                                        const MbModeInfo *above_mi, const MbModeInfo *left_mi,
                                        const int intraonly, const int mi_row, const int mi_col) {
@@ -788,8 +785,8 @@ static AOM_INLINE void sum_intra_stats(PictureControlSet *pcs_ptr, BlkStruct *bl
                    mbmi->block_mi.angle_delta[PLANE_TYPE_Y] + MAX_ANGLE_DELTA,
                    2 * MAX_ANGLE_DELTA + 1);
     }
-    uint8_t sub_sampling_x = 1; // NM - subsampling_x is harcoded to 1 for 420 chroma sampling.
-    uint8_t sub_sampling_y = 1; // NM - subsampling_y is harcoded to 1 for 420 chroma sampling.
+    uint8_t sub_sampling_x = 1; /*!< NM - subsampling_x is harcoded to 1 for 420 chroma sampling. */
+    uint8_t sub_sampling_y = 1; /*!< NM - subsampling_y is harcoded to 1 for 420 chroma sampling. */
     if (!is_chroma_reference(mi_row, mi_col, bsize, sub_sampling_x, sub_sampling_y)) return;
 
     const UvPredictionMode uv_mode     = mbmi->block_mi.uv_mode;
@@ -817,9 +814,9 @@ static AOM_INLINE void sum_intra_stats(PictureControlSet *pcs_ptr, BlkStruct *bl
         update_palette_cdf(xd, mbmi, blk_ptr, mi_row, mi_col);
     }
 }
-/*******************************************************************************
- * Updates all the syntax stats/CDF for the current block
- ******************************************************************************/
+/*******************************************************************************/
+/*!< Updates all the syntax stats/CDF for the current block */
+/*******************************************************************************/
 void update_stats(PictureControlSet *pcs_ptr, BlkStruct *blk_ptr, int mi_row, int mi_col) {
 //    const AV1_COMMON *const cm   = pcs_ptr->parent_pcs_ptr->av1_cm;
     MacroBlockD *           xd   = blk_ptr->av1xd;
@@ -857,9 +854,9 @@ void update_stats(PictureControlSet *pcs_ptr, BlkStruct *blk_ptr, int mi_row, in
     const int inter_block = is_inter_block(&mbmi->block_mi);
     if (!seg_ref_active) {
         update_cdf(fc->intra_inter_cdf[av1_get_intra_inter_context(xd)], inter_block, 2);
-        // If the segment reference feature is enabled we have only a single
-        // reference frame allowed for the segment so exclude it from
-        // the reference frame counts used to work out probabilities.
+        /*!< If the segment reference feature is enabled we have only a single
+         *   reference frame allowed for the segment so exclude it from
+         *   the reference frame counts used to work out probabilities. */
         if (inter_block) {
             const MvReferenceFrame ref0 = mbmi->block_mi.ref_frame[0];
             const MvReferenceFrame ref1 = mbmi->block_mi.ref_frame[1];
@@ -1067,9 +1064,9 @@ void update_stats(PictureControlSet *pcs_ptr, BlkStruct *blk_ptr, int mi_row, in
         }
     }
 }
-/*******************************************************************************
- * Updates the partition stats/CDF for the current block
- ******************************************************************************/
+/*******************************************************************************/
+/*!< Updates the partition stats/CDF for the current block */
+/*******************************************************************************/
 #if TILES_PARALLEL
 void update_part_stats(PictureControlSet *pcs_ptr, BlkStruct *blk_ptr,
                        uint16_t tile_idx, int mi_row, int mi_col) {

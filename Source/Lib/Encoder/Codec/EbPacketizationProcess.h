@@ -1,7 +1,5 @@
-/*
-* Copyright(c) 2019 Intel Corporation
-* SPDX - License - Identifier: BSD - 2 - Clause - Patent
-*/
+/*!< Copyright(c) 2019 Intel Corporation
+ * SPDX - License - Identifier: BSD - 2 - Clause - Patent */
 
 #ifndef EbPacketization_h
 #define EbPacketization_h
@@ -11,9 +9,9 @@
 extern "C" {
 #endif
 
-/**************************************
-     * Extern Function Declarations
-     **************************************/
+/**************************************/
+/*!< Extern Function Declarations */
+/**************************************/
 EbErrorType packetization_context_ctor(EbThreadContext *  thread_context_ptr,
                                        const EbEncHandle *enc_handle_ptr, int rate_control_index,
                                        int demux_index);

@@ -1,7 +1,5 @@
-/*
-* Copyright(c) 2019 Intel Corporation
-* SPDX - License - Identifier: BSD - 2 - Clause - Patent
-*/
+/*!< Copyright(c) 2019 Intel Corporation
+ * SPDX - License - Identifier: BSD - 2 - Clause - Patent */
 
 #include <stdlib.h>
 
@@ -17,23 +15,23 @@
 #include "EbPictureDemuxResults.h"
 #define DETAILED_FRAME_OUTPUT 0
 
-/**************************************
- * Type Declarations
- **************************************/
+/**************************************/
+/*!< Type Declarations */
+/**************************************/
 typedef struct EbPPSConfig {
     uint8_t pps_id;
     uint8_t constrained_flag;
 } EbPPSConfig;
 
-/**************************************
- * Context
- **************************************/
+/**************************************/
+/*!< Context */
+/**************************************/
 typedef struct PacketizationContext {
     EbDctor      dctor;
     EbFifo *     entropy_coding_input_fifo_ptr;
     EbFifo *     rate_control_tasks_output_fifo_ptr;
     EbPPSConfig *pps_config;
-    EbFifo *     picture_manager_input_fifo_ptr; // to picture-manager
+    EbFifo *     picture_manager_input_fifo_ptr; /*!< to picture-manager */
     uint64_t     dpb_disp_order[8], dpb_dec_order[8];
     uint64_t     tot_shown_frames;
     uint64_t     disp_order_continuity_count;
@@ -41,8 +39,9 @@ typedef struct PacketizationContext {
 
 static EbBool is_passthrough_data(EbLinkedListNode *data_node) { return data_node->passthrough; }
 
-// Extracts passthrough data from a linked list. The extracted data nodes are removed from the original linked list and
-// returned as a linked list. Does not gaurantee the original order of the nodes.
+/*!< Extracts passthrough data from a linked list.
+ *   The extracted data nodes are removed from the original linked list and
+ *   returned as a linked list. Does not gaurantee the original order of the nodes. */
 static EbLinkedListNode *extract_passthrough_data(EbLinkedListNode **ll_ptr_ptr) {
     EbLinkedListNode *ll_rest_ptr = NULL;
     EbLinkedListNode *ll_pass_ptr =
@@ -81,7 +80,7 @@ EbErrorType packetization_context_ctor(EbThreadContext *  thread_context_ptr,
 #define OBU_FRAME_HEADER_SIZE 3
 #define TILES_GROUP_SIZE 1
 
-// Write TD after offsetting the stream buffer
+/*!< Write TD after offsetting the stream buffer */
 static void write_td(EbBufferHeaderType *out_str_ptr, EbBool show_ex, EbBool has_tiles) {
     uint8_t td_buff[TD_SIZE] = {0, 0};
     uint8_t obu_frame_header_size =
@@ -118,7 +117,7 @@ void update_rc_rate_tables(PictureControlSet *pcs_ptr, SequenceControlSet *scs_p
     int32_t      qp_index;
     FrameHeader *frm_hdr = &pcs_ptr->parent_pcs_ptr->frm_hdr;
 
-    // SB Loop
+    /*!< SB Loop */
     if (scs_ptr->static_config.rate_control_mode > 0) {
         uint64_t sad_bits[NUMBER_OF_SAD_INTERVALS] = {0};
         uint32_t count[NUMBER_OF_SAD_INTERVALS]    = {0};
@@ -332,32 +331,32 @@ void update_rc_rate_tables(PictureControlSet *pcs_ptr, SequenceControlSet *scs_p
     }
 }
 void *packetization_kernel(void *input_ptr) {
-    // Context
+    /*!< Context */
     EbThreadContext *     thread_context_ptr = (EbThreadContext *)input_ptr;
     PacketizationContext *context_ptr        = (PacketizationContext *)thread_context_ptr->priv;
 
     PictureControlSet *pcs_ptr;
 
-    // Config
+    /*!< Config */
     SequenceControlSet *scs_ptr;
 
     FrameHeader *frm_hdr;
 
-    // Encoding Context
+    /*!< Encoding Context */
     EncodeContext *encode_context_ptr;
 
-    // Input
+    /*!< Input */
     EbObjectWrapper *     entropy_coding_results_wrapper_ptr;
     EntropyCodingResults *entropy_coding_results_ptr;
 
-    // Output
+    /*!< Output */
     EbObjectWrapper *    output_stream_wrapper_ptr;
     EbBufferHeaderType * output_stream_ptr;
     EbObjectWrapper *    rate_control_tasks_wrapper_ptr;
     RateControlTasks *   rate_control_tasks_ptr;
     EbObjectWrapper *    picture_manager_results_wrapper_ptr;
     PictureDemuxResults *picture_manager_results_ptr;
-    // Queue variables
+    /*!< Queue variables */
     int32_t                    queue_entry_index;
     PacketizationReorderEntry *queue_entry_ptr;
     EbLinkedListNode *         app_data_ll_head_temp_ptr;
@@ -370,7 +369,7 @@ void *packetization_kernel(void *input_ptr) {
 #endif
 
     for (;;) {
-        // Get EntropyCoding Results
+        /*!< Get EntropyCoding Results */
         eb_get_full_object(context_ptr->entropy_coding_input_fifo_ptr,
                            &entropy_coding_results_wrapper_ptr);
         entropy_coding_results_ptr =
@@ -383,10 +382,10 @@ void *packetization_kernel(void *input_ptr) {
         Av1Common *const cm = pcs_ptr->parent_pcs_ptr->av1_cm;
         tile_cnt            = cm->tiles_info.tile_rows * cm->tiles_info.tile_cols;
 #endif
-        //****************************************************
-        // Input Entropy Results into Reordering Queue
-        //****************************************************
-        //get a new entry spot
+        /****************************************************/
+        /*!< Input Entropy Results into Reordering Queue */
+        /****************************************************/
+        /*!< get a new entry spot */
         queue_entry_index =
             pcs_ptr->parent_pcs_ptr->decode_order % PACKETIZATION_REORDER_QUEUE_MAX_DEPTH;
         queue_entry_ptr = encode_context_ptr->packetization_reorder_queue[queue_entry_index];
@@ -409,7 +408,6 @@ void *packetization_kernel(void *input_ptr) {
                 : 0;
         output_stream_ptr->n_filled_len = 0;
         output_stream_ptr->pts          = pcs_ptr->parent_pcs_ptr->input_ptr->pts;
-        //minus (1 << MAX_HIERARCHICAL_LEVEL) to make sure the dts never larger than pts.
         output_stream_ptr->dts          = pcs_ptr->parent_pcs_ptr->decode_order -
                                  (uint64_t)(1 << MAX_HIERARCHICAL_LEVEL) + 1;
         output_stream_ptr->pic_type =
@@ -429,7 +427,7 @@ void *packetization_kernel(void *input_ptr) {
             output_stream_ptr->cb_sse   = 0;
         }
 
-        // Get Empty Rate Control Input Tasks
+        /*!< Get Empty Rate Control Input Tasks */
         eb_get_empty_object(context_ptr->rate_control_tasks_output_fifo_ptr,
                             &rate_control_tasks_wrapper_ptr);
         rate_control_tasks_ptr = (RateControlTasks *)rate_control_tasks_wrapper_ptr->object_ptr;
@@ -455,7 +453,7 @@ void *packetization_kernel(void *input_ptr) {
                     ->frame_context = (*pcs_ptr->entropy_coder_ptr->fc);
 #endif
             }
-            // Get Empty Results Object
+            /*!< Get Empty Results Object */
             eb_get_empty_object(context_ptr->picture_manager_input_fifo_ptr,
                                 &picture_manager_results_wrapper_ptr);
 
@@ -469,39 +467,39 @@ void *packetization_kernel(void *input_ptr) {
             (void)picture_manager_results_ptr;
             (void)picture_manager_results_wrapper_ptr;
         }
-        // Reset the Bitstream before writing to it
+        /*!< Reset the Bitstream before writing to it */
         reset_bitstream(pcs_ptr->bitstream_ptr->output_bitstream_ptr);
 
-        // Code the SPS
+        /*!< Code the SPS */
         if (frm_hdr->frame_type == KEY_FRAME) { encode_sps_av1(pcs_ptr->bitstream_ptr, scs_ptr); }
 
         write_frame_header_av1(pcs_ptr->bitstream_ptr, scs_ptr, pcs_ptr, 0);
 
-        // Copy Slice Header to the Output Bitstream
+        /*!< Copy Slice Header to the Output Bitstream */
         copy_payload(pcs_ptr->bitstream_ptr,
-                     output_stream_ptr->p_buffer,
-                     (uint32_t *)&(output_stream_ptr->n_filled_len),
-                     (uint32_t *)&(output_stream_ptr->n_alloc_len),
-                     encode_context_ptr);
+                                       output_stream_ptr->p_buffer,
+                                       (uint32_t *)&(output_stream_ptr->n_filled_len),
+                                       (uint32_t *)&(output_stream_ptr->n_alloc_len),
+                                       encode_context_ptr);
         if (pcs_ptr->parent_pcs_ptr->has_show_existing) {
-            // Reset the Bitstream before writing to it
+            /*!< Reset the Bitstream before writing to it */
             reset_bitstream(pcs_ptr->bitstream_ptr->output_bitstream_ptr);
             write_frame_header_av1(pcs_ptr->bitstream_ptr, scs_ptr, pcs_ptr, 1);
 
-            // Copy Slice Header to the Output Bitstream
+            /*!< Copy Slice Header to the Output Bitstream */
             copy_payload(pcs_ptr->bitstream_ptr,
-                         output_stream_ptr->p_buffer,
-                         (uint32_t *)&(output_stream_ptr->n_filled_len),
-                         (uint32_t *)&(output_stream_ptr->n_alloc_len),
-                         encode_context_ptr);
+                                           output_stream_ptr->p_buffer,
+                                           (uint32_t *)&(output_stream_ptr->n_filled_len),
+                                           (uint32_t *)&(output_stream_ptr->n_alloc_len),
+                                           encode_context_ptr);
 
             output_stream_ptr->flags |= EB_BUFFERFLAG_SHOW_EXT;
         }
 
-        // Send the number of bytes per frame to RC
+        /*!< Send the number of bytes per frame to RC */
         pcs_ptr->parent_pcs_ptr->total_num_bits = output_stream_ptr->n_filled_len << 3;
         queue_entry_ptr->total_num_bits         = pcs_ptr->parent_pcs_ptr->total_num_bits;
-        // update the rate tables used in RC based on the encoded bits of each sb
+        /*!< update the rate tables used in RC based on the encoded bits of each sb */
         update_rc_rate_tables(pcs_ptr, scs_ptr);
         queue_entry_ptr->frame_type = frm_hdr->frame_type;
         queue_entry_ptr->poc        = pcs_ptr->picture_number;
@@ -521,18 +519,18 @@ void *packetization_kernel(void *input_ptr) {
         queue_entry_ptr->has_show_existing   = pcs_ptr->parent_pcs_ptr->has_show_existing;
         queue_entry_ptr->show_existing_frame = frm_hdr->show_existing_frame;
 
-        //Store the output buffer in the Queue
+        /*!<Store the output buffer in the Queue */
         queue_entry_ptr->output_stream_wrapper_ptr = output_stream_wrapper_ptr;
 
-        // Note: last chance here to add more output meta data for an encoded picture -->
+        /*!< Note: last chance here to add more output meta data for an encoded picture --> */
 
-        // collect output meta data
+        /*!< collect output meta data */
         queue_entry_ptr->out_meta_data = concat_eb_linked_list(
             extract_passthrough_data(&(pcs_ptr->parent_pcs_ptr->data_ll_head_ptr)),
             pcs_ptr->parent_pcs_ptr->app_out_data_ll_head_ptr);
         pcs_ptr->parent_pcs_ptr->app_out_data_ll_head_ptr = (EbLinkedListNode *)EB_NULL;
 
-        // Calling callback functions to release the memory allocated for data linked list in the application
+        /*!< Calling callback functions to release the memory allocated for data linked list in the application */
         while (pcs_ptr->parent_pcs_ptr->data_ll_head_ptr != EB_NULL) {
             app_data_ll_head_temp_ptr = pcs_ptr->parent_pcs_ptr->data_ll_head_ptr->next;
             if (pcs_ptr->parent_pcs_ptr->data_ll_head_ptr->release_cb_fnc_ptr != EB_NULL)
@@ -542,31 +540,31 @@ void *packetization_kernel(void *input_ptr) {
         }
 
         if (scs_ptr->static_config.speed_control_flag) {
-            // update speed control variables
+            /*!< update speed control variables */
             eb_block_on_mutex(encode_context_ptr->sc_buffer_mutex);
             encode_context_ptr->sc_frame_out++;
             eb_release_mutex(encode_context_ptr->sc_buffer_mutex);
         }
 
-        // Post Rate Control Taks
+        /*!< Post Rate Control Taks */
         eb_post_full_object(rate_control_tasks_wrapper_ptr);
         if (pcs_ptr->parent_pcs_ptr->is_used_as_reference_flag == EB_TRUE &&
             pcs_ptr->parent_pcs_ptr->reference_picture_wrapper_ptr)
-            // Post the Full Results Object
+            /*!< Post the Full Results Object */
             eb_post_full_object(picture_manager_results_wrapper_ptr);
         else
-            // Since feedback is not set to PM, life count of is reduced here instead of PM
+            /*!< Since feedback is not set to PM, life count of is reduced here instead of PM */
             eb_release_object(pcs_ptr->scs_wrapper_ptr);
-        //Release the Parent PCS then the Child PCS
-        eb_release_object(entropy_coding_results_ptr->pcs_wrapper_ptr); //Child
+        /*!<Release the Parent PCS then the Child PCS */
+        eb_release_object(entropy_coding_results_ptr->pcs_wrapper_ptr); /*!< Child */
 
-        // Release the Entropy Coding Result
+        /*!< Release the Entropy Coding Result
         eb_release_object(entropy_coding_results_wrapper_ptr);
 
-        //****************************************************
-        // Process the head of the queue
-        //****************************************************
-        // Look at head of queue and see if any picture is ready to go
+        /****************************************************/
+        /*!< Process the head of the queue */
+        /****************************************************/
+        /*!< Look at head of queue and see if any picture is ready to go */
         queue_entry_ptr = encode_context_ptr->packetization_reorder_queue
                               [encode_context_ptr->packetization_reorder_queue_head_index];
 
@@ -596,7 +594,7 @@ void *packetization_kernel(void *input_ptr) {
                 int32_t i;
                 uint8_t showTab[] = {'H', 'V'};
 
-                //Countinuity count check of visible frames
+                /*!< Countinuity count check of visible frames */
                 if (queue_entry_ptr->show_frame) {
                     if (context_ptr->disp_order_continuity_count == queue_entry_ptr->poc)
                         context_ptr->disp_order_continuity_count++;
@@ -618,13 +616,13 @@ void *packetization_kernel(void *input_ptr) {
                     }
                 }
 
-                //update total number of shown frames
+                /*!< update total number of shown frames */
                 if (queue_entry_ptr->show_frame) context_ptr->tot_shown_frames++;
                 if (queue_entry_ptr->has_show_existing) context_ptr->tot_shown_frames++;
 
-                //implement the GOP here - Serial dec order
+                /*!< implement the GOP here - Serial dec order */
                 if (queue_entry_ptr->frame_type == KEY_FRAME) {
-                    //reset the DPB on a Key frame
+                    /*!< reset the DPB on a Key frame */
                     for (i = 0; i < 8; i++) {
                         context_ptr->dpb_dec_order[i]  = queue_entry_ptr->picture_number;
                         context_ptr->dpb_disp_order[i] = queue_entry_ptr->poc;
@@ -701,7 +699,7 @@ void *packetization_kernel(void *input_ptr) {
                                     (int32_t)context_ptr->tot_shown_frames);
                     }
 
-                    //Update the DPB
+                    /*!< Update the DPB */
                     for (i = 0; i < 8; i++) {
                         if ((queue_entry_ptr->av1_ref_signal.refresh_frame_mask >> i) & 1) {
                             context_ptr->dpb_dec_order[i]  = queue_entry_ptr->picture_number;
@@ -711,7 +709,7 @@ void *packetization_kernel(void *input_ptr) {
                 }
             }
 #endif
-            // Calculate frame latency in milliseconds
+            /*!< Calculate frame latency in milliseconds */
             double   latency               = 0.0;
             uint64_t finish_time_seconds   = 0;
             uint64_t finish_time_u_seconds = 0;
@@ -731,11 +729,11 @@ void *packetization_kernel(void *input_ptr) {
             eb_post_full_object(output_stream_wrapper_ptr);
             queue_entry_ptr->out_meta_data = (EbLinkedListNode *)EB_NULL;
 
-            // Reset the Reorder Queue Entry
+            /*!< Reset the Reorder Queue Entry */
             queue_entry_ptr->picture_number += PACKETIZATION_REORDER_QUEUE_MAX_DEPTH;
             queue_entry_ptr->output_stream_wrapper_ptr = (EbObjectWrapper *)EB_NULL;
 
-            // Increment the Reorder Queue head Ptr
+            /*!< Increment the Reorder Queue head Ptr */
             encode_context_ptr->packetization_reorder_queue_head_index =
                 (encode_context_ptr->packetization_reorder_queue_head_index ==
                  PACKETIZATION_REORDER_QUEUE_MAX_DEPTH - 1)

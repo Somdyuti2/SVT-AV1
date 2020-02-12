@@ -1,13 +1,11 @@
-/*
-* Copyright(c) 2019 Netflix, Inc.
-* SPDX - License - Identifier: BSD - 2 - Clause - Patent
-*/
+/*!< Copyright(c) 2019 Netflix, Inc.
+* SPDX - License - Identifier: BSD - 2 - Clause - Patent */
 
-// Command line argument parsing
+/*!< Command line argument parsing */
 
-/***************************************
- * Includes
- ***************************************/
+/**************/
+/*!< Includes */
+/**************/
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -52,41 +50,41 @@ static void set_num_pframes(const char *value, EbSvtAv1DecConfiguration *cfg) {
     }
 };
 
-/**********************************
-  * Config Entry Array
-  **********************************/
+/************************/
+/*!< Config Entry Array */
+/************************/
 ConfigEntry config_entry[] = {
-    // Decoder settings
+    /*!< Decoder settings */
     {SKIP_FRAME_TOKEN, "SkipFrame", 1, set_skip_frame},
     {LIMIT_FRAME_TOKEN, "LimitFrame", 1, set_limit_frame},
-    // Picture properties
+    /*!< Picture properties */
     {BIT_DEPTH_TOKEN, "InputBitDepth", 1, set_bit_depth},
     {PIC_WIDTH_TOKEN, "PictureWidth", 1, set_pic_width},
     {PIC_HEIGHT_TOKEN, "PictureHeight", 1, set_pic_height},
     {COLOUR_SPACE_TOKEN, "InputColourSpace", 1, set_colour_space},
     {THREADS_TOKEN, "ThreadCount", 1, set_num_thread},
     {FRAME_PLL_TOKEN, "PllFrameCount", 1, set_num_pframes},
-    // Termination
+    /*!< Termination */
     {NULL, NULL, 0, NULL}};
 
 static void show_help() {
 #define H0 printf
     H0(" Options : \n");
-    H0( " -help                     Show usage options and exit \n");
-    H0( " -i <arg>                  Input file name \n");
-    H0( " -o <arg>                  Output file name \n");
-    H0( " -skip <arg>               Skip the first n input frames \n");
-    H0( " -limit <arg>              Stop decoding after n frames \n");
-    H0( " -bit-depth <arg>          Input bitdepth. [8, 10] \n");
-    H0( " -w <arg>                  Input picture width \n");
-    H0( " -h <arg>                  Input picture height \n");
-    H0( " -colour-space <arg>       Input picture colour space. [400, 420, 422, 444]\n");
-    H0( " -threads <arg>            Number of threads to be launched \n");
-    H0( " -parallel-frames <arg>    Number of frames to be processed in parallel \n");
-    H0( " -md5                      MD5 support flag \n");
-    H0( " -fps-frm                  Show fps after each frame decoded\n");
-    H0( " -fps-summary              Show fps summary");
-    H0( " -skip-film-grain          Disable Film Grain");
+    H0(" -help                     Show usage options and exit \n");
+    H0(" -i <arg>                  Input file name \n");
+    H0(" -o <arg>                  Output file name \n");
+    H0(" -skip <arg>               Skip the first n input frames \n");
+    H0(" -limit <arg>              Stop decoding after n frames \n");
+    H0(" -bit-depth <arg>          Input bitdepth. [8, 10] \n");
+    H0(" -w <arg>                  Input picture width \n");
+    H0(" -h <arg>                  Input picture height \n");
+    H0(" -colour-space <arg>       Input picture colour space. [400, 420, 422, 444]\n");
+    H0(" -threads <arg>            Number of threads to be launched \n");
+    H0(" -parallel-frames <arg>    Number of frames to be processed in parallel \n");
+    H0(" -md5                      MD5 support flag \n");
+    H0(" -fps-frm                  Show fps after each frame decoded\n");
+    H0(" -fps-summary              Show fps summary");
+    H0(" -skip-film-grain          Disable Film Grain");
 
     exit(1);
 }
@@ -112,7 +110,7 @@ EbErrorType read_command_line(int32_t argc, char *const argv[], EbSvtAv1DecConfi
     }
 
     token_index = 0;
-    // Parse command line for tokens
+    /*!< Parse command line for tokens */
     while (token_index < cmd_token_cnt) {
         if (cmd_copy[token_index] != NULL) {
             if (EB_STRCMP(cmd_copy[token_index], INPUT_FILE_TOKEN) == 0) {

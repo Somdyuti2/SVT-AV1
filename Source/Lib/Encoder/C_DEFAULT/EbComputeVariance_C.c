@@ -1,7 +1,5 @@
-/*
-* Copyright(c) 2019 Intel Corporation
-* SPDX - License - Identifier: BSD - 2 - Clause - Patent
-*/
+/*!< Copyright(c) 2019 Intel Corporation
+ * SPDX - License - Identifier: BSD - 2 - Clause - Patent */
 
 #include <stdint.h>
 
@@ -24,7 +22,7 @@ static void variance_c(const uint8_t *a, int a_stride, const uint8_t *b, int b_s
     }
 }
 
-// TODO: use or implement a simd version of this
+/*!< TODO: use or implement a simd version of this */
 uint32_t variance_highbd_c(const uint16_t *a, int a_stride, const uint16_t *b, int b_stride, int w,
                            int h, uint32_t *sse) {
     int i, j;

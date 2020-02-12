@@ -1,14 +1,11 @@
-/*
-* Copyright(c) 2019 Netflix, Inc.
-* SPDX - License - Identifier: BSD - 2 - Clause - Patent
-*/
+/*!< Copyright(c) 2019 Netflix, Inc.
+ * SPDX - License - Identifier: BSD - 2 - Clause - Patent */
 
-// SUMMARY
-//   Contains the Decode Block related functions
+/*!< SUMMARY: Contains the Decode Block related functions */
 
-/**************************************
- * Includes
- **************************************/
+/**************************************/
+/*!< Includes */
+/**************************************/
 
 #include <stdbool.h>
 #include <stdio.h>
@@ -46,20 +43,20 @@ CflAllowedType store_cfl_required(const EbColorConfig *cc, PartitionInfo *xd,
 
     if (cc->mono_chrome) return CFL_DISALLOWED;
     if (!is_chroma_ref) {
-        // For non-chroma-reference blocks, we should always store the luma pixels,
-        // in case the corresponding chroma-reference block uses CfL.
-        // Note that this can only happen for block sizes which are <8 on
-        // their shortest side, as otherwise they would be chroma reference
-        // blocks.
+        /*!< For non-chroma-reference blocks, we should always store the luma pixels,
+         *   in case the corresponding chroma-reference block uses CfL.
+         *   Note that this can only happen for block sizes which are <8 on
+         *   their shortest side, as otherwise they would be chroma reference
+         *   blocks. */
         return CFL_ALLOWED;
     }
 
-    // If this block has chroma information, we know whether we're
-    // actually going to perform a CfL prediction
+    /*!< If this block has chroma information, we know whether we're
+     *   actually going to perform a CfL prediction */
     return (CflAllowedType)(!is_inter_block(mbmi) && mbmi->uv_mode == UV_CFL_PRED);
 }
 
-/* decode partition */
+/*!< decode partition */
 PartitionType get_partition(DecModCtxt *dec_mod_ctxt, FrameHeader *frame_header, uint32_t mi_row,
                             uint32_t mi_col, SBInfo *sb_info, BlockSize bsize) {
     if (mi_row >= frame_header->mi_rows || mi_col >= frame_header->mi_cols)
@@ -79,17 +76,17 @@ PartitionType get_partition(DecModCtxt *dec_mod_ctxt, FrameHeader *frame_header,
 
     if (bsize > BLOCK_8X8 && mi_row + bwide / 2 < frame_header->mi_rows &&
         mi_col + bhigh / 2 < frame_header->mi_cols) {
-        // In this case, the block might be using an extended partition type.
-        /* TODO: Fix the nbr access! */
+        /*!< In this case, the block might be using an extended partition type. */
+        /*!< TODO: Fix the nbr access! */
         const BlockModeInfo *const mbmi_right =
             get_cur_mode_info(dec_mod_ctxt->dec_handle_ptr, mi_row, mi_col + (bwide / 2), sb_info);
         const BlockModeInfo *const mbmi_below =
             get_cur_mode_info(dec_mod_ctxt->dec_handle_ptr, mi_row + (bhigh / 2), mi_col, sb_info);
 
         if (sswide == bwide) {
-            // Smaller height but same width. Is PARTITION_HORZ_4, PARTITION_HORZ or
-            // PARTITION_HORZ_B. To distinguish the latter two, check if the lower
-            // half was split.
+            /*!< Smaller height but same width. Is PARTITION_HORZ_4, PARTITION_HORZ or
+             *   PARTITION_HORZ_B. To distinguish the latter two, check if the lower
+             *   half was split. */
             if (sshigh * 4 == bhigh) return PARTITION_HORZ_4;
             assert(sshigh * 2 == bhigh);
 
@@ -98,9 +95,9 @@ PartitionType get_partition(DecModCtxt *dec_mod_ctxt, FrameHeader *frame_header,
             else
                 return PARTITION_HORZ_B;
         } else if (sshigh == bhigh) {
-            // Smaller width but same height. Is PARTITION_VERT_4, PARTITION_VERT or
-            // PARTITION_VERT_B. To distinguish the latter two, check if the right
-            // half was split.
+            /*!< Smaller width but same height. Is PARTITION_VERT_4, PARTITION_VERT or
+             *   PARTITION_VERT_B. To distinguish the latter two, check if the right
+             *   half was split. */
             if (sswide * 4 == bwide) return PARTITION_VERT_4;
             assert(sswide * 2 == bhigh);
 
@@ -109,13 +106,13 @@ PartitionType get_partition(DecModCtxt *dec_mod_ctxt, FrameHeader *frame_header,
             else
                 return PARTITION_VERT_B;
         } else {
-            // Smaller width and smaller height. Might be PARTITION_SPLIT or could be
-            // PARTITION_HORZ_A or PARTITION_VERT_A. If subsize isn't halved in both
-            // dimensions, we immediately know this is a split (which will recurse to
-            // get to subsize). Otherwise look down and to the right. With
-            // PARTITION_VERT_A, the right block will have height bhigh; with
-            // PARTITION_HORZ_A, the lower block with have width bwide. Otherwise
-            // it's PARTITION_SPLIT.
+            /*!< Smaller width and smaller height. Might be PARTITION_SPLIT or could be
+             *   PARTITION_HORZ_A or PARTITION_VERT_A. If subsize isn't halved in both
+             *   dimensions, we immediately know this is a split (which will recurse to
+             *   get to subsize). Otherwise look down and to the right. With
+             *   PARTITION_VERT_A, the right block will have height bhigh; with
+             *   PARTITION_HORZ_A, the lower block with have width bwide. Otherwise
+             *   it's PARTITION_SPLIT. */
             if (sswide * 2 != bwide || sshigh * 2 != bhigh) return PARTITION_SPLIT;
 
             if (mi_size_wide[mbmi_below->sb_type] == bwide) return PARTITION_HORZ_A;
@@ -162,7 +159,7 @@ void decode_block(DecModCtxt *dec_mod_ctxt, BlockModeInfo *mode_info, int32_t mi
     sub_y                 = color_config->subsampling_y;
     int32_t is_chroma_ref = is_chroma_reference(mi_row, mi_col, bsize, sub_x, sub_y);
 
-    /* TODO: Can move to a common init fun for parse & decode */
+    /*!< TODO: Can move to a common init fun for parse & decode */
     PartitionInfo part_info;
     part_info.mi          = mode_info;
     part_info.sb_info     = sb_info;
@@ -182,19 +179,19 @@ void decode_block(DecModCtxt *dec_mod_ctxt, BlockModeInfo *mode_info, int32_t mi
     part_info.mb_to_right_edge  = ((mi_cols - bw4 - mi_col) * MI_SIZE) * 8;
 
     /*!< Block Size width & height in pixels. */
-    /* For Luma bock */
+    /*!< For Luma bock */
     part_info.wpx[0] = bw4 * MI_SIZE;
     part_info.hpx[0] = bh4 * MI_SIZE;
 
-    /* For U plane chroma bock */
+    /*!< For U plane chroma bock */
     part_info.wpx[1] = (AOMMAX(1, bw4 >> sub_x)) * MI_SIZE;
     part_info.hpx[1] = (AOMMAX(1, bh4 >> sub_y)) * MI_SIZE;
 
-    /* For V plane chroma bock */
+    /*!< For V plane chroma bock */
     part_info.wpx[2] = (AOMMAX(1, bw4 >> sub_x)) * MI_SIZE;
     part_info.hpx[2] = (AOMMAX(1, bh4 >> sub_y)) * MI_SIZE;
 
-    /* TODO : tile->tile_rows boundary condn check is wrong */
+    /*!< TODO : tile->tile_rows boundary condn check is wrong */
     part_info.up_available          = (mi_row > tile->mi_row_start);
     part_info.left_available        = (mi_col > tile->mi_col_start);
     part_info.chroma_up_available   = part_info.up_available;
@@ -226,13 +223,13 @@ void decode_block(DecModCtxt *dec_mod_ctxt, BlockModeInfo *mode_info, int32_t mi
     if (part_info.chroma_up_available) {
         part_info.chroma_above_mbmi =
             get_top_mode_info(dec_handle, (mi_row & (~sub_y)), (mi_col | sub_x), sb_info);
-        // floored to nearest 4x4 based on sub subsampling x & y
+        /*!< floored to nearest 4x4 based on sub subsampling x & y */
     } else
         part_info.chroma_above_mbmi = NULL;
     if (part_info.chroma_left_available) {
         part_info.chroma_left_mbmi =
             get_left_mode_info(dec_handle, (mi_row | sub_y), (mi_col & (~sub_x)), sb_info);
-        // floored to nearest 4x4 based on sub subsampling x & y
+        /*!< floored to nearest 4x4 based on sub subsampling x & y */
     } else
         part_info.chroma_left_mbmi = NULL;
 
@@ -240,15 +237,15 @@ void decode_block(DecModCtxt *dec_mod_ctxt, BlockModeInfo *mode_info, int32_t mi
     part_info.subsampling_y    = color_config->subsampling_y;
     part_info.ps_global_motion = dec_handle->master_frame_buf.cur_frame_bufs[0].global_motion_warp;
 
-    /* Wait until reference block's recon is complete for intrabc blocks */
+    /*!< Wait until reference block's recon is complete for intrabc blocks */
     if (dec_handle->dec_config.threads > 1 && mode_info->use_intrabc) {
         assert(mode_info->ref_frame[1] == NONE_FRAME);
         const MV mv = mode_info->mv[0].as_mv;
 
-        /* A negative mv.col will have ensured
-        reference recon due to top sync */
+        /*!< A negative mv.col will have ensured
+         *   reference recon due to top sync */
         if (mv.col > 0) {
-            /* mv.row is in (SUBPEL_BITS-1) Q format */
+            /*!< mv.row is in (SUBPEL_BITS-1) Q format */
             int32_t ref_row = mi_row +
                 (mv.row >> (SUBPEL_BITS-1 + MI_SIZE_LOG2));
 
@@ -261,7 +258,7 @@ void decode_block(DecModCtxt *dec_mod_ctxt, BlockModeInfo *mode_info, int32_t mi
                 (sb_size_log2 - MI_SIZE_LOG2);
 
             if (ref_sb_tile_row != cur_sb_tile_row) {
-                /* mv.col is in (SUBPEL_BITS-1) Q format */
+                /*!< mv.col is in (SUBPEL_BITS-1) Q format */
                 int32_t ref_col = mi_col + (mv.col >>
                     (SUBPEL_BITS-1 + MI_SIZE_LOG2));
                 DecMtFrameData *dec_mt_frame_data = &dec_handle->
@@ -282,7 +279,7 @@ void decode_block(DecModCtxt *dec_mod_ctxt, BlockModeInfo *mode_info, int32_t mi
         }
     }
 
-    /* Derive warped params for local warp mode*/
+    /*!< Derive warped params for local warp mode */
     if (inter_block) {
         if (WARPED_CAUSAL == mode_info->motion_mode) {
             int32_t pts[SAMPLES_ARRAY_SIZE], pts_inref[SAMPLES_ARRAY_SIZE];
@@ -310,7 +307,7 @@ void decode_block(DecModCtxt *dec_mod_ctxt, BlockModeInfo *mode_info, int32_t mi
                                            mi_row,
                                            mi_col);
 
-            /* local warp mode should find valid projection */
+            /*!< local warp mode should find valid projection */
             assert(apply_wm);
             part_info.local_warp_params.invalid = !apply_wm;
         }
@@ -420,7 +417,7 @@ void decode_block(DecModCtxt *dec_mod_ctxt, BlockModeInfo *mode_info, int32_t mi
                 dec_mod_ctxt->iquant_cur_ptr = dec_mod_ctxt->iquant_cur_ptr + iq_size;
 #if SVT_DEC_COEFF_DEBUG
                 {
-                    /* For debug purpose */
+                    /*!< For debug purpose */
                     uint8_t *cur_coeff  = (uint8_t *)coeffs;
                     uint8_t  mi_row_der = cur_coeff[0];
                     uint8_t  mi_col_der = cur_coeff[1];
@@ -467,7 +464,7 @@ void decode_block(DecModCtxt *dec_mod_ctxt, BlockModeInfo *mode_info, int32_t mi
                 }
             }
 
-            /* Store Luma for CFL if required! */
+            /*!< Store Luma for CFL if required! */
             if (plane == AOM_PLANE_Y &&
                 store_cfl_required(color_config, &part_info, is_chroma_ref)) {
                 cfl_store_tx(&part_info,
@@ -481,7 +478,7 @@ void decode_block(DecModCtxt *dec_mod_ctxt, BlockModeInfo *mode_info, int32_t mi
                              recon_stride);
             }
 
-            // increment transform pointer
+            /*!< increment transform pointer */
             trans_info++;
         }
     }

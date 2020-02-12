@@ -1,18 +1,15 @@
-/*
-* Copyright(c) 2019 Intel Corporation
-* SPDX - License - Identifier: BSD - 2 - Clause - Patent
-*/
+/*!<
+ * Copyright(c) 2019 Intel Corporation
+ * SPDX - License - Identifier: BSD - 2 - Clause - Patent */
 
-/*
-* Copyright (c) 2016, Alliance for Open Media. All rights reserved
-*
-* This source code is subject to the terms of the BSD 2 Clause License and
-* the Alliance for Open Media Patent License 1.0. If the BSD 2 Clause License
-* was not distributed with this source code in the LICENSE file, you can
-* obtain it at www.aomedia.org/license/software. If the Alliance for Open
-* Media Patent License 1.0 was not distributed with this source code in the
-* PATENTS file, you can obtain it at www.aomedia.org/license/patent.
-*/
+/*!< Copyright (c) 2016, Alliance for Open Media. All rights reserved
+ *
+ * This source code is subject to the terms of the BSD 2 Clause License and
+ * the Alliance for Open Media Patent License 1.0. If the BSD 2 Clause License
+ * was not distributed with this source code in the LICENSE file, you can
+ * obtain it at www.aomedia.org/license/software. If the Alliance for Open
+ * Media Patent License 1.0 was not distributed with this source code in the
+ * PATENTS file, you can obtain it at www.aomedia.org/license/patent. */
 
 #include <stdlib.h>
 #include "aom_dsp_rtcd.h"
@@ -50,9 +47,9 @@ void    eb_av1_cdef_frame(EncDecContext *context_ptr, SequenceControlSet *scs_pt
 void    eb_av1_loop_restoration_save_boundary_lines(const Yv12BufferConfig *frame, Av1Common *cm,
                                                     int32_t after_cdef);
 
-/**************************************
- * Cdef Context
- **************************************/
+/**************************************/
+/*!< Cdef Context */
+/**************************************/
 typedef struct CdefContext {
     EbFifo *cdef_input_fifo_ptr;
     EbFifo *cdef_output_fifo_ptr;
@@ -64,9 +61,9 @@ static void cdef_context_dctor(EbPtr p) {
     EB_FREE_ARRAY(obj);
 }
 
-/******************************************************
- * Cdef Context Constructor
- ******************************************************/
+/******************************************************/
+/*!< Cdef Context Constructor */
+/******************************************************/
 EbErrorType cdef_context_ctor(EbThreadContext *  thread_context_ptr,
                               const EbEncHandle *enc_handle_ptr, int index) {
     CdefContext *context_ptr;
@@ -74,7 +71,7 @@ EbErrorType cdef_context_ctor(EbThreadContext *  thread_context_ptr,
     thread_context_ptr->priv  = context_ptr;
     thread_context_ptr->dctor = cdef_context_dctor;
 
-    // Input/Output System Resource Manager FIFOs
+    /*!< Input/Output System Resource Manager FIFOs */
     context_ptr->cdef_input_fifo_ptr =
         eb_system_resource_get_consumer_fifo(enc_handle_ptr->dlf_results_resource_ptr, index);
     context_ptr->cdef_output_fifo_ptr =
@@ -178,7 +175,7 @@ void cdef_seg_search(PictureControlSet *pcs_ptr, SequenceControlSet *scs_ptr,
             int32_t dirinit    = 0;
             nhb                = AOMMIN(MI_SIZE_64X64, cm->mi_cols - MI_SIZE_64X64 * fbc);
             nvb                = AOMMIN(MI_SIZE_64X64, cm->mi_rows - MI_SIZE_64X64 * fbr);
-            int32_t    hb_step = 1; //these should be all time with 64x64 SBs
+            int32_t    hb_step = 1; /*!< these should be all time with 64x64 SBs */
             int32_t    vb_step = 1;
             BlockSize  bs      = BLOCK_64X64;
             ModeInfo **mi =
@@ -203,7 +200,7 @@ void cdef_seg_search(PictureControlSet *pcs_ptr, SequenceControlSet *scs_ptr,
                 vb_step = 2;
             }
 
-            // No filtering if the entire filter block is skipped
+            /*!< No filtering if the entire filter block is skipped */
             if (eb_sb_all_skip(pcs_ptr, cm, fbr * MI_SIZE_64X64, fbc * MI_SIZE_64X64)) continue;
 
             cdef_count = eb_sb_compute_cdef_list(
@@ -242,8 +239,9 @@ void cdef_seg_search(PictureControlSet *pcs_ptr, SequenceControlSet *scs_ptr,
                     int32_t  sec_strength;
                     threshold = gi / CDEF_SEC_STRENGTHS;
                     if (fast) threshold = priconv[threshold];
-                    /* We avoid filtering the pixels for which some of the pixels to
-                    average are outside the frame. We could change the filter instead, but it would add special cases for any future vectorization. */
+                    /*!< We avoid filtering the pixels for which some of the pixels to
+                     *   average are outside the frame. We could change the filter instead,
+                     *   but it would add special cases for any future vectorization. */
                     sec_strength = gi % CDEF_SEC_STRENGTHS;
 
                     eb_cdef_filter_fb(tmp_dst,
@@ -381,7 +379,7 @@ void cdef_seg_search16bit(PictureControlSet *pcs_ptr, SequenceControlSet *scs_pt
             int32_t dirinit    = 0;
             nhb                = AOMMIN(MI_SIZE_64X64, cm->mi_cols - MI_SIZE_64X64 * fbc);
             nvb                = AOMMIN(MI_SIZE_64X64, cm->mi_rows - MI_SIZE_64X64 * fbr);
-            int32_t    hb_step = 1; //these should be all time with 64x64 SBs
+            int32_t    hb_step = 1; /*!< these should be all time with 64x64 SBs */
             int32_t    vb_step = 1;
             BlockSize  bs      = BLOCK_64X64;
             ModeInfo **mi =
@@ -405,7 +403,7 @@ void cdef_seg_search16bit(PictureControlSet *pcs_ptr, SequenceControlSet *scs_pt
                 vb_step = 2;
             }
 
-            // No filtering if the entire filter block is skipped
+            /*!< No filtering if the entire filter block is skipped */
             if (eb_sb_all_skip(pcs_ptr, cm, fbr * MI_SIZE_64X64, fbc * MI_SIZE_64X64)) continue;
 
             cdef_count = eb_sb_compute_cdef_list(
@@ -444,8 +442,9 @@ void cdef_seg_search16bit(PictureControlSet *pcs_ptr, SequenceControlSet *scs_pt
                     int32_t  sec_strength;
                     threshold = gi / CDEF_SEC_STRENGTHS;
                     if (fast) threshold = priconv[threshold];
-                    /* We avoid filtering the pixels for which some of the pixels to
-                    average are outside the frame. We could change the filter instead, but it would add special cases for any future vectorization. */
+                    /*!< We avoid filtering the pixels for which some of the pixels to
+                     *   average are outside the frame. We could change the filter instead,
+                     *   but it would add special cases for any future vectorization. */
                     sec_strength = gi % CDEF_SEC_STRENGTHS;
 
                     eb_cdef_filter_fb(NULL,
@@ -488,11 +487,11 @@ void cdef_seg_search16bit(PictureControlSet *pcs_ptr, SequenceControlSet *scs_pt
     }
 }
 
-/******************************************************
- * CDEF Kernel
- ******************************************************/
+/******************************************************/
+/*!< CDEF Kernel */
+/******************************************************/
 void *cdef_kernel(void *input_ptr) {
-    // Context & SCS & PCS
+    /*!< Context & SCS & PCS */
     EbThreadContext *   thread_context_ptr = (EbThreadContext *)input_ptr;
     CdefContext *       context_ptr        = (CdefContext *)thread_context_ptr->priv;
     PictureControlSet * pcs_ptr;
@@ -500,18 +499,18 @@ void *cdef_kernel(void *input_ptr) {
 
     FrameHeader *frm_hdr;
 
-    //// Input
+    /*!< Input */
     EbObjectWrapper *dlf_results_wrapper_ptr;
     DlfResults *     dlf_results_ptr;
 
-    //// Output
+    /*!< Output */
     EbObjectWrapper *cdef_results_wrapper_ptr;
     CdefResults *    cdef_results_ptr;
 
-    // SB Loop variables
+    /*!< SB Loop variables */
 
     for (;;) {
-        // Get DLF Results
+        /*!< Get DLF Results */
         eb_get_full_object(context_ptr->cdef_input_fifo_ptr, &dlf_results_wrapper_ptr);
 
         dlf_results_ptr = (DlfResults *)dlf_results_wrapper_ptr->object_ptr;
@@ -530,7 +529,8 @@ void *cdef_kernel(void *input_ptr) {
                 cdef_seg_search(pcs_ptr, scs_ptr, dlf_results_ptr->segment_index);
         }
 
-        //all seg based search is done. update total processed segments. if all done, finish the search and perfrom application.
+        /*!< all seg based search is done. update total processed segments.
+         *   if all done, finish the search and perfrom application. */
         eb_block_on_mutex(pcs_ptr->cdef_search_mutex);
 
         pcs_ptr->tot_seg_searched_cdef++;
@@ -554,12 +554,12 @@ void *cdef_kernel(void *input_ptr) {
                 frm_hdr->cdef_params.cdef_uv_strength[0]   = 0;
             }
 
-            //restoration prep
+            /*!< restoration prep */
 
             if (scs_ptr->seq_header.enable_restoration) {
                 eb_av1_loop_restoration_save_boundary_lines(cm->frame_to_show, cm, 1);
 
-                //are these still needed here?/!!!
+                /*!< are these still needed here?/!!! */
                 eb_extend_frame(cm->frame_to_show->buffers[0],
                                 cm->frame_to_show->crop_widths[0],
                                 cm->frame_to_show->crop_heights[0],
@@ -591,18 +591,18 @@ void *cdef_kernel(void *input_ptr) {
             uint32_t segment_index;
             for (segment_index = 0; segment_index < pcs_ptr->rest_segments_total_count;
                  ++segment_index) {
-                // Get Empty Cdef Results to Rest
+                /*!< Get Empty Cdef Results to Rest */
                 eb_get_empty_object(context_ptr->cdef_output_fifo_ptr, &cdef_results_wrapper_ptr);
                 cdef_results_ptr = (struct CdefResults *)cdef_results_wrapper_ptr->object_ptr;
                 cdef_results_ptr->pcs_wrapper_ptr = dlf_results_ptr->pcs_wrapper_ptr;
                 cdef_results_ptr->segment_index   = segment_index;
-                // Post Cdef Results
+                /*!< Post Cdef Results */
                 eb_post_full_object(cdef_results_wrapper_ptr);
             }
         }
         eb_release_mutex(pcs_ptr->cdef_search_mutex);
 
-        // Release Dlf Results
+        /*!< Release Dlf Results */
         eb_release_object(dlf_results_wrapper_ptr);
     }
 

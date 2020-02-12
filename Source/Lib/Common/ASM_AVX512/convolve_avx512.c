@@ -1,7 +1,5 @@
-/*
-* Copyright(c) 2019 Intel Corporation
-* SPDX - License - Identifier: BSD - 2 - Clause - Patent
-*/
+/*!< Copyright(c) 2019 Intel Corporation
+ * SPDX - License - Identifier: BSD - 2 - Clause - Patent */
 #include "EbDefinitions.h"
 
 #ifndef NON_AVX512_SUPPORT
@@ -98,7 +96,7 @@ void eb_av1_convolve_y_sr_avx512(const uint8_t *src, int32_t src_stride, uint8_t
     (void)conv_params;
 
     if (is_convolve_2tap(filter_params_y->filter_ptr)) {
-        // vert_filt as 2 tap
+        /*!< vert_filt as 2 tap */
         const uint8_t *src_ptr = src;
 
         y = h;
@@ -143,7 +141,7 @@ void eb_av1_convolve_y_sr_avx512(const uint8_t *src, int32_t src_stride, uint8_t
                     s_64[0] = _mm_loadl_epi64((__m128i *)src_ptr);
 
                     do {
-                        // Note: Faster than binding to AVX2 registers.
+                        /*!< Note: Faster than binding to AVX2 registers. */
                         s_64[1]            = _mm_loadl_epi64((__m128i *)(src_ptr + src_stride));
                         s_128[0]           = _mm_unpacklo_epi64(s_64[0], s_64[1]);
                         s_64[0]            = _mm_loadl_epi64((__m128i *)(src_ptr + 2 * src_stride));
@@ -246,7 +244,7 @@ void eb_av1_convolve_y_sr_avx512(const uint8_t *src, int32_t src_stride, uint8_t
                 }
             }
         } else {
-            // average to get half pel
+            /*!< average to get half pel */
             if (w <= 8) {
                 if (w == 2) {
                     __m128i s_16[2];
@@ -288,7 +286,7 @@ void eb_av1_convolve_y_sr_avx512(const uint8_t *src, int32_t src_stride, uint8_t
                     s_64[0] = _mm_loadl_epi64((__m128i *)src_ptr);
 
                     do {
-                        // Note: Faster than binding to AVX2 registers.
+                        /*!< Note: Faster than binding to AVX2 registers. */
                         s_64[1]          = _mm_loadl_epi64((__m128i *)(src_ptr + src_stride));
                         const __m128i d0 = _mm_avg_epu8(s_64[0], s_64[1]);
                         _mm_storel_epi64((__m128i *)dst, d0);
@@ -372,7 +370,7 @@ void eb_av1_convolve_y_sr_avx512(const uint8_t *src, int32_t src_stride, uint8_t
             }
         }
     } else if (is_convolve_4tap(filter_params_y->filter_ptr)) {
-        // vert_filt as 4 tap
+        /*!< vert_filt as 4 tap */
         const uint8_t *src_ptr = src - src_stride;
 
         y = h;
@@ -440,7 +438,7 @@ void eb_av1_convolve_y_sr_avx512(const uint8_t *src, int32_t src_stride, uint8_t
                 s_64[1] = _mm_loadl_epi64((__m128i *)(src_ptr + 1 * src_stride));
                 s_64[2] = _mm_loadl_epi64((__m128i *)(src_ptr + 2 * src_stride));
 
-                // Load lines a and b. Line a to lower 128, line b to upper 128
+                /*!< Load lines a and b. Line a to lower 128, line b to upper 128 */
                 const __m256i src01 = _mm256_setr_m128i(s_64[0], s_64[1]);
                 const __m256i src12 = _mm256_setr_m128i(s_64[1], s_64[2]);
 
@@ -466,7 +464,7 @@ void eb_av1_convolve_y_sr_avx512(const uint8_t *src, int32_t src_stride, uint8_t
                 s_128[1] = _mm_loadu_si128((__m128i *)(src_ptr + 1 * src_stride));
                 s_128[2] = _mm_loadu_si128((__m128i *)(src_ptr + 2 * src_stride));
 
-                // Load lines a and b. Line a to lower 128, line b to upper 128
+                /*!< Load lines a and b. Line a to lower 128, line b to upper 128 */
                 const __m256i src01 = _mm256_setr_m128i(s_128[0], s_128[1]);
                 const __m256i src12 = _mm256_setr_m128i(s_128[1], s_128[2]);
 
@@ -484,9 +482,9 @@ void eb_av1_convolve_y_sr_avx512(const uint8_t *src, int32_t src_stride, uint8_t
                     y -= 2;
                 } while (y);
             } else {
-                // AV1 standard won't have 32x4 case.
-                // This only favors some optimization feature which
-                // subsamples 32x8 to 32x4 and triggers 4-tap filter.
+                /*!< AV1 standard won't have 32x4 case.
+                 *   This only favors some optimization feature which
+                 *   subsamples 32x8 to 32x4 and triggers 4-tap filter. */
 
                 __m256i s_256[3];
                 __m512i s_512[2], ss_512[4], r[2];
@@ -518,7 +516,7 @@ void eb_av1_convolve_y_sr_avx512(const uint8_t *src, int32_t src_stride, uint8_t
             }
         }
     } else if (is_convolve_6tap(filter_params_y->filter_ptr)) {
-        // vert_filt as 6 tap
+        /*!< vert_filt as 6 tap */
         const uint8_t *src_ptr = src - 2 * src_stride;
 
         if (w <= 4) {
@@ -600,7 +598,7 @@ void eb_av1_convolve_y_sr_avx512(const uint8_t *src, int32_t src_stride, uint8_t
                 s_64[3] = _mm_loadl_epi64((__m128i *)(src_ptr + 3 * src_stride));
                 s_64[4] = _mm_loadl_epi64((__m128i *)(src_ptr + 4 * src_stride));
 
-                // Load lines a and b. Line a to lower 128, line b to upper 128
+                /*!< Load lines a and b. Line a to lower 128, line b to upper 128 */
                 const __m256i src01 = _mm256_setr_m128i(s_64[0], s_64[1]);
                 const __m256i src12 = _mm256_setr_m128i(s_64[1], s_64[2]);
                 const __m256i src23 = _mm256_setr_m128i(s_64[2], s_64[3]);
@@ -633,7 +631,7 @@ void eb_av1_convolve_y_sr_avx512(const uint8_t *src, int32_t src_stride, uint8_t
                 s_128[3] = _mm_loadu_si128((__m128i *)(src_ptr + 3 * src_stride));
                 s_128[4] = _mm_loadu_si128((__m128i *)(src_ptr + 4 * src_stride));
 
-                // Load lines a and b. Line a to lower 128, line b to upper 128
+                /*!< Load lines a and b. Line a to lower 128, line b to upper 128 */
                 const __m256i src01 = _mm256_setr_m128i(s_128[0], s_128[1]);
                 const __m256i src12 = _mm256_setr_m128i(s_128[1], s_128[2]);
                 const __m256i src23 = _mm256_setr_m128i(s_128[2], s_128[3]);
@@ -747,7 +745,7 @@ void eb_av1_convolve_y_sr_avx512(const uint8_t *src, int32_t src_stride, uint8_t
             }
         }
     } else {
-        // vert_filt as 8 tap
+        /*!< vert_filt as 8 tap */
         const uint8_t *src_ptr = src - 3 * src_stride;
 
         if (w <= 4) {
@@ -841,7 +839,7 @@ void eb_av1_convolve_y_sr_avx512(const uint8_t *src, int32_t src_stride, uint8_t
                 s_64[5] = _mm_loadl_epi64((__m128i *)(src_ptr + 5 * src_stride));
                 s_64[6] = _mm_loadl_epi64((__m128i *)(src_ptr + 6 * src_stride));
 
-                // Load lines a and b. Line a to lower 128, line b to upper 128
+                /*!< Load lines a and b. Line a to lower 128, line b to upper 128 */
                 const __m256i src01 = _mm256_setr_m128i(s_64[0], s_64[1]);
                 const __m256i src12 = _mm256_setr_m128i(s_64[1], s_64[2]);
                 const __m256i src23 = _mm256_setr_m128i(s_64[2], s_64[3]);
@@ -879,7 +877,7 @@ void eb_av1_convolve_y_sr_avx512(const uint8_t *src, int32_t src_stride, uint8_t
                 s_128[5] = _mm_loadu_si128((__m128i *)(src_ptr + 5 * src_stride));
                 s_128[6] = _mm_loadu_si128((__m128i *)(src_ptr + 6 * src_stride));
 
-                // Load lines a and b. Line a to lower 128, line b to upper 128
+                /*!< Load lines a and b. Line a to lower 128, line b to upper 128 */
                 const __m256i src01 = _mm256_setr_m128i(s_128[0], s_128[1]);
                 const __m256i src12 = _mm256_setr_m128i(s_128[1], s_128[2]);
                 const __m256i src23 = _mm256_setr_m128i(s_128[2], s_128[3]);
@@ -1096,7 +1094,7 @@ void eb_av1_convolve_x_sr_avx512(const uint8_t *src, int32_t src_stride, uint8_t
            ((conv_params->round_0 + conv_params->round_1) == 2 * FILTER_BITS));
 
     if (is_convolve_2tap(filter_params_x->filter_ptr)) {
-        // horz_filt as 2 tap
+        /*!< horz_filt as 2 tap */
         const uint8_t *src_ptr = src;
 
         if (subpel_x_q4 != 8) {
@@ -1158,7 +1156,7 @@ void eb_av1_convolve_x_sr_avx512(const uint8_t *src, int32_t src_stride, uint8_t
 
                 if (w == 32) {
                     do {
-                        // Slower than avx2.
+                        /*!< Slower than avx2. */
                         sr_x_2tap_32x2_avx512(src_ptr, src_stride, coeffs_512, dst, dst_stride);
                         src_ptr += 2 * src_stride;
                         dst += 2 * dst_stride;
@@ -1182,7 +1180,7 @@ void eb_av1_convolve_x_sr_avx512(const uint8_t *src, int32_t src_stride, uint8_t
                 }
             }
         } else {
-            // average to get half pel
+            /*!< average to get half pel */
             if (w == 2) {
                 do {
                     __m128i s_128;
@@ -1265,7 +1263,7 @@ void eb_av1_convolve_x_sr_avx512(const uint8_t *src, int32_t src_stride, uint8_t
             }
         }
     } else if (is_convolve_4tap(filter_params_x->filter_ptr)) {
-        // horz_filt as 4 tap
+        /*!< horz_filt as 4 tap */
         const uint8_t *src_ptr = src - 1;
 
         prepare_half_coeffs_4tap_ssse3(filter_params_x, subpel_x_q4, coeffs_128);
@@ -1293,7 +1291,7 @@ void eb_av1_convolve_x_sr_avx512(const uint8_t *src, int32_t src_stride, uint8_t
         }
     } else {
         if (is_convolve_6tap(filter_params_x->filter_ptr)) {
-            // horz_filt as 6 tap
+            /*!< horz_filt as 6 tap */
             const uint8_t *src_ptr = src - 2;
 
             if (w <= 16) {
@@ -1362,7 +1360,7 @@ void eb_av1_convolve_x_sr_avx512(const uint8_t *src, int32_t src_stride, uint8_t
                 }
             }
         } else {
-            // horz_filt as 8 tap
+            /*!< horz_filt as 8 tap */
             const uint8_t *src_ptr = src - 3;
 
             if (w <= 16) {
