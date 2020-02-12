@@ -11,6 +11,7 @@
 #include "EbAppString.h"
 #include "EbAppConfig.h"
 #include "EbAppInputy4m.h"
+#include "getopt.h"
 
 #ifdef _WIN32
 #include <windows.h>
@@ -18,6 +19,9 @@
 #else
 #include <unistd.h>
 #endif
+
+// Temp Macro
+#define GETOPT 1
 
 /**********************************
  * Defines
@@ -1231,9 +1235,15 @@ ConfigEntry config_entry[] = {
     {SINGLE_INPUT, SQ_WEIGHT_TOKEN, "SquareWeight", set_square_weight},
     {SINGLE_INPUT, ENABLE_AMP_TOKEN, "AutomaxPartition", set_enable_auto_max_partition},
 
-    {SINGLE_INPUT, MD_FAST_PRUNE_C_TH, "MdFastPruneClassThreshold", set_md_fast_cost_class_prune_th},
+    {SINGLE_INPUT,
+     MD_FAST_PRUNE_C_TH,
+     "MdFastPruneClassThreshold",
+     set_md_fast_cost_class_prune_th},
     {SINGLE_INPUT, MD_FAST_PRUNE_S_TH, "MdFastPruneCandThreshold", set_md_fast_cost_cand_prune_th},
-    {SINGLE_INPUT, MD_FULL_PRUNE_C_TH, "MdFullPruneClassThreshold", set_md_full_cost_class_prune_th},
+    {SINGLE_INPUT,
+     MD_FULL_PRUNE_C_TH,
+     "MdFullPruneClassThreshold",
+     set_md_full_cost_class_prune_th},
     {SINGLE_INPUT, MD_FULL_PRUNE_S_TH, "MdFullPruneCandThreshold", set_md_full_cost_cand_prune_th},
 
     // Termination
@@ -2321,3 +2331,28 @@ EbErrorType read_command_line(int32_t argc, char *const argv[], EbConfig **confi
     for (index = 0; index < MAX_CHANNEL_NUMBER; ++index) free(config_strings[index]);
     return return_error;
 }
+
+
+#ifdef GETOPT
+void read_command_line_getopt(int32_t argc, char *const argv[]) {
+    int               o;
+    static const char short_opts[] = "i:q:w:h:";
+
+    static const struct option long_opts[] = {
+        {"input", 1, NULL, 'i'},
+        {"output", 1, NULL, 'o'},
+        {"intra-period", 1, NULL, 0},
+        {"qp", 1, NULL, 'q'},
+        {NULL, 0, NULL, 0},
+    };
+
+
+    while ((o = getopt_long(argc, argv, short_opts, long_opts, NULL)) != -1) {
+        switch (o){
+        case 'i': fprintf(stderr, "i: %s:\n", optarg); break;
+        case 'q': fprintf(stderr, "q: %s:\n", optarg); break;
+        case 'w': fprintf(stderr, "w: %s:\n", optarg); break;
+        case 'h': fprintf(stderr, "h: %s:\n", optarg); break;
+        } }
+}
+#endif

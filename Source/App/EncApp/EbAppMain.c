@@ -133,7 +133,9 @@ int32_t main(int32_t argc, char *argv[]) {
 
         // Read all configuration files.
         return_error = read_command_line(argc, argv, configs, num_channels, return_errors);
-
+#ifdef GETOPT
+        read_command_line_getopt(argc, argv);
+#endif
         // Process any command line options, including the configuration file
 
         if (return_error == EB_ErrorNone) {
