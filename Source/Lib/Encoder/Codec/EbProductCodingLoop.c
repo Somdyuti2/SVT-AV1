@@ -5110,11 +5110,6 @@ void md_stage_3(PictureControlSet *pcs_ptr, SuperBlock *sb_ptr, BlkStruct *blk_p
             if (context_ptr->blk_geom->sq_size < 128) {
                 if (context_ptr->blk_geom->has_uv) {
                     if (candidate_ptr->type == INTRA_MODE) {
-                        // Derive disable_cfl_flag as evaluate_cfl_ep = f(disable_cfl_flag)
-                        EbBool disable_cfl_flag = (context_ptr->blk_geom->sq_size > 32 ||
-                            context_ptr->blk_geom->bwidth == 4 ||
-                            context_ptr->blk_geom->bheight == 4) ? EB_TRUE : EB_FALSE;
-
                         uint32_t intra_chroma_mode = candidate_ptr->intra_chroma_mode != UV_CFL_PRED ?
                             context_ptr->best_uv_mode[candidate_ptr->intra_luma_mode][MAX_ANGLE_DELTA + candidate_ptr->angle_delta[PLANE_TYPE_Y]] :
                             UV_CFL_PRED;
@@ -5643,12 +5638,7 @@ void order_nsq_table(PictureControlSet *pcs_ptr, ModeDecisionContext *context_pt
     }
 }
 #if MOVE_OPT
-void init_chroma_mode(PictureControlSet     *picture_control_set_ptr,
-                      EbPictureBufferDesc   *input_picture_ptr,
-                      uint32_t               input_cb_origin_index,
-                      uint32_t               input_cr_origin_index,
-                      uint32_t               cu_chroma_origin_index,
-                      ModeDecisionContext   *context_ptr) {
+void init_chroma_mode(ModeDecisionContext   *context_ptr) {
     context_ptr->uv_search_path = EB_TRUE;
     EbBool use_angle_delta = av1_use_angle_delta(context_ptr->blk_geom->bsize);
     for (uint8_t intra_mode = DC_PRED; intra_mode <= PAETH_PRED; ++intra_mode) {
@@ -6232,12 +6222,7 @@ void md_encode_block(SequenceControlSet *scs_ptr, PictureControlSet *pcs_ptr,
         else if (context_ptr->chroma_level == CHROMA_MODE_01) {
             if (context_ptr->blk_geom->sq_size < 128) {
                 if (context_ptr->blk_geom->has_uv) {
-                    init_chroma_mode(pcs_ptr,
-                                      input_picture_ptr,
-                                      input_cb_origin_in_index,
-                                      input_cb_origin_in_index,
-                                      blk_chroma_origin_index,
-                                      context_ptr);
+                    init_chroma_mode(context_ptr);
                 }
             }
         }
