@@ -2331,388 +2331,409 @@ EbErrorType read_command_line(int32_t argc, char *const argv[], EbConfig **confi
 }
 
 #if GETOPT
+static const char short_opts[] = "c:i:b:o:w:h:q:";
+
+enum {
+    ARG_NCH = 256,
+    ARG_ERRLOG,
+    ARG_QP_FILE,
+    ARG_INPUT_STAT_FILE,
+    ARG_OUTPUT_STAT_FILE,
+    ARG_STAT_FILE,
+    ARG_PRED_STRUCT_FILE,
+    ARG_NB,
+    ARG_BASE_LAYER_SWITCH_MODE,
+    ARG_USE_Q_FILE,
+    ARG_STAT_REPORT,
+    ARG_FPS,
+    ARG_FPS_NUM,
+    ARG_FPS_DENOM,
+    ARG_BIT_DEPTH,
+    ARG_COLOR_FORMAT,
+    ARG_COMPRESSED_TEN_BIT_FORMAT,
+    ARG_ENC_MODE,
+    ARG_ENC_MODE_2P,
+    ARG_HIERARCHICHAL_LEVELS,
+    ARG_PRED_STRUCT,
+    ARG_INTRA_PERIOD,
+    ARG_PROFILE,
+    ARG_TIER,
+    ARG_LEVEL,
+    ARG_LATENCY_MODE,
+    ARG_FILM_GRAIN,
+    ARG_IREFRESH_TYPE,
+    ARG_DLF,
+    ARG_RESTORATION_FILTERING,
+    ARG_CLASS_12,
+    ARG_INTRA_EDGE_SKP,
+    ARG_INTERINTRA_COMP,
+    ARG_FRAC_SEARCH_64,
+    ARG_MFMV,
+    ARG_REDUNDANT_BLK,
+    ARG_TRELLIS,
+    ARG_SPATIAL_SSE_FL,
+    ARG_SUBPEL,
+    ARG_OVER_BNDRY_BLK,
+    ARG_NEW_NRST_NEAR_COMB,
+    ARG_NX4_4XN_MV_INJECT,
+    ARG_PRUNE_UNIPRED_ME,
+    ARG_PRUNE_REF_REC_PART,
+    ARG_NSQ_TABLE_USE,
+    ARG_FRAME_END_CDF_UPD_MODE,
+    ARG_LOCAL_WARP,
+    ARG_GLOBAL_MOTION,
+    ARG_OBMC,
+    ARG_RDOQ,
+    ARG_PRED_ME,
+    ARG_BIPRED_3X3_GRAIN,
+    ARG_COMPOUND,
+    ARG_FILTER_INTRA,
+    ARG_USE_DEFAULT_ME_HME,
+    ARG_HME,
+    ARG_HME_L0,
+    ARG_HME_L1,
+    ARG_HME_L2,
+    ARG_EXT_BLOCK,
+    ARG_SEARCH_W,
+    ARG_SEARCH_H,
+    ARG_NUM_HME_W,
+    ARG_NUM_HME_H,
+    ARG_HME_TOT_L0_W,
+    ARG_HME_TOT_L0_H,
+    ARG_HME_L0_W,
+    ARG_HME_L0_H,
+    ARG_HME_L1_W,
+    ARG_HME_L1_H,
+    ARG_HME_L2_W,
+    ARG_HME_L2_H,
+    ARG_SCM,
+    ARG_ENABLE_ALTREFS,
+    ARG_ALTREF_STRENGTH,
+    ARG_ALTREF_NFRAMES,
+    ARG_ENABLE_OVERLAYS,
+    ARG_SUPERRES_MODE,
+    ARG_SUPERRES_DENOM,
+    ARG_SUPERRES_KF_DENOM,
+    ARG_SUPERRES_QTHRES,
+    ARG_HBD_MD,
+    ARG_PALETTE,
+    ARG_OLPD_REFINEMENT,
+    ARG_HDR,
+    ARG_RC,
+    ARG_TBR,
+    ARG_MAX_QP,
+    ARG_VBV_BUFSIZE,
+    ARG_MIN_QP,
+    ARG_ADAPTIVE_QUANTIZATION,
+    ARG_LAD,
+    ARG_SB_SIZE,
+    ARG_TILE_ROWS,
+    ARG_TILE_COLUMNS,
+    ARG_SQW,
+    ARG_ENABLE_AMP,
+    ARG_CHROMA_MODE,
+    ARG_SCD,
+    ARG_INJ,
+    ARG_INJ_FRM_RT,
+    ARG_SPEED_CTRL,
+    ARG_ASM,
+    ARG_LP,
+    ARG_UNPIN_LP1,
+    ARG_SS,
+    ARG_UMV,
+    ARG_MD_FAST_CLASS_TH,
+    ARG_MD_FAST_CAND_TH,
+    ARG_MD_FULL_CLASS_TH,
+    ARG_MD_FULL_CAND_TH,
+};
+
+static const struct option long_opts[] = {
+    {"nch", 1, NULL, ARG_NCH},
+    {"config-file;", 1, NULL, 'c'}, // long token
+    {"input", 1, NULL, 'i'}, // long token
+    {"output-bitstream", 1, NULL, 'b'}, // long token
+    {"output-recon", 1, NULL, 'o'}, // long token
+    {"errlog", 1, NULL, ARG_ERRLOG},
+    {"qp-file", 1, NULL, ARG_QP_FILE},
+    {"input-stat-file", 1, NULL, ARG_INPUT_STAT_FILE},
+    {"output-stat-file", 1, NULL, ARG_OUTPUT_STAT_FILE},
+    {"stat-file", 1, NULL, ARG_STAT_FILE},
+    {"pred-struct-file", 1, NULL, ARG_PRED_STRUCT_FILE},
+    {"width", 1, NULL, 'w'},
+    {"height", 1, NULL, 'h'},
+    {"number-of-pictures", 1, NULL, 'n'}, // long token
+    {"nb", 1, NULL, ARG_NB},
+    {"base-layer-switch-mode", 1, NULL, ARG_BASE_LAYER_SWITCH_MODE},
+    {"qp", 1, NULL, 'q'}, // long token
+    {"use-q-file", 1, NULL, ARG_USE_Q_FILE},
+    {"stat-report", 1, NULL, ARG_STAT_REPORT},
+    {"fps", 1, NULL, ARG_FPS},
+    {"fps-num", 1, NULL, ARG_FPS_NUM},
+    {"fps-denom", 1, NULL, ARG_FPS_DENOM},
+    {"bit-depth", 1, NULL, ARG_BIT_DEPTH},
+    {"color-format", 1, NULL, ARG_COLOR_FORMAT},
+    {"compressed-ten-bit-format", 1, NULL, ARG_COMPRESSED_TEN_BIT_FORMAT},
+    {"enc-mode", 1, NULL, ARG_ENC_MODE},
+    {"enc-mode-2p", 1, NULL, ARG_ENC_MODE_2P},
+    {"hierarchical-levels", 1, NULL, ARG_HIERARCHICHAL_LEVELS},
+    {"pred-struct", 1, NULL, ARG_PRED_STRUCT},
+    {"intra-period", 1, NULL, ARG_INTRA_PERIOD},
+    {"profile", 1, NULL, ARG_PROFILE},
+    {"tier", 1, NULL, ARG_TIER},
+    {"level", 1, NULL, ARG_LEVEL},
+    {"latency-mode", 1, NULL, ARG_LATENCY_MODE},
+    {"film-grain", 1, NULL, ARG_FILM_GRAIN},
+    {"irefresh-type", 1, NULL, ARG_IREFRESH_TYPE},
+    {"dlf", 1, NULL, ARG_DLF},
+    {"restoration-filtering", 1, NULL, ARG_RESTORATION_FILTERING},
+    {"class-12", 1, NULL, ARG_CLASS_12},
+    {"intra-edge-skp", 1, NULL, ARG_INTRA_EDGE_SKP},
+    {"interintra-comp", 1, NULL, ARG_INTERINTRA_COMP},
+    {"frac-search-64", 1, NULL, ARG_FRAC_SEARCH_64},
+    {"mfmv", 1, NULL, ARG_MFMV},
+    {"redundant-blk", 1, NULL, ARG_REDUNDANT_BLK},
+    {"trellis", 1, NULL, ARG_TRELLIS},
+    {"spatial-sse-fl", 1, NULL, ARG_SPATIAL_SSE_FL},
+    {"subpel", 1, NULL, ARG_SUBPEL},
+    {"over-bndry-blk", 1, NULL, ARG_OVER_BNDRY_BLK},
+    {"new-nrst-near-comb", 1, NULL, ARG_NEW_NRST_NEAR_COMB},
+    {"nx4-4xn-mv-inject", 1, NULL, ARG_NX4_4XN_MV_INJECT},
+    {"prune-unipred-me", 1, NULL, ARG_PRUNE_UNIPRED_ME},
+    {"prune-ref-rec-part", 1, NULL, ARG_PRUNE_REF_REC_PART},
+    {"nsq-table-use", 1, NULL, ARG_NSQ_TABLE_USE},
+    {"frame-end-cdf-upd-mode", 1, NULL, ARG_FRAME_END_CDF_UPD_MODE},
+    {"local-warp", 1, NULL, ARG_LOCAL_WARP},
+    {"global-motion", 1, NULL, ARG_GLOBAL_MOTION},
+    {"obmc", 1, NULL, ARG_OBMC},
+    {"rdoq", 1, NULL, ARG_RDOQ},
+    {"pred-me", 1, NULL, ARG_PRED_ME},
+    {"bipred-3x3-grain", 1, NULL, ARG_BIPRED_3X3_GRAIN},
+    {"compound", 1, NULL, ARG_COMPOUND},
+    {"filter-intra", 1, NULL, ARG_FILTER_INTRA},
+    {"use-default-me-hme", 1, NULL, ARG_USE_DEFAULT_ME_HME},
+    {"hme", 1, NULL, ARG_HME},
+    {"hme-l0", 1, NULL, ARG_HME_L0},
+    {"hme-l1", 1, NULL, ARG_HME_L1},
+    {"hme-l2", 1, NULL, ARG_HME_L2},
+    {"ext-block", 1, NULL, ARG_EXT_BLOCK},
+    {"search-w", 1, NULL, ARG_SEARCH_W},
+    {"search-h", 1, NULL, ARG_SEARCH_H},
+    {"num-hme-w", 1, NULL, ARG_NUM_HME_W},
+    {"num-hme-h", 1, NULL, ARG_NUM_HME_H},
+    {"hme-tot-l0-w", 1, NULL, ARG_HME_TOT_L0_W},
+    {"hme-tot-l0-h", 1, NULL, ARG_HME_TOT_L0_H},
+    {"hme-l0-w", 1, NULL, ARG_HME_L0_W},
+    {"hme-l0-h", 1, NULL, ARG_HME_L0_H},
+    {"hme-l1-w", 1, NULL, ARG_HME_L1_W},
+    {"hme-l1-h", 1, NULL, ARG_HME_L1_H},
+    {"hme-l2-w", 1, NULL, ARG_HME_L2_W},
+    {"hme-l2-h", 1, NULL, ARG_HME_L2_H},
+    {"scm", 1, NULL, ARG_SCM},
+    // --- start: ALTREF_FILTERING_SUPPORT
+    {"enable-altrefs", 1, NULL, ARG_ENABLE_ALTREFS},
+    {"altref-strength", 1, NULL, ARG_ALTREF_STRENGTH},
+    {"altref-nframes", 1, NULL, ARG_ALTREF_NFRAMES},
+    {"enable-overlays", 1, NULL, ARG_ENABLE_OVERLAYS},
+    // --- end: ALTREF_FILTERING_SUPPORT
+    // --- start: SUPER-RESOLUTION SUPPORT
+    {"superres-mode", 1, NULL, ARG_SUPERRES_MODE},
+    {"superres-denom", 1, NULL, ARG_SUPERRES_DENOM},
+    {"superres-kf-denom", 1, NULL, ARG_SUPERRES_KF_DENOM},
+    {"superres-qthres", 1, NULL, ARG_SUPERRES_QTHRES},
+    // --- end: SUPER-RESOLUTION SUPPORT
+    {"hbd-md", 1, NULL, ARG_HBD_MD},
+    {"palette", 1, NULL, ARG_PALETTE},
+    {"olpd-refinement", 1, NULL, ARG_OLPD_REFINEMENT},
+    {"hdr", 1, NULL, ARG_HDR},
+    {"rc", 1, NULL, ARG_RC},
+    {"tbr", 1, NULL, ARG_TBR},
+    {"max-qp", 1, NULL, ARG_MAX_QP},
+    {"vbv-bufsize", 1, NULL, ARG_VBV_BUFSIZE},
+    {"min-qp", 1, NULL, ARG_MIN_QP},
+    {"adaptive-quantization", 1, NULL, ARG_ADAPTIVE_QUANTIZATION},
+    {"lad", 1, NULL, ARG_LAD},
+    {"sb-size", 1, NULL, ARG_SB_SIZE},
+    {"tile-rows", 1, NULL, ARG_TILE_ROWS},
+    {"tile-columns", 1, NULL, ARG_TILE_COLUMNS},
+
+    {"sqw", 1, NULL, ARG_SQW},
+    {"enable-amp", 1, NULL, ARG_ENABLE_AMP},
+    {"chroma-mode", 1, NULL, ARG_CHROMA_MODE},
+
+    {"scd", 1, NULL, ARG_SCD},
+    {"inj", 1, NULL, ARG_INJ},
+    {"inj-frm-rt", 1, NULL, ARG_INJ_FRM_RT},
+    {"speed-ctrl", 1, NULL, ARG_SPEED_CTRL},
+    {"asm", 1, NULL, ARG_ASM},
+    {"lp", 1, NULL, ARG_LP},
+    {"unpin-lp1", 1, NULL, ARG_UNPIN_LP1},
+    {"ss", 1, NULL, ARG_SS},
+    {"umv", 1, NULL, ARG_UMV},
+
+    {"md-fast-class-th", 1, NULL, ARG_MD_FAST_CLASS_TH},
+    {"md-fast-cand-th", 1, NULL, ARG_MD_FAST_CAND_TH},
+    {"md-full-class-th", 1, NULL, ARG_MD_FULL_CLASS_TH},
+    {"md-full-cand-th", 1, NULL, ARG_MD_FULL_CAND_TH},
+    {NULL, 0, NULL, 0},
+};
 EbErrorType read_command_line_getopt(int32_t argc, char *const argv[], EbConfig **configs) {
-    int               o;
-    static const char short_opts[] = "c:i:b:o:w:h:q:";
-
-    enum {
-        ARG_NCH = 256,
-        ARG_ERRLOG,
-        ARG_QP_FILE,
-        ARG_INPUT_STAT_FILE,
-        ARG_OUTPUT_STAT_FILE,
-        ARG_STAT_FILE,
-        ARG_PRED_STRUCT_FILE,
-        ARG_NB,
-        ARG_BASE_LAYER_SWITCH_MODE,
-        ARG_USE_Q_FILE,
-        ARG_STAT_REPORT,
-        ARG_FPS,
-        ARG_FPS_NUM,
-        ARG_FPS_DENOM,
-        ARG_BIT_DEPTH,
-        ARG_COLOR_FORMAT,
-        ARG_COMPRESSED_TEN_BIT_FORMAT,
-        ARG_ENC_MODE,
-        ARG_ENC_MODE_2P,
-        ARG_HIERARCHICHAL_LEVELS,
-        ARG_PRED_STRUCT,
-        ARG_INTRA_PERIOD,
-        ARG_PROFILE,
-        ARG_TIER,
-        ARG_LEVEL,
-        ARG_LATENCY_MODE,
-        ARG_FILM_GRAIN,
-        ARG_IREFRESH_TYPE,
-        ARG_DLF,
-        ARG_RESTORATION_FILTERING,
-        ARG_CLASS_12,
-        ARG_INTRA_EDGE_SKP,
-        ARG_INTERINTRA_COMP,
-        ARG_FRAC_SEARCH_64,
-        ARG_MFMV,
-        ARG_REDUNDANT_BLK,
-        ARG_TRELLIS,
-        ARG_SPATIAL_SSE_FL,
-        ARG_SUBPEL,
-        ARG_OVER_BNDRY_BLK,
-        ARG_NEW_NRST_NEAR_COMB,
-        ARG_NX4_4XN_MV_INJECT,
-        ARG_PRUNE_UNIPRED_ME,
-        ARG_PRUNE_REF_REC_PART,
-        ARG_NSQ_TABLE_USE,
-        ARG_FRAME_END_CDF_UPD_MODE,
-        ARG_LOCAL_WARP,
-        ARG_GLOBAL_MOTION,
-        ARG_OBMC,
-        ARG_RDOQ,
-        ARG_PRED_ME,
-        ARG_BIPRED_3X3_GRAIN,
-        ARG_COMPOUND,
-        ARG_FILTER_INTRA,
-        ARG_USE_DEFAULT_ME_HME,
-        ARG_HME,
-        ARG_HME_L0,
-        ARG_HME_L1,
-        ARG_HME_L2,
-        ARG_EXT_BLOCK,
-        ARG_SEARCH_W,
-        ARG_SEARCH_H,
-        ARG_NUM_HME_W,
-        ARG_NUM_HME_H,
-        ARG_HME_TOT_L0_W,
-        ARG_HME_TOT_L0_H,
-        ARG_HME_L0_W,
-        ARG_HME_L0_H,
-        ARG_HME_L1_W,
-        ARG_HME_L1_H,
-        ARG_HME_L2_W,
-        ARG_HME_L2_H,
-        ARG_SCM,
-        ARG_ENABLE_ALTREFS,
-        ARG_ALTREF_STRENGTH,
-        ARG_ALTREF_NFRAMES,
-        ARG_ENABLE_OVERLAYS,
-        ARG_SUPERRES_MODE,
-        ARG_SUPERRES_DENOM,
-        ARG_SUPERRES_KF_DENOM,
-        ARG_SUPERRES_QTHRES,
-        ARG_HBD_MD,
-        ARG_PALETTE,
-        ARG_OLPD_REFINEMENT,
-        ARG_HDR,
-        ARG_RC,
-        ARG_TBR,
-        ARG_MAX_QP,
-        ARG_VBV_BUFSIZE,
-        ARG_MIN_QP,
-        ARG_ADAPTIVE_QUANTIZATION,
-        ARG_LAD,
-        ARG_SB_SIZE,
-        ARG_TILE_ROWS,
-        ARG_TILE_COLUMNS,
-        ARG_SQW,
-        ARG_ENABLE_AMP,
-        ARG_CHROMA_MODE,
-        ARG_SCD,
-        ARG_INJ,
-        ARG_INJ_FRM_RT,
-        ARG_SPEED_CTRL,
-        ARG_ASM,
-        ARG_LP,
-        ARG_UNPIN_LP1,
-        ARG_SS,
-        ARG_UMV,
-        ARG_MD_FAST_CLASS_TH,
-        ARG_MD_FAST_CAND_TH,
-        ARG_MD_FULL_CLASS_TH,
-        ARG_MD_FULL_CAND_TH,
-    };
-
-    static const struct option long_opts[] = {
-        {"nch", 1, NULL, ARG_NCH},
-        {"config-file;", 1, NULL, 'c'}, // long token
-        {"input", 1, NULL, 'i'}, // long token
-        {"output-bitstream", 1, NULL, 'b'}, // long token
-        {"output-recon", 1, NULL, 'o'}, // long token
-        {"errlog", 1, NULL, ARG_ERRLOG},
-        {"qp-file", 1, NULL, ARG_QP_FILE},
-        {"input-stat-file", 1, NULL, ARG_INPUT_STAT_FILE},
-        {"output-stat-file", 1, NULL, ARG_OUTPUT_STAT_FILE},
-        {"stat-file", 1, NULL, ARG_STAT_FILE},
-        {"pred-struct-file", 1, NULL, ARG_PRED_STRUCT_FILE},
-        {"width", 1, NULL, 'w'},
-        {"height", 1, NULL, 'h'},
-        {"number-of-pictures", 1, NULL, 'n'}, // long token
-        {"nb", 1, NULL, ARG_NB},
-        {"base-layer-switch-mode", 1, NULL, ARG_BASE_LAYER_SWITCH_MODE},
-        {"qp", 1, NULL, 'q'}, // long token
-        {"use-q-file", 1, NULL, ARG_USE_Q_FILE},
-        {"stat-report", 1, NULL, ARG_STAT_REPORT},
-        {"fps", 1, NULL, ARG_FPS},
-        {"fps-num", 1, NULL, ARG_FPS_NUM},
-        {"fps-denom", 1, NULL, ARG_FPS_DENOM},
-        {"bit-depth", 1, NULL, ARG_BIT_DEPTH},
-        {"color-format", 1, NULL, ARG_COLOR_FORMAT},
-        {"compressed-ten-bit-format", 1, NULL, ARG_COMPRESSED_TEN_BIT_FORMAT},
-        {"enc-mode", 1, NULL, ARG_ENC_MODE},
-        {"enc-mode-2p", 1, NULL, ARG_ENC_MODE_2P},
-        {"hierarchical-levels", 1, NULL, ARG_HIERARCHICHAL_LEVELS},
-        {"pred-struct", 1, NULL, ARG_PRED_STRUCT},
-        {"intra-period", 1, NULL, ARG_INTRA_PERIOD},
-        {"profile", 1, NULL, ARG_PROFILE},
-        {"tier", 1, NULL, ARG_TIER},
-        {"level", 1, NULL, ARG_LEVEL},
-        {"latency-mode", 1, NULL, ARG_LATENCY_MODE},
-        {"film-grain", 1, NULL, ARG_FILM_GRAIN},
-        {"irefresh-type", 1, NULL, ARG_IREFRESH_TYPE},
-        {"dlf", 1, NULL, ARG_DLF},
-        {"restoration-filtering", 1, NULL, ARG_RESTORATION_FILTERING},
-        {"class-12", 1, NULL, ARG_CLASS_12},
-        {"intra-edge-skp", 1, NULL, ARG_INTRA_EDGE_SKP},
-        {"interintra-comp", 1, NULL, ARG_INTERINTRA_COMP},
-        {"frac-search-64", 1, NULL, ARG_FRAC_SEARCH_64},
-        {"mfmv", 1, NULL, ARG_MFMV},
-        {"redundant-blk", 1, NULL, ARG_REDUNDANT_BLK},
-        {"trellis", 1, NULL, ARG_TRELLIS},
-        {"spatial-sse-fl", 1, NULL, ARG_SPATIAL_SSE_FL},
-        {"subpel", 1, NULL, ARG_SUBPEL},
-        {"over-bndry-blk", 1, NULL, ARG_OVER_BNDRY_BLK},
-        {"new-nrst-near-comb", 1, NULL, ARG_NEW_NRST_NEAR_COMB},
-        {"nx4-4xn-mv-inject", 1, NULL, ARG_NX4_4XN_MV_INJECT},
-        {"prune-unipred-me", 1, NULL, ARG_PRUNE_UNIPRED_ME},
-        {"prune-ref-rec-part", 1, NULL, ARG_PRUNE_REF_REC_PART},
-        {"nsq-table-use", 1, NULL, ARG_NSQ_TABLE_USE},
-        {"frame-end-cdf-upd-mode", 1, NULL, ARG_FRAME_END_CDF_UPD_MODE},
-        {"local-warp", 1, NULL, ARG_LOCAL_WARP},
-        {"global-motion", 1, NULL, ARG_GLOBAL_MOTION},
-        {"obmc", 1, NULL, ARG_OBMC},
-        {"rdoq", 1, NULL, ARG_RDOQ},
-        {"pred-me", 1, NULL, ARG_PRED_ME},
-        {"bipred-3x3-grain", 1, NULL, ARG_BIPRED_3X3_GRAIN},
-        {"compound", 1, NULL, ARG_COMPOUND},
-        {"filter-intra", 1, NULL, ARG_FILTER_INTRA},
-        {"use-default-me-hme", 1, NULL, ARG_USE_DEFAULT_ME_HME},
-        {"hme", 1, NULL, ARG_HME},
-        {"hme-l0", 1, NULL, ARG_HME_L0},
-        {"hme-l1", 1, NULL, ARG_HME_L1},
-        {"hme-l2", 1, NULL, ARG_HME_L2},
-        {"ext-block", 1, NULL, ARG_EXT_BLOCK},
-        {"search-w", 1, NULL, ARG_SEARCH_W},
-        {"search-h", 1, NULL, ARG_SEARCH_H},
-        {"num-hme-w", 1, NULL, ARG_NUM_HME_W},
-        {"num-hme-h", 1, NULL, ARG_NUM_HME_H},
-        {"hme-tot-l0-w", 1, NULL, ARG_HME_TOT_L0_W},
-        {"hme-tot-l0-h", 1, NULL, ARG_HME_TOT_L0_H},
-        {"hme-l0-w", 1, NULL, ARG_HME_L0_W},
-        {"hme-l0-h", 1, NULL, ARG_HME_L0_H},
-        {"hme-l1-w", 1, NULL, ARG_HME_L1_W},
-        {"hme-l1-h", 1, NULL, ARG_HME_L1_H},
-        {"hme-l2-w", 1, NULL, ARG_HME_L2_W},
-        {"hme-l2-h", 1, NULL, ARG_HME_L2_H},
-        {"scm", 1, NULL, ARG_SCM},
-        // --- start: ALTREF_FILTERING_SUPPORT
-        {"enable-altrefs", 1, NULL, ARG_ENABLE_ALTREFS},
-        {"altref-strength", 1, NULL, ARG_ALTREF_STRENGTH},
-        {"altref-nframes", 1, NULL, ARG_ALTREF_NFRAMES},
-        {"enable-overlays", 1, NULL, ARG_ENABLE_OVERLAYS},
-        // --- end: ALTREF_FILTERING_SUPPORT
-        // --- start: SUPER-RESOLUTION SUPPORT
-        {"superres-mode", 1, NULL, ARG_SUPERRES_MODE},
-        {"superres-denom", 1, NULL, ARG_SUPERRES_DENOM},
-        {"superres-kf-denom", 1, NULL, ARG_SUPERRES_KF_DENOM},
-        {"superres-qthres", 1, NULL, ARG_SUPERRES_QTHRES},
-        // --- end: SUPER-RESOLUTION SUPPORT
-        {"hbd-md", 1, NULL, ARG_HBD_MD},
-        {"palette", 1, NULL, ARG_PALETTE},
-        {"olpd-refinement", 1, NULL, ARG_OLPD_REFINEMENT},
-        {"hdr", 1, NULL, ARG_HDR},
-        {"rc", 1, NULL, ARG_RC},
-        {"tbr", 1, NULL, ARG_TBR},
-        {"max-qp", 1, NULL, ARG_MAX_QP},
-        {"vbv-bufsize", 1, NULL, ARG_VBV_BUFSIZE},
-        {"min-qp", 1, NULL, ARG_MIN_QP},
-        {"adaptive-quantization", 1, NULL, ARG_ADAPTIVE_QUANTIZATION},
-        {"lad", 1, NULL, ARG_LAD},
-        {"sb-size", 1, NULL, ARG_SB_SIZE},
-        {"tile-rows", 1, NULL, ARG_TILE_ROWS},
-        {"tile-columns", 1, NULL, ARG_TILE_COLUMNS},
-
-        {"sqw", 1, NULL, ARG_SQW},
-        {"enable-amp", 1, NULL, ARG_ENABLE_AMP},
-        {"chroma-mode", 1, NULL, ARG_CHROMA_MODE},
-
-        {"scd", 1, NULL, ARG_SCD},
-        {"inj", 1, NULL, ARG_INJ},
-        {"inj-frm-rt", 1, NULL, ARG_INJ_FRM_RT},
-        {"speed-ctrl", 1, NULL, ARG_SPEED_CTRL},
-        {"asm", 1, NULL, ARG_ASM},
-        {"lp", 1, NULL, ARG_LP},
-        {"unpin-lp1", 1, NULL, ARG_UNPIN_LP1},
-        {"ss", 1, NULL, ARG_SS},
-        {"umv", 1, NULL, ARG_UMV},
-
-        {"md-fast-class-th", 1, NULL, ARG_MD_FAST_CLASS_TH},
-        {"md-fast-cand-th", 1, NULL, ARG_MD_FAST_CAND_TH},
-        {"md-full-class-th", 1, NULL, ARG_MD_FULL_CLASS_TH},
-        {"md-full-cand-th", 1, NULL, ARG_MD_FULL_CAND_TH},
-        {NULL, 0, NULL, 0},
-    };
-
-    while ((o = getopt_long_only(argc, argv, short_opts, long_opts, NULL)) != -1) {
-        switch (o) {
-        case ARG_NCH:
-            // todo: needs to handled differently
+    int               token;
+    int index = 0; // for now
+    while ((token = getopt_long_only(argc, argv, short_opts, long_opts, NULL)) != -1) {
+        switch (token) {
+        case ARG_NCH: get_number_of_channels(argc, argv); break;
         case 'c':
             // todo: needs to handled differently
         case 'i': set_cfg_input_file(optarg, configs[0]); break;
         case 'b': set_cfg_stream_file(optarg, configs[0]); break;
         case 'o': set_cfg_recon_file(optarg, configs[0]); break;
         case ARG_ERRLOG: set_cfg_error_file(optarg, configs[0]); break;
-        case ARG_QP_FILE: set_cfg_qp_file(optarg, configs[0]); break;
-        case ARG_INPUT_STAT_FILE: set_input_stat_file(optarg, configs[0]); break;
-        case ARG_OUTPUT_STAT_FILE: set_output_stat_file(optarg, configs[0]); break;
-        case ARG_STAT_FILE: set_cfg_stat_file(optarg, configs[0]); break;
-        case ARG_PRED_STRUCT_FILE: set_pred_struct_file(optarg, configs[0]); break;
-        case 'w': set_cfg_source_width(optarg, configs[0]); break;
+        case ARG_QP_FILE: set_cfg_qp_file(optarg, configs[index]); break;
+        case ARG_INPUT_STAT_FILE: set_input_stat_file(optarg, configs[index]); break;
+        case ARG_OUTPUT_STAT_FILE: set_output_stat_file(optarg, configs[index]); break;
+        case ARG_STAT_FILE: set_cfg_stat_file(optarg, configs[index]); break;
+        case ARG_PRED_STRUCT_FILE: set_pred_struct_file(optarg, configs[index]); break;
+        case 'w': set_cfg_source_width(optarg, configs[index]); break;
         case 'h':
-            set_cfg_source_height(optarg, configs[0]);
+            set_cfg_source_height(optarg, configs[index]);
             //fprintf(stderr, "h: %s:\n", optarg); break;
             break;
-        case 'n': set_cfg_frames_to_be_encoded(optarg, configs[0]); break;
-        case ARG_NB: set_buffered_input(optarg, configs[0]); break;
-        case ARG_BASE_LAYER_SWITCH_MODE: set_base_layer_switch_mode(optarg, configs[0]); break;
-        case 'q': set_cfg_qp(optarg, configs[0]); break;
-        case ARG_USE_Q_FILE: set_cfg_use_qp_file(optarg, configs[0]); break;
-        case ARG_STAT_REPORT: set_stat_report(optarg, configs[0]); break;
-        case ARG_FPS: set_frame_rate(optarg, configs[0]); break;
-        case ARG_FPS_NUM: set_frame_rate_numerator(optarg, configs[0]); break;
-        case ARG_FPS_DENOM: set_frame_rate_denominator(optarg, configs[0]); break;
-        case ARG_BIT_DEPTH: set_encoder_bit_depth(optarg, configs[0]); break;
-        case ARG_COLOR_FORMAT: set_encoder_color_format(optarg, configs[0]); break;
+        case 'n': set_cfg_frames_to_be_encoded(optarg, configs[index]); break;
+        case ARG_NB: set_buffered_input(optarg, configs[index]); break;
+        case ARG_BASE_LAYER_SWITCH_MODE: set_base_layer_switch_mode(optarg, configs[index]); break;
+        case 'q': set_cfg_qp(optarg, configs[index]); break;
+        case ARG_USE_Q_FILE: set_cfg_use_qp_file(optarg, configs[index]); break;
+        case ARG_STAT_REPORT: set_stat_report(optarg, configs[index]); break;
+        case ARG_FPS: set_frame_rate(optarg, configs[index]); break;
+        case ARG_FPS_NUM: set_frame_rate_numerator(optarg, configs[index]); break;
+        case ARG_FPS_DENOM: set_frame_rate_denominator(optarg, configs[index]); break;
+        case ARG_BIT_DEPTH: set_encoder_bit_depth(optarg, configs[index]); break;
+        case ARG_COLOR_FORMAT: set_encoder_color_format(optarg, configs[index]); break;
         case ARG_COMPRESSED_TEN_BIT_FORMAT:
-            set_compressed_ten_bit_format(optarg, configs[0]);
+            set_compressed_ten_bit_format(optarg, configs[index]);
             break;
-        case ARG_ENC_MODE: set_enc_mode(optarg, configs[0]); break;
-        case ARG_ENC_MODE_2P: set_snd_pass_enc_mode(optarg, configs[0]); break;
-        case ARG_HIERARCHICHAL_LEVELS: set_hierarchical_levels(optarg, configs[0]); break;
-        case ARG_PRED_STRUCT: set_cfg_pred_structure(optarg, configs[0]); break;
-        case ARG_INTRA_PERIOD: set_snd_pass_enc_mode(optarg, configs[0]); break;
-        case ARG_PROFILE: set_profile(optarg, configs[0]); break;
-        case ARG_TIER: set_tier(optarg, configs[0]); break;
-        case ARG_LEVEL: set_level(optarg, configs[0]); break;
-        case ARG_LATENCY_MODE: set_latency_mode(optarg, configs[0]); break;
-        case ARG_FILM_GRAIN: set_cfg_film_grain(optarg, configs[0]); break;
-        case ARG_IREFRESH_TYPE: set_cfg_intra_refresh_type(optarg, configs[0]); break;
-        case ARG_DLF: set_disable_dlf_flag(optarg, configs[0]); break;
+        case ARG_ENC_MODE: set_enc_mode(optarg, configs[index]); break;
+        case ARG_ENC_MODE_2P: set_snd_pass_enc_mode(optarg, configs[index]); break;
+        case ARG_HIERARCHICHAL_LEVELS: set_hierarchical_levels(optarg, configs[index]); break;
+        case ARG_PRED_STRUCT: set_cfg_pred_structure(optarg, configs[index]); break;
+        case ARG_INTRA_PERIOD: set_snd_pass_enc_mode(optarg, configs[index]); break;
+        case ARG_PROFILE: set_profile(optarg, configs[index]); break;
+        case ARG_TIER: set_tier(optarg, configs[index]); break;
+        case ARG_LEVEL: set_level(optarg, configs[index]); break;
+        case ARG_LATENCY_MODE: set_latency_mode(optarg, configs[index]); break;
+        case ARG_FILM_GRAIN: set_cfg_film_grain(optarg, configs[index]); break;
+        case ARG_IREFRESH_TYPE: set_cfg_intra_refresh_type(optarg, configs[index]); break;
+        case ARG_DLF: set_disable_dlf_flag(optarg, configs[index]); break;
         case ARG_RESTORATION_FILTERING:
-            set_enable_restoration_filter_flag(optarg, configs[0]);
+            set_enable_restoration_filter_flag(optarg, configs[index]);
             break;
-        case ARG_CLASS_12: set_class_12_flag(optarg, configs[0]); break;
-        case ARG_INTRA_EDGE_SKP: set_edge_skip_angle_intra_flag(optarg, configs[0]); break;
-        case ARG_INTERINTRA_COMP: set_interintra_compound_flag(optarg, configs[0]); break;
-        case ARG_FRAC_SEARCH_64: set_fractional_search_64_flag(optarg, configs[0]); break;
-        case ARG_MFMV: set_enable_mfmv_flag(optarg, configs[0]); break;
-        case ARG_REDUNDANT_BLK: set_enable_redundant_blk_flag(optarg, configs[0]); break;
-        case ARG_TRELLIS: set_enable_trellis_flag(optarg, configs[0]); break;
-        case ARG_SPATIAL_SSE_FL: set_spatial_sse_fl_flag(optarg, configs[0]); break;
-        case ARG_SUBPEL: set_enable_sub_pel_flag(optarg, configs[0]); break;
-        case ARG_OVER_BNDRY_BLK: set_over_bndry_blk_flag(optarg, configs[0]); break;
-        case ARG_NEW_NRST_NEAR_COMB: set_new_nearest_comb_inject_flag(optarg, configs[0]); break;
-        case ARG_NX4_4XN_MV_INJECT: set_nx4_4xn_parent_mv_inject_flag(optarg, configs[0]); break;
-        case ARG_PRUNE_UNIPRED_ME: set_prune_unipred_me_flag(optarg, configs[0]); break;
-        case ARG_PRUNE_REF_REC_PART: set_prune_ref_rec_part_flag(optarg, configs[0]); break;
-        case ARG_NSQ_TABLE_USE: set_nsq_table_flag(optarg, configs[0]); break;
-        case ARG_FRAME_END_CDF_UPD_MODE: set_frame_end_cdf_update_flag(optarg, configs[0]); break;
-        case ARG_LOCAL_WARP: set_enable_local_warped_motion_flag(optarg, configs[0]); break;
-        case ARG_GLOBAL_MOTION: set_enable_global_motion_flag(optarg, configs[0]); break;
-        case ARG_OBMC: set_enable_obmc_flag(optarg, configs[0]); break;
-        case ARG_RDOQ: set_enable_rdoq_flag(optarg, configs[0]); break;
-        case ARG_PRED_ME: set_predictive_me_flag(optarg, configs[0]);
-        case ARG_BIPRED_3X3_GRAIN: set_bipred3x3inject_flag(optarg, configs[0]); break;
-        case ARG_COMPOUND: set_compound_level_flag(optarg, configs[0]); break;
-        case ARG_FILTER_INTRA: set_enable_filter_intra_flag(optarg, configs[0]); break;
-        case ARG_USE_DEFAULT_ME_HME: set_cfg_use_default_me_hme(optarg, configs[0]); break;
-        case ARG_HME: set_enable_hme_flag(optarg, configs[0]); break;
-        case ARG_HME_L0: set_enable_hme_level_0_flag(optarg, configs[0]); break;
-        case ARG_HME_L1: set_enable_hme_level_1_flag(optarg, configs[0]); break;
-        case ARG_HME_L2: set_enable_hme_level_2_flag(optarg, configs[0]); break;
-        case ARG_EXT_BLOCK: set_enable_ext_block_flag(optarg, configs[0]); break;
-        case ARG_SEARCH_W: set_cfg_search_area_width(optarg, configs[0]); break;
-        case ARG_SEARCH_H: set_cfg_search_area_height(optarg, configs[0]); break;
-        case ARG_NUM_HME_W: set_cfg_number_hme_search_region_in_width(optarg, configs[0]); break;
-        case ARG_NUM_HME_H: set_cfg_number_hme_search_region_in_height(optarg, configs[0]); break;
+        case ARG_CLASS_12: set_class_12_flag(optarg, configs[index]); break;
+        case ARG_INTRA_EDGE_SKP: set_edge_skip_angle_intra_flag(optarg, configs[index]); break;
+        case ARG_INTERINTRA_COMP: set_interintra_compound_flag(optarg, configs[index]); break;
+        case ARG_FRAC_SEARCH_64: set_fractional_search_64_flag(optarg, configs[index]); break;
+        case ARG_MFMV: set_enable_mfmv_flag(optarg, configs[index]); break;
+        case ARG_REDUNDANT_BLK: set_enable_redundant_blk_flag(optarg, configs[index]); break;
+        case ARG_TRELLIS: set_enable_trellis_flag(optarg, configs[index]); break;
+        case ARG_SPATIAL_SSE_FL: set_spatial_sse_fl_flag(optarg, configs[index]); break;
+        case ARG_SUBPEL: set_enable_sub_pel_flag(optarg, configs[index]); break;
+        case ARG_OVER_BNDRY_BLK: set_over_bndry_blk_flag(optarg, configs[index]); break;
+        case ARG_NEW_NRST_NEAR_COMB:
+            set_new_nearest_comb_inject_flag(optarg, configs[index]);
+            break;
+        case ARG_NX4_4XN_MV_INJECT:
+            set_nx4_4xn_parent_mv_inject_flag(optarg, configs[index]);
+            break;
+        case ARG_PRUNE_UNIPRED_ME: set_prune_unipred_me_flag(optarg, configs[index]); break;
+        case ARG_PRUNE_REF_REC_PART: set_prune_ref_rec_part_flag(optarg, configs[index]); break;
+        case ARG_NSQ_TABLE_USE: set_nsq_table_flag(optarg, configs[index]); break;
+        case ARG_FRAME_END_CDF_UPD_MODE:
+            set_frame_end_cdf_update_flag(optarg, configs[index]);
+            break;
+        case ARG_LOCAL_WARP: set_enable_local_warped_motion_flag(optarg, configs[index]); break;
+        case ARG_GLOBAL_MOTION: set_enable_global_motion_flag(optarg, configs[index]); break;
+        case ARG_OBMC: set_enable_obmc_flag(optarg, configs[index]); break;
+        case ARG_RDOQ: set_enable_rdoq_flag(optarg, configs[index]); break;
+        case ARG_PRED_ME: set_predictive_me_flag(optarg, configs[index]);
+        case ARG_BIPRED_3X3_GRAIN: set_bipred3x3inject_flag(optarg, configs[index]); break;
+        case ARG_COMPOUND: set_compound_level_flag(optarg, configs[index]); break;
+        case ARG_FILTER_INTRA: set_enable_filter_intra_flag(optarg, configs[index]); break;
+        case ARG_USE_DEFAULT_ME_HME: set_cfg_use_default_me_hme(optarg, configs[index]); break;
+        case ARG_HME: set_enable_hme_flag(optarg, configs[index]); break;
+        case ARG_HME_L0: set_enable_hme_level_0_flag(optarg, configs[index]); break;
+        case ARG_HME_L1: set_enable_hme_level_1_flag(optarg, configs[index]); break;
+        case ARG_HME_L2: set_enable_hme_level_2_flag(optarg, configs[index]); break;
+        case ARG_EXT_BLOCK: set_enable_ext_block_flag(optarg, configs[index]); break;
+        case ARG_SEARCH_W: set_cfg_search_area_width(optarg, configs[index]); break;
+        case ARG_SEARCH_H: set_cfg_search_area_height(optarg, configs[index]); break;
+        case ARG_NUM_HME_W:
+            set_cfg_number_hme_search_region_in_width(optarg, configs[index]);
+            break;
+        case ARG_NUM_HME_H:
+            set_cfg_number_hme_search_region_in_height(optarg, configs[index]);
+            break;
         case ARG_HME_TOT_L0_W:
-            set_cfg_hme_level_0_total_search_area_width(optarg, configs[0]);
+            set_cfg_hme_level_0_total_search_area_width(optarg, configs[index]);
             break;
         case ARG_HME_TOT_L0_H:
-            set_cfg_hme_level_0_total_search_area_height(optarg, configs[0]);
+            set_cfg_hme_level_0_total_search_area_height(optarg, configs[index]);
             break;
-        case ARG_HME_L0_W: set_hme_level_0_search_area_in_width_array(optarg, configs[0]); break;
-        case ARG_HME_L0_H: set_hme_level_0_search_area_in_height_array(optarg, configs[0]); break;
-        case ARG_HME_L1_W: set_hme_level_1_search_area_in_width_array(optarg, configs[0]); break;
-        case ARG_HME_L1_H: set_hme_level_1_search_area_in_height_array(optarg, configs[0]); break;
-        case ARG_HME_L2_W: set_hme_level_2_search_area_in_width_array(optarg, configs[0]); break;
-        case ARG_HME_L2_H: set_hme_level_2_search_area_in_height_array(optarg, configs[0]); break;
-        case ARG_SCM: set_screen_content_mode(optarg, configs[0]); break;
-        case ARG_ENABLE_ALTREFS: set_enable_altrefs(optarg, configs[0]); break;
-        case ARG_ALTREF_STRENGTH: set_altref_strength(optarg, configs[0]); break;
-        case ARG_ALTREF_NFRAMES: set_altref_n_frames(optarg, configs[0]); break;
-        case ARG_ENABLE_OVERLAYS: set_enable_overlays(optarg, configs[0]); break;
-        case ARG_SUPERRES_MODE: set_superres_mode(optarg, configs[0]); break;
-        case ARG_SUPERRES_DENOM: set_superres_denom(optarg, configs[0]); break;
-        case ARG_SUPERRES_KF_DENOM: set_superres_kf_denom(optarg, configs[0]); break;
-        case ARG_SUPERRES_QTHRES: set_superres_qthres(optarg, configs[0]); break;
-        case ARG_HBD_MD: set_enable_hbd_mode_decision(optarg, configs[0]); break;
-        case ARG_PALETTE: set_enable_palette(optarg, configs[0]); break;
-        case ARG_OLPD_REFINEMENT: set_enable_olpd_refinement(optarg, configs[0]); break;
-        case ARG_HDR: set_high_dynamic_range_input(optarg, configs[0]); break;
-        case ARG_RC: set_rate_control_mode(optarg, configs[0]); break;
-        case ARG_TBR: set_target_bit_rate(optarg, configs[0]); break;
-        case ARG_MAX_QP: set_max_qp_allowed(optarg, configs[0]); break;
-        case ARG_VBV_BUFSIZE: set_vbv_buf_size(optarg, configs[0]); break;
-        case ARG_MIN_QP: set_min_qp_allowed(optarg, configs[0]); break;
-        case ARG_ADAPTIVE_QUANTIZATION: set_adaptive_quantization(optarg, configs[0]); break;
-        case ARG_LAD: set_look_ahead_distance(optarg, configs[0]);
-        case ARG_TILE_ROWS: set_tile_row(optarg, configs[0]);
-        case ARG_TILE_COLUMNS: set_tile_col(optarg, configs[0]); break;
-        case ARG_SQW: set_square_weight(optarg, configs[0]); break;
-        case ARG_ENABLE_AMP: set_enable_auto_max_partition(optarg, configs[0]); break;
-        case ARG_CHROMA_MODE: set_chroma_mode(optarg, configs[0]); break;
-        case ARG_SCD: set_scene_change_detection(optarg, configs[0]); break;
-        case ARG_INJ: set_injector(optarg, configs[0]); break;
-        case ARG_INJ_FRM_RT: set_injector_frame_rate(optarg, configs[0]); break;
-        case ARG_SPEED_CTRL: speed_control_flag(optarg, configs[0]); break;
-        case ARG_ASM: set_asm_type(optarg, configs[0]); break;
-        case ARG_LP: set_logical_processors(optarg, configs[0]); break;
-        case ARG_UNPIN_LP1: set_unpin_single_core_execution(optarg, configs[0]); break;
-        case ARG_SS: set_target_socket(optarg, configs[0]); break;
-        case ARG_UMV: set_unrestricted_motion_vector(optarg, configs[0]); break;
-        case ARG_MD_FAST_CLASS_TH: set_md_fast_cost_class_prune_th(optarg, configs[0]); break;
-        case ARG_MD_FAST_CAND_TH: set_md_fast_cost_cand_prune_th(optarg, configs[0]); break;
-        case ARG_MD_FULL_CLASS_TH: set_md_full_cost_class_prune_th(optarg, configs[0]); break;
-        case ARG_MD_FULL_CAND_TH: set_md_full_cost_cand_prune_th(optarg, configs[0]); break;
-        default: fprintf(stderr, "no tokens passed"); break;
+        case ARG_HME_L0_W:
+            set_hme_level_0_search_area_in_width_array(optarg, configs[index]);
+            break;
+        case ARG_HME_L0_H:
+            set_hme_level_0_search_area_in_height_array(optarg, configs[index]);
+            break;
+        case ARG_HME_L1_W:
+            set_hme_level_1_search_area_in_width_array(optarg, configs[index]);
+            break;
+        case ARG_HME_L1_H:
+            set_hme_level_1_search_area_in_height_array(optarg, configs[index]);
+            break;
+        case ARG_HME_L2_W:
+            set_hme_level_2_search_area_in_width_array(optarg, configs[index]);
+            break;
+        case ARG_HME_L2_H:
+            set_hme_level_2_search_area_in_height_array(optarg, configs[index]);
+            break;
+        case ARG_SCM: set_screen_content_mode(optarg, configs[index]); break;
+        case ARG_ENABLE_ALTREFS: set_enable_altrefs(optarg, configs[index]); break;
+        case ARG_ALTREF_STRENGTH: set_altref_strength(optarg, configs[index]); break;
+        case ARG_ALTREF_NFRAMES: set_altref_n_frames(optarg, configs[index]); break;
+        case ARG_ENABLE_OVERLAYS: set_enable_overlays(optarg, configs[index]); break;
+        case ARG_SUPERRES_MODE: set_superres_mode(optarg, configs[index]); break;
+        case ARG_SUPERRES_DENOM: set_superres_denom(optarg, configs[index]); break;
+        case ARG_SUPERRES_KF_DENOM: set_superres_kf_denom(optarg, configs[index]); break;
+        case ARG_SUPERRES_QTHRES: set_superres_qthres(optarg, configs[index]); break;
+        case ARG_HBD_MD: set_enable_hbd_mode_decision(optarg, configs[index]); break;
+        case ARG_PALETTE: set_enable_palette(optarg, configs[index]); break;
+        case ARG_OLPD_REFINEMENT: set_enable_olpd_refinement(optarg, configs[index]); break;
+        case ARG_HDR: set_high_dynamic_range_input(optarg, configs[index]); break;
+        case ARG_RC: set_rate_control_mode(optarg, configs[index]); break;
+        case ARG_TBR: set_target_bit_rate(optarg, configs[index]); break;
+        case ARG_MAX_QP: set_max_qp_allowed(optarg, configs[index]); break;
+        case ARG_VBV_BUFSIZE: set_vbv_buf_size(optarg, configs[index]); break;
+        case ARG_MIN_QP: set_min_qp_allowed(optarg, configs[index]); break;
+        case ARG_ADAPTIVE_QUANTIZATION: set_adaptive_quantization(optarg, configs[index]); break;
+        case ARG_LAD: set_look_ahead_distance(optarg, configs[index]);
+        case ARG_TILE_ROWS: set_tile_row(optarg, configs[index]);
+        case ARG_TILE_COLUMNS: set_tile_col(optarg, configs[index]); break;
+        case ARG_SQW: set_square_weight(optarg, configs[index]); break;
+        case ARG_ENABLE_AMP: set_enable_auto_max_partition(optarg, configs[index]); break;
+        case ARG_CHROMA_MODE: set_chroma_mode(optarg, configs[index]); break;
+        case ARG_SCD: set_scene_change_detection(optarg, configs[index]); break;
+        case ARG_INJ: set_injector(optarg, configs[index]); break;
+        case ARG_INJ_FRM_RT: set_injector_frame_rate(optarg, configs[index]); break;
+        case ARG_SPEED_CTRL: speed_control_flag(optarg, configs[index]); break;
+        case ARG_ASM: set_asm_type(optarg, configs[index]); break;
+        case ARG_LP: set_logical_processors(optarg, configs[index]); break;
+        case ARG_UNPIN_LP1: set_unpin_single_core_execution(optarg, configs[index]); break;
+        case ARG_SS: set_target_socket(optarg, configs[index]); break;
+        case ARG_UMV: set_unrestricted_motion_vector(optarg, configs[index]); break;
+        case ARG_MD_FAST_CLASS_TH: set_md_fast_cost_class_prune_th(optarg, configs[index]); break;
+        case ARG_MD_FAST_CAND_TH: set_md_fast_cost_cand_prune_th(optarg, configs[index]); break;
+        case ARG_MD_FULL_CLASS_TH: set_md_full_cost_class_prune_th(optarg, configs[index]); break;
+        case ARG_MD_FULL_CAND_TH: set_md_full_cost_cand_prune_th(optarg, configs[index]); break;
+        default: fprintf(stderr, "Invalid token passed\n"); return EB_ErrorBadParameter;
         }
     }
 
