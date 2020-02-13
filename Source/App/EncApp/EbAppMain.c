@@ -99,7 +99,11 @@ int32_t main(int32_t argc, char *argv[]) {
     signal(SIGINT, event_handler);
     fprintf(stderr, "-------------------------------------------\n");
     fprintf(stderr, "SVT-AV1 Encoder\n");
+#if GETOPT
+    if (1) {
+#else
     if (!get_help(argc, argv)) {
+#endif
         // Get num_channels
         num_channels = get_number_of_channels(argc, argv);
         if (num_channels == 0) return EB_ErrorBadParameter;
@@ -134,6 +138,8 @@ int32_t main(int32_t argc, char *argv[]) {
         // Read all configuration files.
 #if GETOPT
         return_error = read_command_line_getopt(argc, argv, configs);
+        if (return_error == EB_ErrorMax)
+            goto jump;
         //read_command_line_getopt(argc, argv, configs);
 #else
         return_error = read_command_line(argc, argv, configs, num_channels, return_errors);
@@ -415,6 +421,8 @@ int32_t main(int32_t argc, char *argv[]) {
 
         fprintf(stderr, "Encoder finished\n");
     }
-
+#if GETOPT
+    jump:
+#endif
     return (return_error == 0) ? 0 : 1;
 }

@@ -483,5 +483,6 @@ extern uint32_t    get_help(int32_t argc, char *const argv[]);
 extern uint32_t    get_number_of_channels(int32_t argc, char *const argv[]);
 
 EbErrorType read_command_line_getopt(int32_t argc, char *const argv[], EbConfig **configs);
+void get_help_getopt();
 
 #endif //EbAppConfig_h
