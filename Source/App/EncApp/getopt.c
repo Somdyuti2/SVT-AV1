@@ -57,7 +57,7 @@
 #include <stdio.h>
 #include <windows.h>
 
-#define	REPLACE_GETOPT      /* use this getopt as the system getopt(3) */
+#define REPLACE_GETOPT      /* use this getopt as the system getopt(3) */
 
 #ifdef REPLACE_GETOPT
 int	opterr = 1;     /* if error message should be printed */
@@ -69,16 +69,16 @@ int	optreset;       /* reset getopt */
 char    *optarg;        /* argument associated with option */
 #endif
 
-#define PRINT_ERROR	((opterr) && (*options != ':'))
+#define PRINT_ERROR ((opterr) && (*options != ':'))
 
 #define FLAG_PERMUTE	0x01    /* permute non-options to the end of argv */
 #define FLAG_ALLARGS	0x02    /* treat non-options as args to option "-1" */
 #define FLAG_LONGONLY	0x04    /* operate as getopt_long_only */
 
 /* return values */
-#define	BADCH       (int)'?'
-#define	BADARG      ((*options == ':') ? (int)':' : (int)'?')
-#define	INORDER     (int)1
+#define BADCH       (int)'?'
+#define BADARG      ((*options == ':') ? (int)':' : (int)'?')
+#define INORDER     (int)1
 
 #ifndef __CYGWIN__
 #define __progname __argv[0]
@@ -89,7 +89,7 @@ extern char __declspec(dllimport) *__progname;
 #ifdef __CYGWIN__
 static char EMSG[] = "";
 #else
-#define	EMSG        ""
+#define EMSG        ""
 #endif
 
 static int getopt_internal(int, char * const *, const char *,
