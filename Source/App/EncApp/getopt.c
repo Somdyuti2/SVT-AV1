@@ -60,20 +60,20 @@
 #define REPLACE_GETOPT      /* use this getopt as the system getopt(3) */
 
 #ifdef REPLACE_GETOPT
-int	opterr = 1;     /* if error message should be printed */
-int	optind = 1;     /* index into parent argv vector */
-int	optopt = '?';       /* character checked for validity */
-#undef	optreset        /* see getopt.h */
-#define	optreset        __mingw_optreset
-int	optreset;       /* reset getopt */
+int opterr = 1;     /* if error message should be printed */
+int optind = 1;     /* index into parent argv vector */
+int optopt = '?';       /* character checked for validity */
+#undef optreset        /* see getopt.h */
+#define optreset        __mingw_optreset
+int optreset;       /* reset getopt */
 char    *optarg;        /* argument associated with option */
 #endif
 
 #define PRINT_ERROR ((opterr) && (*options != ':'))
 
-#define FLAG_PERMUTE	0x01    /* permute non-options to the end of argv */
-#define FLAG_ALLARGS	0x02    /* treat non-options as args to option "-1" */
-#define FLAG_LONGONLY	0x04    /* operate as getopt_long_only */
+#define FLAG_PERMUTE    0x01    /* permute non-options to the end of argv */
+#define FLAG_ALLARGS    0x02    /* treat non-options as args to option "-1" */
+#define FLAG_LONGONLY   0x04    /* operate as getopt_long_only */
 
 /* return values */
 #define BADCH       (int)'?'
@@ -473,7 +473,7 @@ start:
     }
     if (long_options != NULL && optchar == 'W' && oli[1] == ';') {
         /* -W long-option */
-        if (*place)	        /* no space */
+        if (*place)     /* no space */
             /* NOTHING */;
         else if (++optind >= nargc) {   /* no arg */
             place = EMSG;
