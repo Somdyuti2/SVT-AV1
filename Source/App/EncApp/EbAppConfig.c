@@ -2804,6 +2804,8 @@ static const struct option long_opts[] = {
 
 void get_help_getopt() {
     int         i = 0;
+    fprintf(stderr, "\n%-25s\n", "Usage: SvtAv1EncApp.exe <options> -b dst_filename -i src_filename");
+    fprintf(stderr, "\n%-25s\n", "Options:");
     while (long_opts[++i].name != NULL) {
         if (long_opts[i].val < MAX_ASCII_PLUS_ONE) {
             if (long_opts[i].description == NULL) continue;

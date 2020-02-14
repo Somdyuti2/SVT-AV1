@@ -138,8 +138,7 @@ int32_t main(int32_t argc, char *argv[]) {
         // Read all configuration files.
 #if GETOPT
         return_error = read_command_line_getopt(argc, argv, configs);
-        if (return_error == EB_ErrorMax)
-            goto jump;
+        if (return_error == EB_ErrorMax) return (return_error == 0) ? 0 : 1;
         //read_command_line_getopt(argc, argv, configs);
 #else
         return_error = read_command_line(argc, argv, configs, num_channels, return_errors);
@@ -421,8 +420,5 @@ int32_t main(int32_t argc, char *argv[]) {
 
         fprintf(stderr, "Encoder finished\n");
     }
-#if GETOPT
-    jump:
-#endif
     return (return_error == 0) ? 0 : 1;
 }
