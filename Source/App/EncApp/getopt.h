@@ -64,13 +64,15 @@ struct option		/* specification for a long form option...	*/
   int         has_arg;		/* does it take an argument?		*/
   int        *flag;		/* where to save its status, or NULL	*/
   int         val;		/* its associated status value		*/
+  int         opt; /* options such as global options, reate control options*/
 };
 
+enum OPT { OPTIONS = 0, ENCODER_GLOBAL_OPTIONS, RATE_CONTROL_OPTIONS, TWO_PASS_OPTIONS, KEYFRAME_PLACEMENT_OPTIONS, AV1_SPECIAL_OPTIONS, EXTRA_OPTIONS };
 enum    		/* permitted values for its `has_arg' field...	*/
 {
-  no_argument = 0,      	/* option never takes an argument	*/
-  required_argument,		/* option always requires an argument	*/
-  optional_argument		/* option may take an argument		*/
+    no_argument = 0,      	/* option never takes an argument	*/
+    required_argument,		/* option always requires an argument	*/
+    optional_argument		/* option may take an argument		*/
 };
 
 extern int getopt_long(int nargc, char * const *nargv, const char *options,
