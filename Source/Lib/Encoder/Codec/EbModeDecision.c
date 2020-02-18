@@ -851,6 +851,25 @@ void unipred_3x3_candidates_injection(const SequenceControlSet *scs_ptr, Picture
                 if (context_ptr->unipred3x3_injection >= 2) {
                     if (allow_refinement_flag[bipred_index] == 0) continue;
                 }
+#if ENHANCED_ME_MV
+                int16_t to_inject_mv_x;
+                int16_t to_inject_mv_y;
+                if (pcs_ptr->parent_pcs_ptr->frm_hdr.allow_high_precision_mv) {
+                    to_inject_mv_x = context_ptr->sb_me_mv[context_ptr->blk_geom->blkidx_mds]
+                                                          [REF_LIST_0][list0_ref_index][0] +
+                                     bipred_3x3_x_pos[bipred_index];
+                    to_inject_mv_y = context_ptr->sb_me_mv[context_ptr->blk_geom->blkidx_mds]
+                                                          [REF_LIST_0][list0_ref_index][1] +
+                                     bipred_3x3_y_pos[bipred_index];
+                } else {
+                    to_inject_mv_x = context_ptr->sb_me_mv[context_ptr->blk_geom->blkidx_mds]
+                                                          [REF_LIST_0][list0_ref_index][0] +
+                                     (bipred_3x3_x_pos[bipred_index] << 1);
+                    to_inject_mv_y = context_ptr->sb_me_mv[context_ptr->blk_geom->blkidx_mds]
+                                                          [REF_LIST_0][list0_ref_index][1] +
+                                     (bipred_3x3_y_pos[bipred_index] << 1);
+                }
+#else
                 int16_t to_inject_mv_x;
                 int16_t to_inject_mv_y;
                 if (pcs_ptr->parent_pcs_ptr->frm_hdr.allow_high_precision_mv) {
@@ -874,6 +893,7 @@ void unipred_3x3_candidates_injection(const SequenceControlSet *scs_ptr, Picture
                          bipred_3x3_y_pos[bipred_index])
                         << 1;
                 }
+#endif
                 uint8_t to_inject_ref_type = svt_get_ref_frame_type(REF_LIST_0, list0_ref_index);
                 uint8_t skip_cand          = check_ref_beackout(
                     context_ptr, to_inject_ref_type, context_ptr->blk_geom->shape);
@@ -1001,6 +1021,25 @@ void unipred_3x3_candidates_injection(const SequenceControlSet *scs_ptr, Picture
                     if (context_ptr->unipred3x3_injection >= 2) {
                         if (allow_refinement_flag[bipred_index] == 0) continue;
                     }
+#if ENHANCED_ME_MV
+                    int16_t to_inject_mv_x;
+                    int16_t to_inject_mv_y;
+                    if (pcs_ptr->parent_pcs_ptr->frm_hdr.allow_high_precision_mv) {
+                        to_inject_mv_x = context_ptr->sb_me_mv[context_ptr->blk_geom->blkidx_mds]
+                                                              [REF_LIST_1][list1_ref_index][0] +
+                                         bipred_3x3_x_pos[bipred_index];
+                        to_inject_mv_y = context_ptr->sb_me_mv[context_ptr->blk_geom->blkidx_mds]
+                                                              [REF_LIST_1][list1_ref_index][1] +
+                                         bipred_3x3_y_pos[bipred_index];
+                    } else {
+                        to_inject_mv_x = context_ptr->sb_me_mv[context_ptr->blk_geom->blkidx_mds]
+                                                              [REF_LIST_1][list1_ref_index][0] +
+                                         (bipred_3x3_x_pos[bipred_index] << 1);
+                        to_inject_mv_y = context_ptr->sb_me_mv[context_ptr->blk_geom->blkidx_mds]
+                                                              [REF_LIST_1][list1_ref_index][1] +
+                                         (bipred_3x3_y_pos[bipred_index] << 1);
+                    }
+#else
                     int16_t to_inject_mv_x;
                     int16_t to_inject_mv_y;
                     if (pcs_ptr->parent_pcs_ptr->frm_hdr.allow_high_precision_mv) {
@@ -1034,6 +1073,7 @@ void unipred_3x3_candidates_injection(const SequenceControlSet *scs_ptr, Picture
                              bipred_3x3_y_pos[bipred_index])
                             << 1;
                     }
+#endif
                     uint8_t to_inject_ref_type =
                         svt_get_ref_frame_type(REF_LIST_1, list1_ref_index);
                     uint8_t skip_cand = check_ref_beackout(
@@ -1200,6 +1240,40 @@ void bipred_3x3_candidates_injection(const SequenceControlSet *scs_ptr, PictureC
                     if (context_ptr->bipred3x3_injection >= 2) {
                         if (allow_refinement_flag[bipred_index] == 0) continue;
                     }
+#if ENHANCED_ME_MV
+                    int16_t to_inject_mv_x_l0 =
+                        context_ptr->sb_me_mv[context_ptr->blk_geom->blkidx_mds]
+                                             [me_block_results_ptr->ref0_list][list0_ref_index][0];
+                    int16_t to_inject_mv_y_l0 =
+                        context_ptr->sb_me_mv[context_ptr->blk_geom->blkidx_mds]
+                                             [me_block_results_ptr->ref0_list][list0_ref_index][1];
+
+                    int16_t to_inject_mv_x_l1;
+                    int16_t to_inject_mv_y_l1;
+                    if (pcs_ptr->parent_pcs_ptr->frm_hdr.allow_high_precision_mv) {
+                        to_inject_mv_x_l1 =
+                            context_ptr
+                                ->sb_me_mv[context_ptr->blk_geom->blkidx_mds]
+                                          [me_block_results_ptr->ref1_list][list1_ref_index][0] +
+                            bipred_3x3_x_pos[bipred_index];
+                        to_inject_mv_y_l1 =
+                            context_ptr
+                                ->sb_me_mv[context_ptr->blk_geom->blkidx_mds]
+                                          [me_block_results_ptr->ref1_list][list1_ref_index][1] +
+                            bipred_3x3_y_pos[bipred_index];
+                    } else {
+                        to_inject_mv_x_l1 =
+                            context_ptr
+                                ->sb_me_mv[context_ptr->blk_geom->blkidx_mds]
+                                          [me_block_results_ptr->ref1_list][list1_ref_index][0] +
+                            (bipred_3x3_x_pos[bipred_index] << 1);
+                        to_inject_mv_y_l1 =
+                            context_ptr
+                                ->sb_me_mv[context_ptr->blk_geom->blkidx_mds]
+                                          [me_block_results_ptr->ref1_list][list1_ref_index][1] +
+                            (bipred_3x3_y_pos[bipred_index] << 1);
+                    }
+#else
                     int16_t to_inject_mv_x_l0 =
                         me_results->me_mv_array[context_ptr->me_block_offset][list0_ref_index].x_mv
                         << 1;
@@ -1251,6 +1325,7 @@ void bipred_3x3_candidates_injection(const SequenceControlSet *scs_ptr, PictureC
                              bipred_3x3_y_pos[bipred_index])
                             << 1;
                     }
+#endif
                     MvReferenceFrame rf[2];
                     rf[0] =
                         svt_get_ref_frame_type(me_block_results_ptr->ref0_list, list0_ref_index);
@@ -1376,6 +1451,40 @@ void bipred_3x3_candidates_injection(const SequenceControlSet *scs_ptr, PictureC
                     if (context_ptr->bipred3x3_injection >= 2) {
                         if (allow_refinement_flag[bipred_index] == 0) continue;
                     }
+
+#if ENHANCED_ME_MV
+                    int16_t to_inject_mv_x_l0;
+                    int16_t to_inject_mv_y_l0;
+                    if (pcs_ptr->parent_pcs_ptr->frm_hdr.allow_high_precision_mv) {
+                        to_inject_mv_x_l0 =
+                            context_ptr
+                                ->sb_me_mv[context_ptr->blk_geom->blkidx_mds]
+                                          [me_block_results_ptr->ref0_list][list0_ref_index][0] +
+                            bipred_3x3_x_pos[bipred_index];
+                        to_inject_mv_y_l0 =
+                            context_ptr
+                                ->sb_me_mv[context_ptr->blk_geom->blkidx_mds]
+                                          [me_block_results_ptr->ref0_list][list0_ref_index][1] +
+                            bipred_3x3_y_pos[bipred_index];
+                    } else {
+                        to_inject_mv_x_l0 =
+                            context_ptr
+                                ->sb_me_mv[context_ptr->blk_geom->blkidx_mds]
+                                          [me_block_results_ptr->ref0_list][list0_ref_index][0] +
+                            (bipred_3x3_x_pos[bipred_index] << 1);
+                        to_inject_mv_y_l0 =
+                            context_ptr
+                                ->sb_me_mv[context_ptr->blk_geom->blkidx_mds]
+                                          [me_block_results_ptr->ref0_list][list0_ref_index][1] +
+                            (bipred_3x3_y_pos[bipred_index] << 1);
+                    }
+                    int16_t to_inject_mv_x_l1 =
+                        context_ptr->sb_me_mv[context_ptr->blk_geom->blkidx_mds]
+                                             [me_block_results_ptr->ref1_list][list1_ref_index][0];
+                    int16_t to_inject_mv_y_l1 =
+                        context_ptr->sb_me_mv[context_ptr->blk_geom->blkidx_mds]
+                                             [me_block_results_ptr->ref1_list][list1_ref_index][1];
+#else
                     int16_t to_inject_mv_x_l0;
                     int16_t to_inject_mv_y_l0;
                     if (pcs_ptr->parent_pcs_ptr->frm_hdr.allow_high_precision_mv) {
@@ -1419,7 +1528,7 @@ void bipred_3x3_candidates_injection(const SequenceControlSet *scs_ptr, PictureC
                                           list1_ref_index]
                             .y_mv
                         << 1;
-
+#endif
                     MvReferenceFrame rf[2];
                     rf[0] =
                         svt_get_ref_frame_type(me_block_results_ptr->ref0_list, list0_ref_index);
@@ -2087,9 +2196,10 @@ void inject_new_nearest_new_comb_candidates(const SequenceControlSet *  scs_ptr,
         if (rf[1] != NONE_FRAME) {
             {
                 //NEAREST_NEWMV
+#if !ENHANCED_ME_MV
                 const MeSbResults *me_results =
                     pcs_ptr->parent_pcs_ptr->me_results[context_ptr->me_sb_addr];
-
+#endif
                 int16_t to_inject_mv_x_l0 =
                     context_ptr->md_local_blk_unit[context_ptr->blk_geom->blkidx_mds]
                         .ed_ref_mv_stack[ref_pair][0]
@@ -2098,6 +2208,14 @@ void inject_new_nearest_new_comb_candidates(const SequenceControlSet *  scs_ptr,
                     context_ptr->md_local_blk_unit[context_ptr->blk_geom->blkidx_mds]
                         .ed_ref_mv_stack[ref_pair][0]
                         .this_mv.as_mv.row;
+#if ENHANCED_ME_MV
+                int16_t to_inject_mv_x_l1 =
+                    context_ptr->sb_me_mv[context_ptr->blk_geom->blkidx_mds][get_list_idx(rf[1])]
+                                         [ref_idx_1][0];
+                int16_t to_inject_mv_y_l1 =
+                    context_ptr->sb_me_mv[context_ptr->blk_geom->blkidx_mds][get_list_idx(rf[1])]
+                                         [ref_idx_1][1];
+#else
                 int16_t to_inject_mv_x_l1 =
                     me_results
                         ->me_mv_array[context_ptr->me_block_offset]
@@ -2114,7 +2232,7 @@ void inject_new_nearest_new_comb_candidates(const SequenceControlSet *  scs_ptr,
                                       ref_idx_1]
                         .y_mv
                     << 1;
-
+#endif
                 inj_mv = context_ptr->injected_mv_count_bipred == 0 ||
                          mrp_is_already_injected_mv_bipred(context_ptr,
                                                            to_inject_mv_x_l0,
@@ -2212,13 +2330,23 @@ void inject_new_nearest_new_comb_candidates(const SequenceControlSet *  scs_ptr,
 
             {
                 //NEW_NEARESTMV
+#if !ENHANCED_ME_MV
                 const MeSbResults *me_results =
                     pcs_ptr->parent_pcs_ptr->me_results[context_ptr->me_sb_addr];
-
+#endif
+#if ENHANCED_ME_MV
+                int16_t to_inject_mv_x_l0 =
+                    context_ptr
+                        ->sb_me_mv[context_ptr->blk_geom->blkidx_mds][REF_LIST_0][ref_idx_0][0];
+                int16_t to_inject_mv_y_l0 =
+                    context_ptr
+                        ->sb_me_mv[context_ptr->blk_geom->blkidx_mds][REF_LIST_0][ref_idx_0][1];
+#else
                 int16_t to_inject_mv_x_l0 =
                     me_results->me_mv_array[context_ptr->me_block_offset][ref_idx_0].x_mv << 1;
                 int16_t to_inject_mv_y_l0 =
                     me_results->me_mv_array[context_ptr->me_block_offset][ref_idx_0].y_mv << 1;
+#endif
                 int16_t to_inject_mv_x_l1 =
                     context_ptr->md_local_blk_unit[context_ptr->blk_geom->blkidx_mds]
                         .ed_ref_mv_stack[ref_pair][0]
@@ -2336,13 +2464,23 @@ void inject_new_nearest_new_comb_candidates(const SequenceControlSet *  scs_ptr,
                                         ref_mv);
 
                     //NEW_NEARMV
+#if !ENHANCED_ME_MV
                     const MeSbResults *me_results =
                         pcs_ptr->parent_pcs_ptr->me_results[context_ptr->me_sb_addr];
-
+#endif
+#if ENHANCED_ME_MV
+                    int16_t to_inject_mv_x_l0 =
+                        context_ptr
+                            ->sb_me_mv[context_ptr->blk_geom->blkidx_mds][REF_LIST_0][ref_idx_0][0];
+                    int16_t to_inject_mv_y_l0 =
+                        context_ptr
+                            ->sb_me_mv[context_ptr->blk_geom->blkidx_mds][REF_LIST_0][ref_idx_0][1];
+#else
                     int16_t to_inject_mv_x_l0 =
                         me_results->me_mv_array[context_ptr->me_block_offset][ref_idx_0].x_mv << 1;
                     int16_t to_inject_mv_y_l0 =
                         me_results->me_mv_array[context_ptr->me_block_offset][ref_idx_0].y_mv << 1;
+#endif
                     int16_t to_inject_mv_x_l1 = nearmv[1].as_mv.col;
                     int16_t to_inject_mv_y_l1 = nearmv[1].as_mv.row;
 
@@ -2436,11 +2574,20 @@ void inject_new_nearest_new_comb_candidates(const SequenceControlSet *  scs_ptr,
                                         ref_mv);
 
                     //NEAR_NEWMV
+#if !ENHANCED_ME_MV
                     const MeSbResults *me_results =
                         pcs_ptr->parent_pcs_ptr->me_results[context_ptr->me_sb_addr];
-
+#endif
                     int16_t to_inject_mv_x_l0 = nearmv[0].as_mv.col;
                     int16_t to_inject_mv_y_l0 = nearmv[0].as_mv.row;
+#if ENHANCED_ME_MV
+                    int16_t to_inject_mv_x_l1 =
+                        context_ptr->sb_me_mv[context_ptr->blk_geom->blkidx_mds]
+                                             [get_list_idx(rf[1])][ref_idx_1][0];
+                    int16_t to_inject_mv_y_l1 =
+                        context_ptr->sb_me_mv[context_ptr->blk_geom->blkidx_mds]
+                                             [get_list_idx(rf[1])][ref_idx_1][1];
+#else
                     int16_t to_inject_mv_x_l1 =
                         me_results
                             ->me_mv_array[context_ptr->me_block_offset]
@@ -2457,7 +2604,7 @@ void inject_new_nearest_new_comb_candidates(const SequenceControlSet *  scs_ptr,
                                           ref_idx_1]
                             .y_mv
                         << 1; //context_ptr->md_local_blk_unit[context_ptr->blk_geom->blkidx_mds].ed_ref_mv_stack[ref_pair][0].comp_mv.as_mv.row;
-
+#endif
                     inj_mv = context_ptr->injected_mv_count_bipred == 0 ||
                              mrp_is_already_injected_mv_bipred(context_ptr,
                                                                to_inject_mv_x_l0,
@@ -2721,8 +2868,17 @@ void inject_warped_motion_candidates(
         if (inter_direction == 0) {
             if (list0_ref_index > context_ptr->md_max_ref_count - 1)
                 continue;
+#if ENHANCED_ME_MV
+            to_inject_mv_x =
+                context_ptr
+                    ->sb_me_mv[context_ptr->blk_geom->blkidx_mds][REF_LIST_0][list0_ref_index][0];
+            to_inject_mv_y =
+                context_ptr
+                    ->sb_me_mv[context_ptr->blk_geom->blkidx_mds][REF_LIST_0][list0_ref_index][1];
+#else
             to_inject_mv_x = me_results->me_mv_array[context_ptr->me_block_offset][list0_ref_index].x_mv << 1;
             to_inject_mv_y = me_results->me_mv_array[context_ptr->me_block_offset][list0_ref_index].y_mv << 1;
+#endif
             uint8_t to_inject_ref_type = svt_get_ref_frame_type(REF_LIST_0, list0_ref_index);
             uint8_t skip_cand = check_ref_beackout(
                 context_ptr,
@@ -2809,8 +2965,17 @@ void inject_warped_motion_candidates(
         if (inter_direction == 1) {
             if (list1_ref_index > context_ptr->md_max_ref_count - 1)
                 continue;
+#if ENHANCED_ME_MV
+            to_inject_mv_x =
+                context_ptr
+                    ->sb_me_mv[context_ptr->blk_geom->blkidx_mds][REF_LIST_1][list1_ref_index][0];
+            to_inject_mv_y =
+                context_ptr
+                    ->sb_me_mv[context_ptr->blk_geom->blkidx_mds][REF_LIST_1][list1_ref_index][1];
+#else
             to_inject_mv_x = me_results->me_mv_array[context_ptr->me_block_offset][((scs_ptr->mrp_mode == 0) ? 4 : 2) + list1_ref_index].x_mv << 1;
             to_inject_mv_y = me_results->me_mv_array[context_ptr->me_block_offset][((scs_ptr->mrp_mode == 0) ? 4 : 2) + list1_ref_index].y_mv << 1;
+#endif
             uint8_t to_inject_ref_type = svt_get_ref_frame_type(REF_LIST_1, list1_ref_index);
             uint8_t skip_cand = check_ref_beackout(
                 context_ptr,
@@ -3388,10 +3553,19 @@ void inject_new_candidates(const SequenceControlSet *  scs_ptr,
         ************* */
         if (inter_direction == 0) {
             if (list0_ref_index > context_ptr->md_max_ref_count - 1) continue;
+#if ENHANCED_ME_MV
+            int16_t to_inject_mv_x =
+                context_ptr
+                    ->sb_me_mv[context_ptr->blk_geom->blkidx_mds][REF_LIST_0][list0_ref_index][0];
+            int16_t to_inject_mv_y =
+                context_ptr
+                    ->sb_me_mv[context_ptr->blk_geom->blkidx_mds][REF_LIST_0][list0_ref_index][1];
+#else
             int16_t to_inject_mv_x = me_results->me_mv_array[me_block_offset][list0_ref_index].x_mv
                                      << 1;
             int16_t to_inject_mv_y = me_results->me_mv_array[me_block_offset][list0_ref_index].y_mv
                                      << 1;
+#endif
             uint8_t to_inject_ref_type = svt_get_ref_frame_type(REF_LIST_0, list0_ref_index);
             uint8_t skip_cand =
                 check_ref_beackout(context_ptr, to_inject_ref_type, context_ptr->blk_geom->shape);
@@ -3519,6 +3693,12 @@ void inject_new_candidates(const SequenceControlSet *  scs_ptr,
            ************* */
             if (inter_direction == 1) {
                 if (list1_ref_index > context_ptr->md_max_ref_count - 1) continue;
+#if ENHANCED_ME_MV
+                int16_t to_inject_mv_x = context_ptr->sb_me_mv[context_ptr->blk_geom->blkidx_mds]
+                                                              [REF_LIST_1][list1_ref_index][0];
+                int16_t to_inject_mv_y = context_ptr->sb_me_mv[context_ptr->blk_geom->blkidx_mds]
+                                                              [REF_LIST_1][list1_ref_index][1];
+#else
                 int16_t to_inject_mv_x =
                     me_results
                         ->me_mv_array[me_block_offset]
@@ -3531,6 +3711,7 @@ void inject_new_candidates(const SequenceControlSet *  scs_ptr,
                                      [((scs_ptr->mrp_mode == 0) ? 4 : 2) + list1_ref_index]
                         .y_mv
                     << 1;
+#endif
                 uint8_t to_inject_ref_type = svt_get_ref_frame_type(REF_LIST_1, list1_ref_index);
                 uint8_t skip_cand          = check_ref_beackout(
                     context_ptr, to_inject_ref_type, context_ptr->blk_geom->shape);
@@ -3657,6 +3838,20 @@ void inject_new_candidates(const SequenceControlSet *  scs_ptr,
                     list1_ref_index > context_ptr->md_max_ref_count - 1)
                     continue;
                 if (inter_direction == 2) {
+#if ENHANCED_ME_MV
+                    int16_t to_inject_mv_x_l0 =
+                        context_ptr->sb_me_mv[context_ptr->blk_geom->blkidx_mds]
+                                             [me_block_results_ptr->ref0_list][list0_ref_index][0];
+                    int16_t to_inject_mv_y_l0 =
+                        context_ptr->sb_me_mv[context_ptr->blk_geom->blkidx_mds]
+                                             [me_block_results_ptr->ref0_list][list0_ref_index][1];
+                    int16_t to_inject_mv_x_l1 =
+                        context_ptr->sb_me_mv[context_ptr->blk_geom->blkidx_mds]
+                                             [me_block_results_ptr->ref1_list][list1_ref_index][0];
+                    int16_t to_inject_mv_y_l1 =
+                        context_ptr->sb_me_mv[context_ptr->blk_geom->blkidx_mds]
+                                             [me_block_results_ptr->ref1_list][list1_ref_index][1];
+#else
                     int16_t to_inject_mv_x_l0 =
                         me_results->me_mv_array[me_block_offset][list0_ref_index].x_mv << 1;
                     int16_t to_inject_mv_y_l0 =
@@ -3679,6 +3874,7 @@ void inject_new_candidates(const SequenceControlSet *  scs_ptr,
                                           list1_ref_index]
                             .y_mv
                         << 1;
+#endif
                     MvReferenceFrame rf[2];
                     rf[0] =
                         svt_get_ref_frame_type(me_block_results_ptr->ref0_list, list0_ref_index);
@@ -4229,7 +4425,7 @@ void inject_inter_candidates(PictureControlSet *pcs_ptr, ModeDecisionContext *co
                           context_ptr->me_sb_addr,
                           context_ptr->me_block_offset,
                           &cand_total_cnt);
-
+#if !ENHANCED_ME_MV
     if (context_ptr->nx4_4xn_parent_mv_injection) {
         // If Nx4 or 4xN the inject the MV of the aprent block
 
@@ -4276,6 +4472,7 @@ void inject_inter_candidates(PictureControlSet *pcs_ptr, ModeDecisionContext *co
                                   &cand_total_cnt);
         }
     }
+#endif
     if (context_ptr->global_mv_injection) {
 #if GLOBAL_WARPED_MOTION
         if (pcs_ptr->parent_pcs_ptr->gm_level <= GM_DOWN) {
