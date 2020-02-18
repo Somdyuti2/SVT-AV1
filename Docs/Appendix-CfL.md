@@ -53,9 +53,11 @@ The steps illustrated in the diagram above can be summarized as follows:
 **Control macros/flags**:
 
 ##### Table 1. Control flags related to the CfL prediction.
-| **Flag**          | **Level** | **Description**                                                                      |
-| ----------------- | --------- | ------------------------------------------------------------------------------------ |
-| chroma\_level | Picture   | Describes the Chroma level of the encoder. Indicates which Chroma modes are allowed. |
+| **Flag**          | **Level**     | **Description**                                                                      |
+| ----------------- | ------------- | ------------------------------------------------------------------------------------ |
+| -cfl              | Configuration | 0: OFF, 1: ON, -1: DEFAULT (derived)
+| -chroma\_mode     | Configuration | Level: [0-3], -1: DEFAULT (derived)
+| chroma\_level     | Picture       | Describes the Chroma level of the encoder. Indicates which Chroma modes are allowed. |
 
 **Details of the implementation**
 

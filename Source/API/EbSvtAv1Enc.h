@@ -334,6 +334,11 @@ typedef struct EbSvtAv1EncConfiguration {
     * Default is -1 (AUTO) */
     int set_chroma_mode;
 
+    /* Disable chroma from luma (CFL)
+     *
+     * Default is -1 (auto) */
+    int cfl_flag;
+
     /* OBMC
     *
     * Default is 1. */

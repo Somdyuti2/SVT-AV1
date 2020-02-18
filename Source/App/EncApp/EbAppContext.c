@@ -143,6 +143,7 @@ EbErrorType copy_configuration_parameters(EbConfig *config, EbAppContext *callba
     callback_data->eb_enc_parameters.bipred_3x3_inject        = config->bipred_3x3_inject;
     callback_data->eb_enc_parameters.compound_level           = config->compound_level;
     callback_data->eb_enc_parameters.set_chroma_mode          = config->set_chroma_mode;
+    callback_data->eb_enc_parameters.cfl_flag                 = config->cfl_flag;
     callback_data->eb_enc_parameters.enable_filter_intra      = (EbBool)config->enable_filter_intra;
     callback_data->eb_enc_parameters.use_default_me_hme       = (EbBool)config->use_default_me_hme;
     callback_data->eb_enc_parameters.enable_hme_flag          = (EbBool)config->enable_hme_flag;
