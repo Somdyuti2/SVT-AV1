@@ -482,7 +482,9 @@ extern EbErrorType read_command_line(int32_t argc, char *const argv[], EbConfig 
 extern uint32_t    get_help(int32_t argc, char *const argv[]);
 extern uint32_t    get_number_of_channels(int32_t argc, char *const argv[]);
 
-EbErrorType read_command_line_getopt(int32_t argc, char *const argv[], EbConfig **configs);
-void get_help_getopt();
+extern EbErrorType set_token_getopt(EbConfig *configs, uint32_t num_channels, uint32_t token);
+extern EbErrorType read_command_line_getopt(int32_t argc, char *const argv[], EbConfig **configs,
+                                            uint32_t num_channels);
+extern void get_help_getopt();
 
 #endif //EbAppConfig_h
