@@ -2317,26 +2317,34 @@ static void line_split(uint32_t *argc, char *argv[CONFIG_FILE_MAX_ARG_COUNT],
 * Set Config value
 **********************************/
 static void set_config_value(EbConfig *config, const char *name, char *value) {
-    int32_t  i           = 1;
+#if GETOPT
+    static uint32_t i = 1;
+    //uint32_t i           = 1;
     uint32_t num_channel = 0;
     optarg               = value;
-#if GETOPT
-    fprintf(stderr, "var_name: %s\n", name);
+    //fprintf(stderr, "var_name: %s\n", name);
     //fprintf(stderr, "cfg_name: %s\n", long_opts[i].cfg_name);
     //fprintf(stderr, "i: %d\n", i);
+
     while (EB_STRCMP(long_opts[i].cfg_name, name) != 0) {
         //fprintf(stderr, "long_opts[i].cfg_name: %s", long_opts[i].cfg_name);
         //fprintf(stderr, "i: %d\n", i);
         i++;
     }
+    if (EB_STRCMP(long_opts[i].cfg_name, name) != 0) {
+        i = 0;
+        fprintf(stderr, "Didnt find it in the first loop");
+        while (EB_STRCMP(long_opts[i++].cfg_name, name) != 0)
+            ;
+    }
+
     if (EB_STRCMP(long_opts[i].cfg_name, name) == 0) {
-        fprintf(stderr, "token: %s", long_opts[i].cfg_name);
-        fprintf(stderr, "       optarg: %s", optarg);
-        fprintf(stderr, "       value: %s\n", value);
+        //fprintf(stderr, "token: %s", long_opts[i].cfg_name);
+        //fprintf(stderr, "       optarg: %s", optarg);
+        //fprintf(stderr, "       value: %s\n", value);
 
         set_token_getopt(config, num_channel, long_opts[i].val);
     }
-    //set_token_getopt(config, num_channel, (int)name);
 #else
     while (config_entry[i].name != NULL) {
         if (EB_STRCMP(config_entry[i].name, name) == 0)
@@ -2676,6 +2684,11 @@ uint32_t get_help(int32_t argc, char *const argv[]) {
 * Get the number of channels and validate it with input
 ******************************************************/
 uint32_t get_number_of_channels(int32_t argc, char *const argv[]) {
+#if GETOPT
+    uint32_t channel = set_token_getopt(NULL, 0, ARG_NCH);
+    fprintf(stderr, "Channel: %d\n", channel);
+    return channel;
+#else
     char     config_string[COMMAND_LINE_MAX_SIZE];
     uint32_t channel_number;
     if (find_token(argc, argv, CHANNEL_NUMBER_TOKEN, config_string) == 0) {
@@ -2690,6 +2703,7 @@ uint32_t get_number_of_channels(int32_t argc, char *const argv[]) {
             return channel_number;
         }
     }
+#endif
     return 1;
 }
 
@@ -3210,16 +3224,29 @@ EbErrorType read_command_line(int32_t argc, char *const argv[], EbConfig **confi
 
 #if GETOPT
 
-EbErrorType set_token_getopt(EbConfig *config, uint32_t num_channels, uint32_t token) {
+EbErrorType set_token_getopt(EbConfig *config, uint32_t num_channel, uint32_t token) {
     switch (token) {
     case ARG_HELP: get_help_getopt(); return EB_ErrorMax;
     case ARG_NCH:
-        // todo: rewrite get_number_of_channels without token
+        if (optarg == NULL) num_channel = 1;
+        else {
+            num_channel = strtol(optarg, NULL, 0);
+        }
+        // without token
+        if ((num_channel > (uint32_t)MAX_CHANNEL_NUMBER) || num_channel == 0) {
+            fprintf(stderr,
+                    "Error: The number of channels has to be within the range [1,%u]\n",
+                    (uint32_t)MAX_CHANNEL_NUMBER);
+            return 0;
+        }
+        fprintf(stderr, "optarg: %s\n", optarg);
+        fprintf(stderr, "num_channel: %u\n", num_channel);
+        return num_channel;
         //get_number_of_channels(argc, argv);
-        break;
+        //break;
     case 'c':
         // Parse the config file
-        for (uint32_t index = 0; index < num_channels; ++index) {
+        for (uint32_t index = 0; index < num_channel; ++index) {
             //fprintf(stderr, "optarg: %s", optarg);
             read_config_file(config, optarg, index);
         }
