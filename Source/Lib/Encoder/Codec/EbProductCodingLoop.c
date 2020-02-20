@@ -2418,7 +2418,7 @@ void read_refine_me_mvs(PictureControlSet *pcs_ptr, ModeDecisionContext *context
 
 #if MUS_ME
             if (is_me_data_present(context_ptr, me_results, list_idx, ref_idx))
-#endif 
+#endif
             {
                 int16_t me_mv_x;
                 int16_t me_mv_y;
@@ -2535,7 +2535,7 @@ void    predictive_me_search(PictureControlSet *pcs_ptr, ModeDecisionContext *co
 #if MUS_ME
             uint32_t pa_me_distortion = ~0;//any non zero value
             if (is_me_data_present(context_ptr, me_results, list_idx, ref_idx)) {
-#endif 
+#endif
             int16_t me_mv_x;
             int16_t me_mv_y;
 #if ENHANCED_ME_MV
