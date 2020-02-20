@@ -62,6 +62,7 @@
 #define FILM_GRAIN_TOKEN "-film-grain"
 #define INTRA_REFRESH_TYPE_TOKEN "-irefresh-type" // no Eval
 #define LOOP_FILTER_DISABLE_TOKEN "-dlf"
+#define CDEF_MODE_TOKEN "-cdef-mode"
 #define RESTORATION_ENABLE_TOKEN "-restoration-filtering"
 #define SG_FILTER_MODE_TOKEN "-sg-filter-mode"
 #define WN_FILTER_MODE_TOKEN "-wn-filter-mode"
@@ -309,6 +310,9 @@ static void set_enable_local_warped_motion_flag(const char *value, EbConfig *cfg
 };
 static void set_enable_global_motion_flag(const char *value, EbConfig *cfg) {
     cfg->enable_global_motion = (EbBool)strtoul(value, NULL, 0);
+};
+static void set_cdef_mode(const char *value, EbConfig *cfg) {
+    cfg->cdef_mode = strtol(value, NULL, 0);
 };
 static void set_enable_restoration_filter_flag(const char *value, EbConfig *cfg) {
     cfg->enable_restoration_filtering = strtol(value, NULL, 0);
@@ -779,6 +783,10 @@ ConfigEntry config_entry_specific[] = {
      RESTORATION_ENABLE_TOKEN,
      "Enable the loop restoration filter(0: OFF ,1: ON ,-1:DEFAULT)",
      set_enable_restoration_filter_flag},
+    // CDEF
+    {SINGLE_INPUT,
+     CDEF_MODE_TOKEN, "CDEF Mode (0: OFF, 1-5: ON with 2,4,8,16,64 step refinement, -1: DEFAULT)",
+     set_cdef_mode},
     {SINGLE_INPUT,
         SG_FILTER_MODE_TOKEN,
         "Self-guided filter mode (0:OFF, 1: step 0, 2: step 1, 3: step 4, 4: step 16, -1: DEFAULT)",
@@ -1106,6 +1114,9 @@ ConfigEntry config_entry[] = {
     {SINGLE_INPUT, SG_FILTER_MODE_TOKEN, "SelfGuidedFilterMode", set_sg_filter_mode},
     {SINGLE_INPUT, WN_FILTER_MODE_TOKEN, "WienerFilterMode", set_wn_filter_mode},
 
+    // CDEF
+    {SINGLE_INPUT, CDEF_MODE_TOKEN, "CDEFMode", set_cdef_mode},
+
     {SINGLE_INPUT, MFMV_ENABLE_TOKEN, "Mfmv", set_enable_mfmv_flag},
     {SINGLE_INPUT, REDUNDANT_BLK_TOKEN, "RedundantBlock", set_enable_redundant_blk_flag},
     {SINGLE_INPUT, TRELLIS_ENABLE_TOKEN, "Trellis", set_enable_trellis_flag},
@@ -1294,6 +1305,7 @@ void eb_config_ctor(EbConfig *config_ptr) {
     config_ptr->hierarchical_levels                       = 4;
     config_ptr->pred_structure                            = 2;
     config_ptr->enable_global_motion                      = EB_TRUE;
+    config_ptr->cdef_mode                                 = DEFAULT;
     config_ptr->enable_restoration_filtering              = DEFAULT;
     config_ptr->sg_filter_mode                            = DEFAULT;
     config_ptr->wn_filter_mode                            = DEFAULT;

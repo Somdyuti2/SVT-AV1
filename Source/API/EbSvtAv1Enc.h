@@ -250,6 +250,11 @@ typedef struct EbSvtAv1EncConfiguration {
     int sg_filter_mode;
     int wn_filter_mode;
 
+    /* CDEF mode
+    *
+    * Default is -1. */
+    int cdef_mode;
+
     /* edge based skip angle intra
     *
     * Default is -1. */

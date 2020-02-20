@@ -180,6 +180,7 @@ The encoder parameters present in the `Sample.cfg` file are listed in this table
 | **LookAheadDistance** | -lad | [0 - 120] | 33 | When Rate Control is set to 1 it&#39;s best to set this parameter to be equal to the Intra period value (such is the default set by the encoder) [this value is capped by the encoder to its maximum need e.g. 33 for CQP, 2*fps for rate control] |
 | **LoopFilterDisable** | -dlf | [0-1, 0 for default] | 0 | Disable loop filter(0: loop filter enabled[default] ,1: loop filter disabled) |
 | **RestorationFilter** | -restoration-filtering | [0/1, -1 for default] | -1 | Enable restoration filtering , 0 = OFF, 1 = ON, -1 = DEFAULT|
+| **CDEFMode** | -cdef-mode | [0-5, -1 for default] | -1 | CDEF Mode, 0: OFF, 1-5: ON with 2,4,8,16,64 step refinement, -1: DEFAULT|
 | **Mfmv** | -mfmv | [0/1, -1 for default] | -1 | Enable motion field motion vector, 0 = OFF, 1 = ON, -1 = DEFAULT|
 | **RedundantBlock** | -redundant-blk | [0/1, -1 for default] | -1 | Enable redundant block, 0 = OFF, 1 = ON, -1 = DEFAULT|
 | **Trellis** | -trellis | [0/1, -1 for default] | -1 | Enable trellis quant coefficient optimization, 0 = OFF, 1 = ON, -1 = DEFAULT|
