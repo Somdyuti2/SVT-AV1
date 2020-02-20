@@ -2386,6 +2386,8 @@ void derive_me_offsets(const SequenceControlSet *scs_ptr, PictureControlSet *pcs
     }
 }
 
+// Copy ME_MVs (generated @ PA) from input buffer (pcs_ptr-> .. ->me_results) to local
+// MD buffers (context_ptr->sb_me_mv)
 void read_refine_me_mvs(PictureControlSet *pcs_ptr, ModeDecisionContext *context_ptr,
                         EbPictureBufferDesc *input_picture_ptr, uint32_t input_origin_index,
                         uint32_t blk_origin_index) {
