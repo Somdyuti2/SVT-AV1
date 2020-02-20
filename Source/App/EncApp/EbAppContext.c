@@ -122,6 +122,7 @@ EbErrorType copy_configuration_parameters(EbConfig *config, EbAppContext *callba
     callback_data->eb_enc_parameters.enable_global_motion = (EbBool)config->enable_global_motion;
     callback_data->eb_enc_parameters.enable_restoration_filtering =
         config->enable_restoration_filtering;
+    callback_data->eb_enc_parameters.cdef_mode                = config->cdef_mode;
     callback_data->eb_enc_parameters.combine_class_12         = config->combine_class_12;
     callback_data->eb_enc_parameters.edge_skp_angle_intra     = config->edge_skp_angle_intra;
     callback_data->eb_enc_parameters.inter_intra_compound     = config->inter_intra_compound;
