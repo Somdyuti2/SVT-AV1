@@ -2317,6 +2317,11 @@ void md_sub_pel_search(PictureControlSet *pcs_ptr, ModeDecisionContext *context_
 void    av1_set_ref_frame(MvReferenceFrame *rf, int8_t ref_frame_type);
 uint8_t get_max_drl_index(uint8_t refmvCnt, PredictionMode mode);
 
+#if MUS_ME
+uint8_t is_me_data_present(struct ModeDecisionContext *context_ptr, const MeSbResults *me_results,
+    uint8_t list_idx, uint8_t ref_idx);
+#endif
+
 #if ENHANCED_ME_MV
 void derive_me_offsets(const SequenceControlSet *scs_ptr, PictureControlSet *pcs_ptr,
     ModeDecisionContext *context_ptr) {
@@ -2412,7 +2417,7 @@ void read_refine_me_mvs(PictureControlSet *pcs_ptr, ModeDecisionContext *context
                 pcs_ptr->parent_pcs_ptr->me_results[context_ptr->me_sb_addr];
 
 #if MUS_ME
-            if (is_me_data_present(context_ptr, me_results, list_idx, ref_idx)) {
+            if (is_me_data_present(context_ptr, me_results, list_idx, ref_idx))
 #endif 
             {
                 int16_t me_mv_x;
@@ -2473,10 +2478,6 @@ void read_refine_me_mvs(PictureControlSet *pcs_ptr, ModeDecisionContext *context
         }
     }
 }
-
-#if MUS_ME
-uint8_t is_me_data_present(struct ModeDecisionContext *context_ptr,const MeSbResults *me_results,
-                           uint8_t list_idx, uint8_t ref_idx);
 #endif
 void    predictive_me_search(PictureControlSet *pcs_ptr, ModeDecisionContext *context_ptr,
                              EbPictureBufferDesc *input_picture_ptr, uint32_t input_origin_index,
@@ -2528,10 +2529,9 @@ void    predictive_me_search(PictureControlSet *pcs_ptr, ModeDecisionContext *co
             uint8_t          ref_idx    = get_ref_frame_idx(rf[0]);
             if (ref_idx > context_ptr->md_max_ref_count - 1) continue;
             // Get the ME MV
-#if !ENHANCED_ME_MV
             const MeSbResults *me_results =
                 pcs_ptr->parent_pcs_ptr->me_results[context_ptr->me_sb_addr];
-#endif
+
 #if MUS_ME
             uint32_t pa_me_distortion = ~0;//any non zero value
             if (is_me_data_present(context_ptr, me_results, list_idx, ref_idx)) {

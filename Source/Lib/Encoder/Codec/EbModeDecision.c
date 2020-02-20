@@ -2220,10 +2220,9 @@ void inject_new_nearest_new_comb_candidates(const SequenceControlSet *  scs_ptr,
         if (rf[1] != NONE_FRAME) {
             {
                 //NEAREST_NEWMV
-#if !ENHANCED_ME_MV
                 const MeSbResults *me_results =
                     pcs_ptr->parent_pcs_ptr->me_results[context_ptr->me_sb_addr];
-#endif
+
                 int16_t to_inject_mv_x_l0 =
                     context_ptr->md_local_blk_unit[context_ptr->blk_geom->blkidx_mds]
                         .ed_ref_mv_stack[ref_pair][0]
@@ -2357,10 +2356,9 @@ void inject_new_nearest_new_comb_candidates(const SequenceControlSet *  scs_ptr,
 
             {
                 //NEW_NEARESTMV
-#if !ENHANCED_ME_MV
                 const MeSbResults *me_results =
                     pcs_ptr->parent_pcs_ptr->me_results[context_ptr->me_sb_addr];
-#endif
+
 #if ENHANCED_ME_MV
                 int16_t to_inject_mv_x_l0 =
                     context_ptr
@@ -2494,10 +2492,9 @@ void inject_new_nearest_new_comb_candidates(const SequenceControlSet *  scs_ptr,
                                         ref_mv);
 
                     //NEW_NEARMV
-#if !ENHANCED_ME_MV
                     const MeSbResults *me_results =
                         pcs_ptr->parent_pcs_ptr->me_results[context_ptr->me_sb_addr];
-#endif
+
 #if ENHANCED_ME_MV
                     int16_t to_inject_mv_x_l0 =
                         context_ptr
@@ -2606,10 +2603,9 @@ void inject_new_nearest_new_comb_candidates(const SequenceControlSet *  scs_ptr,
                                         ref_mv);
 
                     //NEAR_NEWMV
-#if !ENHANCED_ME_MV
                     const MeSbResults *me_results =
                         pcs_ptr->parent_pcs_ptr->me_results[context_ptr->me_sb_addr];
-#endif
+
                     int16_t to_inject_mv_x_l0 = nearmv[0].as_mv.col;
                     int16_t to_inject_mv_y_l0 = nearmv[0].as_mv.row;
 #if ENHANCED_ME_MV
