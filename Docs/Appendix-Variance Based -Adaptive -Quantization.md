@@ -1,5 +1,3 @@
-
-
 # Variance Based Adaptive Quantization 
 
 It is well known that the visibility of compression artifacts in a patch of  an encoded image or video largely depends on the spatial/spatiotemporal contrast of the patch region.  This process is formally known as perceptual contrast masking, and the extent of distortion masking of a spatial/spatiotemporal patch is reported by measuring the contrast masking threshold of the patch through subjective experiments. The purpose of adaptive quantization in video encoding is to exploit the property of perceptual contrast masking to adjust the quantization parameter (QP) value of a region according to its contrast masking threshold. Typically, an adaptive quantization algorithm seeks to use a lower QP value for encoding regions of low contrast where the threshold is low, so that these regions can be rendered at a better perceptual quality, while using higher QP values for high contrast (higher spatial frequency) regions which can mask distortions to a larger extent. 
