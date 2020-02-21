@@ -1,6 +1,6 @@
-# Variance Based Adaptive Quantization 
+# Variance Based Adaptive Quantization
 
-It is well known that the visibility of compression artifacts in a patch of  an encoded image or video largely depends on the spatial/spatiotemporal contrast of the patch region.  This process is formally known as perceptual contrast masking, and the extent of distortion masking of a spatial/spatiotemporal patch is reported by measuring the contrast masking threshold of the patch through subjective experiments. The purpose of adaptive quantization in video encoding is to exploit the property of perceptual contrast masking to adjust the quantization parameter (QP) value of a region according to its contrast masking threshold. Typically, an adaptive quantization algorithm seeks to use a lower QP value for encoding regions of low contrast where the threshold is low, so that these regions can be rendered at a better perceptual quality, while using higher QP values for high contrast (higher spatial frequency) regions which can mask distortions to a larger extent. 
+It is well known that the visibility of compression artifacts in a patch of  an encoded image or video largely depends on the spatial/spatiotemporal contrast of the patch region.  This process is formally known as perceptual contrast masking, and the extent of distortion masking of a spatial/spatiotemporal patch is reported by measuring the contrast masking threshold of the patch through subjective experiments. The purpose of adaptive quantization in video encoding is to exploit the property of perceptual contrast masking to adjust the quantization parameter (QP) value of a region according to its contrast masking threshold. Typically, an adaptive quantization algorithm seeks to use a lower QP value for encoding regions of low contrast where the threshold is low, so that these regions can be rendered at a better perceptual quality, while using higher QP values for high contrast (higher spatial frequency) regions which can mask distortions to a larger extent.
 
 ## 1. Description of the algorithm
 
@@ -12,27 +12,27 @@ The frame level segmentation step in SVT-AV1 utilizes variances of 8✕8, 16✕1
 
 <img src="https://render.githubusercontent.com/render/math?math=\sigma_i = \frac{1}{64}\sum_{j=0}^{63}\sigma_{ij}  \ \text{for} \ i=1 \cdots K">
 
-where <img src="https://render.githubusercontent.com/render/math?math=\sigma_{ij}"> are the variances of the 8✕8 blocks within superblock *i* and *K* is the total number of superblocks in the video frame. The superblock variances thus computed are pooled across the frame, and the logarithm of their maximum, minimum and average are computed.  Let these quantities be <img src="https://render.githubusercontent.com/render/math?math=\sigma_{max}">, <img src="https://render.githubusercontent.com/render/math?math=\sigma_{min}">, and <img src="https://render.githubusercontent.com/render/math?math=\sigma_{avg}"> respectively. 
+where <img src="https://render.githubusercontent.com/render/math?math=\sigma_{ij}"> are the variances of the 8✕8 blocks within superblock *i* and *K* is the total number of superblocks in the video frame. The superblock variances thus computed are pooled across the frame, and the logarithm of their maximum, minimum and average are computed.  Let these quantities be <img src="https://render.githubusercontent.com/render/math?math=\sigma_{max}">, <img src="https://render.githubusercontent.com/render/math?math=\sigma_{min}">, and <img src="https://render.githubusercontent.com/render/math?math=\sigma_{avg}"> respectively.
 
 Subsequently the histogram bin width is computed as <img src="https://render.githubusercontent.com/render/math?math=w=(\sigma_{max}-\sigma_{min})/N">, where *w* is the bin width and *N* is the total number of segments (*N*=8). The bin edges of the histogram are given by <img src="https://render.githubusercontent.com/render/math?math=e_i=(\sigma_{min} %2B i \cdot w)"> for  <img src="https://render.githubusercontent.com/render/math?math=i=0 \ \ \cdots \ \ N">. Each histogram bin corresponds to a segment, and for each segment, the deviation of the segment's q-index from the base q-index for the frame, denoted by Δq is assigned as follows:
 
 <img src="https://render.githubusercontent.com/render/math?math=$\Delta q_{i %2B 1}=\frac{(e_i %2B e_{i %2B 1})} {2} - \sigma_{avg} \ \ \  \text{for} \ \ i=0 \ \cdots \ N-1">
 
-The values <img src="https://render.githubusercontent.com/render/math?math=e_i">as well as <img src="https://render.githubusercontent.com/render/math?math=\Delta q_i"> for <img src="https://render.githubusercontent.com/render/math?math=i = 1 \cdots N"> are saved as segmentation parameters of the frame at the end of Step 1. 
+The values <img src="https://render.githubusercontent.com/render/math?math=e_i">as well as <img src="https://render.githubusercontent.com/render/math?math=\Delta q_i"> for <img src="https://render.githubusercontent.com/render/math?math=i = 1 \cdots N"> are saved as segmentation parameters of the frame at the end of Step 1.
 
 ### Step 2: Segmentation and QP assignment to CUs
 
-In the encode pass, once the superblock partition decisions are made, and CU sizes are available for each superblock, the quantization parameter to be used to encode each CU is individually determined using the segmentation parameters computed Step 1. This involves a table lookup to get the variance of the current CU, using the geometry of the current CU and the variance pointer for the current superblock.  Since only variances of square blocks are calculated during the pre-processing stage, the variance of a rectangular CU is computed as the average of the variances of the two adjacent square blocks of the next smaller size that make up the rectangular CU. Further, as the smallest block size for which block variances are available is 8✕8, all smaller block variances are approximated by the variance of the 8x8 block that encloses such smaller blocks. 
+In the encode pass, once the superblock partition decisions are made, and CU sizes are available for each superblock, the quantization parameter to be used to encode each CU is individually determined using the segmentation parameters computed Step 1. This involves a table lookup to get the variance of the current CU, using the geometry of the current CU and the variance pointer for the current superblock.  Since only variances of square blocks are calculated during the pre-processing stage, the variance of a rectangular CU is computed as the average of the variances of the two adjacent square blocks of the next smaller size that make up the rectangular CU. Further, as the smallest block size for which block variances are available is 8✕8, all smaller block variances are approximated by the variance of the 8x8 block that encloses such smaller blocks.
 
-Once the variance of the CU is computed as described above, the histogram bin corresponding to the current CU is determined.  A CU is with variance <img src="https://render.githubusercontent.com/render/math?math=\sigma_c">is assigned to segment *i*  if <img src="https://render.githubusercontent.com/render/math?math=\sigma_c \leq  e_i"> and <img src="https://render.githubusercontent.com/render/math?math=\sigma_c > e_j \ \ \forall j > i">. The Δq value for the segment to which the CU is assigned is looked up, and the q-index for the CU is obtained by adding the Δq to the base q-index of the frame. Finally, the q-index is mapped to the QP value using the appropriate look-up table, and this QP value is subsequently used to encode the CU. 
+Once the variance of the CU is computed as described above, the histogram bin corresponding to the current CU is determined.  A CU is with variance <img src="https://render.githubusercontent.com/render/math?math=\sigma_c">is assigned to segment *i*  if <img src="https://render.githubusercontent.com/render/math?math=\sigma_c \leq  e_i"> and <img src="https://render.githubusercontent.com/render/math?math=\sigma_c > e_j \ \ \forall j > i">. The Δq value for the segment to which the CU is assigned is looked up, and the q-index for the CU is obtained by adding the Δq to the base q-index of the frame. Finally, the q-index is mapped to the QP value using the appropriate look-up table, and this QP value is subsequently used to encode the CU.
 
 ## 2. Implementation of the algorithm
 
 **Inputs**: superblock pointer, CU pointer, CU block geometry and segmentation parameters.
 
-**Outputs**: CU segment id and QP value. 
+**Outputs**: CU segment id and QP value.
 
-**Control macros/flags**: `adaptive-quantization` is the high level flag used to enable/disable adaptive quantization (default: disabled). 
+**Control macros/flags**: `adaptive-quantization` is the high level flag used to enable/disable adaptive quantization (default: disabled).
 
 ### Implementation details
 
@@ -56,7 +56,7 @@ for (int i = 0; i < MAX_SEGMENTS; i++) {
     }
 ```
 
-Here, `SEG_LVL_ALT_Q` is the enum for the position corresponding to *Δq* in the `feature_data` data structure. The logarithm operation previously used to compute the variance bin edges is inverted by an exponential operation when the bin edges are saved as segmentation parameters.  
+Here, `SEG_LVL_ALT_Q` is the enum for the position corresponding to *Δq* in the `feature_data` data structure. The logarithm operation previously used to compute the variance bin edges is inverted by an exponential operation when the bin edges are saved as segmentation parameters.
 
 In the encoding phase, the variance of each CU is found through a table lookup by the function *get_variance_for_cu()* and subsequently adaptive quantization takes place in the function *apply_segmentation_based_quantization()* by finding the histogram bin corresponding to the CU variance and assigning the corresponding segment id and QP value to the CU as follows:
 
@@ -98,7 +98,7 @@ The relevant functions used in EbSegmentation.c to perform the  adaptive quantiz
 
 ## 3. Optimization of the algorithm
 
-The adaptive quantization algorithm is computationally efficient since it uses block variances as contrast descriptors, which are available from the pre-processing statistics and needs very little extra computation to compute the variance distribution and histogram bin edges. Thereby, no optimizations are performed for higher speed presets. 
+The adaptive quantization algorithm is computationally efficient since it uses block variances as contrast descriptors, which are available from the pre-processing statistics and needs very little extra computation to compute the variance distribution and histogram bin edges. Thereby, no optimizations are performed for higher speed presets.
 
 ## 4. Signaling
 
