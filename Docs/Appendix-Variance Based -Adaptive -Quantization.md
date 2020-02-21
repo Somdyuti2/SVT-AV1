@@ -1,5 +1,3 @@
-
-
 # Variance Based Adaptive Quantization 
 
 It is well known that the visibility of compression artifacts in a patch of  an encoded image or video largely depends on the spatial/spatiotemporal contrast of the patch region.  This process is formally known as perceptual contrast masking, and the extent of distortion masking of a spatial/spatiotemporal patch is reported by measuring the contrast masking threshold of the patch through subjective experiments. The purpose of adaptive quantization in video encoding is to exploit the property of perceptual contrast masking to adjust the quantization parameter (QP) value of a region according to its contrast masking threshold. Typically, an adaptive quantization algorithm seeks to use a lower QP value for encoding regions of low contrast where the threshold is low, so that these regions can be rendered at a better perceptual quality, while using higher QP values for high contrast (higher spatial frequency) regions which can mask distortions to a larger extent. 
@@ -112,5 +110,5 @@ The relevant flags of the frame header OBU that are associated with the segmenta
 | `segmentation_update_map`                                    | 1: Indicates that the segmentation map are updated during the decoding of this frame.          <br/>0: Indicates that the segmentation map from the previous frame is used. |
 | `segmentation_temporal_update`                               | 1: Indicates that the updates to the segmentation map are coded< relative to the existing segmentation map.<br/>0: Indicates that the new segmentation map is coded without reference to the existing segmentation map. |
 | `segmentation_update_data`                                   | 1: Indicates that new parameters are about to be specified for each segment. <br/>0: Indicates that the segmentation parameters should keep their existing values. |
-| `feature_enabled[i][j]` <br/> 0 ≤ i ≤ `MAX_SEGMENTS` <br/> 0 ≤ j ≤ `SEG_LVL_MAX` | 0: Indicates the feature j disabled for segment i. <br/>1: Indicates the feature j disabled for segment i. |
-| `feature_data[i][j]` <br/> 0 ≤ i ≤ `MAX_SEGMENTS` <br/> 0 ≤ j ≤`SEG_LVL_MAX` | Specifies the j<sup>th</sup> feature data for segment i.     |
+| `feature_enabled[i][j]` <br/> 0 ≤ i < `MAX_SEGMENTS` <br/> 0 ≤ j < `SEG_LVL_MAX` | 0: Indicates the feature j disabled for segment i. <br/>1: Indicates the feature j disabled for segment i. |
+| `feature_data[i][j]` <br/> 0 ≤ i < `MAX_SEGMENTS` <br/> 0 ≤ j < `SEG_LVL_MAX` | Specifies the j<sup>th</sup> feature data for segment i.     |
