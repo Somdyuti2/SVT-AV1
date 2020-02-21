@@ -110,5 +110,5 @@ The relevant flags of the frame header OBU that are associated with the segmenta
 | `segmentation_update_map`                                    | 1: Indicates that the segmentation map are updated during the decoding of this frame.          <br/>0: Indicates that the segmentation map from the previous frame is used. |
 | `segmentation_temporal_update`                               | 1: Indicates that the updates to the segmentation map are coded< relative to the existing segmentation map.<br/>0: Indicates that the new segmentation map is coded without reference to the existing segmentation map. |
 | `segmentation_update_data`                                   | 1: Indicates that new parameters are about to be specified for each segment. <br/>0: Indicates that the segmentation parameters should keep their existing values. |
-| `feature_enabled[i][j]` <br/> 0 ≤ i ≤ `MAX_SEGMENTS` <br/> 0 ≤ j ≤ `SEG_LVL_MAX` | 0: Indicates the feature j disabled for segment i. <br/>1: Indicates the feature j disabled for segment i. |
-| `feature_data[i][j]` <br/> 0 ≤ i ≤ `MAX_SEGMENTS` <br/> 0 ≤ j ≤`SEG_LVL_MAX` | Specifies the j<sup>th</sup> feature data for segment i.     |
+| `feature_enabled[i][j]` <br/> 0 ≤ i < `MAX_SEGMENTS` <br/> 0 ≤ j < `SEG_LVL_MAX` | 0: Indicates the feature j disabled for segment i. <br/>1: Indicates the feature j disabled for segment i. |
+| `feature_data[i][j]` <br/> 0 ≤ i < `MAX_SEGMENTS` <br/> 0 ≤ j < `SEG_LVL_MAX` | Specifies the j<sup>th</sup> feature data for segment i.     |
